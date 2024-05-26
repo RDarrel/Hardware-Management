@@ -6,6 +6,7 @@ import projects from "./slices/projects";
 import tasks from "./slices/tasks";
 import events from "./slices/events";
 import employees from "./slices/administrator/employees";
+import products from "./slices/administrator/products";
 const store = configureStore({
   reducer: {
     auth,
@@ -15,6 +16,7 @@ const store = configureStore({
     tasks,
     events,
     employees,
+    products,
   },
 });
 

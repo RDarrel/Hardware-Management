@@ -63,7 +63,7 @@ export default function Employees() {
           <tbody>
             {employees.length > 0 ? (
               employees.map(({ role, fullName: name, email }, index) => (
-                <tr>
+                <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{fullName(name)}</td>
                   <td>{email}</td>

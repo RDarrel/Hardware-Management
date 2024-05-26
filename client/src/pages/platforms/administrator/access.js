@@ -1,9 +1,4 @@
 import Dashboard from "./dashboard";
-import Roles from "./user settings/roles";
-import Users from "./user settings/users";
-import Projects from "./work management/projects";
-import Tasks from "./work management/tasks";
-import Events from "./work management/events";
 import Employees from "./employees";
 import Products from "./products";
 
@@ -27,53 +22,53 @@ const access = [
     icon: "award",
     component: Products,
   },
-  {
-    path: "/user-settings",
-    name: "User Settings",
-    icon: "user-cog",
-    children: [
-      {
-        name: "Roles",
-        path: "/roles",
-        component: Roles,
-      },
-      {
-        name: "Users",
-        path: "/users",
-        component: Users,
-      },
-    ],
-  },
-  {
-    path: "/work-management",
-    name: "Work Management",
-    icon: "city",
-    children: [
-      {
-        name: "Projects",
-        path: "/projects",
-        component: Projects,
-      },
-      {
-        name: "Tasks",
+  // {
+  //   path: "/user-settings",
+  //   name: "User Settings",
+  //   icon: "user-cog",
+  //   children: [
+  //     {
+  //       name: "Roles",
+  //       path: "/roles",
+  //       component: Roles,
+  //     },
+  //     {
+  //       name: "Users",
+  //       path: "/users",
+  //       component: Users,
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "/work-management",
+  //   name: "Work Management",
+  //   icon: "city",
+  //   children: [
+  //     {
+  //       name: "Projects",
+  //       path: "/projects",
+  //       component: Projects,
+  //     },
+  //     {
+  //       name: "Tasks",
 
-        path: "/tasks",
-        component: Tasks,
-      },
-      {
-        name: "Events",
+  //       path: "/tasks",
+  //       component: Tasks,
+  //     },
+  //     {
+  //       name: "Events",
 
-        path: "/events",
-        component: Events,
-      },
-      {
-        name: "Tickets",
+  //       path: "/events",
+  //       component: Events,
+  //     },
+  //     {
+  //       name: "Tickets",
 
-        path: "/tickets",
-        component: Events,
-      },
-    ],
-  },
+  //       path: "/tickets",
+  //       component: Events,
+  //     },
+  //   ],
+  // },
 ];
 
 export default access;
