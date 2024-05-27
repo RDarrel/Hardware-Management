@@ -18,6 +18,18 @@ const _labels = [
 ];
 const ProductInformation = ({ setIsViewProductInformation }) => {
   const [labels, setLabels] = useState(_labels);
+  const [variations, setVariations] = useState([
+    {
+      title: "Variation 1",
+      name: "Color",
+      options: ["Red", "Blue", "Black"],
+    },
+    // {
+    //   title: "Variation 2",
+    //   name: "Size",
+    //   options: ["SM", "MD", "LG", "XL"],
+    // },
+  ]);
 
   const dragOver = (e) => {
     e.preventDefault();
@@ -31,24 +43,23 @@ const ProductInformation = ({ setIsViewProductInformation }) => {
     );
 
     const copyLabels = [...labels];
-    const newImg = { ...copyLabels[transferIndex], img };
+    const { img: image = "" } = copyLabels[transferIndex];
 
-    const swapInOriginalIndex = {
-      ...copyLabels[transferIndex],
-      img: copyLabels[transferIndex].img,
+    const getLabel = (index) => copyLabels[index].label;
+
+    copyLabels[transferIndex] = { label: getLabel(transferIndex), img };
+    copyLabels[originalIndex] = {
+      label: getLabel(originalIndex),
+      img: image,
     };
 
-    copyLabels[transferIndex] = newImg;
-    copyLabels[originalIndex] = swapInOriginalIndex;
-
-    console.log(copyLabels[originalIndex]);
     setLabels(copyLabels);
   };
 
   return (
     <>
       <Basic />
-      <Informations />
+      <Informations variations={variations} setVariations={setVariations} />
       <Media
         dragOver={dragOver}
         handleDrop={handleDrop}

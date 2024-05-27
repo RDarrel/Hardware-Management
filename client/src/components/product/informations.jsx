@@ -9,8 +9,9 @@ import {
   MDBIcon,
 } from "mdbreact";
 import { useState } from "react";
+import Variations from "./variations";
 
-function Informations() {
+function Informations({ variations, setVariations }) {
   const [enableVariations, setEnableVariations] = useState(false);
 
   return (
@@ -54,7 +55,10 @@ function Informations() {
                 </MDBRow>
               </>
             ) : (
-              <h2>Variations</h2>
+              <Variations
+                variations={variations}
+                setVariations={setVariations}
+              />
             )}
           </MDBCardBody>
         </MDBCard>

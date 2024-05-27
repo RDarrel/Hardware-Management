@@ -4,9 +4,10 @@ import { categories } from "../../../../services/fakeDb";
 
 export const Header = ({ setShow, setIsViewProductInformation }) => {
   return (
-    <MDBRow className="align-items-center">
+    <MDBRow className="align-items-center mt-3 p-3">
       <MDBCol md="2">
         <MDBBtn
+          size="sm"
           color="primary"
           onClick={() => setIsViewProductInformation(true)}
         >
@@ -26,7 +27,7 @@ export const Header = ({ setShow, setIsViewProductInformation }) => {
         </select>
       </MDBCol>
       <MDBCol className="d-flex justify-content-end" md="4">
-        <div className="cashier-search-cotaniner">
+        <div className="cashier-search-cotaniner ">
           <form className="cashier-search">
             <input
               placeholder="Search..."
