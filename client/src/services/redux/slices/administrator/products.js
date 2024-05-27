@@ -63,6 +63,24 @@ export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   }
 });
 
+export const DESTROY = createAsyncThunk(
+  `${name}/destroy`,
+  ({ token, data }, thunkAPI) => {
+    try {
+      return axioKit.destroy(name, data, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const reduxSlice = createSlice({
   name,
   initialState,
@@ -141,6 +159,23 @@ export const reduxSlice = createSlice({
       })
       .addCase(SAVE.rejected, (state, action) => {
         const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+      .addCase(DESTROY.fulfilled, (state, action) => {
+        const { success, payload } = action.payload;
+        const index = state.collections.findIndex(
+          ({ _id }) => _id === payload._id
+        );
+        state.collections.splice(index, 1);
+        state.showModal = false;
+        state.message = success;
+        state.isSuccess = true;
+        state.isLoading = false;
+      })
+      .addCase(DESTROY.rejected, (state, action) => {
+        const { error } = action;
+        state.showModal = false;
         state.message = error.message;
         state.isLoading = false;
       });

@@ -60,7 +60,7 @@ export default function Modal({ show, toggle, selected, willCreate }) {
       } else {
         dispatch(
           UPDATE({
-            data: form,
+            data: { ...form, sizes, img: base64 },
             token,
           })
         );
@@ -104,7 +104,6 @@ export default function Modal({ show, toggle, selected, willCreate }) {
       img.src = result;
 
       img.onload = () => {
-        // Split the result to get the Base64 part only
         const base64String = result.split(",")[1];
         setBase64(base64String);
         setPreview(URL.createObjectURL(file));
@@ -223,7 +222,9 @@ export default function Modal({ show, toggle, selected, willCreate }) {
                 }
               />
 
-              <input
+              <MDBBtn>Variations</MDBBtn>
+
+              {/* <input
                 className="form-check-input"
                 type="checkbox"
                 id={"isSize"}
@@ -236,7 +237,7 @@ export default function Modal({ show, toggle, selected, willCreate }) {
                 htmlFor={"isSize"}
                 className="form-check-label mr-2 label-table"
               >
-                This Product Is Per size
+                Per size
               </label>
 
               <input
@@ -250,10 +251,42 @@ export default function Modal({ show, toggle, selected, willCreate }) {
               />
               <label
                 htmlFor={"isPerKilo"}
-                className="form-check-label ml-5 label-table"
+                className="form-check-label ml-3 label-table"
               >
-                This Product Is Per Kilo
+                Per Kilo
               </label>
+
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id={"color"}
+                checked={form.isPerSize}
+                onChange={() =>
+                  setForm({ ...form, isPerSize: !form.isPerSize })
+                }
+              />
+              <label
+                htmlFor={"color"}
+                className="form-check-label ml-3 mr-2 label-table"
+              >
+                Have a multiple color
+              </label>
+
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id={"variant"}
+                checked={form.isPerKilo}
+                onChange={() =>
+                  setForm({ ...form, isPerKilo: !form.isPerKilo })
+                }
+              />
+              <label
+                htmlFor={"variant"}
+                className="form-check-label ml-3 label-table"
+              >
+                Have a variants
+              </label> */}
               {form.isPerSize &&
                 sizes.map(({ size, price }, index) => (
                   <MDBRow key={index} className="d-flex align-items-center">

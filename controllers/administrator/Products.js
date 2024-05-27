@@ -53,10 +53,26 @@ exports.save = (req, res) => {
     .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
 };
 
-exports.update = (req, res) =>
+exports.update = (req, res) => {
+  const { sizes = [], img = "" } = req.body;
+  var sizesWithID = [];
+  if (sizes.length > 0) {
+    sizesWithID = sizes
+      .map(
+        ({ size, price, _id = "" }, index) =>
+          size && {
+            size,
+            price,
+            _id: _id || `${uuidv4()}${index}`,
+          }
+      )
+      .filter(Boolean);
+  }
   Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
     .then((item) => {
       if (item) {
+        upload(item.name, item._id, img);
+
         res.json({
           success: "Role Updated Successfully",
           payload: item,
@@ -69,3 +85,12 @@ exports.update = (req, res) =>
       }
     })
     .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
+};
+
+exports.destroy = (req, res) => {
+  Entity.findByIdAndDelete(req.body._id)
+    .then((item) => {
+      res.json({ success: "Successfuly Deleted Product", payload: item });
+    })
+    .catch((error) => res.status(400).json({ error: error.message }));
+};

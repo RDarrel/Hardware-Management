@@ -76,7 +76,9 @@ const View = ({ isView, toggleView, selected }) => {
                 <h5 className="mr-2">Price:</h5>
               </MDBCol>
               <MDBCol>
-                <h3 className=" text-danger font-weight-bold p-2">{price}</h3>
+                <h3 className=" text-danger font-weight-bold p-2">
+                  {selected.isPerSize ? price : selected.price}
+                </h3>
               </MDBCol>
             </MDBRow>
 
@@ -92,7 +94,7 @@ const View = ({ isView, toggleView, selected }) => {
                       color="primary"
                       outline={size !== activeSize}
                       onClick={() => setActiveSize(size)}
-                      className="mr-2"
+                      className="mr-2 font-weight-bold"
                     >
                       {size}
                     </MDBBtn>

@@ -1,0 +1,295 @@
+/* search */
+.cashier-search-cotaniner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 350px;
+}
+
+.cashier-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 4px;
+  border-radius: 50px;
+  box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+}
+
+.cashier-search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  margin-inline: 5px;
+}
+
+.cashier-search input::placeholder {
+  font-style: italic;
+  color: hsl(0, 0%, 60%);
+  letter-spacing: 0.5px;
+}
+
+.cashier-search button {
+  border: none;
+  background-color: #007bff;
+  color: white;
+  padding: 0.3rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+.cashier-search button:active {
+  transform: scale(0.95);
+}
+
+.cashier-search button:hover {
+  background-color: hsl(221.25, 70.8%, 61.1%);
+}
+
+.cashier-search.active {
+  border-radius: 0;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+/* Suggestions Design */
+.cashier-search .cashier-search-suggestions {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, 100%);
+  background-color: #fff;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 3px 4px 1px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+}
+
+.cashier-search.active .cashier-search-suggestions {
+  display: block;
+}
+
+.cashier-search .cashier-search-suggestions::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.1);
+  box-shadow: -1px 0 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.cashier-search .cashier-search-suggestions small {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: grey;
+}
+
+.cashier-search .cashier-search-suggestions ul {
+  list-style-type: none;
+  padding: 0;
+  padding-inline: 5px;
+  margin: 0;
+  text-align: left;
+  font-weight: 400;
+  font-size: 0.9rem;
+  max-height: 15rem;
+  overflow-y: auto;
+}
+
+.cashier-search .cashier-search-suggestions ul li {
+  padding: 5px 10px;
+}
+
+.cashier-search .cashier-search-suggestions ul li:hover {
+  background-color: hsl(207, 90%, 56%);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.3);
+}
+/* End of Search Design */
+
+.cashier-wrapper {
+  height: 100vh;
+  width: 100%;
+  background-color: white;
+}
+
+/* instruction search */
+.cashier-instruction {
+  position: relative;
+  margin-right: 10px;
+}
+
+.cashier-instruction input {
+  background-color: green;
+  display: block;
+}
+
+.cashier-instruction div {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  transform: translate(-46.5%, -85%);
+  width: 19rem;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 5px;
+  text-align: center;
+  border-radius: 5px;
+  z-index: 99999;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}
+
+.cashier-instruction:hover div {
+  visibility: visible;
+  opacity: 1;
+}
+
+.cashier-instruction div::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 25px;
+  height: 15px;
+  transform: translate(-50%, 98.16%) rotate(180deg);
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: -1;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.cashier-instruction div p {
+  font-weight: bold;
+  margin: 0;
+}
+
+.cashier-instruction div i {
+  font-size: 0.8rem;
+}
+
+/* card design */
+.cashier-card {
+  position: relative;
+  width: 100%;
+  min-width: 18rem;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  white-space: pre-wrap;
+  transition: transform 0.3s ease;
+  user-select: none;
+}
+
+.cashier-card:hover {
+  transform: translateY(-5px);
+}
+
+.cashier-card label {
+  width: 100%;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-right: 10px;
+  margin: 0;
+}
+
+.cashier-card p {
+  width: 100%;
+  color: hsl(0, 0%, 50%);
+  margin: 0;
+  margin-top: 10px;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+.cashier-card-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}
+
+.cashier-card:hover .cashier-card-footer {
+  opacity: 1;
+}
+
+/* carousel */
+.carousel-wrapper {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.carousel-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.cashier-carousel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.cashier-carousel h4 {
+  font-weight: bold;
+  margin: 0;
+  transition: color 300ms ease-in;
+}
+
+.cashier-carousel:hover h4 {
+  color: #007bff;
+}
+
+.cashier-carousel-box {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  scroll-behavior: smooth; /* Add smooth scrolling effect */
+  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS devices */
+  white-space: nowrap; /* Prevent items from wrapping to the next line */
+}
+
+.cashier-carousel-box::-webkit-scrollbar {
+  display: none;
+}
+
+.cashier-carousel-box:active {
+  cursor: grabbing;
+}
+
+.dots-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(-30%, 30%);
+}
+
+.dot {
+  width: 18px;
+  height: 3px;
+  background-color: #ccc;
+  border-radius: 10px;
+  display: inline-block;
+  margin: 0 2px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dot.active {
+  background-color: #007bff; /* Change this to your desired active color */
+  box-shadow: 0 0 3px 0 #007bff;
+}
