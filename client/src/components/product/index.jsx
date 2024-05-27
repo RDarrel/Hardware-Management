@@ -24,11 +24,11 @@ const ProductInformation = ({ setIsViewProductInformation }) => {
       name: "Color",
       options: ["Red", "Blue", "Black"],
     },
-    // {
-    //   title: "Variation 2",
-    //   name: "Size",
-    //   options: ["SM", "MD", "LG", "XL"],
-    // },
+    {
+      title: "Variation 2",
+      name: "Size",
+      options: ["SM", "MD", "LG", "XL"],
+    },
   ]);
 
   const dragOver = (e) => {

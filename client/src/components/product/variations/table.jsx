@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 function Table({ variations }) {
   const [_variations, _setVariations] = useState([]);
   const [vr2IsMoreThanVr1, setVr2IsMoreThanVr1] = useState(false);
+  const [variantionsWithPrice, setVariantionsWithPrice] = useState([]);
 
   useEffect(() => {
     const copyOfVariations = variations.map((variation) => ({
@@ -46,7 +47,7 @@ function Table({ variations }) {
     }
   }, [variations]);
 
-  const handleChangePrice = (value, { option, index }) => {
+  const handleChangePrice = (price, { option, index }) => {
     const optionsCopy = !vr2IsMoreThanVr1
       ? _variations[0].options
       : _variations[1].options;
@@ -54,14 +55,51 @@ function Table({ variations }) {
     const reversedArray = optionsCopy.slice(0, index).reverse();
     const variantIndex = reversedArray.find((obj) =>
       Object.keys(obj).includes("index")
-    ).index;
+    )?.index;
 
-    const variant =
+    const variantStorage =
       _variations[0].options[vr2IsMoreThanVr1 ? variantIndex : index];
-    console.log(variant);
-  };
 
-  console.log(_variations);
+    var variant = "";
+    if (typeof variantStorage === "object") {
+      variant = variantStorage.name;
+    } else {
+      variant = variantStorage;
+    }
+
+    const _variantionsWithPrice = [...variantionsWithPrice];
+    const variationIndex = _variantionsWithPrice.findIndex(
+      ({ name }) => name === name
+    );
+    const variantHasExist = _variantionsWithPrice.find(
+      ({ name }) => name === name
+    );
+
+    if (!variantHasExist) {
+      _variantionsWithPrice.push({
+        name: variant,
+        options: [{ name: option, price }],
+      });
+    } else {
+      const optionHasExist = variantHasExist.options.findIndex(
+        ({ name }) => name === option
+      );
+
+      if (optionHasExist > -1) {
+        const newPrices = {
+          ...variantHasExist.options[optionHasExist].prices,
+          [option]: price,
+        };
+      } else {
+        const newOption = {
+          name: option,
+          prices: {
+            [option]: price,
+          },
+        };
+      }
+    }
+  };
 
   return (
     <MDBRow className="mt-4">
@@ -91,10 +129,12 @@ function Table({ variations }) {
                 const { name = "", index: baseIndex = -1, price } = data;
                 const vr1Options = _variations[0]?.options;
 
-                console.log(baseIndex);
                 const rowSpan = vr2IsMoreThanVr1
                   ? _variations[1]?.options?.length / vr1Options.length
                   : 0;
+
+                const isShowPrice =
+                  !vr2IsMoreThanVr1 || baseIndex === -1 ? true : false;
 
                 return (
                   <tr key={`${index}-${name}`} className="border border-black">
@@ -107,7 +147,7 @@ function Table({ variations }) {
                         {vr1Options[baseIndex]}
                       </td>
                     )}
-                    {baseIndex === -1 && (
+                    {isShowPrice && (
                       <>
                         <td className="text-center border border-black">
                           {name}
