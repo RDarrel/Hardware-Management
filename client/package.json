@@ -18,7 +18,8 @@
     "react-scripts": "^3.0.1",
     "react-toast-notifications": "^2.5.1",
     "socket.io-client": "^4.6.1",
-    "sweetalert2": "^11.7.10"
+    "sweetalert2": "^11.7.10",
+    "uuid": "^9.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

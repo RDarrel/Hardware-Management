@@ -9,7 +9,6 @@ import {
   MDBCol,
   MDBIcon,
   MDBRow,
-  MDBTable,
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
 import { ENDPOINT } from "../../../../services/utilities";
@@ -96,27 +95,75 @@ const Products = () => {
               setIsViewProductInformation={setIsViewProductInformation}
             />
             <MDBCardBody>
-              <MDBTable striped>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Variation</th>
-                    <th>Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product, index) => {
-                    const { name, hasVariation } = product;
-                    return (
-                      <tr key={index}>
-                        <td>{index + 1} </td>
-                        <td>{name} </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </MDBTable>
+              <MDBRow>
+                {currentProducts.length > 0 &&
+                  currentProducts.map((product, index) => (
+                    <MDBCol md="3" className="mt-4" key={index}>
+                      <section>
+                        <MDBCard>
+                          <div className="d-flex justify-content-center">
+                            <MDBCardImage
+                              className="img-fluid d-flex justify-content-center"
+                              src={`${ENDPOINT}/assets/products/${product.name}-${product._id}.jpg`}
+                              style={{ height: "200px", width: "100%" }}
+                            />
+                          </div>
+                          <MDBBtn
+                            floating
+                            color="warning"
+                            tag="a"
+                            className="ml-auto mr-4  "
+                            onClick={() => {
+                              setIsView(true);
+                              setSelected(product);
+                            }}
+                            action
+                          >
+                            <MDBIcon icon="eye" />
+                          </MDBBtn>
+
+                          <MDBCardBody>
+                            <MDBCardTitle>{product.name}</MDBCardTitle>
+                            <hr />
+                            <MDBRow>
+                              <MDBCol
+                                md="12"
+                                className="d-flex justify-content-end"
+                              >
+                                <MDBBtnGroup>
+                                  <MDBBtn
+                                    size="sm"
+                                    color="primary"
+                                    onClick={() => {
+                                      setWillCreate(false);
+                                      setSelected(product);
+                                      toggle();
+                                    }}
+                                  >
+                                    <MDBIcon icon="pencil-alt" />
+                                  </MDBBtn>
+                                  <MDBBtn
+                                    size="sm"
+                                    color="danger"
+                                    onClick={() => handleDelete(product._id)}
+                                  >
+                                    <MDBIcon icon="trash" />
+                                  </MDBBtn>
+                                </MDBBtnGroup>
+                              </MDBCol>
+                            </MDBRow>
+                          </MDBCardBody>
+                        </MDBCard>
+                      </section>
+                    </MDBCol>
+                  ))}
+              </MDBRow>
+
+              <Pagination
+                currentPage={currentPage}
+                pageNumbers={pageNumbers}
+                handlePageChange={handlePageChange}
+              />
             </MDBCardBody>
           </MDBCard>
 

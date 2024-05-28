@@ -10,16 +10,24 @@ const modelSchema = new mongoose.Schema(
     price: {
       type: Number,
     },
+
+    description: {
+      type: String,
+      required: true,
+    },
+
     category: {
       type: String,
       required: true,
     },
-    sizes: {
-      type: Array,
+
+    material: {
+      type: String,
+      required: true,
     },
-    isPerSize: {
-      type: Boolean,
-      default: false,
+
+    variations: {
+      type: Array,
     },
 
     isPerKilo: {
@@ -27,8 +35,18 @@ const modelSchema = new mongoose.Schema(
       default: false,
     },
 
-    description: {
-      type: String,
+    hasVariant: {
+      type: Boolean,
+      default: false,
+    },
+
+    has2Variant: {
+      type: Boolean,
+      default: false,
+    },
+    media: {
+      type: Object,
+      default: {},
     },
   },
   {

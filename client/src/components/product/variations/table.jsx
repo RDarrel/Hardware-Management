@@ -1,104 +1,178 @@
 import { MDBCol, MDBInputGroup, MDBRow, MDBTable } from "mdbreact";
 import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
-function Table({ variations }) {
+function Table({
+  variations,
+  priceApplyInAllVarations,
+  variationsWithPrice,
+  setVariationsWithPrice,
+}) {
   const [_variations, _setVariations] = useState([]);
-  const [vr2IsMoreThanVr1, setVr2IsMoreThanVr1] = useState(false);
-  const [variantionsWithPrice, setVariantionsWithPrice] = useState([]);
+  const [haveVariation2, setHaveVariation2] = useState(false);
+  const [variation2, setVariation2] = useState([]);
 
   useEffect(() => {
     const copyOfVariations = variations.map((variation) => ({
       ...variation,
-      options: [...variation.options],
+      options: variation.options,
     }));
+
     if (variations.length === 2) {
-      const vr2IsMoreThanVr1 =
-        variations[1]?.options?.length > variations[0]?.options?.length;
-
-      if (vr2IsMoreThanVr1) {
-        const newOptions = [];
-        let baseIndex = -1;
-        copyOfVariations[0].options.forEach(() => {
-          copyOfVariations[1].options.forEach((option, index) => {
-            if (index === 0) {
-              baseIndex++;
-              newOptions.push({ index: baseIndex });
-            }
-            newOptions.push({ name: option, price: 0 });
-          });
+      const newOptions = [];
+      let baseIndex = -1;
+      copyOfVariations[0].options.forEach(() => {
+        copyOfVariations[1].options.forEach(({ name, _id }, index) => {
+          if (index === 0) {
+            baseIndex++;
+            newOptions.push({ index: baseIndex });
+          }
+          newOptions.push({ name, price: priceApplyInAllVarations, _id });
         });
+      });
 
-        const updatedVariations = [...copyOfVariations];
-        updatedVariations[1].options = newOptions;
+      const updatedVariations = [...copyOfVariations];
+      updatedVariations[1].options = newOptions;
 
-        _setVariations(updatedVariations);
-        setVr2IsMoreThanVr1(vr2IsMoreThanVr1);
-      }
+      setVariation2({
+        ...variations[1],
+        options: variations[1].options,
+      });
+      _setVariations(updatedVariations);
+      setHaveVariation2(true);
     } else {
       const _vr1OptionsCopy = [];
-      copyOfVariations[0].options.forEach((option, index) => {
-        _vr1OptionsCopy.push({ name: option, price: 0, index });
+      copyOfVariations[0].options.forEach(({ name, _id }, index) => {
+        _vr1OptionsCopy.push({
+          name,
+          price: priceApplyInAllVarations,
+          index,
+          _id,
+        });
       });
 
       copyOfVariations[0].options = _vr1OptionsCopy;
-      setVr2IsMoreThanVr1(false);
+      setHaveVariation2(false);
 
       _setVariations(copyOfVariations);
     }
-  }, [variations]);
+  }, [variations, priceApplyInAllVarations]);
 
-  const handleChangePrice = (price, { option, index }) => {
-    const optionsCopy = !vr2IsMoreThanVr1
+  const handleChangePrice = (price, { option = "", index: baseIndex }) => {
+    const optionsCopy = !haveVariation2
       ? _variations[0].options
       : _variations[1].options;
 
-    const reversedArray = optionsCopy.slice(0, index).reverse();
+    const reversedArray = optionsCopy.slice(0, baseIndex).reverse();
     const variantIndex = reversedArray.find((obj) =>
       Object.keys(obj).includes("index")
     )?.index;
 
     const variantStorage =
-      _variations[0].options[vr2IsMoreThanVr1 ? variantIndex : index];
+      _variations[0].options[haveVariation2 ? variantIndex : baseIndex];
 
-    var variant = "";
+    var variant = ""; //  red blue green
     if (typeof variantStorage === "object") {
       variant = variantStorage.name;
     } else {
       variant = variantStorage;
     }
+    if (haveVariation2) {
+      handleChangeHaveVariation2(variant, option, price);
+    } else {
+      handleChangeVaration1(variant, price);
+    }
+    handleChangeCurrentVariations(baseIndex, price);
+  };
 
-    const _variantionsWithPrice = [...variantionsWithPrice];
-    const variationIndex = _variantionsWithPrice.findIndex(
-      ({ name }) => name === name
-    );
-    const variantHasExist = _variantionsWithPrice.find(
-      ({ name }) => name === name
+  const handleChangeVaration1 = (variant, prices) => {
+    const updatedVariationsWithPrice = [...variationsWithPrice];
+
+    // Ensure the first element exists and has options
+    if (updatedVariationsWithPrice[0]?.options) {
+      const vr1Options = [...updatedVariationsWithPrice[0].options];
+      const optionIndex = vr1Options.findIndex(({ name }) => name === variant);
+
+      if (optionIndex > -1) {
+        vr1Options[optionIndex].prices = prices;
+      } else {
+        vr1Options.push({ _id: uuidv4(), name: variant, prices });
+      }
+
+      updatedVariationsWithPrice[0].options = vr1Options;
+    } else {
+      // Ensure initial setup of options if not present
+      updatedVariationsWithPrice[0] = {
+        ...variations[0],
+        _id: uuidv4(),
+        options: [{ _id: uuidv4(), name: variant, prices }],
+      };
+    }
+
+    setVariationsWithPrice(updatedVariationsWithPrice);
+  };
+
+  const handleChangeHaveVariation2 = (variant, option, price) => {
+    const updatedVariationsWithPrice = [...variationsWithPrice];
+
+    const variationIndex = updatedVariationsWithPrice.findIndex(
+      ({ name }) => name === variations[0].name
     );
 
-    if (!variantHasExist) {
-      _variantionsWithPrice.push({
-        name: variant,
-        options: [{ name: option, price }],
+    if (variationIndex < 0) {
+      updatedVariationsWithPrice.push({
+        _id: uuidv4(),
+        name: variations[0].name,
+        options: [
+          {
+            name: variant,
+            prices: [{ _id: option, srp: price, disable: false }],
+          },
+        ],
       });
     } else {
-      const optionHasExist = variantHasExist.options.findIndex(
-        ({ name }) => name === option
+      const variantExist = updatedVariationsWithPrice[variationIndex];
+      const optionIndex = variantExist.options.findIndex(
+        ({ name }) => name === variant
       );
 
-      if (optionHasExist > -1) {
-        const newPrices = {
-          ...variantHasExist.options[optionHasExist].prices,
-          [option]: price,
-        };
+      if (optionIndex > -1) {
+        // if the option is already exist
+        const prices = variantExist.options[optionIndex].prices;
+        const priceIndex = prices.findIndex(({ _id }) => _id === option);
+
+        if (priceIndex > -1) {
+          prices[priceIndex].srp = price;
+        } else {
+          prices.push({ _id: option, srp: price, disable: false });
+        }
+
+        variantExist.options[optionIndex].prices = prices;
       } else {
-        const newOption = {
-          name: option,
-          prices: {
-            [option]: price,
-          },
-        };
+        //if the option is not exist
+        variantExist.options.push({
+          name: variant,
+          prices: [{ _id: option, srp: price, disable: false }],
+        });
       }
+
+      updatedVariationsWithPrice[variationIndex] = variantExist;
     }
+    if (updatedVariationsWithPrice.length <= 1) {
+      updatedVariationsWithPrice.push({ ...variation2 });
+    }
+    setVariationsWithPrice(updatedVariationsWithPrice);
+  };
+
+  const handleChangeCurrentVariations = (index, price) => {
+    const baseIndex = haveVariation2 ? 1 : 0;
+    const baseVariations = [..._variations];
+    const copyOfVrOptions = [...baseVariations[baseIndex].options];
+
+    copyOfVrOptions[index].price = price;
+
+    baseVariations[baseIndex].options = copyOfVrOptions;
+    _setVariations(baseVariations);
   };
 
   return (
@@ -124,33 +198,37 @@ function Table({ variations }) {
             </tr>
           </thead>
           <tbody>
-            {_variations[vr2IsMoreThanVr1 ? 1 : 0]?.options?.map(
+            {_variations[haveVariation2 ? 1 : 0]?.options?.map(
               (data, index) => {
-                const { name = "", index: baseIndex = -1, price } = data;
-                const vr1Options = _variations[0]?.options;
+                const {
+                  name = "",
+                  index: baseIndex = -1,
+                  price,
+                  _id,
+                } = data || {};
+                const vr1Options = _variations[0]?.options || [];
 
-                const rowSpan = vr2IsMoreThanVr1
-                  ? _variations[1]?.options?.length / vr1Options.length
+                const rowSpan = haveVariation2
+                  ? _variations[1]?.options?.length / (vr1Options.length || 1)
                   : 0;
 
-                const isShowPrice =
-                  !vr2IsMoreThanVr1 || baseIndex === -1 ? true : false;
+                const isShowPrice = !haveVariation2 || baseIndex === -1;
 
                 return (
                   <tr key={`${index}-${name}`} className="border border-black">
-                    {vr2IsMoreThanVr1 && baseIndex > -1 && (
+                    {haveVariation2 && baseIndex > -1 && (
                       <td
                         className="text-center border border-black "
                         rowSpan={rowSpan}
                         style={{ verticalAlign: "middle" }}
                       >
-                        {vr1Options[baseIndex]}
+                        {vr1Options[baseIndex].name || `Option`}
                       </td>
                     )}
                     {isShowPrice && (
                       <>
                         <td className="text-center border border-black">
-                          {name}
+                          {name || `Option `}
                         </td>
                         <td
                           className="text-center border border-black"
@@ -158,12 +236,13 @@ function Table({ variations }) {
                         >
                           <MDBInputGroup
                             prepend="₱"
+                            required
                             type="number"
                             value={String(price)}
                             onChange={(e) =>
                               handleChangePrice(Number(e.target.value), {
                                 index,
-                                option: name,
+                                option: _id,
                               })
                             }
                           ></MDBInputGroup>

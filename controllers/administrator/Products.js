@@ -14,6 +14,43 @@ const upload = (name, _id, base64) => {
   }
 };
 
+const handleVariantImagesUpload = (productName, productID, variantImages) => {
+  const options = variantImages.options;
+  const optionsImages = options
+    .map((option) => (option.img ? option : ""))
+    .filter(Boolean);
+
+  if (optionsImages.length > 0) {
+    const url = `./assets/products/${productName}-${productID}/variant`;
+
+    // const url = `./assets/products`;
+    if (!fs.existsSync(url)) {
+      fs.mkdirSync(url, { recursive: true });
+    }
+    try {
+      optionsImages.forEach((element) => {
+        fs.writeFileSync(`${url}/${element._id}.jpg`, element.img, "base64");
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+};
+
+const handleUploadProduct = (name, _id, images) => {
+  const url = `./assets/products/${name}-${_id}`;
+  if (!fs.existsSync(url)) {
+    fs.mkdirSync(url, { recursive: true });
+  }
+  try {
+    images.forEach((element) => {
+      fs.writeFileSync(`${url}/${element.label}.jpg`, element.img, "base64");
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 exports.browse = (req, res) =>
   Entity.find()
     .select("-__v")
@@ -28,23 +65,12 @@ exports.browse = (req, res) =>
     .catch((error) => res.status(400).json({ error: error.message }));
 
 exports.save = (req, res) => {
-  const { sizes = [], img = "" } = req.body;
-  var sizesWithID = [];
-  if (sizes.length > 0) {
-    sizesWithID = sizes
-      .map(
-        ({ size, price }, index) =>
-          size && {
-            size,
-            price,
-            _id: `${uuidv4()}${index}`,
-          }
-      )
-      .filter(Boolean);
-  }
-  Entity.create({ ...req.body, sizes: sizesWithID })
+  const product = req.body;
+  Entity.create(product)
     .then((item) => {
-      upload(item.name, item._id, img);
+      handleUploadProduct(item.name, item._id, item?.media?.product);
+      handleVariantImagesUpload(item.name, item._id, item?.media?.variant);
+
       res.status(201).json({
         success: "Product Created Successfully",
         payload: item,

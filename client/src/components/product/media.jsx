@@ -1,8 +1,9 @@
 import React from "react";
 import { MDBRow, MDBCol, MDBCard, MDBCardBody } from "mdbreact";
-import ImagePlaceholder from "./ImagePlaceHolder";
+import ProductImg from "./mediaPlaceHolder/product";
+import OptionImg from "./mediaPlaceHolder/variant";
 
-function Media({ handleDrop, labels, dragOver, setLabels }) {
+function Media({ handleDrop, media, dragOver, setMedia, variations }) {
   return (
     <MDBRow className="mt-3">
       <MDBCol md="12">
@@ -15,7 +16,7 @@ function Media({ handleDrop, labels, dragOver, setLabels }) {
               </MDBCol>
               <MDBCol>
                 <MDBRow>
-                  {labels.map(({ img, label }, index) => (
+                  {media?.product?.map(({ preview: img, label }, index) => (
                     <MDBCol
                       key={index}
                       md="1"
@@ -24,16 +25,17 @@ function Media({ handleDrop, labels, dragOver, setLabels }) {
                       onDragStart={(e) => {
                         e.dataTransfer.setData(
                           "text/plain",
-                          JSON.stringify({ img, index })
+                          JSON.stringify({ img, index, title: "product" })
                         );
                       }}
                       onDragOver={dragOver}
                       onDrop={(e) => handleDrop(e, index)}
                     >
-                      <ImagePlaceholder
+                      <ProductImg
                         index={index}
+                        media={media}
                         label={label}
-                        setLabels={setLabels}
+                        setMedia={setMedia}
                         img={img}
                       />
                     </MDBCol>
@@ -41,6 +43,44 @@ function Media({ handleDrop, labels, dragOver, setLabels }) {
                 </MDBRow>
               </MDBCol>
             </MDBRow>
+
+            {variations.length > 0 && (
+              <MDBRow>
+                <MDBCol md="2" className="d-flex justify-content-end ">
+                  <h5 className="mt-4">{variations[0].name || "Name"}</h5>
+                </MDBCol>
+                <MDBCol>
+                  <MDBRow>
+                    {media.variant?.options?.map(
+                      ({ preview: img, label }, index) => (
+                        <MDBCol
+                          key={index}
+                          md="1"
+                          className="mr-5"
+                          draggable="true"
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData(
+                              "text/plain",
+                              JSON.stringify({ img, index, title: "variant" })
+                            );
+                          }}
+                          onDragOver={dragOver}
+                          onDrop={(e) => handleDrop(e, index)}
+                        >
+                          <OptionImg
+                            index={index}
+                            label={label}
+                            media={media}
+                            setMedia={setMedia}
+                            img={img}
+                          />
+                        </MDBCol>
+                      )
+                    )}
+                  </MDBRow>
+                </MDBCol>
+              </MDBRow>
+            )}
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
