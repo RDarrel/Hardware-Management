@@ -9,6 +9,7 @@ import {
   MDBCol,
   MDBIcon,
   MDBRow,
+  MDBSwitch,
   MDBTable,
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
@@ -46,6 +47,7 @@ const Products = () => {
   }, [token, dispatch]);
 
   useEffect(() => {
+    collections.forEach((element) => {});
     setProducts(collections);
   }, [collections]);
 
@@ -86,6 +88,22 @@ const Products = () => {
     });
   };
 
+  const handleRowSpan = (product, variant) => {
+    if (variant === "variant2") {
+      return product.variations.reduce(
+        (total, variation) =>
+          total +
+          variation.options.length * (variation.options[0].prices?.length || 0),
+        0
+      );
+    }
+
+    return product.variations.reduce(
+      (total, variation) => total + variation.options.length,
+      0
+    );
+  };
+
   return (
     <>
       {!isViewProductInformation ? (
@@ -95,28 +113,164 @@ const Products = () => {
               setShow={setShow}
               setIsViewProductInformation={setIsViewProductInformation}
             />
+
             <MDBCardBody>
-              <MDBTable striped>
+              <table>
                 <thead>
-                  <tr>
+                  <tr className="bg-light">
                     <th>#</th>
-                    <th>Name</th>
+                    <th className="th-lg">Name</th>
                     <th>Variation</th>
                     <th>Price</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((product, index) => {
-                    const { name, hasVariation } = product;
-                    return (
-                      <tr key={index}>
-                        <td>{index + 1} </td>
-                        <td>{name} </td>
+                  {products.map((product, indexProduct) =>
+                    product?.variations?.length === 2 ? (
+                      product.variations.map((variation, indexVariation) =>
+                        variation.options.map((option, indexOption) =>
+                          option.prices?.map((price, indexPrice) => {
+                            const isFirstRow =
+                              indexVariation === 0 &&
+                              indexOption === 0 &&
+                              indexPrice === 0;
+                            return (
+                              <tr key={price._id}>
+                                {isFirstRow ? (
+                                  <>
+                                    <td
+                                      rowSpan={handleRowSpan(
+                                        product,
+                                        "variant2"
+                                      )}
+                                    >
+                                      {indexProduct + 1}
+                                    </td>
+                                    <td
+                                      rowSpan={handleRowSpan(
+                                        product,
+                                        "variant2"
+                                      )}
+                                    >
+                                      <div className="d-flex align-items-center">
+                                        <img
+                                          src={`${ENDPOINT}/assets/products/${product.name}-${product._id}/${product.media?.product[0].label}.jpg`}
+                                          alt={product.name}
+                                          className="mr-2"
+                                          style={{ width: "80px" }}
+                                        />
+                                        <h5> {product.name}</h5>
+                                      </div>
+                                    </td>
+                                  </>
+                                ) : null}
+                                <td className="d-flex align-items-center ">
+                                  <MDBSwitch
+                                    labelLeft=""
+                                    labelRight=""
+                                    checked={true}
+                                  />
+                                  <h5> {`${option.name}, ${price.name}`}</h5>
+                                </td>
+                                <td>
+                                  <h5>₱{price.srp}</h5>
+                                </td>
+
+                                {isFirstRow && (
+                                  <td>
+                                    <MDBBtn size="sm" rounded color="danger">
+                                      <MDBIcon icon="trash" />
+                                    </MDBBtn>
+                                  </td>
+                                )}
+                              </tr>
+                            );
+                          })
+                        )
+                      )
+                    ) : product?.variations?.length === 1 ? (
+                      product.variations.map((variation, indexVariation) =>
+                        variation.options.map((option, indexOption) => {
+                          const isFirstRow =
+                            indexVariation === 0 && indexOption === 0;
+                          return (
+                            <tr key={option._id}>
+                              {isFirstRow ? (
+                                <>
+                                  <td
+                                    rowSpan={handleRowSpan(product)}
+                                    style={{ border: "none" }}
+                                  >
+                                    {indexProduct + 1}
+                                  </td>
+                                  <td
+                                    rowSpan={handleRowSpan(product)}
+                                    style={{ border: "none" }}
+                                  >
+                                    <div className="d-flex align-items-center">
+                                      <img
+                                        src={`${ENDPOINT}/assets/products/${product.name}-${product._id}/${product.media?.product[0].label}.jpg`}
+                                        alt={product.name}
+                                        className="mr-2"
+                                        style={{ width: "80px" }}
+                                      />
+                                      <h5> {product.name}</h5>
+                                    </div>
+                                  </td>
+                                </>
+                              ) : null}
+                              <td
+                                className="d-flex align-items-center m-0 p-0"
+                                style={{ verticalAlign: "middle" }}
+                              >
+                                <MDBSwitch
+                                  labelLeft=""
+                                  labelRight=""
+                                  checked={true}
+                                />
+                                <h5>{`${option.name}`}</h5>
+                              </td>
+                              <td>
+                                <h5>₱{option.srp}</h5>
+                              </td>
+
+                              {isFirstRow && (
+                                <td>
+                                  <MDBBtn size="sm" rounded color="danger">
+                                    <MDBIcon icon="trash" />
+                                  </MDBBtn>
+                                </td>
+                              )}
+                            </tr>
+                          );
+                        })
+                      )
+                    ) : (
+                      <tr key={product._id}>
+                        <td>{indexProduct + 1}</td>
+                        <td>
+                          <img
+                            src={product.media.product[0].preview}
+                            style={{ width: "50px" }}
+                            alt={product.name}
+                          />
+                          <h5>{product.name}</h5>
+                        </td>
+                        <td>N/A</td>
+                        <td className="">
+                          <h5>₱{product.price}</h5>
+                        </td>
+                        <td>
+                          <MDBBtn size="sm" rounded color="danger">
+                            <MDBIcon icon="trash" />
+                          </MDBBtn>
+                        </td>
                       </tr>
-                    );
-                  })}
+                    )
+                  )}
                 </tbody>
-              </MDBTable>
+              </table>
             </MDBCardBody>
           </MDBCard>
 

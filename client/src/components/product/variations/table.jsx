@@ -1,6 +1,5 @@
 import { MDBCol, MDBInputGroup, MDBRow, MDBTable } from "mdbreact";
 import React, { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 function Table({
   variations,
@@ -10,7 +9,6 @@ function Table({
 }) {
   const [_variations, _setVariations] = useState([]);
   const [haveVariation2, setHaveVariation2] = useState(false);
-  const [variation2, setVariation2] = useState([]);
 
   useEffect(() => {
     const copyOfVariations = variations.map((variation) => ({
@@ -34,10 +32,23 @@ function Table({
       const updatedVariations = [...copyOfVariations];
       updatedVariations[1].options = newOptions;
 
-      setVariation2({
-        ...variations[1],
-        options: variations[1].options,
-      });
+      //to set a price in variation 1
+      const vr1 = { ...variations[0] };
+      const vr2 = { ...variations[1] };
+      const vr1OptionsWithPrice = vr1.options.map((option) => ({
+        ...option,
+        prices: vr2.options.map((option2) => ({
+          ...option2,
+          srp: priceApplyInAllVarations,
+          disable: false,
+        })),
+      }));
+
+      setVariationsWithPrice([
+        { ...vr1, options: vr1OptionsWithPrice },
+        { ...vr2 },
+      ]);
+
       _setVariations(updatedVariations);
       setHaveVariation2(true);
     } else {
@@ -52,8 +63,16 @@ function Table({
       });
 
       copyOfVariations[0].options = _vr1OptionsCopy;
-      setHaveVariation2(false);
+      //this code is to put a price in each option in a variant
+      const vr1 = { ...variations[0] };
+      const optionsWithPrice = vr1.options.map((option) => ({
+        ...option,
+        srp: priceApplyInAllVarations,
+        disable: false,
+      }));
 
+      setVariationsWithPrice([{ ...vr1, options: optionsWithPrice }]);
+      setHaveVariation2(false);
       _setVariations(copyOfVariations);
     }
   }, [variations, priceApplyInAllVarations]);
@@ -71,97 +90,42 @@ function Table({
     const variantStorage =
       _variations[0].options[haveVariation2 ? variantIndex : baseIndex];
 
-    var variant = ""; //  red blue green
-    if (typeof variantStorage === "object") {
-      variant = variantStorage.name;
-    } else {
-      variant = variantStorage;
-    }
+    var variantID = variantStorage._id;
+
     if (haveVariation2) {
-      handleChangeHaveVariation2(variant, option, price);
+      handleChangeHaveVariation2(variantID, option, price);
     } else {
-      handleChangeVaration1(variant, price);
+      handleChangeVaration1(variantID, price);
     }
     handleChangeCurrentVariations(baseIndex, price);
   };
 
-  const handleChangeVaration1 = (variant, prices) => {
-    const updatedVariationsWithPrice = [...variationsWithPrice];
+  const handleChangeVaration1 = (variantID, price) => {
+    const vr1 = { ...variationsWithPrice[0] };
+    const options = [...vr1.options];
+    const optionIndex = options.findIndex(({ _id }) => variantID === _id);
+    options[optionIndex].srp = price;
 
-    // Ensure the first element exists and has options
-    if (updatedVariationsWithPrice[0]?.options) {
-      const vr1Options = [...updatedVariationsWithPrice[0].options];
-      const optionIndex = vr1Options.findIndex(({ name }) => name === variant);
-
-      if (optionIndex > -1) {
-        vr1Options[optionIndex].prices = prices;
-      } else {
-        vr1Options.push({ _id: uuidv4(), name: variant, prices });
-      }
-
-      updatedVariationsWithPrice[0].options = vr1Options;
-    } else {
-      // Ensure initial setup of options if not present
-      updatedVariationsWithPrice[0] = {
-        ...variations[0],
-        _id: uuidv4(),
-        options: [{ _id: uuidv4(), name: variant, prices }],
-      };
-    }
-
-    setVariationsWithPrice(updatedVariationsWithPrice);
+    setVariationsWithPrice([vr1]);
   };
 
-  const handleChangeHaveVariation2 = (variant, option, price) => {
-    const updatedVariationsWithPrice = [...variationsWithPrice];
+  const handleChangeHaveVariation2 = (variantID, option, price) => {
+    //the option parameter is _id, _id of variation 2
+    const _variationsWithPrice = [...variationsWithPrice];
+    const vr1 = { ..._variationsWithPrice[0] };
+    const options = [...vr1.options];
 
-    const variationIndex = updatedVariationsWithPrice.findIndex(
-      ({ name }) => name === variations[0].name
+    const optionIndex = options.findIndex(({ _id }) => _id === variantID);
+    const priceIndex = options[optionIndex].prices.findIndex(
+      ({ _id }) => _id === option
     );
 
-    if (variationIndex < 0) {
-      updatedVariationsWithPrice.push({
-        _id: uuidv4(),
-        name: variations[0].name,
-        options: [
-          {
-            name: variant,
-            prices: [{ _id: option, srp: price, disable: false }],
-          },
-        ],
-      });
-    } else {
-      const variantExist = updatedVariationsWithPrice[variationIndex];
-      const optionIndex = variantExist.options.findIndex(
-        ({ name }) => name === variant
-      );
+    options[optionIndex].prices[priceIndex].srp = price;
 
-      if (optionIndex > -1) {
-        // if the option is already exist
-        const prices = variantExist.options[optionIndex].prices;
-        const priceIndex = prices.findIndex(({ _id }) => _id === option);
+    vr1.options = options;
+    _variationsWithPrice[0] = vr1;
 
-        if (priceIndex > -1) {
-          prices[priceIndex].srp = price;
-        } else {
-          prices.push({ _id: option, srp: price, disable: false });
-        }
-
-        variantExist.options[optionIndex].prices = prices;
-      } else {
-        //if the option is not exist
-        variantExist.options.push({
-          name: variant,
-          prices: [{ _id: option, srp: price, disable: false }],
-        });
-      }
-
-      updatedVariationsWithPrice[variationIndex] = variantExist;
-    }
-    if (updatedVariationsWithPrice.length <= 1) {
-      updatedVariationsWithPrice.push({ ...variation2 });
-    }
-    setVariationsWithPrice(updatedVariationsWithPrice);
+    setVariationsWithPrice(_variationsWithPrice);
   };
 
   const handleChangeCurrentVariations = (index, price) => {

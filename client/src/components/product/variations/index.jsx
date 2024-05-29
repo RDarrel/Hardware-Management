@@ -96,12 +96,12 @@ function Variations({
     if (index === 0 && variations.length === 0) {
       setMedia({ ...media, variant: {} });
     } else {
-      const variant = updatedVariations[0];
+      const variant = updatedVariations[0] || {};
       setMedia({
         ...media,
         variant: {
           ...variant,
-          options: variant.options.map((obj) => ({
+          options: variant?.options.map((obj) => ({
             label: obj.name,
             _id: obj._id,
           })),

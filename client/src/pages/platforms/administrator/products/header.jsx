@@ -1,32 +1,15 @@
 import React from "react";
 import { MDBRow, MDBCol, MDBIcon, MDBBtn } from "mdbreact";
-import { categories } from "../../../../services/fakeDb";
 
 export const Header = ({ setShow, setIsViewProductInformation }) => {
   return (
-    <MDBRow className="align-items-center mt-3 p-3">
+    <MDBRow className="mt-3 mb-2 d-flex align-items-center">
       <MDBCol md="2">
-        <MDBBtn
-          size="sm"
-          color="primary"
-          onClick={() => setIsViewProductInformation(true)}
-        >
-          <MDBIcon icon="plus" />
-        </MDBBtn>
+        <h4 className="ml-4" style={{ fontWeight: 400 }}>
+          Product List
+        </h4>
       </MDBCol>
-      <MDBCol>
-        <select
-          className="form-control"
-          style={{ height: 50, borderRadius: 20 }}
-        >
-          {categories.map((categorie, index) => (
-            <option value={categorie} key={index}>
-              {categorie}
-            </option>
-          ))}
-        </select>
-      </MDBCol>
-      <MDBCol className="d-flex justify-content-end" md="4">
+      <MDBCol className="d-flex justify-content-end align-items-center" md="10">
         <div className="cashier-search-cotaniner ">
           <form className="cashier-search">
             <input
@@ -39,6 +22,14 @@ export const Header = ({ setShow, setIsViewProductInformation }) => {
             </button>
           </form>
         </div>
+        <MDBBtn
+          size="md"
+          rounded
+          color="primary"
+          onClick={() => setIsViewProductInformation(true)}
+        >
+          <MDBIcon icon="plus" />
+        </MDBBtn>
       </MDBCol>
     </MDBRow>
   );
