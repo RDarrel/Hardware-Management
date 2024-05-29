@@ -8,9 +8,9 @@ import axios from "axios";
  * @param {string} token - Authorization Token.
  * @returns {{ success: boolean, payload: Array<any>|object }} - The result object containing success and payload.
  */
-const update = async (entity, data, token) =>
+const update = async (entity, data, token, newENDPOINT = "") =>
   await axios
-    .put(`${entity}/update`, data, {
+    .put(`${entity}/${newENDPOINT ? newENDPOINT : "update"}`, data, {
       headers: {
         Authorization: `QTracy ${token}`,
       },

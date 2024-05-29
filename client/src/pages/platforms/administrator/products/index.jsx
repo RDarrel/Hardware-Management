@@ -17,6 +17,7 @@ import { ENDPOINT } from "../../../../services/utilities";
 import {
   BROWSE,
   DESTROY,
+  VARIATION_UPDATE,
 } from "../../../../services/redux/slices/administrator/products";
 import { Pagination } from "./pagination";
 import { Header } from "./header";
@@ -104,6 +105,43 @@ const Products = () => {
     );
   };
 
+  const handleDiasableVariant = (
+    value,
+    { product, optionID, variantID, priceID }
+  ) => {
+    const action = value ? "enable" : "disable";
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You want to ${action} this variant!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${action} it!`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(
+          VARIATION_UPDATE({
+            token,
+            data: {
+              productID: product._id,
+              optionID,
+              variantID,
+              isDisable: !value,
+              priceID,
+              has2Variant: product.has2Variant,
+            },
+          })
+        );
+        Swal.fire({
+          title: "Success!",
+          text: `Your Variation has been ${action}.`,
+          icon: "success",
+        });
+      }
+    });
+  };
+
   return (
     <>
       {!isViewProductInformation ? (
@@ -136,7 +174,10 @@ const Products = () => {
                               indexOption === 0 &&
                               indexPrice === 0;
                             return (
-                              <tr key={price._id}>
+                              <tr
+                                key={price._id}
+                                className={isFirstRow ? "border-top" : ""}
+                              >
                                 {isFirstRow ? (
                                   <>
                                     <td
@@ -165,11 +206,22 @@ const Products = () => {
                                     </td>
                                   </>
                                 ) : null}
-                                <td className="d-flex align-items-center ">
+                                <td
+                                  className="d-flex align-items-center"
+                                  style={{ border: "none" }}
+                                >
                                   <MDBSwitch
                                     labelLeft=""
                                     labelRight=""
-                                    checked={true}
+                                    checked={price.disable ? false : true}
+                                    onChange={({ target }) =>
+                                      handleDiasableVariant(target.checked, {
+                                        product,
+                                        variantID: variation._id,
+                                        optionID: option._id,
+                                        priceID: price._id,
+                                      })
+                                    }
                                   />
                                   <h5> {`${option.name}, ${price.name}`}</h5>
                                 </td>
@@ -195,7 +247,10 @@ const Products = () => {
                           const isFirstRow =
                             indexVariation === 0 && indexOption === 0;
                           return (
-                            <tr key={option._id}>
+                            <tr
+                              key={option._id}
+                              className={isFirstRow ? "border-top" : ""}
+                            >
                               {isFirstRow ? (
                                 <>
                                   <td
@@ -227,7 +282,14 @@ const Products = () => {
                                 <MDBSwitch
                                   labelLeft=""
                                   labelRight=""
-                                  checked={true}
+                                  checked={option.disable ? false : true}
+                                  onChange={({ target }) =>
+                                    handleDiasableVariant(target.checked, {
+                                      product,
+                                      variantID: variation._id,
+                                      optionID: option._id,
+                                    })
+                                  }
                                 />
                                 <h5>{`${option.name}`}</h5>
                               </td>
@@ -247,7 +309,7 @@ const Products = () => {
                         })
                       )
                     ) : (
-                      <tr key={product._id}>
+                      <tr key={product._id} className="border-top">
                         <td>{indexProduct + 1}</td>
                         <td>
                           <img

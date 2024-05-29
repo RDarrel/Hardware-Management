@@ -96,20 +96,21 @@ function Variations({
     if (index === 0 && variations.length === 0) {
       setMedia({ ...media, variant: {} });
     } else {
-      const variant = updatedVariations[0] || {};
-      setMedia({
-        ...media,
-        variant: {
-          ...variant,
-          options: variant?.options.map((obj) => ({
-            label: obj.name,
-            _id: obj._id,
-          })),
-        },
-      });
+      const variant = updatedVariations[0] || undefined;
+      if (variant) {
+        setMedia({
+          ...media,
+          variant: {
+            ...variant,
+            options: variant?.options.map((obj) => ({
+              label: obj.name,
+              _id: obj._id,
+            })),
+          },
+        });
+      }
     }
   };
-  console.log(variations);
 
   const handleAddVr = () => {
     const updatedVariations = [...variations];
@@ -127,7 +128,7 @@ function Variations({
         <React.Fragment key={`main-variation-${index}`}>
           <MDBRow className="mt-5" key={index}>
             <MDBCol md="2" className="d-flex justify-content-end ">
-              <h5>Variation {index + 1}</h5>
+              <h6>Variation {index + 1}</h6>
             </MDBCol>
             <MDBCol md="8">
               <MDBCard
@@ -149,7 +150,7 @@ function Variations({
                       md="2"
                       className="d-flex justify-content-end align-items-center"
                     >
-                      <h5>Name</h5>
+                      <h6>Name</h6>
                     </MDBCol>
                     <MDBCol md="8">
                       <input
@@ -222,7 +223,7 @@ function Variations({
           {variations.length < 2 && (
             <MDBRow className="mt-5" key={`addVaration-${index}`}>
               <MDBCol md="2" className="d-flex justify-content-end ">
-                <h5>Variation {variations.length + 1}</h5>
+                <h6>Variation {variations.length + 1}</h6>
               </MDBCol>
               <MDBCol md="8">
                 <MDBBtn
@@ -245,7 +246,7 @@ function Variations({
           md="2"
           className="d-flex justify-content-end align-content-center "
         >
-          <h5>Variation Information</h5>
+          <h6>Variation Information</h6>
         </MDBCol>
         <MDBCol md="8">
           <MDBInputGroup

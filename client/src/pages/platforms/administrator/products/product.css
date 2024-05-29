@@ -134,3 +134,11 @@ table {
   border-collapse: collapse;
   width: 100%;
 }
+
+.border-bottom {
+  border-bottom: 1px solid #000; /* Adjust border style and color as needed */
+}
+
+.border-top {
+  border-top: 1px solid #000; /* Adjust border style and color as needed */
+}

@@ -68,8 +68,12 @@ exports.save = (req, res) => {
   const product = req.body;
   Entity.create(product)
     .then((item) => {
-      handleUploadProduct(item.name, item._id, item?.media?.product);
-      handleVariantImagesUpload(item.name, item._id, item?.media?.variant);
+      if (item.hasVariant) {
+        handleUploadProduct(item.name, item._id, item?.media?.product);
+        handleVariantImagesUpload(item.name, item._id, item?.media?.variant);
+      } else {
+        upload(item.name, item._id, product.media);
+      }
 
       res.status(201).json({
         success: "Product Created Successfully",
@@ -111,6 +115,57 @@ exports.update = (req, res) => {
       }
     })
     .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
+};
+
+exports.variation_update = async (req, res) => {
+  const {
+    isDisable = false,
+    has2Variant = false,
+    productID,
+    optionID,
+    priceID,
+    variantID,
+  } = req.body;
+
+  const updateQuery = {
+    $set: {
+      ...(has2Variant
+        ? {
+            "variations.$[variation].options.$[option].prices.$[price].disable":
+              isDisable,
+          }
+        : {
+            "variations.$[variation].options.$[option].disable": isDisable,
+          }),
+    },
+  };
+
+  const arrayFilters = [
+    { "variation._id": variantID },
+    { "option._id": optionID },
+    ...(has2Variant ? [{ "price._id": priceID }] : []),
+  ];
+
+  try {
+    const updatedItem = await Entity.findByIdAndUpdate(productID, updateQuery, {
+      arrayFilters: arrayFilters,
+      returnDocument: "after",
+    });
+
+    if (updatedItem) {
+      res.json({
+        success: "Role Updated Successfully",
+        payload: updatedItem,
+      });
+    } else {
+      res.status(404).json({
+        error: "ID Not Found",
+        message: "The provided ID does not exist.",
+      });
+    }
+  } catch (error) {
+    res.status(400).json({ error: handleDuplicate(error) });
+  }
 };
 
 exports.destroy = (req, res) => {

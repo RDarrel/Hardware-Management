@@ -1,6 +1,5 @@
 import { MDBCol, MDBInputGroup, MDBRow, MDBTable } from "mdbreact";
 import React, { useEffect, useState } from "react";
-
 function Table({
   variations,
   priceApplyInAllVarations,
@@ -25,7 +24,12 @@ function Table({
             baseIndex++;
             newOptions.push({ index: baseIndex });
           }
-          newOptions.push({ name, price: priceApplyInAllVarations, _id });
+          newOptions.push({
+            name,
+            price: priceApplyInAllVarations,
+            _id,
+            isShowVr1: index === 0 ? true : false,
+          });
         });
       });
 
@@ -75,22 +79,29 @@ function Table({
       setHaveVariation2(false);
       _setVariations(copyOfVariations);
     }
-  }, [variations, priceApplyInAllVarations]);
+  }, [variations, priceApplyInAllVarations, setVariationsWithPrice]);
+
+  const getTheNameOFVR1 = (array, index, isVrTD) => {
+    // isVrTD para kapag yung nasa table ang mag cacall ng function na ito irereturn agad yung name
+    const reversedArray = array.slice(0, index).reverse();
+    const vrIndex = reversedArray.find((obj) =>
+      Object.keys(obj).includes("index")
+    )?.index;
+
+    return isVrTD ? _variations[0].options[vrIndex].name : vrIndex;
+  };
 
   const handleChangePrice = (price, { option = "", index: baseIndex }) => {
     const optionsCopy = !haveVariation2
       ? _variations[0].options
       : _variations[1].options;
 
-    const reversedArray = optionsCopy.slice(0, baseIndex).reverse();
-    const variantIndex = reversedArray.find((obj) =>
-      Object.keys(obj).includes("index")
-    )?.index;
+    const variantIndex = getTheNameOFVR1(optionsCopy, baseIndex);
 
-    const variantStorage =
+    const variant =
       _variations[0].options[haveVariation2 ? variantIndex : baseIndex];
 
-    var variantID = variantStorage._id;
+    var variantID = variant._id;
 
     if (haveVariation2) {
       handleChangeHaveVariation2(variantID, option, price);
@@ -145,7 +156,7 @@ function Table({
         <h5>Variation List</h5>
       </MDBCol>
       <MDBCol>
-        <MDBTable>
+        <MDBTable style={{ border: "collapse" }}>
           <thead>
             <tr className="border border-black">
               {_variations.map(({ name }, index) => (
@@ -166,55 +177,60 @@ function Table({
               (data, index) => {
                 const {
                   name = "",
-                  index: baseIndex = -1,
+                  index: baseIndex = -1, //PARA LANG ITO SA KAPAG DALAWA ANG VARIATION PARA MAKUHA YUNG NAME NG VR1
                   price,
+                  isShowVr1 = false, // PARA SA UNANG LOOP LANG LALABAS YUNG VR1
                   _id,
                 } = data || {};
                 const vr1Options = _variations[0]?.options || [];
 
                 const rowSpan = haveVariation2
-                  ? _variations[1]?.options?.length / (vr1Options.length || 1)
+                  ? _variations[1]?.options?.length / vr1Options.length
                   : 0;
 
-                const isShowPrice = !haveVariation2 || baseIndex === -1;
-
-                return (
-                  <tr key={`${index}-${name}`} className="border border-black">
-                    {haveVariation2 && baseIndex > -1 && (
-                      <td
-                        className="text-center border border-black "
-                        rowSpan={rowSpan}
-                        style={{ verticalAlign: "middle" }}
-                      >
-                        {vr1Options[baseIndex].name || `Option`}
-                      </td>
-                    )}
-                    {isShowPrice && (
-                      <>
-                        <td className="text-center border border-black">
-                          {name || `Option `}
-                        </td>
+                if (baseIndex === -1 || !haveVariation2) {
+                  return (
+                    <tr
+                      key={`${index}-${name}`}
+                      className="border border-black"
+                    >
+                      {haveVariation2 && isShowVr1 && (
                         <td
-                          className="text-center border border-black"
-                          width={250}
+                          className="text-center border border-black "
+                          rowSpan={rowSpan - 1}
+                          style={{ verticalAlign: "middle" }}
                         >
-                          <MDBInputGroup
-                            prepend="₱"
-                            required
-                            type="number"
-                            value={String(price)}
-                            onChange={(e) =>
-                              handleChangePrice(Number(e.target.value), {
-                                index,
-                                option: _id,
-                              })
-                            }
-                          ></MDBInputGroup>
+                          {getTheNameOFVR1(
+                            _variations[1].options,
+                            index,
+                            true
+                          ) || "Name"}
                         </td>
-                      </>
-                    )}
-                  </tr>
-                );
+                      )}
+
+                      <td className="text-center border border-black">
+                        {name || index}
+                      </td>
+                      <td
+                        className="text-center border border-black"
+                        width={250}
+                      >
+                        <MDBInputGroup
+                          prepend="₱"
+                          required
+                          type="number"
+                          value={String(price)}
+                          onChange={(e) =>
+                            handleChangePrice(Number(e.target.value), {
+                              index,
+                              option: _id,
+                            })
+                          }
+                        ></MDBInputGroup>
+                      </td>
+                    </tr>
+                  );
+                }
               }
             )}
           </tbody>

@@ -10,13 +10,13 @@ function Basic({ form, setForm }) {
       <MDBCol md="12">
         <MDBCard>
           <MDBCardBody>
-            <h4 className="font-weight-bold">Basic Information</h4>
+            <h5 className="font-weight-bold">Basic Information</h5>
             <MDBRow className="mt-5">
               <MDBCol
                 md="2"
                 className="d-flex justify-content-end align-items-center"
               >
-                <h5>* Product Name</h5>
+                <h6>* Product Name</h6>
               </MDBCol>
               <MDBCol md="10">
                 <MDBInput
@@ -32,11 +32,12 @@ function Basic({ form, setForm }) {
             <MDBRow className="mt-5">
               <MDBCol
                 md="2"
-                className="d-flex justify-content-end align-items-center"
+                sm="4"
+                className="d-flex justify-content-end align-items-center "
               >
-                <h5>* Product Description</h5>
+                <h6 className="text-nowrap">* Product Description</h6>
               </MDBCol>
-              <MDBCol md="10">
+              <MDBCol md="10" sm="8">
                 <MDBInput
                   label="Description"
                   type="textarea"
@@ -53,7 +54,7 @@ function Basic({ form, setForm }) {
                 md="2"
                 className="d-flex justify-content-end align-items-center"
               >
-                <h5>* Category</h5>
+                <h6>* Category</h6>
               </MDBCol>
               <MDBCol md="10">
                 <CustomSelect
@@ -67,12 +68,12 @@ function Basic({ form, setForm }) {
 
             <MDBRow className="mt-5">
               <MDBCol
-                md="2"
+                md="3"
                 className="d-flex justify-content-end align-items-center"
               >
                 <h6>* This Product is Per Kilo?</h6>
               </MDBCol>
-              <MDBCol md="10">
+              <MDBCol md="9">
                 <input
                   className="form-check-input"
                   type="checkbox"
@@ -108,7 +109,7 @@ function Basic({ form, setForm }) {
                 md="2"
                 className="d-flex justify-content-end align-items-center"
               >
-                <h5>* Material</h5>
+                <h6>* Material</h6>
               </MDBCol>
               <MDBCol md="10">
                 <CustomSelect

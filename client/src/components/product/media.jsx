@@ -9,10 +9,10 @@ function Media({ handleDrop, media, dragOver, setMedia, variations }) {
       <MDBCol md="12">
         <MDBCard>
           <MDBCardBody>
-            <h4 className="font-weight-bold">Media Management</h4>
+            <h5 className="font-weight-bold">Media Management</h5>
             <MDBRow>
               <MDBCol md="2" className="d-flex justify-content-end ">
-                <h5 className="mt-4">Product Images</h5>
+                <h6 className="mt-4">Product Images</h6>
               </MDBCol>
               <MDBCol>
                 <MDBRow>
@@ -47,7 +47,7 @@ function Media({ handleDrop, media, dragOver, setMedia, variations }) {
             {variations.length > 0 && (
               <MDBRow>
                 <MDBCol md="2" className="d-flex justify-content-end ">
-                  <h5 className="mt-4">{variations[0].name || "Name"}</h5>
+                  <h6 className="mt-4">{variations[0].name || "Name"}</h6>
                 </MDBCol>
                 <MDBCol>
                   <MDBRow>

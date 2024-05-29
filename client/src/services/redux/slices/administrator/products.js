@@ -63,6 +63,24 @@ export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   }
 });
 
+export const VARIATION_UPDATE = createAsyncThunk(
+  `${name}/variation`,
+  (form, thunkAPI) => {
+    try {
+      return axioKit.update(name, form.data, form.token, "variation");
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const DESTROY = createAsyncThunk(
   `${name}/destroy`,
   ({ token, data }, thunkAPI) => {
@@ -140,6 +158,24 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(UPDATE.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(VARIATION_UPDATE.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(VARIATION_UPDATE.fulfilled, (state, action) => {
+        const { success, payload } = action.payload;
+        bulkPayload(state, payload);
+        state.message = success;
+        state.isSuccess = true;
+        state.isLoading = false;
+      })
+      .addCase(VARIATION_UPDATE.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;

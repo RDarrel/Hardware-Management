@@ -51,7 +51,7 @@ function Informations({
       <MDBCol md="12">
         <MDBCard>
           <MDBCardBody>
-            <h4 className="font-weight-bold">Sales Information</h4>
+            <h5 className="font-weight-bold">Sales Information</h5>
             {variations.length === 0 ? (
               <>
                 <MDBRow className="mt-5">
@@ -59,7 +59,7 @@ function Informations({
                     md="2"
                     className="d-flex justify-content-end align-items-center"
                   >
-                    <h5>Price</h5>
+                    <h6>Price</h6>
                   </MDBCol>
                   <MDBCol md="10">
                     <MDBInputGroup
@@ -78,7 +78,7 @@ function Informations({
                     md="2"
                     className="d-flex justify-content-end align-items-center"
                   >
-                    <h5>Variations</h5>
+                    <h6>Variations</h6>
                   </MDBCol>
                   <MDBCol md="10">
                     <MDBBtn
