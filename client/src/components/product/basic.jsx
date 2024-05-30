@@ -4,7 +4,7 @@ import { categories } from "../../services/fakeDb";
 import materials from "../../services/fakeDb/materials";
 import CustomSelect from "../../components/customSelect";
 
-function Basic({ form, setForm }) {
+function Basic({ form, setForm, selected }) {
   return (
     <MDBRow>
       <MDBCol md="12">
@@ -60,7 +60,7 @@ function Basic({ form, setForm }) {
                 <CustomSelect
                   choices={categories}
                   label={"Category"}
-                  preValue={form.category}
+                  preValue={form?.category || selected.category}
                   onChange={(value) => setForm({ ...form, category: value })}
                 />
               </MDBCol>
@@ -115,7 +115,7 @@ function Basic({ form, setForm }) {
                 <CustomSelect
                   choices={materials}
                   label={"Material"}
-                  preValue={form.material}
+                  preValue={form.material || selected.material}
                   onChange={(value) => setForm({ ...form, material: value })}
                 />
               </MDBCol>

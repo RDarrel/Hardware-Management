@@ -23,9 +23,10 @@ export const Header = ({ setShow, setIsViewProductInformation }) => {
           </form>
         </div>
         <MDBBtn
-          size="md"
-          rounded
+          size="sm"
           color="primary"
+          floating
+          rounded
           onClick={() => setIsViewProductInformation(true)}
         >
           <MDBIcon icon="plus" />

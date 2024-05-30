@@ -26,6 +26,7 @@ import Modal from "./modal";
 import ProductInformation from "../../../../components/product/index";
 import View from "./view";
 import "./product.css";
+import { Table } from "./table";
 
 const Products = () => {
   const { token } = useSelector(({ auth }) => auth),
@@ -71,7 +72,7 @@ const Products = () => {
   const handleDelete = (_id) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "You won't be able to revert this!",
+      text: "You want to delete this product!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -142,6 +143,96 @@ const Products = () => {
     });
   };
 
+  const getProductImg = (product) => (
+    <img
+      src={`${ENDPOINT}/assets/products/${product.name}-${product._id}/${product.media?.product[0].label}.jpg`}
+      alt={product.name}
+      className="mr-2"
+      style={{ width: "80px" }}
+    />
+  );
+
+  const handleUpdate = (product) => {
+    setSelected(product);
+    setIsViewProductInformation(true);
+    setWillCreate(false);
+  };
+
+  const handleTableData = (
+    key,
+    product,
+    isFirstRow,
+    indexProduct,
+    { variation, option, actionFor, price }
+  ) => {
+    const has2Variant = product.has2Variant;
+    const vrDisable = {
+      product,
+      variantID: variation._id,
+      optionID: option._id,
+      priceID: has2Variant ? price._id : "",
+    };
+
+    const isDisable = has2Variant ? price.disable : option.disable;
+    const variantName = `${option.name}, ${
+      has2Variant ? price.name : option.name
+    }`;
+    return (
+      <tr key={key} className={isFirstRow ? "border-top" : ""}>
+        {isFirstRow ? (
+          <>
+            <td rowSpan={handleRowSpan(product, actionFor)}>
+              {indexProduct + 1}
+            </td>
+            <td rowSpan={handleRowSpan(product, actionFor)}>
+              <div className="d-flex align-items-center">
+                {getProductImg(product)}
+                <h5> {product.name}</h5>
+              </div>
+            </td>
+          </>
+        ) : null}
+        <td className="d-flex align-items-center" style={{ border: "none" }}>
+          <MDBSwitch
+            labelLeft=""
+            labelRight=""
+            checked={isDisable ? false : true}
+            onChange={({ target }) =>
+              handleDiasableVariant(target.checked, vrDisable)
+            }
+          />
+          <h5> {variantName}</h5>
+        </td>
+        <td>
+          <h5>₱{has2Variant ? price.srp : option.srp}</h5>
+        </td>
+
+        {isFirstRow && (
+          <td>
+            <MDBBtnGroup>
+              <MDBBtn
+                size="sm"
+                rounded
+                color="danger"
+                onClick={() => handleDelete(product._id)}
+              >
+                <MDBIcon icon="trash" />
+              </MDBBtn>
+              <MDBBtn
+                rounded
+                size="sm"
+                color="primary"
+                onClick={() => handleUpdate(product)}
+              >
+                <MDBIcon icon="pencil-alt" />
+              </MDBBtn>
+            </MDBBtnGroup>
+          </td>
+        )}
+      </tr>
+    );
+  };
+
   return (
     <>
       {!isViewProductInformation ? (
@@ -153,186 +244,13 @@ const Products = () => {
             />
 
             <MDBCardBody>
-              <table>
-                <thead>
-                  <tr className="bg-light">
-                    <th>#</th>
-                    <th className="th-lg">Name</th>
-                    <th>Variation</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product, indexProduct) =>
-                    product?.variations?.length === 2 ? (
-                      product.variations.map((variation, indexVariation) =>
-                        variation.options.map((option, indexOption) =>
-                          option.prices?.map((price, indexPrice) => {
-                            const isFirstRow =
-                              indexVariation === 0 &&
-                              indexOption === 0 &&
-                              indexPrice === 0;
-                            return (
-                              <tr
-                                key={price._id}
-                                className={isFirstRow ? "border-top" : ""}
-                              >
-                                {isFirstRow ? (
-                                  <>
-                                    <td
-                                      rowSpan={handleRowSpan(
-                                        product,
-                                        "variant2"
-                                      )}
-                                    >
-                                      {indexProduct + 1}
-                                    </td>
-                                    <td
-                                      rowSpan={handleRowSpan(
-                                        product,
-                                        "variant2"
-                                      )}
-                                    >
-                                      <div className="d-flex align-items-center">
-                                        <img
-                                          src={`${ENDPOINT}/assets/products/${product.name}-${product._id}/${product.media?.product[0].label}.jpg`}
-                                          alt={product.name}
-                                          className="mr-2"
-                                          style={{ width: "80px" }}
-                                        />
-                                        <h5> {product.name}</h5>
-                                      </div>
-                                    </td>
-                                  </>
-                                ) : null}
-                                <td
-                                  className="d-flex align-items-center"
-                                  style={{ border: "none" }}
-                                >
-                                  <MDBSwitch
-                                    labelLeft=""
-                                    labelRight=""
-                                    checked={price.disable ? false : true}
-                                    onChange={({ target }) =>
-                                      handleDiasableVariant(target.checked, {
-                                        product,
-                                        variantID: variation._id,
-                                        optionID: option._id,
-                                        priceID: price._id,
-                                      })
-                                    }
-                                  />
-                                  <h5> {`${option.name}, ${price.name}`}</h5>
-                                </td>
-                                <td>
-                                  <h5>₱{price.srp}</h5>
-                                </td>
-
-                                {isFirstRow && (
-                                  <td>
-                                    <MDBBtn size="sm" rounded color="danger">
-                                      <MDBIcon icon="trash" />
-                                    </MDBBtn>
-                                  </td>
-                                )}
-                              </tr>
-                            );
-                          })
-                        )
-                      )
-                    ) : product?.variations?.length === 1 ? (
-                      product.variations.map((variation, indexVariation) =>
-                        variation.options.map((option, indexOption) => {
-                          const isFirstRow =
-                            indexVariation === 0 && indexOption === 0;
-                          return (
-                            <tr
-                              key={option._id}
-                              className={isFirstRow ? "border-top" : ""}
-                            >
-                              {isFirstRow ? (
-                                <>
-                                  <td
-                                    rowSpan={handleRowSpan(product)}
-                                    style={{ border: "none" }}
-                                  >
-                                    {indexProduct + 1}
-                                  </td>
-                                  <td
-                                    rowSpan={handleRowSpan(product)}
-                                    style={{ border: "none" }}
-                                  >
-                                    <div className="d-flex align-items-center">
-                                      <img
-                                        src={`${ENDPOINT}/assets/products/${product.name}-${product._id}/${product.media?.product[0].label}.jpg`}
-                                        alt={product.name}
-                                        className="mr-2"
-                                        style={{ width: "80px" }}
-                                      />
-                                      <h5> {product.name}</h5>
-                                    </div>
-                                  </td>
-                                </>
-                              ) : null}
-                              <td
-                                className="d-flex align-items-center m-0 p-0"
-                                style={{ verticalAlign: "middle" }}
-                              >
-                                <MDBSwitch
-                                  labelLeft=""
-                                  labelRight=""
-                                  checked={option.disable ? false : true}
-                                  onChange={({ target }) =>
-                                    handleDiasableVariant(target.checked, {
-                                      product,
-                                      variantID: variation._id,
-                                      optionID: option._id,
-                                    })
-                                  }
-                                />
-                                <h5>{`${option.name}`}</h5>
-                              </td>
-                              <td>
-                                <h5>₱{option.srp}</h5>
-                              </td>
-
-                              {isFirstRow && (
-                                <td>
-                                  <MDBBtn size="sm" rounded color="danger">
-                                    <MDBIcon icon="trash" />
-                                  </MDBBtn>
-                                </td>
-                              )}
-                            </tr>
-                          );
-                        })
-                      )
-                    ) : (
-                      <tr key={product._id} className="border-top">
-                        <td>{indexProduct + 1}</td>
-                        <td>
-                          <img
-                            src={product.media.product[0].preview}
-                            style={{ width: "50px" }}
-                            alt={product.name}
-                          />
-                          <h5>{product.name}</h5>
-                        </td>
-                        <td>N/A</td>
-                        <td className="">
-                          <h5>₱{product.price}</h5>
-                        </td>
-                        <td>
-                          <MDBBtn size="sm" rounded color="danger">
-                            <MDBIcon icon="trash" />
-                          </MDBBtn>
-                        </td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </table>
+              <Table
+                products={products}
+                handleTableData={handleTableData}
+                getProductImg={getProductImg}
+                handleDelete={handleDelete}
+                handleUpdate={handleUpdate}
+              />
             </MDBCardBody>
           </MDBCard>
 
@@ -353,6 +271,8 @@ const Products = () => {
       ) : (
         <ProductInformation
           setIsViewProductInformation={setIsViewProductInformation}
+          selected={selected}
+          willCreate={willCreate}
         />
       )}
     </>

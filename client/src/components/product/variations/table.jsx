@@ -43,7 +43,7 @@ function Table({
         ...option,
         prices: vr2.options.map((option2) => ({
           ...option2,
-          srp: priceApplyInAllVarations,
+          srp: option.srp || priceApplyInAllVarations,
           disable: false,
         })),
       }));
@@ -57,10 +57,10 @@ function Table({
       setHaveVariation2(true);
     } else {
       const _vr1OptionsCopy = [];
-      copyOfVariations[0].options.forEach(({ name, _id }, index) => {
+      copyOfVariations[0].options.forEach(({ name, _id, srp = 0 }, index) => {
         _vr1OptionsCopy.push({
           name,
-          price: priceApplyInAllVarations,
+          price: srp || priceApplyInAllVarations,
           index,
           _id,
         });
@@ -69,11 +69,9 @@ function Table({
       copyOfVariations[0].options = _vr1OptionsCopy;
       //this code is to put a price in each option in a variant
       const vr1 = { ...variations[0] };
-      const optionsWithPrice = vr1.options.map((option) => ({
-        ...option,
-        srp: priceApplyInAllVarations,
-        disable: false,
-      }));
+      const optionsWithPrice = vr1.options.map((option) => {
+        return { ...option, srp: option.srp, disable: false };
+      });
 
       setVariationsWithPrice([{ ...vr1, options: optionsWithPrice }]);
       setHaveVariation2(false);
@@ -90,6 +88,8 @@ function Table({
 
     return isVrTD ? _variations[0].options[vrIndex].name : vrIndex;
   };
+
+  console.log(variations);
 
   const handleChangePrice = (price, { option = "", index: baseIndex }) => {
     const optionsCopy = !haveVariation2
@@ -209,7 +209,7 @@ function Table({
                       )}
 
                       <td className="text-center border border-black">
-                        {name || index}
+                        {name || "Option"}
                       </td>
                       <td
                         className="text-center border border-black"

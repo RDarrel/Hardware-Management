@@ -66,14 +66,24 @@ exports.browse = (req, res) =>
 
 exports.save = (req, res) => {
   const product = req.body;
-  Entity.create(product)
+  const { media = {} } = product;
+  const remveBase64InMediaProduct = media.product.map(({ label }) => ({
+    label,
+  }));
+  const remveBase64InMediaOptions = media.variant.options.map(({ label }) => ({
+    label,
+  }));
+
+  Entity.create({
+    ...product,
+    media: {
+      product: remveBase64InMediaProduct,
+      variant: { ...product.variant, option: remveBase64InMediaOptions },
+    },
+  })
     .then((item) => {
-      if (item.hasVariant) {
-        handleUploadProduct(item.name, item._id, item?.media?.product);
-        handleVariantImagesUpload(item.name, item._id, item?.media?.variant);
-      } else {
-        upload(item.name, item._id, product.media);
-      }
+      handleUploadProduct(item.name, item._id, product?.media?.product);
+      handleVariantImagesUpload(item.name, item._id, product?.media?.variant);
 
       res.status(201).json({
         success: "Product Created Successfully",

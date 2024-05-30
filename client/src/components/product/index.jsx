@@ -1,5 +1,5 @@
 import { MDBBtn, MDBCol, MDBRow } from "mdbreact";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import "./product.css";
 import Basic from "./basic";
@@ -7,6 +7,7 @@ import Informations from "./informations";
 import Media from "./media";
 import { SAVE } from "../../services/redux/slices/administrator/products";
 import { useDispatch, useSelector } from "react-redux";
+import { ENDPOINT } from "../../services/utilities";
 
 const _media = {
   product: [
@@ -27,13 +28,105 @@ const _media = {
   },
 };
 
-const ProductInformation = ({ setIsViewProductInformation }) => {
+const ProductInformation = ({
+  setIsViewProductInformation,
+  selected,
+  willCreate = true,
+}) => {
   const { token } = useSelector(({ auth }) => auth);
   const [media, setMedia] = useState(_media);
   const [form, setForm] = useState({ isPerKilo: false });
   const [variations, setVariations] = useState([]);
   const [variationsWithPrice, setVariationsWithPrice] = useState([]);
+  const [oldPricesForVr2, setOldPricesForVr2] = useState([]);
   const disptach = useDispatch();
+
+  const imgToBase64 = async (url) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error(
+          `Failed to fetch image: ${url}, status: ${response.status}`
+        );
+        return false;
+      }
+
+      const blob = await response.blob();
+      if (!blob.type.startsWith("image/")) {
+        return false;
+      }
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => {
+          console.error(`Failed to read blob as data URL: ${url}`);
+          reject(null);
+        };
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!willCreate) {
+        const {
+          hasVariant,
+          variations = [],
+          media: mediaSelected = {},
+        } = selected || {};
+        const { variant = {}, product: productImages } = mediaSelected || {};
+
+        if (hasVariant) {
+          // Fetch images and convert to Base64
+          const getTheImageOfOptions = async () => {
+            const promises = variant.options.map(async ({ label, _id }) => {
+              const img = `${ENDPOINT}/assets/products/${selected.name}-${selected._id}/variant/${_id}.jpg`;
+              const base64 = await imgToBase64(img);
+              return {
+                label,
+                _id,
+                img: base64 || "",
+                preview: base64 ? img : "",
+              };
+            });
+
+            const result = await Promise.all(promises);
+            return result;
+          };
+
+          const optionsWithImages = await getTheImageOfOptions();
+
+          // Set the resolved data in state
+          setMedia((prev) => ({
+            ...prev,
+            variant: { options: optionsWithImages },
+          }));
+        }
+
+        const getTheImageOfProduct = async () => {
+          productImages.map(async ({ label }) => {
+            const index = media.product.findIndex(({ label }) => label);
+
+            const img = `${ENDPOINT}/assets/products/${selected.name}-${selected._id}/${label}.jpg`;
+            const base64 = await imgToBase64(img);
+            if (base64) {
+              const _productImages = [...media.product];
+              _productImages[index] = { img: base64, preview: img, label };
+              setMedia((prev) => ({ ...prev, product: _productImages }));
+            }
+          });
+        };
+        getTheImageOfProduct();
+        setVariations(variations);
+        setForm(selected);
+      }
+    };
+
+    fetchData();
+  }, [willCreate, selected, ENDPOINT]);
 
   const dragOver = (e) => {
     e.preventDefault();
@@ -51,32 +144,35 @@ const ProductInformation = ({ setIsViewProductInformation }) => {
     const copyLabels =
       title === "product" ? media.product : media.variant?.options;
 
-    const { preview: image = "", img: transferImg } = copyLabels[transferIndex];
+    if (transferIndex <= copyLabels.length - 1) {
+      const { preview: image = "", img: transferImg } =
+        copyLabels[transferIndex];
 
-    const getLabel = (index) => copyLabels[index].label;
+      const getLabel = (index) => copyLabels[index]?.label;
 
-    copyLabels[transferIndex] = {
-      label: getLabel(transferIndex),
-      img: copyLabels[originalIndex]?.img,
-      preview: img,
-    };
+      copyLabels[transferIndex] = {
+        label: getLabel(transferIndex),
+        img: copyLabels[originalIndex]?.img,
+        preview: img,
+      };
 
-    copyLabels[originalIndex] = {
-      label: getLabel(originalIndex),
-      preview: image,
-      img: transferImg,
-    };
+      copyLabels[originalIndex] = {
+        label: getLabel(originalIndex),
+        preview: image,
+        img: transferImg,
+      };
 
-    if (title === "variant") {
-      setMedia({
-        ...media,
-        variant: { ...media.variant, options: copyLabels },
-      });
-    } else {
-      setMedia({
-        ...media,
-        product: copyLabels,
-      });
+      if (title === "variant") {
+        setMedia({
+          ...media,
+          variant: { ...media.variant, options: copyLabels },
+        });
+      } else {
+        setMedia({
+          ...media,
+          product: copyLabels,
+        });
+      }
     }
   };
 
@@ -110,13 +206,30 @@ const ProductInformation = ({ setIsViewProductInformation }) => {
       media: { ...media, product: productsImages },
     };
 
-    disptach(SAVE({ token, data: newForm }));
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to publish this product!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, publish it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        disptach(SAVE({ token, data: newForm }));
+        Swal.fire({
+          title: "Success!",
+          text: "Your product has been publish.",
+          icon: "success",
+        });
+      }
+    });
   };
 
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Basic form={form} setForm={setForm} />
+        <Basic form={form} setForm={setForm} selected={selected} />
         <Informations
           variations={variations}
           setVariations={setVariations}
@@ -143,7 +256,7 @@ const ProductInformation = ({ setIsViewProductInformation }) => {
               Cancel
             </MDBBtn>
             <MDBBtn color="primary" type="submit">
-              Create
+              Publish
             </MDBBtn>
           </MDBCol>
         </MDBRow>
