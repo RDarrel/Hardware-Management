@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axioKit, bulkPayload } from "../../../utilities";
 
-const name = "administrator/products";
+const name = "administrator/Suppliers";
 
 const initialState = {
   collections: [],
@@ -53,6 +53,19 @@ export const SAVE = createAsyncThunk(`${name}/save`, (form, thunkAPI) => {
 export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   try {
     return axioKit.update(name, form.data, form.token);
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
+export const STATUS = createAsyncThunk(`${name}/status`, (form, thunkAPI) => {
+  try {
+    return axioKit.update(name, form.data, form.token, "status");
   } catch (error) {
     const message =
       (error.response && error.response.data && error.response.data.message) ||
@@ -158,6 +171,24 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(UPDATE.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(STATUS.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(STATUS.fulfilled, (state, action) => {
+        const { success, payload } = action.payload;
+        bulkPayload(state, payload);
+        state.message = success;
+        state.isSuccess = true;
+        state.isLoading = false;
+      })
+      .addCase(STATUS.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;

@@ -6,17 +6,17 @@ const modelSchema = new mongoose.Schema(
       type: String,
     },
 
-    address: {
+    location: {
       type: Object,
     },
 
     contact: {
-      type: Array,
+      type: String,
     },
 
     status: {
       type: Boolean,
-      required: true,
+      default: true,
     },
   },
   {
@@ -24,6 +24,6 @@ const modelSchema = new mongoose.Schema(
   }
 );
 
-const Entity = mongoose.model("Products", modelSchema);
+const Entity = mongoose.model("Suppliers", modelSchema);
 
 module.exports = Entity;

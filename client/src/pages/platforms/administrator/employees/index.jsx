@@ -5,7 +5,6 @@ import {
   MDBCard,
   MDBCardBody,
   MDBIcon,
-  MDBInput,
   MDBTable,
 } from "mdbreact";
 import { BROWSE } from "../../../../services/redux/slices/administrator/employees";

@@ -1,5 +1,5 @@
 const Entity = require("../../models/administrator/Supplier"),
-  handleDuplicate = require("../config/duplicate");
+  handleDuplicate = require("../../config/duplicate");
 
 exports.browse = (req, res) =>
   Entity.find()
@@ -40,3 +40,30 @@ exports.update = (req, res) =>
       }
     })
     .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
+
+exports.status = (req, res) =>
+  Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
+    .then((item) => {
+      if (item) {
+        res.json({
+          success: `Supplier has been ${
+            req.body.status ? "Active" : "Inactive"
+          } Successfully`,
+          payload: item,
+        });
+      } else {
+        res.status(404).json({
+          error: "ID Not Found",
+          message: "The provided ID does not exist.",
+        });
+      }
+    })
+    .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
+
+exports.destroy = (req, res) => {
+  Entity.findByIdAndDelete(req.body._id)
+    .then((item) => {
+      res.json({ success: "Successfuly Deleted Product", payload: item });
+    })
+    .catch((error) => res.status(400).json({ error: error.message }));
+};

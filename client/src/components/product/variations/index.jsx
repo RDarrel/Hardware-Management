@@ -12,8 +12,7 @@ import { v4 as uuidv4 } from "uuid";
 import Table from "./table";
 
 function Variations({ variations = [], setVariations, media, setMedia }) {
-  const [price, setPrice] = useState(0),
-    [isApplyPrice, setIsApplyPrice] = useState(false);
+  const [price, setPrice] = useState(0);
 
   const handleChangeOptions = (option, index, optionIndex) => {
     var updatedVariations = [...variations];
@@ -144,6 +143,7 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
           const prices = option?.prices
             ?.map((price, priceIndex) => {
               if (priceIndex !== optionIndex) return price;
+              return "";
             })
             .filter(Boolean);
 
@@ -175,6 +175,7 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
         if (delIndex !== optionIndex) {
           return option;
         }
+        return "";
       })
       .filter(Boolean);
     const newVr = { ...updatedVariations[index], options: newOptions };
@@ -252,6 +253,30 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
         },
       ],
     });
+    setVariations(updatedVariations);
+  };
+
+  const handleApplyPriceInAllVariant = () => {
+    const updatedVariations = [...variations];
+    const vr1 = { ...updatedVariations[0] };
+    const options = [...vr1.options];
+
+    if (price <= 0) return false;
+
+    if (updatedVariations.length === 2) {
+      const newOptions = options.map((option) => {
+        const newPrices = option.prices.map((objPrice) => {
+          return { ...objPrice, srp: price };
+        });
+        return { ...option, prices: newPrices };
+      });
+      updatedVariations[0] = { ...vr1, options: newOptions };
+      setVariations(updatedVariations);
+    } else {
+      const newOPtions = options.map((option) => ({ ...option, srp: price }));
+      updatedVariations[0] = { ...vr1, options: newOPtions };
+    }
+
     setVariations(updatedVariations);
   };
   console.log(variations);
@@ -390,13 +415,7 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
           />
         </MDBCol>
         <MDBCol md="2">
-          <MDBBtn
-            color="danger"
-            block
-            onClick={() => {
-              setIsApplyPrice(true);
-            }}
-          >
+          <MDBBtn color="danger" block onClick={handleApplyPriceInAllVariant}>
             Apply To All
           </MDBBtn>
         </MDBCol>

@@ -4,13 +4,8 @@ import {
   MDBBtnGroup,
   MDBCard,
   MDBCardBody,
-  MDBCardImage,
-  MDBCardTitle,
-  MDBCol,
   MDBIcon,
-  MDBRow,
   MDBSwitch,
-  MDBTable,
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
 import { ENDPOINT } from "../../../../services/utilities";
@@ -19,8 +14,6 @@ import {
   DESTROY,
   VARIATION_UPDATE,
 } from "../../../../services/redux/slices/administrator/products";
-import { Pagination } from "./pagination";
-import { Header } from "./header";
 import Swal from "sweetalert2";
 import Modal from "./modal";
 import ProductInformation from "../../../../components/product/index";
@@ -38,11 +31,8 @@ const Products = () => {
     [isViewProductInformation, setIsViewProductInformation] = useState(false),
     [willCreate, setWillCreate] = useState(true),
     [show, setShow] = useState(false),
-    [currentPage, setCurrentPage] = useState(1),
-    [itemsPerPage] = useState(8), // Adjust the number of items per page as needed
     dispatch = useDispatch();
 
-  const toggle = () => setShow(!show);
   const toggleView = () => setIsView(!isView);
 
   useEffect(() => {
@@ -50,25 +40,8 @@ const Products = () => {
   }, [token, dispatch]);
 
   useEffect(() => {
-    collections.forEach((element) => {});
     setProducts(collections);
   }, [collections]);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const indexOfLastProduct = currentPage * itemsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
-  const currentProducts = products.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
-  );
-
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
-    pageNumbers.push(i);
-  }
 
   const handleDelete = (_id) => {
     Swal.fire({
@@ -191,7 +164,7 @@ const Products = () => {
             </td>
           </>
         ) : null}
-        <td className="d-flex align-items-center" style={{ border: "none" }}>
+        <td className="d-flex align-items-center " style={{ border: "none" }}>
           <MDBSwitch
             labelLeft=""
             labelRight=""
@@ -207,7 +180,7 @@ const Products = () => {
         </td>
 
         {isFirstRow && (
-          <td>
+          <td className="text-center">
             <MDBBtnGroup>
               <MDBBtn
                 size="sm"

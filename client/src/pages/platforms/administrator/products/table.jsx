@@ -11,12 +11,12 @@ export const Table = ({
   return (
     <table>
       <thead>
-        <tr className="bg-light">
+        <tr>
           <th className="ml-4">#</th>
           <th className="th-lg">Name</th>
           <th>Variation</th>
           <th>Price</th>
-          <th>Action</th>
+          <th className="text-center">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -68,10 +68,10 @@ export const Table = ({
                 </div>
               </td>
               <td>N/A</td>
-              <td className="">
+              <td>
                 <h5>₱{product.price}</h5>
               </td>
-              <td>
+              <td className="text-center">
                 <MDBBtnGroup>
                   <MDBBtn
                     size="sm"

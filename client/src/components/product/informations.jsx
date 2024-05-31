@@ -65,10 +65,10 @@ function Informations({
                     <MDBInputGroup
                       prepend="₱"
                       type="number"
-                      value={form.price}
+                      value={String(form.price)}
                       required
                       onChange={({ target }) =>
-                        setForm({ ...form, price: target.value })
+                        setForm({ ...form, price: Number(target.value) })
                       }
                     />
                   </MDBCol>

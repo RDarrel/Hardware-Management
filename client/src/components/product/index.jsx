@@ -83,8 +83,8 @@ const ProductInformation = ({
         } = selected || {};
 
         const { variant = {}, product: productImages } = mediaSelected || {};
+
         if (hasVariant) {
-          // Fetch images and convert to Base64
           const getTheImageOfOptions = async () => {
             const promises = variant?.options?.map(async ({ label, _id }) => {
               const img = `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`;
@@ -103,7 +103,6 @@ const ProductInformation = ({
 
           const optionsWithImages = await getTheImageOfOptions();
 
-          // Set the resolved data in state
           setMedia((prev) => ({
             ...prev,
             variant: { options: optionsWithImages },
@@ -111,26 +110,31 @@ const ProductInformation = ({
         }
 
         const getTheImageOfProduct = async () => {
-          productImages.map(async ({ label }) => {
-            const index = media?.product?.findIndex(({ label }) => label);
-
+          const promises = productImages.map(async ({ label }) => {
             const img = `${ENDPOINT}/assets/products/${selected._id}/${label}.jpg`;
             const base64 = await imgToBase64(img);
             if (base64) {
-              const _productImages = [...media.product];
-              _productImages[index] = { img: base64, preview: img, label };
-              setMedia((prev) => ({ ...prev, product: _productImages }));
+              return { img: base64, preview: img, label };
             }
           });
+
+          const _productImages = await Promise.all(promises);
+          setMedia((prev) => ({
+            ...prev,
+            product: _productImages.filter(Boolean),
+          }));
         };
-        getTheImageOfProduct();
+
+        await getTheImageOfProduct();
+
         setVariations(variations);
         setForm(selected);
       }
     };
 
     fetchData();
-  }, [willCreate, selected, ENDPOINT]);
+    // Exclude unnecessary dependencies and avoid infinite loops
+  }, [willCreate, selected]);
 
   const dragOver = (e) => {
     e.preventDefault();
@@ -243,7 +247,6 @@ const ProductInformation = ({
     setWillCreate(true);
     setSelected({});
   };
-  console.log(form);
   return (
     <>
       <form onSubmit={handleSubmit}>
