@@ -145,7 +145,7 @@ const Products = () => {
 
   const getProductImg = (product) => (
     <img
-      src={`${ENDPOINT}/assets/products/${product.name}-${product._id}/${product.media?.product[0].label}.jpg`}
+      src={`${ENDPOINT}/assets/products/${product._id}/${product.media?.product[0].label}.jpg`}
       alt={product.name}
       className="mr-2"
       style={{ width: "80px" }}
@@ -174,9 +174,7 @@ const Products = () => {
     };
 
     const isDisable = has2Variant ? price.disable : option.disable;
-    const variantName = `${option.name}, ${
-      has2Variant ? price.name : option.name
-    }`;
+    const variantName = `${option.name} ${has2Variant ? `,${price.name}` : ""}`;
     return (
       <tr key={key} className={isFirstRow ? "border-top" : ""}>
         {isFirstRow ? (

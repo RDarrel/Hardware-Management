@@ -41,7 +41,7 @@ function Informations({
         _id: variantID,
         title: "Variation 1",
         name: "",
-        options: [{ name: "", _id: optionID }],
+        options: [{ name: "", _id: optionID, disable: false, srp: 0 }],
       },
     ]);
   };
@@ -66,6 +66,7 @@ function Informations({
                       prepend="₱"
                       type="number"
                       value={form.price}
+                      required
                       onChange={({ target }) =>
                         setForm({ ...form, price: target.value })
                       }

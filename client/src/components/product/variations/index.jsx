@@ -11,22 +11,47 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import Table from "./table";
 
-function Variations({
-  variations = [],
-  setVariations,
-  media,
-  setMedia,
-  variationsWithPrice,
-  setVariationsWithPrice,
-}) {
+function Variations({ variations = [], setVariations, media, setMedia }) {
   const [price, setPrice] = useState(0),
     [isApplyPrice, setIsApplyPrice] = useState(false);
 
   const handleChangeOptions = (option, index, optionIndex) => {
-    console.log(option);
-    console.log(index);
-    const updatedVariations = [...variations];
-    updatedVariations[index].options[optionIndex].name = option;
+    var updatedVariations = [...variations];
+
+    if (updatedVariations.length === 2) {
+      if (index === 0) {
+        handleDefaultChangeOption(
+          updatedVariations,
+          index,
+          option,
+          optionIndex
+        );
+      } else {
+        //para ma update yung vr1 yung mga prices nila
+        const vr1Options = [...updatedVariations[0].options];
+        const newVr1Options = vr1Options.map((obj) => {
+          const newPrices = obj.prices.map((price, priceIndex) => {
+            if (priceIndex === optionIndex) {
+              return { ...price, name: option };
+            }
+            return price;
+          });
+
+          return { ...obj, prices: newPrices };
+        });
+        const newVr = { ...updatedVariations[0], options: newVr1Options };
+        updatedVariations[0] = newVr;
+        handleDefaultChangeOption(
+          updatedVariations,
+          index,
+          option,
+          optionIndex
+        );
+      }
+    } else {
+      handleDefaultChangeOption(updatedVariations, index, option, optionIndex);
+    }
+
     setVariations(updatedVariations);
 
     if (index === 0) {
@@ -39,45 +64,129 @@ function Variations({
     }
   };
 
+  const handleDefaultChangeOption = (
+    updatedVariations,
+    index,
+    option,
+    optionIndex
+  ) => {
+    const options = [...updatedVariations[index].options];
+    const newOPtion = { ...options[optionIndex] };
+    options[optionIndex] = { ...newOPtion, name: option };
+    const newVariant = { ...updatedVariations[index] };
+    updatedVariations[index] = { ...newVariant, options };
+  };
+
+  const handleDefaultValueInMediaVariants = (newOptionsImages) => {
+    setMedia({
+      ...media,
+      variant: { ...media.variant, options: newOptionsImages },
+    });
+  };
+
   const handleAddOptions = (index) => {
     const updatedVariations = [...variations];
     const newOption = { name: "", _id: uuidv4() };
-    if (updatedVariations[index].options?.length < 20) {
-      updatedVariations[index].options.push(newOption);
-      setVariations(updatedVariations);
+    if (updatedVariations[index].options?.length === 20) return false;
+
+    if (updatedVariations.length === 2) {
+      if (index === 0) {
+        updatedVariations[index].options.push({
+          ...newOption,
+          prices: updatedVariations[1].options.map((option) => ({
+            ...option,
+            srp: 0,
+            disable: false,
+          })),
+        });
+      } else {
+        const priceID = uuidv4();
+        const vr1Options = [...updatedVariations[0].options];
+        const newVr1Options = vr1Options.map((option) => {
+          const prices = option.prices;
+          prices.push({ name: "", _id: priceID, disable: false });
+          return {
+            ...option,
+            prices,
+          };
+        });
+        updatedVariations[0].options = newVr1Options;
+        updatedVariations[index].options.push({ name: "", _id: priceID });
+      }
+    } else {
+      const newVr = { ...updatedVariations[index] };
+      const newOptions = [...newVr.options];
+      newOptions.push({
+        ...newOption,
+        srp: 0,
+        disable: false,
+      });
+
+      updatedVariations[index] = { ...newVr, options: newOptions };
     }
+    setVariations(updatedVariations);
 
     if (index === 0) {
       const optionImages = [...media.variant.options];
       optionImages.push({ _id: newOption._id, label: "" });
-      setMedia({
-        ...media,
-        variant: { ...media.variant, options: optionImages },
-      });
+      handleDefaultValueInMediaVariants(optionImages);
     }
   };
 
   const handleRemoveOption = (index, optionIndex) => {
-    if (optionIndex !== 0) {
-      const updatedVariations = [...variations];
-      updatedVariations[index].options.splice(optionIndex, 1);
-      setVariations(updatedVariations);
+    if (optionIndex === 0) return false;
+    const updatedVariations = [...variations];
+    if (updatedVariations.length === 2) {
+      if (index === 0) {
+        handleRemoveOptionDefault(updatedVariations, index, optionIndex);
+      } else {
+        const newVr1Options = updatedVariations[0].options.map((option) => {
+          const prices = option?.prices
+            ?.map((price, priceIndex) => {
+              if (priceIndex !== optionIndex) return price;
+            })
+            .filter(Boolean);
+
+          return { ...option, prices };
+        });
+        console.log(newVr1Options);
+        const newVr = { ...updatedVariations[0], options: newVr1Options };
+
+        updatedVariations[0] = newVr;
+        handleRemoveOptionDefault(updatedVariations, index, optionIndex);
+      }
+    } else {
+      handleRemoveOptionDefault(updatedVariations, index, optionIndex);
     }
+
+    setVariations(updatedVariations);
 
     if (index === 0 && optionIndex !== 0) {
       const optionImages = [...media.variant.options];
       optionImages.splice(optionIndex, 1);
 
-      setMedia({
-        ...media,
-        variant: { ...media.variant, options: optionImages },
-      });
+      handleDefaultValueInMediaVariants(optionImages);
     }
+  };
+
+  const handleRemoveOptionDefault = (updatedVariations, index, optionIndex) => {
+    const newOptions = updatedVariations[index].options
+      .map((option, delIndex) => {
+        if (delIndex !== optionIndex) {
+          return option;
+        }
+      })
+      .filter(Boolean);
+    const newVr = { ...updatedVariations[index], options: newOptions };
+
+    updatedVariations[index] = newVr;
   };
 
   const handleChangeVrName = (value, index) => {
     const updatedVariations = [...variations];
-    updatedVariations[index].name = value;
+    const newVr = { ...updatedVariations[index], name: value };
+
+    updatedVariations[index] = newVr;
     setVariations(updatedVariations);
 
     if (index === 0) {
@@ -92,12 +201,23 @@ function Variations({
     const updatedVariations = [...variations];
     updatedVariations.splice(index, 1);
     setVariations(updatedVariations);
-
     if (index === 0 && variations.length === 0) {
       setMedia({ ...media, variant: {} });
     } else {
       const variant = updatedVariations[0] || undefined;
       if (variant) {
+        setVariations([
+          {
+            ...variant,
+            options: variant.options.map(({ name, _id }) => ({
+              name,
+              _id,
+              srp: 0,
+              disable: false,
+            })),
+          },
+        ]);
+
         setMedia({
           ...media,
           variant: {
@@ -113,15 +233,28 @@ function Variations({
   };
 
   const handleAddVr = () => {
+    const priceID = uuidv4();
     const updatedVariations = [...variations];
+    updatedVariations[0] = {
+      ...updatedVariations[0],
+      options: updatedVariations[0].options.map((option) => ({
+        ...option,
+        prices: [{ _id: priceID, name: "", srp: 0, disable: false }],
+      })),
+    };
     updatedVariations.push({
       _id: uuidv4(),
-      name: "Color",
-      options: [{ name: "Red", _id: uuidv4() }],
+      name: "",
+      options: [
+        {
+          name: "",
+          _id: priceID,
+        },
+      ],
     });
     setVariations(updatedVariations);
   };
-
+  console.log(variations);
   return (
     <>
       {variations.map((variation, index) => (
@@ -269,13 +402,7 @@ function Variations({
         </MDBCol>
       </MDBRow>
 
-      <Table
-        variations={variations}
-        setVariations={setVariations}
-        priceApplyInAllVarations={isApplyPrice ? price : 0}
-        variationsWithPrice={variationsWithPrice}
-        setVariationsWithPrice={setVariationsWithPrice}
-      />
+      <Table variations={variations} setVariations={setVariations} />
     </>
   );
 }

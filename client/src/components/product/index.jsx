@@ -5,7 +5,10 @@ import "./product.css";
 import Basic from "./basic";
 import Informations from "./informations";
 import Media from "./media";
-import { SAVE } from "../../services/redux/slices/administrator/products";
+import {
+  SAVE,
+  UPDATE,
+} from "../../services/redux/slices/administrator/products";
 import { useDispatch, useSelector } from "react-redux";
 import { ENDPOINT } from "../../services/utilities";
 
@@ -37,8 +40,6 @@ const ProductInformation = ({
   const [media, setMedia] = useState(_media);
   const [form, setForm] = useState({ isPerKilo: false });
   const [variations, setVariations] = useState([]);
-  const [variationsWithPrice, setVariationsWithPrice] = useState([]);
-  const [oldPricesForVr2, setOldPricesForVr2] = useState([]);
   const disptach = useDispatch();
 
   const imgToBase64 = async (url) => {
@@ -55,20 +56,21 @@ const ProductInformation = ({
       if (!blob.type.startsWith("image/")) {
         return false;
       }
+
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = () => {
-          console.error(`Failed to read blob as data URL: ${url}`);
-          reject(null);
+        reader.onload = () => {
+          const base64String = reader.result.split(",")[1];
+          resolve(base64String);
         };
+        reader.onerror = (error) => reject(error);
         reader.readAsDataURL(blob);
       });
     } catch (error) {
+      console.error(`Error converting image to base64: ${error}`);
       return false;
     }
   };
-
   useEffect(() => {
     const fetchData = async () => {
       if (!willCreate) {
@@ -77,13 +79,14 @@ const ProductInformation = ({
           variations = [],
           media: mediaSelected = {},
         } = selected || {};
-        const { variant = {}, product: productImages } = mediaSelected || {};
 
+        console.log(selected);
+        const { variant = {}, product: productImages } = mediaSelected || {};
         if (hasVariant) {
           // Fetch images and convert to Base64
           const getTheImageOfOptions = async () => {
             const promises = variant.options.map(async ({ label, _id }) => {
-              const img = `${ENDPOINT}/assets/products/${selected.name}-${selected._id}/variant/${_id}.jpg`;
+              const img = `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`;
               const base64 = await imgToBase64(img);
               return {
                 label,
@@ -110,7 +113,7 @@ const ProductInformation = ({
           productImages.map(async ({ label }) => {
             const index = media.product.findIndex(({ label }) => label);
 
-            const img = `${ENDPOINT}/assets/products/${selected.name}-${selected._id}/${label}.jpg`;
+            const img = `${ENDPOINT}/assets/products/${selected._id}/${label}.jpg`;
             const base64 = await imgToBase64(img);
             if (base64) {
               const _productImages = [...media.product];
@@ -127,6 +130,8 @@ const ProductInformation = ({
 
     fetchData();
   }, [willCreate, selected, ENDPOINT]);
+
+  console.log(media);
 
   const dragOver = (e) => {
     e.preventDefault();
@@ -200,26 +205,31 @@ const ProductInformation = ({
 
     const newForm = {
       ...form,
-      hasVariant: variationsWithPrice.length > 0 ? true : false,
-      has2Variant: variationsWithPrice.length === 2 ? true : false,
-      variations: variationsWithPrice,
+      hasVariant: variations.length > 0 ? true : false,
+      has2Variant: variations.length === 2 ? true : false,
+      variations: variations,
       media: { ...media, product: productsImages },
     };
-
+    const title = willCreate ? "publish" : "Update";
     Swal.fire({
       title: "Are you sure?",
-      text: "You want to publish this product!",
+      text: `You want to ${title} this product!`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, publish it!",
+      confirmButtonText: `Yes, ${title} it!`,
     }).then((result) => {
       if (result.isConfirmed) {
-        disptach(SAVE({ token, data: newForm }));
+        if (willCreate) {
+          disptach(SAVE({ token, data: newForm }));
+        } else {
+          disptach(UPDATE({ token, data: newForm }));
+        }
+        setIsViewProductInformation(false);
         Swal.fire({
           title: "Success!",
-          text: "Your product has been publish.",
+          text: `Your product has been ${title}.`,
           icon: "success",
         });
       }
@@ -235,8 +245,6 @@ const ProductInformation = ({
           setVariations={setVariations}
           form={form}
           setForm={setForm}
-          variationsWithPrice={variationsWithPrice}
-          setVariationsWithPrice={setVariationsWithPrice}
           media={media}
           setMedia={setMedia}
         />
@@ -256,7 +264,7 @@ const ProductInformation = ({
               Cancel
             </MDBBtn>
             <MDBBtn color="primary" type="submit">
-              Publish
+              {willCreate ? "Publish" : "Update"}
             </MDBBtn>
           </MDBCol>
         </MDBRow>

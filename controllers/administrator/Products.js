@@ -14,14 +14,14 @@ const upload = (name, _id, base64) => {
   }
 };
 
-const handleVariantImagesUpload = (productName, productID, variantImages) => {
+const handleVariantImagesUpload = (productID, variantImages) => {
   const options = variantImages.options;
   const optionsImages = options
     .map((option) => (option.img ? option : ""))
     .filter(Boolean);
 
   if (optionsImages.length > 0) {
-    const url = `./assets/products/${productName}-${productID}/variant`;
+    const url = `./assets/products/${productID}/variant`;
 
     // const url = `./assets/products`;
     if (!fs.existsSync(url)) {
@@ -37,8 +37,8 @@ const handleVariantImagesUpload = (productName, productID, variantImages) => {
   }
 };
 
-const handleUploadProduct = (name, _id, images) => {
-  const url = `./assets/products/${name}-${_id}`;
+const handleUploadProduct = (_id, images) => {
+  const url = `./assets/products/${_id}`;
   if (!fs.existsSync(url)) {
     fs.mkdirSync(url, { recursive: true });
   }
@@ -64,26 +64,33 @@ exports.browse = (req, res) =>
     )
     .catch((error) => res.status(400).json({ error: error.message }));
 
-exports.save = (req, res) => {
-  const product = req.body;
-  const { media = {} } = product;
-  const remveBase64InMediaProduct = media.product.map(({ label }) => ({
+const handleRemoveTheBase64 = (media) => {
+  const product = media.product.map(({ label }) => ({
     label,
   }));
-  const remveBase64InMediaOptions = media.variant.options.map(({ label }) => ({
+  const variant = media.variant.options.map(({ label, _id }) => ({
+    _id,
     label,
   }));
 
+  return { product, variant };
+};
+
+exports.save = (req, res) => {
+  const product = req.body;
+  const { media = {} } = product;
+  const remveBase64InMediaProduct = handleRemoveTheBase64(media)?.product;
+  const remveBase64InMediaOptions = handleRemoveTheBase64(media)?.variant;
   Entity.create({
     ...product,
     media: {
       product: remveBase64InMediaProduct,
-      variant: { ...product.variant, option: remveBase64InMediaOptions },
+      variant: { ...product.variant, options: remveBase64InMediaOptions },
     },
   })
     .then((item) => {
-      handleUploadProduct(item.name, item._id, product?.media?.product);
-      handleVariantImagesUpload(item.name, item._id, product?.media?.variant);
+      handleUploadProduct(item._id, product?.media?.product);
+      handleVariantImagesUpload(item._id, product?.media?.variant);
 
       res.status(201).json({
         success: "Product Created Successfully",
@@ -94,27 +101,29 @@ exports.save = (req, res) => {
 };
 
 exports.update = (req, res) => {
-  const { sizes = [], img = "" } = req.body;
-  var sizesWithID = [];
-  if (sizes.length > 0) {
-    sizesWithID = sizes
-      .map(
-        ({ size, price, _id = "" }, index) =>
-          size && {
-            size,
-            price,
-            _id: _id || `${uuidv4()}${index}`,
-          }
-      )
-      .filter(Boolean);
-  }
-  Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
+  const product = req.body;
+  const { media = {}, _id } = product;
+
+  const remveBase64InMediaProduct = handleRemoveTheBase64(media).product;
+  const remveBase64InMediaOptions = handleRemoveTheBase64(media).variant;
+  Entity.findByIdAndUpdate(
+    _id,
+    {
+      ...product,
+      media: {
+        product: remveBase64InMediaProduct,
+        variant: { options: remveBase64InMediaOptions },
+      },
+    },
+    { new: true }
+  )
     .then((item) => {
       if (item) {
-        upload(item.name, item._id, img);
+        handleUploadProduct(item._id, product?.media?.product);
+        handleVariantImagesUpload(item._id, product?.media?.variant);
 
         res.json({
-          success: "Role Updated Successfully",
+          success: "Product Updated Successfully",
           payload: item,
         });
       } else {
