@@ -1,6 +1,7 @@
 import Dashboard from "./dashboard";
 import Employees from "./employees";
 import Products from "./products";
+import Suppliers from "./suppliers";
 
 const access = [
   {
@@ -21,6 +22,13 @@ const access = [
     path: "/products",
     icon: "award",
     component: Products,
+  },
+
+  {
+    name: "Supplier",
+    path: "/suppliers",
+    icon: "hands-helping",
+    component: Suppliers,
   },
   // {
   //   path: "/user-settings",

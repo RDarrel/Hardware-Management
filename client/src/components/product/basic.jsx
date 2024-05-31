@@ -78,7 +78,7 @@ function Basic({ form, setForm, selected }) {
                   className="form-check-input"
                   type="checkbox"
                   id="yes"
-                  checked={form.isPerKilo}
+                  checked={form?.isPerKilo || false}
                   onChange={() => setForm({ ...form, isPerKilo: true })}
                 />
                 <label

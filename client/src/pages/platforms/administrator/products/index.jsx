@@ -27,6 +27,7 @@ import ProductInformation from "../../../../components/product/index";
 import View from "./view";
 import "./product.css";
 import { Table } from "./table";
+import { Search } from "../../../widgets/search";
 
 const Products = () => {
   const { token } = useSelector(({ auth }) => auth),
@@ -235,13 +236,12 @@ const Products = () => {
     <>
       {!isViewProductInformation ? (
         <>
-          <MDBCard className="mt-4 p-0">
-            <Header
-              setShow={setShow}
-              setIsViewProductInformation={setIsViewProductInformation}
-            />
-
+          <MDBCard>
             <MDBCardBody>
+              <Search
+                setShow={setIsViewProductInformation}
+                title="Product List"
+              />
               <Table
                 products={products}
                 handleTableData={handleTableData}
@@ -271,6 +271,8 @@ const Products = () => {
           setIsViewProductInformation={setIsViewProductInformation}
           selected={selected}
           willCreate={willCreate}
+          setWillCreate={setWillCreate}
+          setSelected={setSelected}
         />
       )}
     </>

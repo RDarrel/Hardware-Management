@@ -11,6 +11,7 @@ import {
 import { BROWSE } from "../../../../services/redux/slices/administrator/employees";
 import { useDispatch, useSelector } from "react-redux";
 import { fullName } from "../../../../services/utilities";
+import { Search } from "../../../widgets/search";
 export default function Employees() {
   const { token } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ employees }) => employees),
@@ -28,28 +29,7 @@ export default function Employees() {
   return (
     <MDBCard>
       <MDBCardBody>
-        <div className="d-flex justify-content-between align-items-center">
-          <h5>Employee List</h5>
-          <div className="d-flex align-items-center">
-            <MDBInput label="Search..." />
-            <MDBBtn
-              size="sm"
-              rounded
-              className="d-inline ml-2 px-2 m-0"
-              color="primary"
-            >
-              <MDBIcon icon="search" size="lg" />
-            </MDBBtn>
-            <MDBBtn
-              size="sm"
-              rounded
-              className="d-inline ml-2 px-2"
-              color="primary"
-            >
-              <MDBIcon icon="plus" size="lg" />
-            </MDBBtn>
-          </div>
-        </div>
+        <Search title={"Employee List"} />
         <MDBTable striped responsive>
           <thead>
             <tr>

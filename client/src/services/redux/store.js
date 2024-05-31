@@ -7,6 +7,7 @@ import tasks from "./slices/tasks";
 import events from "./slices/events";
 import employees from "./slices/administrator/employees";
 import products from "./slices/administrator/products";
+import suppliers from "./slices/administrator/suppliers";
 const store = configureStore({
   reducer: {
     auth,
@@ -17,6 +18,7 @@ const store = configureStore({
     events,
     employees,
     products,
+    suppliers,
   },
 });
 

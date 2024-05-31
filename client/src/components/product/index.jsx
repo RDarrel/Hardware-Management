@@ -35,6 +35,8 @@ const ProductInformation = ({
   setIsViewProductInformation,
   selected,
   willCreate = true,
+  setWillCreate,
+  setSelected,
 }) => {
   const { token } = useSelector(({ auth }) => auth);
   const [media, setMedia] = useState(_media);
@@ -80,12 +82,11 @@ const ProductInformation = ({
           media: mediaSelected = {},
         } = selected || {};
 
-        console.log(selected);
         const { variant = {}, product: productImages } = mediaSelected || {};
         if (hasVariant) {
           // Fetch images and convert to Base64
           const getTheImageOfOptions = async () => {
-            const promises = variant.options.map(async ({ label, _id }) => {
+            const promises = variant?.options?.map(async ({ label, _id }) => {
               const img = `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`;
               const base64 = await imgToBase64(img);
               return {
@@ -111,7 +112,7 @@ const ProductInformation = ({
 
         const getTheImageOfProduct = async () => {
           productImages.map(async ({ label }) => {
-            const index = media.product.findIndex(({ label }) => label);
+            const index = media?.product?.findIndex(({ label }) => label);
 
             const img = `${ENDPOINT}/assets/products/${selected._id}/${label}.jpg`;
             const base64 = await imgToBase64(img);
@@ -130,8 +131,6 @@ const ProductInformation = ({
 
     fetchData();
   }, [willCreate, selected, ENDPOINT]);
-
-  console.log(media);
 
   const dragOver = (e) => {
     e.preventDefault();
@@ -226,7 +225,7 @@ const ProductInformation = ({
         } else {
           disptach(UPDATE({ token, data: newForm }));
         }
-        setIsViewProductInformation(false);
+        handleClearForm();
         Swal.fire({
           title: "Success!",
           text: `Your product has been ${title}.`,
@@ -236,6 +235,15 @@ const ProductInformation = ({
     });
   };
 
+  const handleClearForm = () => {
+    setIsViewProductInformation(false);
+    setMedia(_media);
+    setVariations([]);
+    setForm({ isPerKilo: false });
+    setWillCreate(true);
+    setSelected({});
+  };
+  console.log(form);
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -257,10 +265,7 @@ const ProductInformation = ({
         />
         <MDBRow>
           <MDBCol md="12" className="d-flex justify-content-end mt-3 mr-5">
-            <MDBBtn
-              color="white"
-              onClick={() => setIsViewProductInformation(false)}
-            >
+            <MDBBtn color="white" onClick={handleClearForm}>
               Cancel
             </MDBBtn>
             <MDBBtn color="primary" type="submit">
