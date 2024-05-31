@@ -74,8 +74,9 @@ const ProductInformation = ({
     }
   };
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
-      if (!willCreate) {
+      if (!willCreate && isMounted) {
         const {
           hasVariant,
           variations = [],
@@ -110,21 +111,28 @@ const ProductInformation = ({
         }
 
         const getTheImageOfProduct = async () => {
-          const promises = productImages.map(async ({ label }) => {
+          for (const { label } of productImages) {
             const img = `${ENDPOINT}/assets/products/${selected._id}/${label}.jpg`;
             const base64 = await imgToBase64(img);
+
             if (base64) {
-              return { img: base64, preview: img, label };
+              setMedia((prev) => {
+                const newProductImgs = [...prev.product];
+                const indexProduct = newProductImgs.findIndex(
+                  ({ label: pLabel }) => pLabel === label
+                );
+
+                newProductImgs[indexProduct] = {
+                  ...newProductImgs[indexProduct],
+                  preview: img,
+                  img: base64,
+                };
+
+                return { ...prev, product: newProductImgs };
+              });
             }
-          });
-
-          const _productImages = await Promise.all(promises);
-          setMedia((prev) => ({
-            ...prev,
-            product: _productImages.filter(Boolean),
-          }));
+          }
         };
-
         await getTheImageOfProduct();
 
         setVariations(variations);
@@ -133,7 +141,9 @@ const ProductInformation = ({
     };
 
     fetchData();
-    // Exclude unnecessary dependencies and avoid infinite loops
+    return () => {
+      isMounted = false; // Itigil ang pag-update ng estado kapag unmounted na ang component
+    };
   }, [willCreate, selected]);
 
   const dragOver = (e) => {

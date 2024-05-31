@@ -1,14 +1,17 @@
 import React from "react";
-import { MDBRow, MDBCol, MDBIcon, MDBBtn } from "mdbreact";
+import { MDBRow, MDBCol, MDBIcon } from "mdbreact";
 import { categories } from "../../../../services/fakeDb";
 
 export const Header = ({ setShow, setIsViewProductInformation }) => {
   return (
-    <MDBRow className="align-items-center mt-3 p-3">
-      <MDBCol>
+    <MDBRow className=" d-flex align-items-center mt-3 p-3">
+      <MDBCol md="2">
+        <h6 style={{ fontWeight: 500 }}>Product List</h6>
+      </MDBCol>
+      <MDBCol className="d-flex justify-content-center">
         <select
           className="form-control"
-          style={{ height: 50, borderRadius: 20 }}
+          style={{ height: 42, borderRadius: 20 }}
         >
           {categories.map((categorie, index) => (
             <option value={categorie} key={index}>

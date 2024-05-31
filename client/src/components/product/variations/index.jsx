@@ -279,7 +279,6 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
 
     setVariations(updatedVariations);
   };
-  console.log(variations);
   return (
     <>
       {variations.map((variation, index) => (

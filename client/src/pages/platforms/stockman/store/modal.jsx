@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   MDBBtn,
   MDBModal,
@@ -19,7 +19,6 @@ import {
 import CustomSelect from "../../../../components/customSelect";
 import { isEqual } from "lodash";
 import { categories } from "../../../../services/fakeDb";
-import { ENDPOINT } from "../../../../services/utilities";
 
 const _form = {
   name: "",

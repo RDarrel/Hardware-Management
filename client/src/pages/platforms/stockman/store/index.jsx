@@ -1,39 +1,24 @@
 import React, { useEffect, useState } from "react";
-import {
-  MDBBtn,
-  MDBBtnGroup,
-  MDBCard,
-  MDBCardBody,
-  MDBCardImage,
-  MDBCardTitle,
-  MDBCol,
-  MDBIcon,
-  MDBRow,
-} from "mdbreact";
+import { MDBBtn, MDBCard, MDBCardBody, MDBIcon, MDBRow } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
-import { ENDPOINT } from "../../../../services/utilities";
-import {
-  BROWSE,
-  DESTROY,
-} from "../../../../services/redux/slices/administrator/products";
+import { BROWSE } from "../../../../services/redux/slices/administrator/products";
 import { Pagination } from "./pagination";
 import { Header } from "./header";
 import Modal from "./modal";
-import ProductInformation from "../../../../components/product/index";
 import View from "./view";
 import "./product.css";
+import { ProducCard } from "./card";
 
 const Store = () => {
   const { token } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(({ products }) => products),
+    { collections, isLoading } = useSelector(({ products }) => products),
     [products, setProducts] = useState([]),
     [isView, setIsView] = useState(false),
     [selected, setSelected] = useState({}),
-    [isViewProductInformation, setIsViewProductInformation] = useState(false),
     [willCreate, setWillCreate] = useState(true),
     [show, setShow] = useState(false),
     [currentPage, setCurrentPage] = useState(1),
-    [itemsPerPage] = useState(8), // Adjust the number of items per page as needed
+    [itemsPerPage] = useState(12), // Adjust the number of items per page as needed
     dispatch = useDispatch();
 
   const toggleView = () => setIsView(!isView);
@@ -64,77 +49,61 @@ const Store = () => {
 
   return (
     <>
-      {!isViewProductInformation ? (
-        <>
-          <MDBCard className="mt-4 p-0">
-            <Header
-              setShow={setShow}
-              setIsViewProductInformation={setIsViewProductInformation}
+      <>
+        <MDBCard className="mt-4 p-0">
+          <Header setShow={setShow} />
+          <MDBCardBody>
+            <MDBRow>
+              {currentProducts.length > 0 &&
+                currentProducts.map((product, index) => (
+                  <ProducCard
+                    index={index}
+                    product={product}
+                    key={index}
+                    setIsView={setIsView}
+                    setSelected={setSelected}
+                  />
+                ))}
+            </MDBRow>
+
+            <Pagination
+              currentPage={currentPage}
+              pageNumbers={pageNumbers}
+              handlePageChange={handlePageChange}
             />
-            <MDBCardBody>
-              <MDBRow>
-                {currentProducts.length > 0 &&
-                  currentProducts.map((product, index) => (
-                    <MDBCol md="3" className="mt-4" key={index}>
-                      <section>
-                        <MDBCard>
-                          <div className="d-flex justify-content-center">
-                            <MDBCardImage
-                              className="img-fluid d-flex justify-content-center"
-                              src={`${ENDPOINT}/assets/products/${product._id}/Cover Photo.jpg`}
-                              style={{ height: "200px", width: "100%" }}
-                            />
-                          </div>
-                          <MDBBtn
-                            floating
-                            color="warning"
-                            tag="a"
-                            className="ml-auto mr-4  "
-                            onClick={() => {
-                              setIsView(true);
-                              setSelected(product);
-                            }}
-                            action
-                          >
-                            <MDBIcon icon="cart-plus" />
-                          </MDBBtn>
+          </MDBCardBody>
+        </MDBCard>
 
-                          <MDBCardBody>
-                            <MDBCardTitle>{product.name}</MDBCardTitle>
-                          </MDBCardBody>
-                        </MDBCard>
-                      </section>
-                    </MDBCol>
-                  ))}
-              </MDBRow>
-
-              <Pagination
-                currentPage={currentPage}
-                pageNumbers={pageNumbers}
-                handlePageChange={handlePageChange}
-              />
-            </MDBCardBody>
-          </MDBCard>
-
-          <View isView={isView} toggleView={toggleView} selected={selected} />
-          <Modal
-            toggle={() => {
-              if (!willCreate) {
-                setWillCreate(true);
-                setSelected({});
-              }
-              setShow(false);
-            }}
-            show={show}
-            willCreate={willCreate}
-            selected={selected}
-          />
-        </>
-      ) : (
-        <ProductInformation
-          setIsViewProductInformation={setIsViewProductInformation}
+        <div
+          style={{
+            position: "sticky",
+            marginRight: "-65px",
+            float: "right",
+            bottom: "100px",
+          }}
+        >
+          {!isLoading && (
+            <>
+              <MDBBtn floating gradient="blue">
+                <MDBIcon icon="shopping-cart" />
+              </MDBBtn>
+            </>
+          )}
+        </div>
+        <View isView={isView} toggleView={toggleView} selected={selected} />
+        <Modal
+          toggle={() => {
+            if (!willCreate) {
+              setWillCreate(true);
+              setSelected({});
+            }
+            setShow(false);
+          }}
+          show={show}
+          willCreate={willCreate}
+          selected={selected}
         />
-      )}
+      </>
     </>
   );
 };

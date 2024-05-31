@@ -4,24 +4,20 @@ import {
   MDBRow,
   MDBCol,
   MDBBtn,
-  MDBModalFooter,
   MDBIcon,
-  MDBInput,
 } from "mdbreact";
 import React, { useEffect, useState } from "react";
 import { ENDPOINT } from "../../../../services/utilities";
 
 const View = ({ isView, toggleView, selected }) => {
-  const [activeSize, setActiveSize] = useState(""),
-    [images, setImages] = useState([]),
-    [price, setPrice] = useState(0),
+  const [images, setImages] = useState([]),
     [variant1, setVariant1] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const thumbnailsPerPage = 3;
+  const thumbnailsPerPage = 4;
   const [selectedImage, setSelectedImage] = useState();
 
   useEffect(() => {
-    if (selected.hasVariant) {
+    if (isView) {
       const { media } = selected;
       const productImages = media.product.map(({ label }) => ({
         large: `${ENDPOINT}/assets/products/${selected._id}/${label}.jpg`,
@@ -37,7 +33,7 @@ const View = ({ isView, toggleView, selected }) => {
 
       setSelectedImage(productImages[0].large);
     }
-  }, [selected]);
+  }, [selected, isView]);
 
   const totalPages = Math.ceil(images.length / thumbnailsPerPage);
 
@@ -46,8 +42,6 @@ const View = ({ isView, toggleView, selected }) => {
   };
 
   const nextPage = () => {
-    console.log("clicked");
-
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
     }
@@ -64,7 +58,6 @@ const View = ({ isView, toggleView, selected }) => {
     startIndex,
     startIndex + thumbnailsPerPage
   );
-  console.log(images);
   return (
     <MDBModal
       isOpen={isView}
@@ -75,7 +68,7 @@ const View = ({ isView, toggleView, selected }) => {
     >
       <MDBModalBody className="mb-0">
         <MDBRow>
-          <MDBCol md="5" className="border border-black">
+          <MDBCol md="5">
             <div className="gallery-container">
               <div className="main-image">
                 <img src={selectedImage} alt="Selected" />
@@ -109,14 +102,7 @@ const View = ({ isView, toggleView, selected }) => {
                 Name:
               </MDBCol>
               <MDBCol>
-                <h3 style={{ fontWeight: "500" }}>{selected.name}</h3>
-              </MDBCol>
-            </MDBRow>
-
-            <MDBRow className="d-flex align-items-center mt-3">
-              <MDBCol md="1">Description:</MDBCol>
-              <MDBCol className="ml-5">
-                <h5 style={{ fontWeight: "400" }}>{selected.description}</h5>
+                <h5 style={{ fontWeight: "500" }}>{selected.name}</h5>
               </MDBCol>
             </MDBRow>
 
@@ -170,15 +156,22 @@ const View = ({ isView, toggleView, selected }) => {
                   <option>1/3 kl</option>
                 </select>
               </MDBCol>
+              <MDBCol>
+                <MDBBtn color="danger" onClick={() => toggleView()}>
+                  ADD TO CART
+                </MDBBtn>
+              </MDBCol>
+            </MDBRow>
+
+            <MDBRow className="d-flex align-items-center mt-5">
+              <MDBCol md="1">Description:</MDBCol>
+              <MDBCol className="ml-5">
+                <h6 style={{ fontWeight: "400" }}>{selected.description}</h6>
+              </MDBCol>
             </MDBRow>
           </MDBCol>
         </MDBRow>
       </MDBModalBody>
-      <MDBModalFooter className="text-end">
-        <MDBBtn color="primary" onClick={() => toggleView()}>
-          ADD TO CART
-        </MDBBtn>
-      </MDBModalFooter>
     </MDBModal>
   );
 };
