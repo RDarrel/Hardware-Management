@@ -5,15 +5,17 @@ import { BROWSE } from "../../../../services/redux/slices/administrator/products
 import { Pagination } from "./pagination";
 import { Header } from "./header";
 import Modal from "./modal";
-import View from "./view";
+import View from "./view/index";
 import "./product.css";
 import { ProducCard } from "./card";
+import Cart from "./cart";
 
 const Store = () => {
   const { token } = useSelector(({ auth }) => auth),
     { collections, isLoading } = useSelector(({ products }) => products),
     [products, setProducts] = useState([]),
     [isView, setIsView] = useState(false),
+    [isShowCart, setIsShowCart] = useState(false),
     [selected, setSelected] = useState({}),
     [willCreate, setWillCreate] = useState(true),
     [show, setShow] = useState(false),
@@ -84,13 +86,22 @@ const Store = () => {
         >
           {!isLoading && (
             <>
-              <MDBBtn floating gradient="blue">
+              <MDBBtn
+                floating
+                gradient="blue"
+                onClick={() => setIsShowCart(true)}
+              >
                 <MDBIcon icon="shopping-cart" />
               </MDBBtn>
             </>
           )}
         </div>
-        <View isView={isView} toggleView={toggleView} selected={selected} />
+        <View
+          isView={isView}
+          toggleView={toggleView}
+          selected={selected}
+          setIsView={setIsView}
+        />
         <Modal
           toggle={() => {
             if (!willCreate) {
@@ -103,6 +114,7 @@ const Store = () => {
           willCreate={willCreate}
           selected={selected}
         />
+        <Cart show={isShowCart} toggle={() => setIsShowCart(false)} />
       </>
     </>
   );

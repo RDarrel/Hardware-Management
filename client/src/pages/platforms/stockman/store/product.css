@@ -141,7 +141,7 @@
 
 .thumbnail {
   width: 100px;
-  height: 100px;
+  height: 80px;
   cursor: pointer;
   object-fit: cover;
   border: 2px solid transparent;
@@ -149,7 +149,7 @@
 }
 
 .thumbnail:hover {
-  border: 2px solid #000;
+  border: 1px solid red;
 }
 
 .arrow-button {
