@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { MDBBtn, MDBCard, MDBCardBody, MDBIcon, MDBRow } from "mdbreact";
+import {
+  MDBBtn,
+  MDBCard,
+  MDBCardBody,
+  MDBIcon,
+  MDBRow,
+  MDBView,
+} from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
 import { BROWSE } from "../../../../services/redux/slices/administrator/products";
 import { Pagination } from "./pagination";
@@ -51,8 +58,14 @@ const Store = () => {
 
   return (
     <>
-      <MDBCard className="mt-4 p-0">
-        <Header setShow={setShow} />
+      <MDBCard className="mt-4 p-0 pb-3" narrow>
+        <MDBView
+          cascade
+          className="gradient-card-header blue py-2 mx-4 d-flex justify-content-between align-items-center"
+        >
+          <Header setShow={setShow} />
+        </MDBView>
+
         <MDBCardBody>
           <MDBRow>
             {currentProducts.length > 0 &&
@@ -88,6 +101,7 @@ const Store = () => {
             <MDBBtn floating color="red" onClick={() => setIsShowCart(true)}>
               <MDBIcon icon="shopping-cart" />
             </MDBBtn>
+            <span className="counter">2</span>
           </>
         )}
       </div>

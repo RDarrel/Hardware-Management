@@ -1,0 +1,61 @@
+.popover-body {
+  height: auto;
+  width: 500px;
+  border: 2px solid rgb(186, 173, 173);
+  max-width: none;
+  background-color: white;
+}
+
+.pop-over-btn {
+  background: linear-gradient(to bottom, white, white);
+  border: none;
+  box-shadow: 0px 0px 0px 0px !important;
+  color: black !important;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+}
+
+table-responsive {
+  max-height: 400px; /* Adjust the height as needed */
+  overflow-x: auto;
+}
+
+.table-responsive::-webkit-scrollbar {
+  width: 0px;
+  background: transparent; /* Make scrollbar invisible in Webkit browsers */
+}
+
+.table-responsive {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #ff0000; /* Optional: Style for scrollbar thumb */
+  border-radius: 10px;
+}
+
+/* Additional media queries for responsiveness */
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  th,
+  td {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 576px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  th,
+  td {
+    white-space: nowrap;
+    font-size: 14px; /* Adjust font size for smaller screens */
+  }
+}

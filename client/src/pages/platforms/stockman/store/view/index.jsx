@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { useDispatch, useSelector } from "react-redux";
+
 import { MDBModalBody, MDBModal } from "mdbreact";
 import { ENDPOINT } from "../../../../../services/utilities";
 import { FullView } from "./fullView";
 import { InformationView } from "./informationView";
+import { SAVE } from "../../../../../services/redux/slices/cart";
 
 const View = ({ isView, toggleView, selected, setIsView }) => {
-  const [images, setImages] = useState([]),
+  const { token, auth } = useSelector(({ auth }) => auth),
+    [images, setImages] = useState([]),
     [variant1, setVariant1] = useState(""),
     [variant2, setVariant2] = useState(""),
     [kilo, setKilo] = useState(1),
@@ -17,13 +21,14 @@ const View = ({ isView, toggleView, selected, setIsView }) => {
     [baseImages, setBaseImages] = useState([]),
     [storageOfRemoveImages, setStorageOfRemoveImages] = useState([]),
     thumbnailsPerPage = 4,
-    [selectedImage, setSelectedImage] = useState();
+    [selectedImage, setSelectedImage] = useState(),
+    dispatch = useDispatch();
 
   useEffect(() => {
     if (isView) {
       const { media } = selected;
       const productImages = media.product.map(({ label }) => ({
-        large: `${ENDPOINT}/assets/products/${selected._id}/${label}.jpg`,
+        large: ` ${ENDPOINT}/assets/products/${selected._id}/${label}.jpg`,
         thumb: `${ENDPOINT}/assets/products/${selected._id}/${label}.jpg`,
         label,
       }));
@@ -75,7 +80,7 @@ const View = ({ isView, toggleView, selected, setIsView }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    var form = { product: selected._id, cartBy: auth._id };
     if (selected.hasVariant) {
       if (selected.has2Variant) {
         if (!variant1 || !variant2)
@@ -86,6 +91,8 @@ const View = ({ isView, toggleView, selected, setIsView }) => {
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
           });
+        form.variant1 = variant1;
+        form.variant2 = variant2;
       } else {
         if (!variant1)
           return Swal.fire({
@@ -95,11 +102,21 @@ const View = ({ isView, toggleView, selected, setIsView }) => {
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
           });
+        form.variant1 = variant1;
       }
     }
+
+    if (selected.isPerKilo) {
+      form.kilo = kilo;
+      form.kiloGrams = kiloGrams;
+    } else {
+      form.quantity = quantity;
+    }
+
+    dispatch(SAVE({ token, data: { ...form } }));
   };
 
-  console.log("hheheh");
+  console.log("test");
 
   return (
     <MDBModal isOpen={isView} toggle={toggleView} backdrop size="xl">

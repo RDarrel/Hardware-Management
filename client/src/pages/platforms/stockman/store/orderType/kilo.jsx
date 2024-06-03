@@ -1,4 +1,4 @@
-import { MDBRow, MDBCol, MDBBtn } from "mdbreact";
+import { MDBRow, MDBCol, MDBBtn, MDBIcon } from "mdbreact";
 import React from "react";
 
 const Kilo = ({ kilo, setKilo, kiloGrams, setKiloGrams }) => {
@@ -32,7 +32,7 @@ const Kilo = ({ kilo, setKilo, kiloGrams, setKiloGrams }) => {
       </MDBCol>
       <MDBCol>
         <MDBBtn color="danger" type="submit">
-          ADD TO CART
+          <MDBIcon icon="shopping-cart" className="mr-2" /> ADD TO CART
         </MDBBtn>
       </MDBCol>
     </MDBRow>

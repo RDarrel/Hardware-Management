@@ -1,17 +1,19 @@
 import React from "react";
-import { MDBRow, MDBCol, MDBIcon } from "mdbreact";
+import { MDBIcon } from "mdbreact";
 import { categories } from "../../../../services/fakeDb";
 
-export const Header = ({ setShow, setIsViewProductInformation }) => {
+export const Header = () => {
   return (
-    <MDBRow className=" d-flex align-items-center mt-3 p-3">
-      <MDBCol md="2">
-        <h6 style={{ fontWeight: 500 }}>Product List</h6>
-      </MDBCol>
-      <MDBCol className="d-flex justify-content-center">
+    <>
+      <div>
+        <h6 style={{ fontWeight: 500 }}>
+          <MDBIcon icon="store" className="mr-3" /> Products
+        </h6>
+      </div>
+      <div>
         <select
           className="form-control"
-          style={{ height: 42, borderRadius: 20 }}
+          style={{ height: 42, borderRadius: 15, width: "400px" }}
         >
           {categories.map((categorie, index) => (
             <option value={categorie} key={index}>
@@ -19,21 +21,15 @@ export const Header = ({ setShow, setIsViewProductInformation }) => {
             </option>
           ))}
         </select>
-      </MDBCol>
-      <MDBCol className="d-flex justify-content-end" md="4">
-        <div className="cashier-search-cotaniner ">
-          <form className="cashier-search">
-            <input
-              placeholder="Search..."
-              autoCorrect="off"
-              spellCheck={false}
-            />
-            <button type="submit">
-              <MDBIcon icon={"search"} className="search-icon" />
-            </button>
-          </form>
-        </div>
-      </MDBCol>
-    </MDBRow>
+      </div>
+      <div className="cashier-search-cotaniner ">
+        <form className="cashier-search">
+          <input placeholder="Search..." autoCorrect="off" spellCheck={false} />
+          <button type="submit">
+            <MDBIcon icon={"search"} className="search-icon" />
+          </button>
+        </form>
+      </div>
+    </>
   );
 };

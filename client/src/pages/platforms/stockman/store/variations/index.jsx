@@ -7,6 +7,7 @@ const Variations = ({
   setVariant1,
   images,
   variant1,
+  isCart = false,
   variant2,
   setSelectedImage,
   setVariant2,
@@ -23,15 +24,17 @@ const Variations = ({
         setVariation2(variations[1]);
       }
     }
-  }, [has2Variant, variations]);
+    setVariant1("");
+    setVariant2("");
+  }, [has2Variant, variations, setVariant1, setVariant2]);
 
   const handleClickVr1 = (_id) => {
-    const vr1Img = images.find(({ label }) => label === _id);
+    const vr1Img = !isCart && images.find(({ label }) => label === _id);
 
     if (has2Variant) {
-      const pricesOfVarian1Choose = variation1.options.find(
-        ({ _id: optionID }) => _id === optionID
-      ).prices;
+      const pricesOfVarian1Choose =
+        variation1.options.find(({ _id: optionID }) => _id === optionID)
+          .prices || [];
       const vr2DisableIDS =
         pricesOfVarian1Choose
           .filter(({ disable }) => disable)
@@ -45,7 +48,7 @@ const Variations = ({
     }
 
     setVariant1(_id);
-    if (vr1Img) {
+    if (vr1Img && !isCart) {
       setSelectedImage(vr1Img);
     }
   };
@@ -83,7 +86,8 @@ const Variations = ({
           <MDBCol md="10">
             <div className="button-wrapper d-flex flex-wrap">
               {variation1.options.map((option, index) => {
-                const image = images.find(({ label }) => option._id === label);
+                const image =
+                  !isCart && images.find(({ label }) => option._id === label);
 
                 if (!option.disable) {
                   return (
@@ -141,7 +145,7 @@ const Variations = ({
                     <MDBBtn
                       outline
                       size="sm"
-                      color={option.name === variant2 ? "danger" : "light"}
+                      color={option._id === variant2 ? "danger" : "light"}
                       className={`button ${
                         option._id === variant1 ? "selected" : ""
                       }`}

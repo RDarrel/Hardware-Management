@@ -26,9 +26,9 @@ export const ProducCard = ({ index, product, setIsView, setSelected }) => {
           </div>
           <MDBBtn
             floating
-            color="warning"
+            color="light"
             tag="a"
-            className="ml-auto mr-4  d-flex align-items-center "
+            className="ml-auto mr-4 lighten-3 mdb-color"
             onClick={() => {
               setIsView(true);
               setSelected(product);
