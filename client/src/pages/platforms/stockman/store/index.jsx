@@ -86,11 +86,7 @@ const Store = () => {
         >
           {!isLoading && (
             <>
-              <MDBBtn
-                floating
-                gradient="blue"
-                onClick={() => setIsShowCart(true)}
-              >
+              <MDBBtn floating color="red" onClick={() => setIsShowCart(true)}>
                 <MDBIcon icon="shopping-cart" />
               </MDBBtn>
             </>

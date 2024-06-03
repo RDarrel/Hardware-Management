@@ -16,6 +16,9 @@ export const ProducCard = ({ index, product, setIsView, setSelected }) => {
         <MDBCard style={{ maxHeight: "300px", height: "250px" }}>
           <div className="d-flex justify-content-center">
             <MDBCardImage
+              top
+              zoom
+              waves
               className="img-fluid d-flex justify-content-center"
               src={`${ENDPOINT}/assets/products/${product._id}/Cover Photo.jpg`}
               style={{ height: "160px", width: "70%" }}

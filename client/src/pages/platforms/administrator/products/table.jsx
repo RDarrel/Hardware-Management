@@ -62,9 +62,9 @@ export const Table = ({
             <tr key={product._id} className="border-top">
               <td>{indexProduct + 1}</td>
               <td>
-                <div className="d-flex align-items-center">
+                <div className="d-flex align-items-center text-truncate">
                   {getProductImg(product)}
-                  <h5>{product.name}</h5>
+                  <h5 className="text-truncate">{product.name}</h5>
                 </div>
               </td>
               <td>N/A</td>

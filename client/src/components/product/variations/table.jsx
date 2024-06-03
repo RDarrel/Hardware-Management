@@ -8,8 +8,9 @@ function Table({ variations, setVariations }) {
     if (priceIndex > -1) {
       const prices = [...vr1Options[optionIndex].prices];
       const price = { ...prices[priceIndex], srp: value };
+      const option = { ...vr1Options[optionIndex] };
       prices[priceIndex] = price;
-      vr1Options[optionIndex] = prices;
+      vr1Options[optionIndex] = { ...option, prices };
     } else {
       const option = { ...vr1Options[optionIndex], srp: value };
       vr1Options[optionIndex] = option;
@@ -18,6 +19,8 @@ function Table({ variations, setVariations }) {
     updatedVariations[0] = vr1;
     setVariations(updatedVariations);
   };
+
+  console.log(variations);
   return (
     <MDBRow className="mt-4">
       <MDBCol md="2" className="d-flex justify-content-end mt-3">
@@ -46,7 +49,9 @@ function Table({ variations, setVariations }) {
                 option.prices.map((price, priceIndex) => {
                   const isFirstRow = priceIndex === 0;
                   return (
-                    <tr key={`${option?._id}-${price?._id}`}>
+                    <tr
+                      key={`dualVariant-${option?._id}-${price?._id}-${optionIndex}`}
+                    >
                       {isFirstRow && (
                         <td
                           rowSpan={option.prices.length}
@@ -81,7 +86,7 @@ function Table({ variations, setVariations }) {
                   );
                 })
               ) : (
-                <tr key={option?._id}>
+                <tr key={`singleVariant-${option?._id}-${optionIndex}`}>
                   <td className="text-center border border-black">
                     {option?.name || "Option"}
                   </td>

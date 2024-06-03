@@ -159,7 +159,7 @@ const Products = () => {
             <td rowSpan={handleRowSpan(product, actionFor)}>
               <div className="d-flex align-items-center">
                 {getProductImg(product)}
-                <h5> {product.name}</h5>
+                <h5 className="text-truncate"> {product.name}</h5>
               </div>
             </td>
           </>

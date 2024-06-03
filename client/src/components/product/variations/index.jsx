@@ -103,7 +103,7 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
         const vr1Options = [...updatedVariations[0].options];
         const newVr1Options = vr1Options.map((option) => {
           const prices = option.prices;
-          prices.push({ name: "", _id: priceID, disable: false });
+          prices.push({ name: "", _id: priceID, disable: false, srp: 0 });
           return {
             ...option,
             prices,

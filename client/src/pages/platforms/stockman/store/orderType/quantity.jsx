@@ -1,7 +1,8 @@
 import { MDBCol, MDBRow, MDBIcon, MDBBtn, MDBInputGroup } from "mdbreact";
-import React from "react";
+import React, { useState } from "react";
 
 export const Quantity = ({ toggleView }) => {
+  const [qty, setQty] = useState(1);
   return (
     <MDBRow className="d-flex align-items-center mt-3">
       <MDBCol md="2">Quantity:</MDBCol>
@@ -10,6 +11,9 @@ export const Quantity = ({ toggleView }) => {
           type="number"
           className="text-center border border-light"
           style={{ width: "70%" }}
+          value={String(qty)}
+          min="1"
+          onChange={({ target }) => setQty(Number(target.value))}
           size="sm"
           prepend={
             <MDBBtn
