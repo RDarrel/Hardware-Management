@@ -1,5 +1,5 @@
 import React from "react";
-import { MDBRow, MDBCol, MDBIcon, MDBBtn } from "mdbreact";
+import { MDBRow, MDBCol, MDBIcon } from "mdbreact";
 import Kilo from "../orderType/kilo";
 import { Quantity } from "../orderType/quantity";
 import Variations from "../variations";
@@ -23,6 +23,12 @@ export const InformationView = ({
   variant2,
   setVariant2,
   setSelectedImage,
+  quantity,
+  setQuantity,
+  kilo,
+  setKilo,
+  kiloGrams,
+  setKiloGrams,
 }) => {
   return (
     <MDBRow>
@@ -44,6 +50,7 @@ export const InformationView = ({
               className="arrow-button left"
               disabled={storageOfRemoveImages.length === 0}
               onClick={prevPage}
+              type="button"
             ></button>
             {currentThumbnails.map((image, index) => (
               <img
@@ -60,6 +67,7 @@ export const InformationView = ({
               />
             ))}
             <button
+              type="button"
               className="arrow-button right"
               onClick={nextPage}
               disabled={totalPages === 1}
@@ -117,9 +125,19 @@ export const InformationView = ({
           />
         )}
         {selected.isPerKilo ? (
-          <Kilo toggleView={toggleView} />
+          <Kilo
+            toggleView={toggleView}
+            kilo={kilo}
+            setKilo={setKilo}
+            kiloGrams={kiloGrams}
+            setKiloGrams={setKiloGrams}
+          />
         ) : (
-          <Quantity toggleView={toggleView} />
+          <Quantity
+            toggleView={toggleView}
+            quantity={quantity}
+            setQuantity={setQuantity}
+          />
         )}
         <MDBRow className="d-flex align-items-center mt-5">
           <MDBCol md="2">

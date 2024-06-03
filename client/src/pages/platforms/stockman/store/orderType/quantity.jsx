@@ -1,8 +1,7 @@
+import React from "react";
 import { MDBCol, MDBRow, MDBIcon, MDBBtn, MDBInputGroup } from "mdbreact";
-import React, { useState } from "react";
 
-export const Quantity = ({ toggleView }) => {
-  const [qty, setQty] = useState(1);
+export const Quantity = ({ quantity, setQuantity }) => {
   return (
     <MDBRow className="d-flex align-items-center mt-3">
       <MDBCol md="2">Quantity:</MDBCol>
@@ -11,15 +10,22 @@ export const Quantity = ({ toggleView }) => {
           type="number"
           className="text-center border border-light"
           style={{ width: "70%" }}
-          value={String(qty)}
+          value={String(quantity)}
           min="1"
-          onChange={({ target }) => setQty(Number(target.value))}
+          onChange={({ target }) => {
+            var quantity = Number(target.value);
+            if (quantity < 1) quantity = 1;
+            setQuantity(quantity);
+          }}
           size="sm"
           prepend={
             <MDBBtn
               className="m-0 px-2 py-0"
               size="sm"
               color="light"
+              onClick={() =>
+                setQuantity((prev) => (prev > 1 ? prev - 1 : prev))
+              }
               style={{ boxShadow: "0px 0px 0px 0px" }}
               outline
             >
@@ -32,6 +38,7 @@ export const Quantity = ({ toggleView }) => {
               size="sm"
               color="light"
               style={{ boxShadow: "0px 0px 0px 0px" }}
+              onClick={() => setQuantity((prev) => prev + 1)}
               outline
             >
               <MDBIcon icon="plus" style={{ color: "black" }} />
@@ -40,7 +47,7 @@ export const Quantity = ({ toggleView }) => {
         />
       </MDBCol>
       <MDBCol>
-        <MDBBtn color="danger" onClick={() => toggleView()}>
+        <MDBBtn color="danger" type="submit">
           ADD TO CART
         </MDBBtn>
       </MDBCol>

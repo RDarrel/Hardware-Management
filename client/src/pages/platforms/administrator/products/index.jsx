@@ -159,7 +159,17 @@ const Products = () => {
             <td rowSpan={handleRowSpan(product, actionFor)}>
               <div className="d-flex align-items-center">
                 {getProductImg(product)}
-                <h5 className="text-truncate"> {product.name}</h5>
+                <h5
+                  className="text-truncate"
+                  style={{
+                    maxWidth: "200px",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {product.name}
+                </h5>
               </div>
             </td>
           </>

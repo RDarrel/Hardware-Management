@@ -35,6 +35,7 @@ export const FullView = ({
       <MDBCol md="7">
         <div className="thumbnails">
           <button
+            type="button"
             className="arrow-button left ml-3"
             onClick={handlePrev}
             disabled={activeIndex === 0}
@@ -45,6 +46,7 @@ export const FullView = ({
             style={{ height: "500px", width: "100%" }}
           />
           <button
+            type="button"
             className="arrow-button right mr-3"
             onClick={handleNextPage}
             disabled={activeIndex === images.length - 1}

@@ -64,7 +64,17 @@ export const Table = ({
               <td>
                 <div className="d-flex align-items-center text-truncate">
                   {getProductImg(product)}
-                  <h5 className="text-truncate">{product.name}</h5>
+                  <h5
+                    className="text-truncate"
+                    style={{
+                      maxWidth: "200px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {product.name}
+                  </h5>
                 </div>
               </td>
               <td>N/A</td>

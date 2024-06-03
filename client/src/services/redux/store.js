@@ -8,6 +8,7 @@ import events from "./slices/events";
 import employees from "./slices/administrator/employees";
 import products from "./slices/administrator/products";
 import suppliers from "./slices/administrator/suppliers";
+import cart from "./slices/cart";
 const store = configureStore({
   reducer: {
     auth,
@@ -19,6 +20,7 @@ const store = configureStore({
     employees,
     products,
     suppliers,
+    cart,
   },
 });
 

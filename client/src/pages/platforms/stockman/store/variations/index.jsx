@@ -25,7 +25,7 @@ const Variations = ({
     }
   }, [has2Variant, variations]);
 
-  const handleClickVr1 = (name, _id) => {
+  const handleClickVr1 = (_id) => {
     const vr1Img = images.find(({ label }) => label === _id);
 
     if (has2Variant) {
@@ -44,13 +44,13 @@ const Variations = ({
       }
     }
 
-    setVariant1(name);
+    setVariant1(_id);
     if (vr1Img) {
       setSelectedImage(vr1Img);
     }
   };
 
-  const handleClickVr2 = (name, _id) => {
+  const handleClickVr2 = (_id) => {
     const disableOptionsID = variation1?.options
       .map((option) => {
         const prices = option.prices;
@@ -61,6 +61,7 @@ const Variations = ({
         if (isDisAble) {
           return option._id;
         }
+        return false;
       })
       .filter(Boolean);
 
@@ -69,7 +70,7 @@ const Variations = ({
     } else {
       setDisableIDSVr1([]);
     }
-    setVariant2(name);
+    setVariant2(_id);
   };
 
   return (
@@ -83,40 +84,44 @@ const Variations = ({
             <div className="button-wrapper d-flex flex-wrap">
               {variation1.options.map((option, index) => {
                 const image = images.find(({ label }) => option._id === label);
-                return (
-                  <div key={index} className="button-container">
-                    <MDBBtn
-                      outline
-                      size="sm"
-                      disabled={disableIDSVr1.includes(option._id)}
-                      color={option.name === variant1 ? "danger" : "light"}
-                      className={`button ${
-                        option.name === variant1 ? "selected" : ""
-                      }`}
-                      onClick={() => handleClickVr1(option.name, option._id)}
-                    >
-                      {image && (
-                        <img
-                          src={image.thumb}
-                          style={{ height: "20px" }}
-                          alt={`${index} shoe`}
-                          className="button-image"
-                        />
-                      )}
-                      <span
-                        style={{ fontSize: "13px" }}
-                        className="text-dark font-weight-bold"
+
+                if (!option.disable) {
+                  return (
+                    <div key={index} className="button-container">
+                      <MDBBtn
+                        outline
+                        size="sm"
+                        disabled={disableIDSVr1.includes(option._id)}
+                        color={option._id === variant1 ? "danger" : "light"}
+                        className={`button ${
+                          option.name === variant1 ? "selected" : ""
+                        }`}
+                        onClick={() => handleClickVr1(option._id)}
                       >
-                        {option.name}
-                      </span>
-                      {option.name === variant1 && (
-                        <div className="check-icon-background">
-                          <MDBIcon icon="check" className="check-icon" />
-                        </div>
-                      )}
-                    </MDBBtn>
-                  </div>
-                );
+                        {image && (
+                          <img
+                            src={image.thumb}
+                            style={{ height: "20px" }}
+                            alt={`${index} shoe`}
+                            className="button-image"
+                          />
+                        )}
+                        <span
+                          style={{ fontSize: "13px" }}
+                          className="text-dark font-weight-bold"
+                        >
+                          {option.name}
+                        </span>
+                        {option._id === variant1 && (
+                          <div className="check-icon-background">
+                            <MDBIcon icon="check" className="check-icon" />
+                          </div>
+                        )}
+                      </MDBBtn>
+                    </div>
+                  );
+                }
+                return "";
               })}
             </div>
           </MDBCol>
@@ -138,9 +143,9 @@ const Variations = ({
                       size="sm"
                       color={option.name === variant2 ? "danger" : "light"}
                       className={`button ${
-                        option.name === variant1 ? "selected" : ""
+                        option._id === variant1 ? "selected" : ""
                       }`}
-                      onClick={() => handleClickVr2(option.name, option._id)}
+                      onClick={() => handleClickVr2(option._id)}
                       disabled={disableIDSVr2.includes(option._id)}
                     >
                       <span
@@ -149,7 +154,7 @@ const Variations = ({
                       >
                         {option.name}
                       </span>
-                      {option.name === variant2 && (
+                      {option._id === variant2 && (
                         <div className="check-icon-background">
                           <MDBIcon icon="check" className="check-icon" />
                         </div>

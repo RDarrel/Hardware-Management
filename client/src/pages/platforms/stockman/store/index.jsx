@@ -51,67 +51,65 @@ const Store = () => {
 
   return (
     <>
-      <>
-        <MDBCard className="mt-4 p-0">
-          <Header setShow={setShow} />
-          <MDBCardBody>
-            <MDBRow>
-              {currentProducts.length > 0 &&
-                currentProducts.map((product, index) => (
-                  <ProducCard
-                    index={index}
-                    product={product}
-                    key={index}
-                    setIsView={setIsView}
-                    setSelected={setSelected}
-                  />
-                ))}
-            </MDBRow>
+      <MDBCard className="mt-4 p-0">
+        <Header setShow={setShow} />
+        <MDBCardBody>
+          <MDBRow>
+            {currentProducts.length > 0 &&
+              currentProducts.map((product, index) => (
+                <ProducCard
+                  index={index}
+                  product={product}
+                  key={index}
+                  setIsView={setIsView}
+                  setSelected={setSelected}
+                />
+              ))}
+          </MDBRow>
 
-            <Pagination
-              currentPage={currentPage}
-              pageNumbers={pageNumbers}
-              handlePageChange={handlePageChange}
-            />
-          </MDBCardBody>
-        </MDBCard>
+          <Pagination
+            currentPage={currentPage}
+            pageNumbers={pageNumbers}
+            handlePageChange={handlePageChange}
+          />
+        </MDBCardBody>
+      </MDBCard>
 
-        <div
-          style={{
-            position: "sticky",
-            marginRight: "-65px",
-            float: "right",
-            bottom: "100px",
-          }}
-        >
-          {!isLoading && (
-            <>
-              <MDBBtn floating color="red" onClick={() => setIsShowCart(true)}>
-                <MDBIcon icon="shopping-cart" />
-              </MDBBtn>
-            </>
-          )}
-        </div>
-        <View
-          isView={isView}
-          toggleView={toggleView}
-          selected={selected}
-          setIsView={setIsView}
-        />
-        <Modal
-          toggle={() => {
-            if (!willCreate) {
-              setWillCreate(true);
-              setSelected({});
-            }
-            setShow(false);
-          }}
-          show={show}
-          willCreate={willCreate}
-          selected={selected}
-        />
-        <Cart show={isShowCart} toggle={() => setIsShowCart(false)} />
-      </>
+      <div
+        style={{
+          position: "sticky",
+          marginRight: "-65px",
+          float: "right",
+          bottom: "100px",
+        }}
+      >
+        {!isLoading && (
+          <>
+            <MDBBtn floating color="red" onClick={() => setIsShowCart(true)}>
+              <MDBIcon icon="shopping-cart" />
+            </MDBBtn>
+          </>
+        )}
+      </div>
+      <View
+        isView={isView}
+        toggleView={toggleView}
+        selected={selected}
+        setIsView={setIsView}
+      />
+      <Modal
+        toggle={() => {
+          if (!willCreate) {
+            setWillCreate(true);
+            setSelected({});
+          }
+          setShow(false);
+        }}
+        show={show}
+        willCreate={willCreate}
+        selected={selected}
+      />
+      <Cart show={isShowCart} toggle={() => setIsShowCart(false)} />
     </>
   );
 };
