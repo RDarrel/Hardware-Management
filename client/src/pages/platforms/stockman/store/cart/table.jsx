@@ -1,28 +1,26 @@
 import React, { useState } from "react";
 import "./table.css";
+import { MDBTable } from "mdbreact";
 import {
-  MDBBtn,
-  MDBCol,
-  MDBIcon,
-  MDBInputGroup,
-  MDBPopover,
-  MDBPopoverBody,
-  MDBRow,
-  MDBTable,
-} from "mdbreact";
-import { UPDATE } from "../../../../../services/redux/slices/cart";
-import { ENDPOINT } from "../../../../../services/utilities";
-import Variations from "../variations";
+  UPDATE,
+  DESTROY,
+  changeVariant,
+} from "../../../../../services/redux/slices/cart";
 import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2";
+import { Tbody } from "./tbody";
 
-const Table = ({ cart }) => {
+const Table = ({
+  cart,
+  checkOutProducts,
+  handleActionInCheckOut,
+  handleChangeSelectAll,
+  isCheckAll,
+}) => {
   const { token } = useSelector(({ auth }) => auth),
     [popoverKey, setPopoverKey] = useState(0),
     [variant1, setVariant1] = useState(""),
     [variant2, setVariant2] = useState(""),
-    [quantity, setQuantity] = useState(""),
-    [kilo, setKilo] = useState(""),
-    [kiloGrams, setKiloGrams] = useState(""),
     dispatch = useDispatch();
 
   const handleClose = () => {
@@ -45,19 +43,85 @@ const Table = ({ cart }) => {
     }
   };
 
-  const handleUpdateVariant = () => {};
+  const handleUpdateVariant = (cart, oldVariant) => {
+    if (
+      cart?.variant1 === oldVariant?.variant1 &&
+      cart?.variant2 === oldVariant?.variant2
+    )
+      return handleClose();
 
-  const handleChangeQty = (action, value, _id) => {
-    if (action === "add") {
-      dispatch({ token, data: { _id, value } });
+    dispatch(changeVariant({ token, data: cart }));
+    handleClose();
+  };
+
+  const handleChangeQty = (action, newQty, _id) => {
+    if (action === "ADD") {
+      dispatch(
+        UPDATE({
+          token,
+          data: { _id, newQty, action: "quantity", operator: "ADD" },
+        })
+      );
+    } else if (action === "MINUS") {
+      dispatch(
+        UPDATE({
+          token,
+          data: { _id, newQty, action: "quantity", operator: "MINUS" },
+        })
+      );
     } else {
-      dispatch({ token, data: { _id, value } });
+      dispatch(
+        UPDATE({
+          token,
+          data: { _id, newQty, action: "quantity", isOnChange: true }, //kapag onchange ibig sabihin  sa input type siya nag bago
+        })
+      );
     }
   };
 
-  const hanleChangeKilo = () => {};
+  const handleChangeKilo = (_id, newKilo) => {
+    dispatch(
+      UPDATE({
+        token,
+        data: { _id, newKilo, action: "kilo" },
+      })
+    );
+  };
 
-  const handleChangeKiloGrams = () => {};
+  const handleChangeKiloGrams = (_id, newKiloGrams) => {
+    dispatch(
+      UPDATE({
+        token,
+        data: { _id, newKiloGrams, action: "kiloGrams" },
+      })
+    );
+  };
+
+  const handleRemoveCart = (_id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to remove this product in your cart!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, remove it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(
+          DESTROY({
+            token,
+            data: { _id },
+          })
+        );
+        Swal.fire({
+          title: "Success!",
+          text: "Your product in your cart has been removed.",
+          icon: "success",
+        });
+      }
+    });
+  };
 
   return (
     <>
@@ -65,202 +129,43 @@ const Table = ({ cart }) => {
         <thead>
           <tr>
             <th>
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="checkbox"
-              />
-              <label
-                htmlFor="checkbox"
-                className="form-check-label mr-2 label-table"
-              />
+              <div className="d-flex align-items-center">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={isCheckAll}
+                  id="checkbox"
+                  onChange={() => handleChangeSelectAll(!isCheckAll)}
+                />
+                <label
+                  htmlFor="checkbox"
+                  className="form-check-label mr-2 label-table"
+                />
+                Product
+              </div>
             </th>
-            <th>Product</th>
             <th className="text-center">Quantity/Kilo</th>
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
-          {cart.length > 0 &&
-            cart.map((obj, index) => {
-              const { product } = obj;
-              const hasVariant = product.hasVariant;
-              const { media } = product;
-
-              return (
-                <tr key={index}>
-                  <td>
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id={`checkbox-${index}`}
-                    />
-                    <label
-                      htmlFor={`checkbox-${index}`}
-                      className="form-check-label mr-2 label-table"
-                    />
-                  </td>
-                  <td>
-                    <div className="d-flex align-items-center">
-                      <img
-                        src={`${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`}
-                        height={"80px"}
-                        alt={`${product.name}`}
-                      />
-                      <div className="ml-3">
-                        <h6
-                          style={{
-                            maxWidth: "300px",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                          className="font-weight-bold"
-                        >
-                          {product.name}
-                        </h6>
-
-                        {hasVariant && (
-                          <MDBPopover
-                            placement="bottom"
-                            popover
-                            clickable
-                            id={`popover-${index}`}
-                            key={popoverKey}
-                          >
-                            <MDBBtn
-                              className="pop-over-btn"
-                              id={`btn-pop-over-${index}`}
-                            >
-                              <h6>Variations:</h6>
-                              <div className="d-flex">
-                                <h6>
-                                  {getTheVariant(
-                                    obj.variant1,
-                                    obj.variant2 || "",
-                                    product.variations
-                                  )}
-                                </h6>
-                              </div>
-                            </MDBBtn>
-                            <MDBPopoverBody
-                              className="popover-body"
-                              id={`pop-body-${index}`}
-                            >
-                              <Variations
-                                isCart={true}
-                                has2Variant={product.hasVariant}
-                                variations={product.variations}
-                                variant1={variant1 || obj.variant1}
-                                setVariant1={setVariant1}
-                                variant2={variant2 || obj.variant2}
-                                setVariant2={setVariant2}
-                              />
-
-                              <MDBRow className="mt-5">
-                                <MDBCol
-                                  md="6"
-                                  className="d-flex justify-content-center"
-                                >
-                                  <MDBBtn color="white" onClick={handleClose}>
-                                    Cancel
-                                  </MDBBtn>
-                                </MDBCol>
-                                <MDBCol
-                                  md="6"
-                                  className="d-flex justify-content-center"
-                                >
-                                  <MDBBtn
-                                    color="danger"
-                                    onClick={() => handleUpdateVariant()}
-                                  >
-                                    Confirm
-                                  </MDBBtn>
-                                </MDBCol>
-                              </MDBRow>
-                            </MDBPopoverBody>
-                          </MDBPopover>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-
-                  <td className="d-flex justify-content-center">
-                    {product.isPerKilo ? (
-                      <MDBInputGroup
-                        style={{ width: "50%" }}
-                        type="number"
-                        value={String(kilo) || String(obj.kilo)}
-                        onChange={({ target }) => setKilo(Number(target.value))}
-                        className="text-center border border-light"
-                        append={
-                          <select
-                            className="form-control"
-                            value={String(kiloGrams) || String(obj.kiloGrams)}
-                            onChange={({ target }) =>
-                              setKiloGrams(Number(target.value))
-                            }
-                          >
-                            <option value={"0"}>kl</option>
-                            <option value={"0.25"}>1/4</option>
-                            <option value={"0.5"}>1/2</option>
-                            <option value={"0.75"}>3/4</option>
-                          </select>
-                        }
-                      />
-                    ) : (
-                      <MDBInputGroup
-                        type="number"
-                        className="text-center border border-light"
-                        style={{ width: "50%" }}
-                        value={String(quantity) || String(obj.quantity)}
-                        min="1"
-                        onChange={({ target }) => {
-                          var quantity = Number(target.value);
-                          if (quantity < 1) quantity = 1;
-                          setQuantity(quantity);
-                        }}
-                        size="sm"
-                        prepend={
-                          <MDBBtn
-                            className="m-0 px-2 py-0"
-                            size="sm"
-                            color="light"
-                            onClick={() =>
-                              setQuantity((prev) =>
-                                prev > 1 ? prev - 1 : prev
-                              )
-                            }
-                            style={{ boxShadow: "0px 0px 0px 0px" }}
-                            outline
-                          >
-                            <MDBIcon icon="minus" style={{ color: "black" }} />
-                          </MDBBtn>
-                        }
-                        append={
-                          <MDBBtn
-                            className="m-0 px-2  py-0"
-                            size="sm"
-                            color="light"
-                            style={{ boxShadow: "0px 0px 0px 0px" }}
-                            onClick={() => setQuantity((prev) => prev + 1)}
-                            outline
-                          >
-                            <MDBIcon icon="plus" style={{ color: "black" }} />
-                          </MDBBtn>
-                        }
-                      />
-                    )}
-                  </td>
-                  <td>
-                    <MDBBtn color="danger" size="sm" rounded>
-                      <MDBIcon icon="trash" />
-                    </MDBBtn>
-                  </td>
-                </tr>
-              );
-            })}
-        </tbody>
+        <Tbody
+          checkOutProducts={checkOutProducts}
+          variant1={variant1}
+          variant2={variant2}
+          setVariant1={setVariant1}
+          setVariant2={setVariant2}
+          handleChangeKilo={handleChangeKilo}
+          handleClose={handleClose}
+          handleChangeKiloGrams={handleChangeKiloGrams}
+          handleChangeQty={handleChangeQty}
+          cart={cart}
+          handleRemoveCart={handleRemoveCart}
+          getTheVariant={getTheVariant}
+          handleUpdateVariant={handleUpdateVariant}
+          popoverKey={popoverKey}
+          isCheckAll={isCheckAll}
+          handleActionInCheckOut={handleActionInCheckOut}
+        />
       </MDBTable>
     </>
   );

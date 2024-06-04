@@ -9,9 +9,9 @@ import {
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
 import { BROWSE } from "../../../../services/redux/slices/administrator/products";
+import { BROWSE as BROWSECART } from "../../../../services/redux/slices/cart";
 import { Pagination } from "./pagination";
 import { Header } from "./header";
-import Modal from "./modal";
 import View from "./view/index";
 import "./product.css";
 import { ProducCard } from "./card";
@@ -20,12 +20,12 @@ import Cart from "./cart";
 const Store = () => {
   const { token } = useSelector(({ auth }) => auth),
     { collections, isLoading } = useSelector(({ products }) => products),
+    { collections: cartCollections } = useSelector(({ cart }) => cart),
     [products, setProducts] = useState([]),
+    [cart, setCart] = useState([]),
     [isView, setIsView] = useState(false),
     [isShowCart, setIsShowCart] = useState(false),
     [selected, setSelected] = useState({}),
-    [willCreate, setWillCreate] = useState(true),
-    [show, setShow] = useState(false),
     [currentPage, setCurrentPage] = useState(1),
     [itemsPerPage] = useState(12), // Adjust the number of items per page as needed
     dispatch = useDispatch();
@@ -35,6 +35,14 @@ const Store = () => {
   useEffect(() => {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
+
+  useEffect(() => {
+    dispatch(BROWSECART({ token }));
+  }, [token, dispatch]);
+
+  useEffect(() => {
+    setCart(cartCollections);
+  }, [cartCollections]);
 
   useEffect(() => {
     setProducts(collections);
@@ -63,7 +71,7 @@ const Store = () => {
           cascade
           className="gradient-card-header blue py-2 mx-4 d-flex justify-content-between align-items-center"
         >
-          <Header setShow={setShow} />
+          <Header />
         </MDBView>
 
         <MDBCardBody>
@@ -101,7 +109,7 @@ const Store = () => {
             <MDBBtn floating color="red" onClick={() => setIsShowCart(true)}>
               <MDBIcon icon="shopping-cart" />
             </MDBBtn>
-            <span className="counter">2</span>
+            <span className="counter">{cart.length}</span>
           </>
         )}
       </div>
@@ -111,19 +119,12 @@ const Store = () => {
         selected={selected}
         setIsView={setIsView}
       />
-      <Modal
-        toggle={() => {
-          if (!willCreate) {
-            setWillCreate(true);
-            setSelected({});
-          }
-          setShow(false);
-        }}
-        show={show}
-        willCreate={willCreate}
-        selected={selected}
+
+      <Cart
+        show={isShowCart}
+        toggle={() => setIsShowCart(false)}
+        collections={cart}
       />
-      <Cart show={isShowCart} toggle={() => setIsShowCart(false)} />
     </>
   );
 };

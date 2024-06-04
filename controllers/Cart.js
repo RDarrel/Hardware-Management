@@ -20,15 +20,13 @@ exports.save = async (req, res) => {
     const product = req.body;
 
     let createdProduct = {};
-
     const query = {
       product: product.product,
       ...(product.hasVariant && { variant1: product.variant1 }),
       ...(product.has2Variant && { variant2: product.variant2 }),
     };
     let isExisting = await Entity.findOne(query);
-
-    if (isExisting._id) {
+    if (isExisting?._id) {
       if (product.isPerKilo) {
         const existingKilo = isExisting.kilo || 0;
         const existingKiloGrams = isExisting.kiloGrams || 0;
@@ -56,9 +54,11 @@ exports.save = async (req, res) => {
         ).populate("product");
       }
     } else {
-      createdProduct = await Entity.create(product).populate("product");
+      const newProductCreated = await Entity.create(product);
+      createdProduct = await Entity.findOne({
+        _id: newProductCreated._id,
+      }).populate("product");
     }
-
     res.status(201).json({
       success: "Added to cart successfully",
       payload: createdProduct,
@@ -68,22 +68,86 @@ exports.save = async (req, res) => {
   }
 };
 
-exports.update = (req, res) =>
-  Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
-    .then((item) => {
-      if (item) {
-        res.json({
-          success: "Role Updated Successfully",
-          payload: item,
-        });
-      } else {
-        res.status(404).json({
-          error: "ID Not Found",
-          message: "The provided ID does not exist.",
-        });
-      }
-    })
-    .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
+exports.changeVariant = async (req, res) => {
+  try {
+    const { _id, has2Variant = false, variant1, variant2 = "" } = req.body;
+    const updatedObj = {
+      variant1,
+      ...(has2Variant && { variant2 }),
+    };
+    const updatedCart = await Entity.findByIdAndUpdate(_id, updatedObj, {
+      new: true,
+    }).populate("product");
+
+    res.json({
+      success: "Cart Updated Successfully",
+      payload: updatedCart,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    const {
+      isOnChange = false,
+      newQty = 1,
+      action = "quantity",
+      _id,
+      newKilo = 1,
+      operator = "MINUS",
+      newKiloGrams = 0,
+    } = req.body;
+    var updatedCart = {};
+
+    switch (action) {
+      case "quantity":
+        const oldQuantity = await Entity.findOne({ _id });
+        if (isOnChange) {
+          updatedCart = await Entity.findByIdAndUpdate(
+            _id,
+            { quantity: newQty },
+            { new: true }
+          ).populate("product");
+        } else {
+          updatedCart = await Entity.findByIdAndUpdate(
+            _id,
+            {
+              quantity:
+                operator === "ADD"
+                  ? oldQuantity.quantity + 1
+                  : oldQuantity.quantity - 1,
+            },
+            { new: true }
+          ).populate("product");
+        }
+        break;
+      case "kilo":
+        updatedCart = await Entity.findByIdAndUpdate(
+          _id,
+          { kilo: newKilo },
+          { new: true }
+        ).populate("product");
+        break;
+
+      default:
+        updatedCart = await Entity.findByIdAndUpdate(
+          _id,
+          { kiloGrams: newKiloGrams },
+          { new: true }
+        ).populate("product");
+        break;
+    }
+
+    res.json({
+      success: "Cart Updated Successfully",
+      payload: updatedCart,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 exports.status = (req, res) =>
   Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
@@ -107,7 +171,7 @@ exports.status = (req, res) =>
 exports.destroy = (req, res) => {
   Entity.findByIdAndDelete(req.body._id)
     .then((item) => {
-      res.json({ success: "Successfuly Deleted Product", payload: item });
+      res.json({ success: "Successfuly Deleted Cart", payload: item });
     })
     .catch((error) => res.status(400).json({ error: error.message }));
 };

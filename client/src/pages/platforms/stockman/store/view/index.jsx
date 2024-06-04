@@ -39,7 +39,8 @@ const View = ({ isView, toggleView, selected, setIsView }) => {
         label: _id,
       }));
       setBaseImages([]);
-
+      setSelectedImage({});
+      setIsFullView(false);
       setImages([...productImages, ...variantImages]);
       setBaseImages([...productImages, ...variantImages]);
       setSelectedImage(productImages[0]);
@@ -120,9 +121,15 @@ const View = ({ isView, toggleView, selected, setIsView }) => {
     }
 
     dispatch(SAVE({ token, data: { ...form } }));
+    Swal.fire({
+      title: "Successfully",
+      text: "Added to your cart",
+      icon: "success",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "OK",
+    });
+    setIsView(false);
   };
-
-  console.log("test");
 
   return (
     <MDBModal isOpen={isView} toggle={toggleView} backdrop size="xl">

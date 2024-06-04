@@ -63,6 +63,24 @@ export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   }
 });
 
+export const changeVariant = createAsyncThunk(
+  `${name}/changeVariant`,
+  (form, thunkAPI) => {
+    try {
+      return axioKit.update(name, form.data, form.token, "changeVariant");
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const VARIATION_UPDATE = createAsyncThunk(
   `${name}/variation`,
   (form, thunkAPI) => {
@@ -146,6 +164,24 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
 
+      .addCase(changeVariant.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(changeVariant.fulfilled, (state, action) => {
+        const { success, payload } = action.payload;
+        bulkPayload(state, payload);
+        state.message = success;
+        state.isSuccess = true;
+        state.isLoading = false;
+      })
+      .addCase(changeVariant.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
       .addCase(UPDATE.pending, (state) => {
         state.isLoading = true;
         state.isSuccess = false;
@@ -189,8 +225,15 @@ export const reduxSlice = createSlice({
       })
       .addCase(SAVE.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
+        const _collections = [...state.collections];
+        const index = _collections.findIndex(({ _id }) => payload._id === _id);
+        if (index > -1) {
+          _collections[index] = payload;
+        } else {
+          _collections.unshift(payload);
+        }
         state.message = success;
-        state.collections.unshift(payload);
+        state.collections = _collections;
         state.isSuccess = true;
         state.isLoading = false;
       })
