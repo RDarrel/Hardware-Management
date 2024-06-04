@@ -106,6 +106,7 @@ export const reduxSlice = createSlice({
     CUSTOMALERT: (state, data) => {
       state.message = data.payload;
     },
+
     RESET: (state, data) => {
       state.isSuccess = false;
       state.message = "";

@@ -149,7 +149,6 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
 
           return { ...option, prices };
         });
-        console.log(newVr1Options);
         const newVr = { ...updatedVariations[0], options: newVr1Options };
 
         updatedVariations[0] = newVr;

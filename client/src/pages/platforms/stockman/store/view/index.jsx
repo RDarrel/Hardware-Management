@@ -80,7 +80,13 @@ const View = ({ isView, toggleView, selected, setIsView }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    var form = { product: selected._id, cartBy: auth._id };
+    var form = {
+      product: selected._id,
+      cartBy: auth._id,
+      isPerKilo: selected.isPerKilo,
+      hasVariant: selected.hasVariant,
+      has2Variant: selected.has2Variant,
+    };
     if (selected.hasVariant) {
       if (selected.has2Variant) {
         if (!variant1 || !variant2)

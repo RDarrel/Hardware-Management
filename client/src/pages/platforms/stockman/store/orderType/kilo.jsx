@@ -14,7 +14,7 @@ const Kilo = ({ kilo, setKilo, kiloGrams, setKiloGrams }) => {
           value={String(kilo)}
           onChange={({ target }) => {
             var kilo = Number(target.value);
-            if (kilo < 1) kilo = 1;
+            if (kilo < 0) kilo = 0;
             setKilo(kilo);
           }}
           className="form-control mr-2"

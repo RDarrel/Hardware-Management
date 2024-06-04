@@ -145,7 +145,7 @@ class TopNavigation extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     auth: state.auth.auth, // Replace with your actual state property
     route: state.auth.route,

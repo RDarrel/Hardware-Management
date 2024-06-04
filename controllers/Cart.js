@@ -15,15 +15,58 @@ exports.browse = (req, res) =>
     )
     .catch((error) => res.status(400).json({ error: error.message }));
 
-exports.save = (req, res) =>
-  Entity.create(req.body)
-    .then((item) =>
-      res.status(201).json({
-        success: "Added to cart Successfully",
-        payload: item,
-      })
-    )
-    .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
+exports.save = async (req, res) => {
+  try {
+    const product = req.body;
+
+    let createdProduct = {};
+
+    const query = {
+      product: product.product,
+      ...(product.hasVariant && { variant1: product.variant1 }),
+      ...(product.has2Variant && { variant2: product.variant2 }),
+    };
+    let isExisting = await Entity.findOne(query);
+
+    if (isExisting._id) {
+      if (product.isPerKilo) {
+        const existingKilo = isExisting.kilo || 0;
+        const existingKiloGrams = isExisting.kiloGrams || 0;
+        const newKilo = product.kilo || 0;
+        const newKiloGrams = product.kiloGrams || 0;
+
+        const newTotalKilo =
+          existingKilo + existingKiloGrams + newKilo + newKiloGrams;
+
+        const kilo = Math.trunc(newTotalKilo);
+        const kiloGrams = parseFloat((newTotalKilo - kilo).toFixed(2));
+        createdProduct = await Entity.findByIdAndUpdate(
+          isExisting._id,
+          { kilo, kiloGrams },
+          { new: true }
+        ).populate("product");
+      } else {
+        const newQuantity =
+          (isExisting.quantity || 0) + (product.quantity || 0);
+
+        createdProduct = await Entity.findByIdAndUpdate(
+          isExisting._id,
+          { quantity: newQuantity },
+          { new: true }
+        ).populate("product");
+      }
+    } else {
+      createdProduct = await Entity.create(product).populate("product");
+    }
+
+    res.status(201).json({
+      success: "Added to cart successfully",
+      payload: createdProduct,
+    });
+  } catch (error) {
+    res.status(400).json({ error: handleDuplicate(error.message) });
+  }
+};
 
 exports.update = (req, res) =>
   Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
