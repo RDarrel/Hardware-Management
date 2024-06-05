@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router";
+
+import { CHECKOUT } from "../../../../../services/redux/slices/cart";
 import {
   MDBModal,
   MDBModalHeader,
@@ -8,11 +11,14 @@ import {
   MDBModalFooter,
 } from "mdbreact";
 import Table from "./table";
+import { useDispatch } from "react-redux";
 
 const Cart = ({ show, toggle, collections }) => {
   const [isCheckAll, setIsCheckAll] = useState(true),
     [checkOutProducts, setCheckOutProducts] = useState([]),
-    [cart, setCart] = useState([]);
+    [cart, setCart] = useState([]),
+    dispatch = useDispatch(),
+    history = useHistory();
 
   useEffect(() => {
     setCart(collections);
@@ -45,6 +51,11 @@ const Cart = ({ show, toggle, collections }) => {
     setCheckOutProducts(value ? cart : []);
     setIsCheckAll(value);
   };
+
+  const handleCheckOut = () => {
+    dispatch(CHECKOUT(checkOutProducts));
+    history.push("/checkout");
+  };
   return (
     <MDBModal
       isOpen={show}
@@ -68,7 +79,7 @@ const Cart = ({ show, toggle, collections }) => {
         />
       </MDBModalBody>
       <MDBModalFooter className="d-flex justify-content-end">
-        <MDBBtn color="primary" outline>
+        <MDBBtn color="primary" outline onClick={handleCheckOut}>
           <span>
             Check Out
             <i className="fas fa-long-arrow-alt-right ms-2"></i>

@@ -1,4 +1,4 @@
-import { MDBRow, MDBCol, MDBBtn, MDBIcon } from "mdbreact";
+import { MDBRow, MDBCol, MDBBtn, MDBIcon, MDBInputGroup } from "mdbreact";
 import React from "react";
 
 const Kilo = ({ kilo, setKilo, kiloGrams, setKiloGrams }) => {
@@ -7,9 +7,8 @@ const Kilo = ({ kilo, setKilo, kiloGrams, setKiloGrams }) => {
       <MDBCol md="2">
         <h6>Kilo:</h6>
       </MDBCol>
-      <MDBCol md="6" className="m-0 d-flex align-items-center">
-        <input
-          label="kilo"
+      <MDBCol md="4" className="m-0 d-flex align-items-center">
+        <MDBInputGroup
           type="number"
           value={String(kilo)}
           onChange={({ target }) => {
@@ -17,22 +16,33 @@ const Kilo = ({ kilo, setKilo, kiloGrams, setKiloGrams }) => {
             if (kilo < 0) kilo = 0;
             setKilo(kilo);
           }}
-          className="form-control mr-2"
+          className="text-center border border-light"
+          append={
+            <select
+              className="form-control"
+              value={String(kiloGrams)}
+              onChange={({ target }) => setKiloGrams(Number(target.value))}
+            >
+              <option value={"0"}>kl</option>
+              <option value={"0.25"}>1/4 kl</option>
+              <option value={"0.5"}>1/2 kl</option>
+              <option value={"0.75"}>3/4 kl</option>
+            </select>
+          }
         />
-        <select
-          className="form-control"
-          value={String(kiloGrams)}
-          onChange={({ target }) => setKiloGrams(Number(target.value))}
-        >
-          <option value={"0"}>kl</option>
-          <option value={"0.25"}>1/4 kl</option>
-          <option value={"0.5"}>1/2 kl</option>
-          <option value={"0.75"}>3/4 kl</option>
-        </select>
       </MDBCol>
-      <MDBCol>
-        <MDBBtn color="danger" type="submit">
-          <MDBIcon icon="shopping-cart" className="mr-2" /> ADD TO CART
+      <MDBCol md="6" className="d-flex align-items-center">
+        <MDBBtn
+          color="primary"
+          type="submit"
+          size="md"
+          className="text-nowrap"
+          outline
+        >
+          <MDBIcon icon="shopping-cart" className="mr-1" /> ADD TO CART
+        </MDBBtn>
+        <MDBBtn color="danger" type="submit" size="md">
+          Buy Now
         </MDBBtn>
       </MDBCol>
     </MDBRow>

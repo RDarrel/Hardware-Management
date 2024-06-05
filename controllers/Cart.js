@@ -1,4 +1,5 @@
 const Entity = require("../models/Cart"),
+  Suppliers = require("../models/administrator/Supplier"),
   handleDuplicate = require("../config/duplicate");
 
 exports.browse = (req, res) =>
@@ -173,5 +174,19 @@ exports.destroy = (req, res) => {
     .then((item) => {
       res.json({ success: "Successfuly Deleted Cart", payload: item });
     })
+    .catch((error) => res.status(400).json({ error: error.message }));
+};
+
+exports.suppliers = (_, res) => {
+  Suppliers.find({ status: true })
+    .select("-__v")
+    .sort({ createdAt: -1 })
+    .lean()
+    .then((items) =>
+      res.json({
+        success: "Suppliers Fetched Successfully",
+        payload: items,
+      })
+    )
     .catch((error) => res.status(400).json({ error: error.message }));
 };

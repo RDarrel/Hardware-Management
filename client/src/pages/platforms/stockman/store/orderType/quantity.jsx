@@ -46,9 +46,18 @@ export const Quantity = ({ quantity, setQuantity }) => {
           }
         />
       </MDBCol>
-      <MDBCol>
-        <MDBBtn color="danger" type="submit">
-          <MDBIcon icon="shopping-cart" className="mr-2" /> ADD TO CART
+      <MDBCol md="6" className="d-flex align-items-center">
+        <MDBBtn
+          color="primary"
+          type="submit"
+          size="md"
+          className="text-nowrap"
+          outline
+        >
+          <MDBIcon icon="shopping-cart" className="mr-1" /> ADD TO CART
+        </MDBBtn>
+        <MDBBtn color="danger" type="submit" size="md">
+          Buy Now
         </MDBBtn>
       </MDBCol>
     </MDBRow>

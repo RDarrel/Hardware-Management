@@ -8,6 +8,7 @@ import ACCESS from "./platforms/access.js";
 import Profile from "../components/profile";
 import ViewProfile from "../components/profile/view.jsx";
 import { useSelector } from "react-redux";
+import Checkout from "./platforms/stockman/checkout/index.jsx";
 
 export default function Routes() {
   const { role } = useSelector(({ auth }) => auth);
@@ -37,6 +38,7 @@ export default function Routes() {
       {handleRoutes()}
       <Route path="/profile" exact component={ViewProfile} />
       <Route path="/profile/update" exact component={Profile} />
+      <Route path="/checkout" exact component={Checkout} />
 
       <Route component={NotFound} />
     </Switch>

@@ -5,6 +5,8 @@ const name = "cart";
 
 const initialState = {
   collections: [],
+  checkOutProducts: [],
+  suppliers: [],
   progress: 0,
   isSuccess: false,
   isLoading: false,
@@ -23,6 +25,24 @@ export const BROWSE = createAsyncThunk(`${name}`, ({ token }, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
+
+export const SUPPLIERS = createAsyncThunk(
+  `SUPPLIERS`,
+  ({ token }, thunkAPI) => {
+    try {
+      return axioKit.universal("cart/suppliers", token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 export const FIND = createAsyncThunk(`${name}/find`, (form, thunkAPI) => {
   try {
@@ -125,6 +145,10 @@ export const reduxSlice = createSlice({
       state.message = data.payload;
     },
 
+    CHECKOUT: (state, data) => {
+      state.checkOutProducts = data.payload;
+    },
+
     RESET: (state, data) => {
       state.isSuccess = false;
       state.message = "";
@@ -143,6 +167,22 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(BROWSE.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(SUPPLIERS.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(SUPPLIERS.fulfilled, (state, action) => {
+        const { payload } = action.payload;
+        state.suppliers = payload;
+        state.isLoading = false;
+      })
+      .addCase(SUPPLIERS.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;
@@ -262,6 +302,6 @@ export const reduxSlice = createSlice({
   },
 });
 
-export const { RESET, CUSTOMALERT } = reduxSlice.actions;
+export const { RESET, CUSTOMALERT, CHECKOUT } = reduxSlice.actions;
 
 export default reduxSlice.reducer;
