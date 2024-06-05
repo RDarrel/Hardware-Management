@@ -11,12 +11,13 @@ import bulkPayload from "./bulkPayload";
 import globalSearch from "./globalSearch";
 import useCountdown from "./useCountdown";
 import taskBadge from "./taskBadge";
-
+import formattedDate from "./formattedDate";
+import variation from "./variation/variation";
 const ENDPOINT = "http://localhost:5000";
 // const ENDPOINT = window.location.origin;
 const socket = io.connect(ENDPOINT);
 
-const PresetImage = gender => {
+const PresetImage = (gender) => {
   if (gender) return Male;
 
   return Female;
@@ -27,6 +28,8 @@ export {
   ENDPOINT,
   axioKit,
   socket,
+  variation,
+  formattedDate,
   handlePagination,
   fullName,
   calculateDiff,

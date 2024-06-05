@@ -1,30 +1,39 @@
-import React from "react";
-import {
-  MDBCol,
-  MDBCard,
-  MDBCardBody,
-  MDBBtn,
-  MDBIcon,
-  MDBCardImage,
-} from "mdbreact";
+import React, { useState } from "react";
+import { MDBCol, MDBCard, MDBCardBody, MDBCardImage } from "mdbreact";
 import { ENDPOINT } from "../../../../../services/utilities";
 
 export const ProducCard = ({ index, product, setIsView, setSelected }) => {
+  const [didHover, setDidHover] = useState(false);
   return (
     <MDBCol md="3" className="mt-4" key={index}>
       <section>
-        <MDBCard style={{ maxHeight: "300px", height: "250px" }}>
+        <MDBCard
+          onMouseOver={() => setDidHover(true)}
+          onMouseLeave={() => setDidHover(false)}
+          style={{
+            maxHeight: "300px",
+            height: "250px",
+            transform: didHover ? "translateY(-8px)" : "",
+            transition: "transform 0.3s ease-in-out",
+          }}
+          className={`h-100 cursor-pointer transition-all z-depth-${
+            didHover ? "2" : "1"
+          }`}
+          onClick={() => {
+            setIsView(true);
+            setSelected(product);
+          }}
+        >
           <div className="d-flex justify-content-center">
             <MDBCardImage
               top
-              zoom
               waves
               className="img-fluid d-flex justify-content-center"
               src={`${ENDPOINT}/assets/products/${product._id}/Cover Photo.jpg`}
               style={{ height: "160px", width: "70%" }}
             />
           </div>
-          <MDBBtn
+          {/* <MDBBtn
             floating
             color="light"
             tag="a"
@@ -36,10 +45,15 @@ export const ProducCard = ({ index, product, setIsView, setSelected }) => {
             action
           >
             <MDBIcon icon="eye" />
-          </MDBBtn>
+          </MDBBtn> */}
 
           <MDBCardBody>
-            <h6 className="text-truncate mt-3">{product.name}</h6>
+            <h6
+              className="text-truncate title mt-3"
+              style={{ fontWeight: 450 }}
+            >
+              {product.name}
+            </h6>
           </MDBCardBody>
         </MDBCard>
       </section>

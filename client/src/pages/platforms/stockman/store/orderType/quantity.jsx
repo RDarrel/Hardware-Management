@@ -1,7 +1,7 @@
 import React from "react";
 import { MDBCol, MDBRow, MDBIcon, MDBBtn, MDBInputGroup } from "mdbreact";
 
-export const Quantity = ({ quantity, setQuantity }) => {
+export const Quantity = ({ quantity, setQuantity, handleSubmit }) => {
   return (
     <MDBRow className="d-flex align-items-center mt-3">
       <MDBCol md="2">Quantity:</MDBCol>
@@ -52,11 +52,17 @@ export const Quantity = ({ quantity, setQuantity }) => {
           type="submit"
           size="md"
           className="text-nowrap"
+          onClick={handleSubmit}
           outline
         >
           <MDBIcon icon="shopping-cart" className="mr-1" /> ADD TO CART
         </MDBBtn>
-        <MDBBtn color="danger" type="submit" size="md">
+        <MDBBtn
+          color="danger"
+          type="submit"
+          size="md"
+          onClick={() => handleSubmit(false)}
+        >
           Buy Now
         </MDBBtn>
       </MDBCol>

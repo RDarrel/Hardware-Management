@@ -1,5 +1,6 @@
 // import Checkout from "./checkout";
 import Dashboard from "./dashboard";
+import Purchases from "./purchases";
 import { Stocks } from "./stocks";
 import Store from "./store";
 
@@ -25,12 +26,12 @@ const access = [
     component: Store,
   },
 
-  // {
-  //   path: "/checkout",
-  //   name: "checkout",
-  //   icon: "store-alt",
-  //   component: Checkout,
-  // },
+  {
+    path: "/purchases",
+    name: "Purchases",
+    icon: "shopping-basket",
+    component: Purchases,
+  },
 ];
 
 export default access;

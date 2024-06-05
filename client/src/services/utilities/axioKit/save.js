@@ -8,9 +8,9 @@ import axios from "axios";
  * @param {string} token - Authorization Token.
  * @returns {{ success: boolean, payload: object }} - The result object containing success and payload.
  */
-const save = async (entity, data, token) =>
+const save = async (entity, data, token, newEndpoint = "") =>
   await axios
-    .post(`${entity}/save`, data, {
+    .post(`${entity}/${newEndpoint ? newEndpoint : "save"}`, data, {
       headers: {
         Authorization: `QTracy ${token}`,
       },

@@ -1,4 +1,6 @@
 const Entity = require("../models/Cart"),
+  Purchase = require("../models/stockman/Purchases"),
+  Stocks = require("../models/stockman/Stocks"),
   Suppliers = require("../models/administrator/Supplier"),
   handleDuplicate = require("../config/duplicate");
 
@@ -189,4 +191,30 @@ exports.suppliers = (_, res) => {
       })
     )
     .catch((error) => res.status(400).json({ error: error.message }));
+};
+
+exports.buy = async (req, res) => {
+  try {
+    const { purchase, cart } = req.body;
+
+    const createdPurchase = await Purchase.create(purchase);
+    const cartWithPurchaseID = cart.map((obj) => ({
+      ...obj,
+      product: obj?.product?._id,
+      purchase: createdPurchase._id,
+      unitPrice: obj.price,
+    }));
+
+    const idsToDelete = cart.map(({ _id }) => _id).filter(Boolean);
+
+    await Stocks.insertMany(cartWithPurchaseID);
+    await Entity.deleteMany({ _id: { $in: idsToDelete } });
+
+    res.status(201).json({
+      success: "Purchase is successful",
+      payload: idsToDelete,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };

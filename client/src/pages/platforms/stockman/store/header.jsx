@@ -1,5 +1,5 @@
 import React from "react";
-import { MDBIcon, MDBInputGroup } from "mdbreact";
+import { MDBIcon } from "mdbreact";
 import { categories } from "../../../../services/fakeDb";
 
 export const Header = () => {

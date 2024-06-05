@@ -11,12 +11,14 @@ import {
   MDBIcon,
   MDBTypography,
 } from "mdbreact";
-import { SUPPLIERS } from "../../../../services/redux/slices/cart";
+import { SUPPLIERS, BUY } from "../../../../services/redux/slices/cart";
+
 import { useDispatch, useSelector } from "react-redux";
 import Table from "./table";
 import Swal from "sweetalert2";
+import { fullName } from "../../../../services/utilities";
 const Checkout = () => {
-  const { token } = useSelector(({ auth }) => auth),
+  const { token, auth } = useSelector(({ auth }) => auth),
     { checkOutProducts, suppliers: supplierCollections } = useSelector(
       ({ cart }) => cart
     ),
@@ -69,8 +71,6 @@ const Checkout = () => {
     }
   }, [cart]);
 
-  console.log(isAllProductHaveSubtotal);
-
   const handleBuy = async () => {
     if (!isAllProductHaveSubtotal) {
       return await Swal.fire({
@@ -97,9 +97,25 @@ const Checkout = () => {
           title: "Purchase Confirmed",
           text: `Your purchase has been confirmed with supplier: "${supplierName}".`,
           icon: "success",
+        }).then(() => {
+          const purchase = {
+            purchaseBy: auth._id,
+            supplier,
+            total,
+          };
+          dispatch(BUY({ token, data: { purchase, cart } }));
+          history.push("/store");
         });
       }
     });
+
+    // return await Swal.fire({
+    //   title: "Success!",
+    //   text: "Purchase completed successfully.",
+    //   icon: "info",
+    //   confirmButtonColor: "#3085d6",
+    //   confirmButtonText: "OK",
+    // });
   };
 
   return (
@@ -172,9 +188,9 @@ const Checkout = () => {
               )}
             </div>
             <div className="supplier-content">
-              <p>
+              <p className="ml-2">
                 Purchase By:&nbsp;
-                <strong>Darrel Pajarillaga (+63) 9203552827</strong>
+                <strong>{fullName(auth.fullName)} (+63) 9203552827</strong>
               </p>
             </div>
           </div>
@@ -193,7 +209,7 @@ const Checkout = () => {
             >
               <h5 className="mr-5">Order Total ({cart.length} Item):</h5>
               <h2 style={{ fontWeight: 900 }} className="text-danger  ml-2">
-                {isAllProductHaveSubtotal ? `₱${total}` : `₱0`}
+                {isAllProductHaveSubtotal ? `₱${total}` : `₱--`}
               </h2>
             </MDBCol>
           </MDBRow>

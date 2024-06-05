@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { useHistory } from "react-router";
+
 import { useDispatch, useSelector } from "react-redux";
 
 import { MDBModalBody, MDBModal } from "mdbreact";
 import { ENDPOINT } from "../../../../../services/utilities";
 import { FullView } from "./fullView";
 import { InformationView } from "./informationView";
-import { SAVE } from "../../../../../services/redux/slices/cart";
+import { SAVE, CHECKOUT } from "../../../../../services/redux/slices/cart";
 
 const View = ({ isView, toggleView, selected, setIsView }) => {
   const { token, auth } = useSelector(({ auth }) => auth),
@@ -22,6 +24,7 @@ const View = ({ isView, toggleView, selected, setIsView }) => {
     [storageOfRemoveImages, setStorageOfRemoveImages] = useState([]),
     thumbnailsPerPage = 4,
     [selectedImage, setSelectedImage] = useState(),
+    history = useHistory(),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -79,8 +82,7 @@ const View = ({ isView, toggleView, selected, setIsView }) => {
   const totalPages = Math.ceil(images.length / thumbnailsPerPage);
   const currentThumbnails = images.slice(0, 0 + 4);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (isCart = true) => {
     var form = {
       product: selected._id,
       cartBy: auth._id,
@@ -119,58 +121,62 @@ const View = ({ isView, toggleView, selected, setIsView }) => {
     } else {
       form.quantity = quantity;
     }
+    if (isCart) {
+      dispatch(SAVE({ token, data: { ...form } }));
+      Swal.fire({
+        title: "Successfully",
+        text: "Added to your cart",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "OK",
+      });
+    } else {
+      dispatch(CHECKOUT([{ ...form, product: selected }]));
+      history.push("/checkout");
+    }
 
-    dispatch(SAVE({ token, data: { ...form } }));
-    Swal.fire({
-      title: "Successfully",
-      text: "Added to your cart",
-      icon: "success",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "OK",
-    });
     setIsView(false);
   };
 
   return (
     <MDBModal isOpen={isView} toggle={toggleView} backdrop size="xl">
       <MDBModalBody className="mb-0">
-        <form onSubmit={handleSubmit}>
-          {isFullView ? (
-            <FullView
-              images={baseImages}
-              setIsFullView={setIsFullView}
-              imgForFullView={imgForFullView}
-              selected={selected}
-            />
-          ) : (
-            <InformationView
-              selected={selected}
-              baseImages={baseImages}
-              selectedImage={selectedImage}
-              setIsFullView={setIsFullView}
-              toggleView={toggleView}
-              variant1={variant1}
-              setVariant1={setVariant1}
-              storageOfRemoveImages={storageOfRemoveImages}
-              currentThumbnails={currentThumbnails}
-              prevPage={prevPage}
-              handleClickThumbnail={handleClickThumbnail}
-              nextPage={nextPage}
-              totalPages={totalPages}
-              setIsView={setIsView}
-              setSelectedImage={setSelectedImage}
-              setImgForFullView={setImgForFullView}
-              variant2={variant2}
-              setVariant2={setVariant2}
-              quantity={quantity}
-              setQuantity={setQuantity}
-              kilo={kilo}
-              setKilo={setKilo}
-              kiloGrams={kiloGrams}
-              setKiloGrams={setKiloGrams}
-            />
-          )}
-        </form>
+        {isFullView ? (
+          <FullView
+            images={baseImages}
+            setIsFullView={setIsFullView}
+            imgForFullView={imgForFullView}
+            selected={selected}
+          />
+        ) : (
+          <InformationView
+            selected={selected}
+            baseImages={baseImages}
+            selectedImage={selectedImage}
+            setIsFullView={setIsFullView}
+            toggleView={toggleView}
+            variant1={variant1}
+            setVariant1={setVariant1}
+            storageOfRemoveImages={storageOfRemoveImages}
+            currentThumbnails={currentThumbnails}
+            prevPage={prevPage}
+            handleClickThumbnail={handleClickThumbnail}
+            nextPage={nextPage}
+            totalPages={totalPages}
+            setIsView={setIsView}
+            setSelectedImage={setSelectedImage}
+            setImgForFullView={setImgForFullView}
+            variant2={variant2}
+            setVariant2={setVariant2}
+            quantity={quantity}
+            setQuantity={setQuantity}
+            kilo={kilo}
+            setKilo={setKilo}
+            kiloGrams={kiloGrams}
+            handleSubmit={handleSubmit}
+            setKiloGrams={setKiloGrams}
+          />
+        )}
       </MDBModalBody>
     </MDBModal>
   );

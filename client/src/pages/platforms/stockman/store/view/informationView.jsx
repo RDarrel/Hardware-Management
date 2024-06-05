@@ -29,6 +29,7 @@ export const InformationView = ({
   setKilo,
   kiloGrams,
   setKiloGrams,
+  handleSubmit,
 }) => {
   return (
     <MDBRow>
@@ -130,12 +131,14 @@ export const InformationView = ({
             kilo={kilo}
             setKilo={setKilo}
             kiloGrams={kiloGrams}
+            handleSubmit={handleSubmit}
             setKiloGrams={setKiloGrams}
           />
         ) : (
           <Quantity
             toggleView={toggleView}
             quantity={quantity}
+            handleSubmit={handleSubmit}
             setQuantity={setQuantity}
           />
         )}

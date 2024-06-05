@@ -78,7 +78,7 @@ const Cart = ({ show, toggle, collections }) => {
           handleActionInCheckOut={handleActionInCheckOut}
         />
       </MDBModalBody>
-      <MDBModalFooter className="d-flex justify-content-end">
+      <MDBModalFooter className="d-flex justify-content-end  fixed-footer">
         <MDBBtn color="primary" outline onClick={handleCheckOut}>
           <span>
             Check Out

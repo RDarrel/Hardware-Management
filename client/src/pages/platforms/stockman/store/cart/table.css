@@ -15,3 +15,17 @@
   padding: 0;
   margin: 0;
 }
+
+.fixed-footer {
+  position: sticky;
+  bottom: 0;
+  box-shadow: 10px 29px 30px 5px black;
+  right: 0;
+  left: 0;
+  background-color: white;
+  z-index: 1000;
+}
+
+.fixed-footer.no-shadow {
+  box-shadow: none;
+}

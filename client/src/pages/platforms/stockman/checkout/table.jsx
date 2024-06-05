@@ -1,50 +1,8 @@
 import React from "react";
 import { MDBTable, MDBInputGroup } from "mdbreact";
-import { ENDPOINT } from "../../../../services/utilities";
+import { ENDPOINT, variation } from "../../../../services/utilities";
 
 const Table = ({ cart, setCart }) => {
-  const getTheVariant = (_variant1, _variant2, variations) => {
-    const foundVariant1 = variations[0].options.find(
-      ({ _id }) => _id === _variant1
-    )?.name;
-
-    if (variations.length > 1) {
-      const foundVariant2 = variations[1].options.find(
-        ({ _id }) => _id === _variant2
-      )?.name;
-
-      return `${foundVariant1}/${foundVariant2}`;
-    } else {
-      return `${foundVariant1}`;
-    }
-  };
-
-  const getTheGrams = (grams) => {
-    switch (grams) {
-      case 0.25:
-        return "1/4";
-      case 0.5:
-        return "1/2";
-
-      default:
-        return "3/4";
-    }
-  };
-
-  const getTheQtyOrKilo = (obj, isPerKilo) => {
-    if (isPerKilo) {
-      return `${
-        obj.kiloGrams === 0
-          ? `${obj.kilo} kilo${obj.kilo > 1 ? "s" : ""}`
-          : `${obj.kilo} kilo${obj.kilo > 1 ? "s" : ""} and ${getTheGrams(
-              obj.kiloGrams
-            )}`
-      }`;
-    } else {
-      return obj.quantity;
-    }
-  };
-
   const handleChangePrice = (price, index, product, isPerKilo) => {
     const _cart = [...cart];
 
@@ -61,8 +19,6 @@ const Table = ({ cart, setCart }) => {
 
     setCart(_cart);
   };
-
-  console.log(cart);
 
   return (
     <MDBTable>
@@ -108,13 +64,7 @@ const Table = ({ cart, setCart }) => {
                     {product.hasVariant && (
                       <div className="d-flex align-items-center">
                         <h6 className="mr-1">Variations:</h6>
-                        <h6>
-                          {getTheVariant(
-                            obj.variant1,
-                            obj.variant2 || "",
-                            product.variations
-                          )}
-                        </h6>
+                        <h6>{variation.name(obj, product.variations)}</h6>
                       </div>
                     )}
                   </div>
@@ -137,7 +87,7 @@ const Table = ({ cart, setCart }) => {
                 />
               </td>
               <td className="font-weight-bold">
-                {getTheQtyOrKilo(obj, product.isPerKilo)}
+                {variation.qtyOrKilo(obj, product.isPerKilo)}
               </td>
 
               <td className="font-weight-bold d-flex justify-content-end mr-2">

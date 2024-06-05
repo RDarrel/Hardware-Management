@@ -9,6 +9,8 @@ import employees from "./slices/administrator/employees";
 import products from "./slices/administrator/products";
 import suppliers from "./slices/administrator/suppliers";
 import cart from "./slices/cart";
+import purchases from "./slices/stockman/purchases";
+import stocks from "./slices/stockman/stocks";
 const store = configureStore({
   reducer: {
     auth,
@@ -21,6 +23,8 @@ const store = configureStore({
     products,
     suppliers,
     cart,
+    purchases,
+    stocks,
   },
 });
 
