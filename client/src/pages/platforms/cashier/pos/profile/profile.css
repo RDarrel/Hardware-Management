@@ -1,10 +1,10 @@
-.popover-body {
+.profile-popover-body {
   height: auto;
   width: 250px;
   background-color: white;
 }
 
-.pop-over-btn {
+.profile-pop-over-btn {
   background: linear-gradient(to bottom, #ed3f41, #ed3f41);
   border: none;
   box-shadow: 0px 0px 0px 0px !important;

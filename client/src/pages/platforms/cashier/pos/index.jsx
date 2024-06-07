@@ -49,7 +49,7 @@ const POS = () => {
                   </h4>
                   <div className="input-container ml-3">
                     <input
-                      className="form-control"
+                      className="form-controls"
                       style={{ height: "50px" }}
                       placeholder="Search..."
                     />

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./style.css";
+import "./profile.css";
 import {
   MDBRow,
   MDBCol,
@@ -20,14 +20,17 @@ const Profile = () => {
       >
         <MDBPopover placement="bottom" popover id={`popover-${id}`} key={id}>
           <MDBBtn
-            className="d-flex align-items-center m-0 p-0 pop-over-btn mr-3"
+            className="d-flex align-items-center m-0 p-0 profile-pop-over-btn mr-3"
             size="sm"
             id={`btn-pop-over-${id}`}
           >
             <MDBIcon icon="user-alt" size="2x" style={{ color: "white" }} />
             <h6 className="text-white mt-2 ml-3">Ric Darrel Pajarilaga</h6>
           </MDBBtn>
-          <MDBPopoverBody className="popover-body" id={`pop-body-${id}`}>
+          <MDBPopoverBody
+            className="profile-popover-body"
+            id={`pop-body-${id}`}
+          >
             <MDBBtn block color="primary">
               Logout
             </MDBBtn>
