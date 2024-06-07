@@ -13,18 +13,23 @@ const initialState = {
   message: "",
 };
 
-export const BROWSE = createAsyncThunk(`${name}`, ({ token }, thunkAPI) => {
-  try {
-    return axioKit.universal(name, token);
-  } catch (error) {
-    const message =
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString();
+export const BROWSE = createAsyncThunk(
+  `${name}`,
+  ({ token, key }, thunkAPI) => {
+    try {
+      return axioKit.universal(name, token, key);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
 
-    return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
 export const SUPPLIERS = createAsyncThunk(
   `SUPPLIERS`,

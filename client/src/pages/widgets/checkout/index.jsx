@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
+import { SUPPLIERS, BUY } from "../../../services/redux/slices/cart";
+import { fullName } from "../../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
-import { SUPPLIERS, BUY } from "../../../../services/redux/slices/cart";
-import { fullName } from "../../../../services/utilities";
 import "./style.css";
-
 import {
   MDBCard,
   MDBCardBody,
@@ -14,7 +13,6 @@ import {
   MDBIcon,
   MDBTypography,
 } from "mdbreact";
-
 import Table from "./table";
 import Swal from "sweetalert2";
 const Checkout = () => {

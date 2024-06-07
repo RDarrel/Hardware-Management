@@ -5,12 +5,12 @@ import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 
 import { MDBModalBody, MDBModal } from "mdbreact";
-import { ENDPOINT } from "../../../../../services/utilities";
+import { ENDPOINT } from "../../../services/utilities";
 import { FullView } from "./fullView";
 import { InformationView } from "./informationView";
-import { SAVE, CHECKOUT } from "../../../../../services/redux/slices/cart";
+import { SAVE, CHECKOUT } from "../../../services/redux/slices/cart";
 
-const View = ({
+const ViewProduct = ({
   isView,
   toggleView,
   selected,
@@ -189,4 +189,4 @@ const View = ({
   );
 };
 
-export default View;
+export default ViewProduct;

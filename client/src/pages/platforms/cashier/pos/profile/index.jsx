@@ -31,7 +31,7 @@ const Profile = () => {
             className="profile-popover-body"
             id={`pop-body-${id}`}
           >
-            <MDBBtn block color="primary">
+            <MDBBtn color="primary" size="sm">
               Logout
             </MDBBtn>
           </MDBPopoverBody>

@@ -1,0 +1,36 @@
+.supplier-container {
+  /* border: 1px solid #ccc; */
+  padding: 16px;
+  margin: 20px;
+  box-shadow: 3px 2px 2px 2px white;
+  background-color: white;
+  position: relative;
+}
+
+.striped-border {
+  height: 4px;
+  width: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #6fa7d7,
+    #6fa7d7 60px,
+    transparent 50px,
+    transparent 70px,
+    #f08d9a 70px,
+    #f08d9a 130px,
+    transparent 100px,
+    transparent 140px
+  );
+
+  margin-bottom: 10px; /* Adjust the spacing between the border and content */
+}
+.supplier-container h2 {
+  margin-top: 0;
+}
+
+.supplier-content {
+  padding-top: 10px;
+}
+.dotted {
+  border-bottom: 3px dotted #999;
+}

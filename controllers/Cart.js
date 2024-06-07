@@ -5,7 +5,7 @@ const Entity = require("../models/Cart"),
   handleDuplicate = require("../config/duplicate");
 
 exports.browse = (req, res) =>
-  Entity.find()
+  Entity.find({ cartBy: req.query._id })
     .populate("product")
     .select("-__v")
     .sort({ createdAt: -1 })
@@ -24,6 +24,7 @@ exports.save = async (req, res) => {
 
     let createdProduct = {};
     const query = {
+      cartBy: product.cartBy,
       product: product.product,
       ...(product.hasVariant && { variant1: product.variant1 }),
       ...(product.has2Variant && { variant2: product.variant2 }),
