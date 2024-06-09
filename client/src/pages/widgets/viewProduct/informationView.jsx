@@ -53,7 +53,7 @@ export const InformationView = ({
         getTheMinAndMaxSrp(srps);
       }
     } else {
-      setPrice(selected.price);
+      setPrice(selected.srp);
     }
   }, [selected]);
   return (

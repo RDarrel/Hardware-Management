@@ -138,7 +138,7 @@ const ViewProduct = ({
       });
     } else {
       dispatch(CHECKOUT([{ ...form, product: selected }]));
-      history.push("/checkout");
+      history.push("/pos/checkout");
     }
 
     setIsView(false);

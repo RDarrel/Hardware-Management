@@ -1,6 +1,6 @@
 .popover-body {
   height: auto;
-  width: 700px;
+  width: 700px !important;
   border: 2px solid rgb(186, 173, 173);
   max-width: none;
   background-color: white;

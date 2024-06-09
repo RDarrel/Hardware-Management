@@ -1,7 +1,8 @@
 import React from "react";
 import { MDBRow, MDBCol, MDBIcon, MDBBtn } from "mdbreact";
 
-export const Search = ({ setShow, title }) => {
+export const Search = ({ title, disable, toggleCreate }) => {
+  const { create = false } = disable || {};
   return (
     <MDBRow className="mt-0  mb-2 d-flex align-items-center">
       <MDBCol md="2">
@@ -22,15 +23,17 @@ export const Search = ({ setShow, title }) => {
             </button>
           </form>
         </div>
-        <MDBBtn
-          size="sm"
-          color="primary"
-          floating
-          rounded
-          onClick={() => setShow(true)}
-        >
-          <MDBIcon icon="plus" />
-        </MDBBtn>
+        {!create && (
+          <MDBBtn
+            size="sm"
+            color="primary"
+            floating
+            rounded
+            onClick={toggleCreate}
+          >
+            <MDBIcon icon="plus" />
+          </MDBBtn>
+        )}
       </MDBCol>
     </MDBRow>
   );

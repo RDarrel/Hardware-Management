@@ -10,6 +10,15 @@ const getTheGrams = (grams) => {
   }
 };
 
+const computeSubtotal = ({ srp, isPerKilo, kilo, kiloGrams, quantity }) => {
+  if (isPerKilo) {
+    const totalKilo = kilo + kiloGrams;
+    return srp * totalKilo;
+  } else {
+    return srp * quantity;
+  }
+};
+
 const variation = {
   name: (obj, variations) => {
     const foundVariant1 = variations[0].options.find(
@@ -38,6 +47,55 @@ const variation = {
       }`;
     } else {
       return ` ${obj.quantity} qty`;
+    }
+  },
+
+  getTheSubTotal: (name, cart, product) => {
+    // name= 'capital' || 'srp'
+    const { hasVariant, has2Variant, variations, isPerKilo } = product;
+    const { variant1 = "", variant2 = "", kiloGrams, kilo, quantity } = cart;
+
+    if (hasVariant) {
+      if (has2Variant) {
+        const srp = variations[0].options
+          .find(({ _id }) => _id === variant1)
+          .prices.find(({ _id }) => _id === variant2)[name];
+
+        return computeSubtotal({ srp, isPerKilo, kilo, kiloGrams, quantity });
+      } else {
+        const srp = variations[0].options.find(
+          ({ _id }) => _id === variant1
+        ).srp;
+        return computeSubtotal({ srp, isPerKilo, kilo, kiloGrams, quantity });
+      }
+    } else {
+      return computeSubtotal({
+        srp: product[name],
+        isPerKilo,
+        kilo,
+        kiloGrams,
+        quantity,
+      });
+    }
+  },
+
+  getTheCapitalOrSrp: (name, cart, product) => {
+    const { hasVariant, has2Variant, variations, isPerKilo } = product;
+    const { variant1 = "", variant2 = "", kiloGrams, kilo, quantity } = cart;
+
+    if (hasVariant) {
+      if (has2Variant) {
+        return variations[0].options
+          .find(({ _id }) => _id === variant1)
+          .prices.find(({ _id }) => _id === variant2)[name];
+      } else {
+        const srp = variations[0].options.find(
+          ({ _id }) => _id === variant1
+        ).srp;
+        return computeSubtotal({ srp, isPerKilo, kilo, kiloGrams, quantity });
+      }
+    } else {
+      return product[name];
     }
   },
 };

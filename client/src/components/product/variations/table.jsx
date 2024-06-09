@@ -1,18 +1,23 @@
 import { MDBCol, MDBInputGroup, MDBRow, MDBTable } from "mdbreact";
 import React from "react";
 function Table({ variations, setVariations }) {
-  const handleChangePriceHaveVr2 = (value, optionIndex, priceIndex = -1) => {
+  const handleChangePriceHaveVr2 = (
+    value,
+    name,
+    optionIndex,
+    priceIndex = -1
+  ) => {
     const updatedVariations = [...variations];
     const vr1 = { ...variations[0] };
     const vr1Options = [...vr1.options];
     if (priceIndex > -1) {
       const prices = [...vr1Options[optionIndex].prices];
-      const price = { ...prices[priceIndex], srp: value };
+      const price = { ...prices[priceIndex], [name]: value };
       const option = { ...vr1Options[optionIndex] };
       prices[priceIndex] = price;
       vr1Options[optionIndex] = { ...option, prices };
     } else {
-      const option = { ...vr1Options[optionIndex], srp: value };
+      const option = { ...vr1Options[optionIndex], [name]: value };
       vr1Options[optionIndex] = option;
     }
     vr1.options = vr1Options;
@@ -20,7 +25,6 @@ function Table({ variations, setVariations }) {
     setVariations(updatedVariations);
   };
 
-  console.log(variations);
   return (
     <MDBRow className="mt-4">
       <MDBCol md="2" className="d-flex justify-content-end mt-3">
@@ -39,8 +43,9 @@ function Table({ variations, setVariations }) {
                 </th>
               ))}
               <th className="text-center border border-black bg-light">
-                Price
+                Capital
               </th>
+              <th className="text-center border border-black bg-light">SRP</th>
             </tr>
           </thead>
           <tbody>
@@ -73,6 +78,26 @@ function Table({ variations, setVariations }) {
                           onChange={({ target }) =>
                             handleChangePriceHaveVr2(
                               Number(target.value),
+                              "capital",
+                              optionIndex,
+                              priceIndex
+                            )
+                          }
+                          value={String(price?.capital)}
+                          required
+                          type="number"
+                        ></MDBInputGroup>
+                      </td>
+                      <td
+                        className="text-center border border-black"
+                        width={250}
+                      >
+                        <MDBInputGroup
+                          prepend="₱"
+                          onChange={({ target }) =>
+                            handleChangePriceHaveVr2(
+                              Number(target.value),
+                              "srp",
                               optionIndex,
                               priceIndex
                             )
@@ -96,6 +121,22 @@ function Table({ variations, setVariations }) {
                       onChange={({ target }) =>
                         handleChangePriceHaveVr2(
                           Number(target.value),
+                          "capital",
+                          optionIndex
+                        )
+                      }
+                      value={String(option?.capital)}
+                      required
+                      type="number"
+                    ></MDBInputGroup>
+                  </td>
+                  <td className="text-center border border-black" width={250}>
+                    <MDBInputGroup
+                      prepend="₱"
+                      onChange={({ target }) =>
+                        handleChangePriceHaveVr2(
+                          Number(target.value),
+                          "srp",
                           optionIndex
                         )
                       }

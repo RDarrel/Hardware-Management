@@ -3,6 +3,13 @@ import React from "react";
 import { MDBCol, MDBIcon, MDBRow } from "mdbreact";
 
 const ProductImg = ({ label, setMedia, index, img, media }) => {
+  const handleRemoveImg = () => {
+    const productsImages = [...media.product];
+    productsImages[index] = { ...productsImages[index], img: "", preview: "" };
+    console.log(productsImages[index]);
+    setMedia({ ...media, product: productsImages });
+  };
+
   const handleImageChange = (event) => {
     const file = event.target.files[0];
 
@@ -34,7 +41,14 @@ const ProductImg = ({ label, setMedia, index, img, media }) => {
     <>
       <div className="image-placeholder">
         {img ? (
-          <img src={img} alt={label} className="uploaded-image" />
+          <>
+            <img src={img} alt={label} className="uploaded-image" />
+            <MDBIcon
+              icon="times"
+              className="remove-icon"
+              onClick={handleRemoveImg}
+            />
+          </>
         ) : (
           <>
             <MDBIcon icon="plus" className="blue-text" size="2x" />

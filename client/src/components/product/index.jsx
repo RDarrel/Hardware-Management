@@ -73,6 +73,7 @@ const ProductInformation = ({
       return false;
     }
   };
+
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
@@ -112,23 +113,29 @@ const ProductInformation = ({
 
         const getTheImageOfProduct = async () => {
           for (const { label } of productImages) {
-            const img = `${ENDPOINT}/assets/products/${selected._id}/${label}.jpg`;
-            const base64 = await imgToBase64(img);
+            const img =
+              `${ENDPOINT}/assets/products/${selected._id}/${label}.jpg` || "";
+            const base64 = (await imgToBase64(img)) || "";
 
-            if (base64) {
+            if (base64 && img) {
               setMedia((prev) => {
-                const newProductImgs = [...prev.product];
-                const indexProduct = newProductImgs.findIndex(
-                  ({ label: pLabel }) => pLabel === label
-                );
+                if (prev?.product) {
+                  console.log("meron");
+                  const newProductImgs = [...prev?.product];
+                  const indexProduct = newProductImgs.findIndex(
+                    ({ label: pLabel }) => pLabel === label
+                  );
 
-                newProductImgs[indexProduct] = {
-                  ...newProductImgs[indexProduct],
-                  preview: img,
-                  img: base64,
-                };
+                  newProductImgs[indexProduct] = {
+                    ...newProductImgs[indexProduct],
+                    preview: img,
+                    img: base64,
+                  };
 
-                return { ...prev, product: newProductImgs };
+                  return { ...prev, product: newProductImgs };
+                } else {
+                  return _media;
+                }
               });
             }
           }
@@ -142,7 +149,7 @@ const ProductInformation = ({
 
     fetchData();
     return () => {
-      isMounted = false; // Itigil ang pag-update ng estado kapag unmounted na ang component
+      isMounted = false;
     };
   }, [willCreate, selected]);
 
@@ -257,6 +264,8 @@ const ProductInformation = ({
     setWillCreate(true);
     setSelected({});
   };
+
+  console.log(variations);
   return (
     <>
       <form onSubmit={handleSubmit}>

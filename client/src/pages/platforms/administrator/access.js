@@ -1,6 +1,7 @@
 import Dashboard from "./dashboard";
 import Employees from "./employees";
 import Products from "./products";
+import Purchases from "./purchases";
 import Suppliers from "./suppliers";
 
 const access = [
@@ -30,23 +31,32 @@ const access = [
     icon: "hands-helping",
     component: Suppliers,
   },
-  // {
-  //   path: "/user-settings",
-  //   name: "User Settings",
-  //   icon: "user-cog",
-  //   children: [
-  //     {
-  //       name: "Roles",
-  //       path: "/roles",
-  //       component: Roles,
-  //     },
-  //     {
-  //       name: "Users",
-  //       path: "/users",
-  //       component: Users,
-  //     },
-  //   ],
-  // },
+
+  {
+    name: "Purchases",
+    path: "/Purchases",
+    icon: "shopping-basket",
+    component: Purchases,
+  },
+  {
+    path: "/report",
+    name: "Report",
+    icon: "scroll",
+    children: [
+      {
+        name: "Sales",
+        path: "/Sales",
+      },
+      {
+        name: "Transaction",
+        path: "/Transaction",
+      },
+      {
+        name: "Employee",
+        path: "/Employee",
+      },
+    ],
+  },
   // {
   //   path: "/work-management",
   //   name: "Work Management",

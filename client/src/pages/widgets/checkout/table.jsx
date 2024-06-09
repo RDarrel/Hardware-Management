@@ -1,35 +1,17 @@
 import React from "react";
-import { MDBTable, MDBInputGroup } from "mdbreact";
-import { ENDPOINT, variation } from "../../../../services/utilities";
+import { MDBTable } from "mdbreact";
+import { ENDPOINT, variation } from "../../../services/utilities";
 
-const Table = ({ cart, setCart }) => {
-  const handleChangePrice = (price, index, product, isPerKilo) => {
-    const _cart = [...cart];
-
-    if (isPerKilo) {
-      const subtotal = price * product.kilo + price * product.kiloGrams;
-      _cart[index] = { ..._cart[index], subtotal, price };
-    } else {
-      _cart[index] = {
-        ..._cart[index],
-        subtotal: price * product.quantity,
-        price,
-      };
-    }
-
-    setCart(_cart);
-  };
-
+const Table = ({ cart }) => {
   return (
     <MDBTable>
       <thead>
         <tr>
           <th>Product Ordered</th>
-          <th>Unit Price</th>
           <th>Quantity/Kilo</th>
           <th>
             <div className="text-end d-flex justify-content-end mr-2">
-              Item Subtotal
+              Subtotal
             </div>
           </th>
         </tr>
@@ -47,7 +29,7 @@ const Table = ({ cart, setCart }) => {
                     src={img}
                     alt={product.name}
                     className="mr-2"
-                    style={{ width: "80px" }}
+                    style={{ width: "60px" }}
                   />
                   <div>
                     <h5
@@ -70,22 +52,7 @@ const Table = ({ cart, setCart }) => {
                   </div>
                 </div>
               </td>
-              <td>
-                <MDBInputGroup
-                  required
-                  prepend="₱"
-                  style={{ width: "200px" }}
-                  value={String(obj?.price || 0)}
-                  onChange={({ target }) =>
-                    handleChangePrice(
-                      Number(target.value),
-                      index,
-                      obj,
-                      product.isPerKilo
-                    )
-                  }
-                />
-              </td>
+
               <td className="font-weight-bold">
                 {variation.qtyOrKilo(obj, product.isPerKilo)}
               </td>

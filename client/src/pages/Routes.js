@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Route, Switch } from "react-router-dom";
-import { useHistory } from "react-router";
 import NotFound from "./notFound";
 
 import ACCESS from "./platforms/access.js";
@@ -12,14 +11,7 @@ import { useSelector } from "react-redux";
 import Checkout from "./platforms/stockman/checkout/index.jsx";
 
 export default function Routes() {
-  const { role } = useSelector(({ auth }) => auth),
-    history = useHistory();
-
-  useEffect(() => {
-    if (role === "CASHIER") {
-      history.push("/pos");
-    }
-  }, [role, history]);
+  const { role } = useSelector(({ auth }) => auth);
 
   const handleRoutes = () => {
     const routes = ACCESS[role] || [];

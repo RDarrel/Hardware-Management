@@ -87,6 +87,7 @@ const Variations = ({
     const prices = variation1.options.find(
       (option) => option._id === option1ID
     ).prices;
+
     setOption2ID(_id);
     const srp = prices.find((price) => price._id === _id).srp;
     setPrice(srp);

@@ -2,13 +2,19 @@ import React, { useEffect, useState } from "react";
 import { BROWSE } from "../../../../services/redux/slices/stockman/stocks";
 import { MDBBadge, MDBCard, MDBCardBody, MDBTable } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
-import { ENDPOINT, variation } from "../../../../services/utilities";
+import {
+  ENDPOINT,
+  handlePagination,
+  variation,
+} from "../../../../services/utilities";
+import PaginationButtons from "../../../widgets/pagination/buttons";
 import { Search } from "../../../widgets/search";
 
 export const Stocks = () => {
-  const { token } = useSelector(({ auth }) => auth),
+  const { token, maxPage } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ stocks }) => stocks),
     [stocks, setStocks] = useState([]),
+    [page, setPage] = useState(1),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -47,7 +53,7 @@ export const Stocks = () => {
       const grams = kilos[1] ? getTheGrams(kilos[1]) : null;
 
       return (
-        <MDBBadge color={stockColor} className="p-2">
+        <MDBBadge color={stockColor} className="p-2" pill>
           <h6 className="font-weight-bold">
             {kilo} kilo{kilo > 1 ? "s" : ""}
             {grams && ` and ${grams}`}
@@ -56,7 +62,7 @@ export const Stocks = () => {
       );
     } else {
       return (
-        <MDBBadge color={stockColor} className="p-2">
+        <MDBBadge color={stockColor} className="p-2" pill>
           <h6 className="font-weight-bold">{stock} qty</h6>
         </MDBBadge>
       );
@@ -66,7 +72,7 @@ export const Stocks = () => {
   return (
     <MDBCard>
       <MDBCardBody>
-        <Search title={"Stock List"} />
+        <Search title={"Stock List"} disable={{ create: true }} />
 
         <MDBTable responsive hover>
           <thead>
@@ -84,7 +90,7 @@ export const Stocks = () => {
                 </td>
               </tr>
             )}
-            {stocks.map((obj, index) => {
+            {handlePagination(stocks, page, maxPage).map((obj, index) => {
               const { product, _id } = obj;
               const { media } = product;
               const img = `${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`;
@@ -126,6 +132,13 @@ export const Stocks = () => {
             })}
           </tbody>
         </MDBTable>
+        <PaginationButtons
+          page={page}
+          setPage={setPage}
+          max={maxPage}
+          array={stocks}
+          title={"Stock"}
+        />
       </MDBCardBody>
     </MDBCard>
   );

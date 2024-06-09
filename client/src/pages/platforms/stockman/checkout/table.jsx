@@ -1,37 +1,37 @@
 import React from "react";
-import { MDBTable, MDBInputGroup } from "mdbreact";
+import { MDBTable } from "mdbreact";
 import { ENDPOINT, variation } from "../../../../services/utilities";
 
 const Table = ({ cart, setCart }) => {
-  const handleChangePrice = (price, index, product, isPerKilo) => {
-    const _cart = [...cart];
+  // const handleChangePrice = (price, index, product, isPerKilo) => {
+  //   const _cart = [...cart];
 
-    if (isPerKilo) {
-      const subtotal = price * product.kilo + price * product.kiloGrams;
-      _cart[index] = { ..._cart[index], subtotal, price };
-    } else {
-      _cart[index] = {
-        ..._cart[index],
-        subtotal: price * product.quantity,
-        price,
-      };
-    }
+  //   if (isPerKilo) {
+  //     const subtotal = price * product.kilo + price * product.kiloGrams;
+  //     _cart[index] = { ..._cart[index], subtotal, price };
+  //   } else {
+  //     _cart[index] = {
+  //       ..._cart[index],
+  //       subtotal: price * product.quantity,
+  //       price,
+  //     };
+  //   }
 
-    setCart(_cart);
-  };
+  //   setCart(_cart);
+  // };
 
   return (
     <MDBTable>
       <thead>
         <tr>
           <th>Product Ordered</th>
-          <th>Unit Price</th>
-          <th>Quantity/Kilo</th>
-          <th>
+          {/* <th>Unit Price</th> */}
+          <th className="text-center">Quantity/Kilo</th>
+          {/* <th>
             <div className="text-end d-flex justify-content-end mr-2">
               Item Subtotal
             </div>
-          </th>
+          </th> */}
         </tr>
       </thead>
       <tbody>
@@ -41,7 +41,7 @@ const Table = ({ cart, setCart }) => {
           const img = `${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`;
           return (
             <tr key={index}>
-              <td className="font-weight-bold">
+              <td className="font-weight-bold text-center">
                 <div className="d-flex align-items-center">
                   <img
                     src={img}
@@ -70,7 +70,7 @@ const Table = ({ cart, setCart }) => {
                   </div>
                 </div>
               </td>
-              <td>
+              {/* <td>
                 <MDBInputGroup
                   required
                   prepend="₱"
@@ -85,14 +85,14 @@ const Table = ({ cart, setCart }) => {
                     )
                   }
                 />
-              </td>
-              <td className="font-weight-bold">
+              </td> */}
+              <td className="font-weight-bold text-center">
                 {variation.qtyOrKilo(obj, product.isPerKilo)}
               </td>
 
-              <td className="font-weight-bold d-flex justify-content-end mr-2">
+              {/* <td className="font-weight-bold d-flex justify-content-end mr-2">
                 {obj.subtotal ? `₱${obj.subtotal}` : "--"}
-              </td>
+              </td> */}
             </tr>
           );
         })}

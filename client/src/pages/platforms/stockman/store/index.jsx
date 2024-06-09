@@ -18,7 +18,7 @@ import { ProducCard } from "./card";
 import Cart from "./cart";
 
 const Store = () => {
-  const { token } = useSelector(({ auth }) => auth),
+  const { token, auth } = useSelector(({ auth }) => auth),
     { collections, isLoading } = useSelector(({ products }) => products),
     { collections: cartCollections } = useSelector(({ cart }) => cart),
     [products, setProducts] = useState([]),
@@ -37,8 +37,8 @@ const Store = () => {
   }, [token, dispatch]);
 
   useEffect(() => {
-    dispatch(BROWSECART({ token }));
-  }, [token, dispatch]);
+    dispatch(BROWSECART({ token, key: { _id: auth._id } }));
+  }, [token, dispatch, auth]);
 
   useEffect(() => {
     setCart(cartCollections);
@@ -109,7 +109,7 @@ const Store = () => {
             <MDBBtn floating color="red" onClick={() => setIsShowCart(true)}>
               <MDBIcon icon="shopping-cart" />
             </MDBBtn>
-            <span className="counter">{cart.length}</span>
+            {cart.length > 0 && <span className="counter">{cart.length}</span>}
           </>
         )}
       </div>

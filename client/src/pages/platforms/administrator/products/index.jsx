@@ -15,9 +15,7 @@ import {
   VARIATION_UPDATE,
 } from "../../../../services/redux/slices/administrator/products";
 import Swal from "sweetalert2";
-import Modal from "./modal";
 import ProductInformation from "../../../../components/product/index";
-import View from "./view";
 import "./product.css";
 import { Table } from "./table";
 import { Search } from "../../../widgets/search";
@@ -26,14 +24,10 @@ const Products = () => {
   const { token } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ products }) => products),
     [products, setProducts] = useState([]),
-    [isView, setIsView] = useState(false),
     [selected, setSelected] = useState({}),
-    [isViewProductInformation, setIsViewProductInformation] = useState(false),
-    [willCreate, setWillCreate] = useState(true),
     [show, setShow] = useState(false),
+    [willCreate, setWillCreate] = useState(true),
     dispatch = useDispatch();
-
-  const toggleView = () => setIsView(!isView);
 
   useEffect(() => {
     dispatch(BROWSE({ token }));
@@ -128,7 +122,7 @@ const Products = () => {
 
   const handleUpdate = (product) => {
     setSelected(product);
-    setIsViewProductInformation(true);
+    setShow(true);
     setWillCreate(false);
   };
 
@@ -136,8 +130,7 @@ const Products = () => {
     key,
     product,
     isFirstRow,
-    indexProduct,
-    { variation, option, actionFor, price }
+    { variation = {}, option, actionFor, price }
   ) => {
     const has2Variant = product.has2Variant;
     const vrDisable = {
@@ -154,15 +147,12 @@ const Products = () => {
         {isFirstRow ? (
           <>
             <td rowSpan={handleRowSpan(product, actionFor)}>
-              {indexProduct + 1}
-            </td>
-            <td rowSpan={handleRowSpan(product, actionFor)}>
               <div className="d-flex align-items-center">
                 {getProductImg(product)}
                 <h5
                   className="text-truncate"
                   style={{
-                    maxWidth: "200px",
+                    maxWidth: "250px",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -184,6 +174,9 @@ const Products = () => {
             }
           />
           <h5> {variantName}</h5>
+        </td>
+        <td>
+          <h5>₱{has2Variant ? price.capital : option.capital}</h5>
         </td>
         <td>
           <h5>₱{has2Variant ? price.srp : option.srp}</h5>
@@ -215,16 +208,15 @@ const Products = () => {
     );
   };
 
+  const toggleCreate = () => setShow(!show);
+
   return (
     <>
-      {!isViewProductInformation ? (
+      {!show ? (
         <>
           <MDBCard>
             <MDBCardBody>
-              <Search
-                setShow={setIsViewProductInformation}
-                title="Product List"
-              />
+              <Search toggleCreate={toggleCreate} title="Product List" />
               <Table
                 products={products}
                 handleTableData={handleTableData}
@@ -234,24 +226,10 @@ const Products = () => {
               />
             </MDBCardBody>
           </MDBCard>
-
-          <View isView={isView} toggleView={toggleView} selected={selected} />
-          <Modal
-            toggle={() => {
-              if (!willCreate) {
-                setWillCreate(true);
-                setSelected({});
-              }
-              setShow(false);
-            }}
-            show={show}
-            willCreate={willCreate}
-            selected={selected}
-          />
         </>
       ) : (
         <ProductInformation
-          setIsViewProductInformation={setIsViewProductInformation}
+          setIsViewProductInformation={setShow}
           selected={selected}
           willCreate={willCreate}
           setWillCreate={setWillCreate}

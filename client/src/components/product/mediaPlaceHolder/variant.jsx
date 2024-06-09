@@ -1,8 +1,18 @@
 // ImagePlaceholder.js
 import React from "react";
+import "./media.css";
 import { MDBIcon, MDBRow, MDBCol } from "mdbreact";
 
 const OptionImg = ({ label, setMedia, index, img, media }) => {
+  const handleRemoveImg = () => {
+    const optionsImages = [...media.variant.options];
+    optionsImages[index] = { ...optionsImages[index], img: "", preview: "" };
+    setMedia({
+      ...media,
+      variant: { ...media.variant, options: optionsImages },
+    });
+  };
+
   const handleImageChange = (event) => {
     const file = event.target.files[0];
 
@@ -34,7 +44,14 @@ const OptionImg = ({ label, setMedia, index, img, media }) => {
     <>
       <div className="image-placeholder">
         {img ? (
-          <img src={img} alt={label} className="uploaded-image" />
+          <>
+            <img src={img} alt={label} className="uploaded-image" />
+            <MDBIcon
+              icon="times"
+              className="remove-icon"
+              onClick={handleRemoveImg}
+            />
+          </>
         ) : (
           <>
             <MDBIcon icon="plus" className="blue-text" size="2x" />

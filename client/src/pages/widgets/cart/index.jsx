@@ -54,14 +54,14 @@ const Cart = ({ show, toggle, collections }) => {
 
   const handleCheckOut = () => {
     dispatch(CHECKOUT(checkOutProducts));
-    history.push("/checkout");
+    history.push("/pos/checkout");
   };
   return (
     <MDBModal
       isOpen={show}
       toggle={() => toggle()}
       size="lg"
-      className="modal-notify modal-primary"
+      className="modal-notify modal-primary "
       fullHeight
       position="right"
     >
@@ -69,17 +69,27 @@ const Cart = ({ show, toggle, collections }) => {
         <MDBIcon icon="shopping-cart" className="mr-2" />
         Shoppping Cart
       </MDBModalHeader>
-      <MDBModalBody>
-        <Table
-          cart={cart}
-          handleChangeSelectAll={handleChangeSelectAll}
-          isCheckAll={isCheckAll}
-          checkOutProducts={checkOutProducts}
-          handleActionInCheckOut={handleActionInCheckOut}
-        />
+      <MDBModalBody className="pr-0">
+        {cart.length > 0 ? (
+          <Table
+            cart={cart}
+            setCart={setCart}
+            handleChangeSelectAll={handleChangeSelectAll}
+            isCheckAll={isCheckAll}
+            checkOutProducts={checkOutProducts}
+            handleActionInCheckOut={handleActionInCheckOut}
+          />
+        ) : (
+          <h5 className="text-center">No Cart</h5>
+        )}
       </MDBModalBody>
       <MDBModalFooter className="d-flex justify-content-end  fixed-footer">
-        <MDBBtn color="primary" outline onClick={handleCheckOut}>
+        <MDBBtn
+          color="primary"
+          outline
+          onClick={handleCheckOut}
+          disabled={cart.length === 0}
+        >
           <span>
             Check Out
             <i className="fas fa-long-arrow-alt-right ms-2"></i>

@@ -18,14 +18,17 @@ import {
   DESTROY,
 } from "../../../../services/redux/slices/administrator/suppliers";
 import Swal from "sweetalert2";
+import handlePagination from "../../../widgets/pagination";
+import PaginationButtons from "../../../widgets/pagination/buttons";
 
 const Suppliers = () => {
-  const { token } = useSelector(({ auth }) => auth),
+  const { token, maxPage } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ suppliers }) => suppliers),
     [suppliers, setSuppliers] = useState([]),
     [willCreate, setWillCreate] = useState(true),
     [show, setShow] = useState(false),
     [selected, setSelected] = useState({}),
+    [page, setPage] = useState(1),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -82,7 +85,7 @@ const Suppliers = () => {
   return (
     <MDBCard>
       <MDBCardBody>
-        <Search title="Supplier List" setShow={setShow} />
+        <Search title="Supplier List" toggleCreate={() => setShow(!show)} />
         <MDBTable>
           <thead>
             <tr>
@@ -96,50 +99,59 @@ const Suppliers = () => {
           </thead>
           <tbody>
             {suppliers.length > 0 &&
-              suppliers.map((supplier, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{supplier.company}</td>
-                  <td>{supplier.location}</td>
-                  <td>{supplier.contact}</td>
-                  <td className="text-center">
-                    <MDBSwitch
-                      labelLeft="Inactive"
-                      labelRight="Active"
-                      checked={supplier.status ? true : false}
-                      onChange={({ target }) =>
-                        handleChangeStatus(target.checked, supplier._id)
-                      }
-                    />
-                  </td>
-                  <td className="text-center">
-                    <MDBBtnGroup>
-                      <MDBBtn
-                        color="danger"
-                        size="sm"
-                        rounded
-                        onClick={() => handleDelete(supplier._id)}
-                      >
-                        <MDBIcon icon="trash" />
-                      </MDBBtn>
-                      <MDBBtn
-                        color="primary"
-                        size="sm"
-                        rounded
-                        onClick={() => {
-                          setSelected(supplier);
-                          setShow(true);
-                          setWillCreate(false);
-                        }}
-                      >
-                        <MDBIcon icon="pencil-alt" />
-                      </MDBBtn>
-                    </MDBBtnGroup>
-                  </td>
-                </tr>
-              ))}
+              handlePagination(suppliers, page, maxPage).map(
+                (supplier, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{supplier.company}</td>
+                    <td>{supplier.location}</td>
+                    <td>{supplier.contact}</td>
+                    <td className="text-center">
+                      <MDBSwitch
+                        labelLeft="Inactive"
+                        labelRight="Active"
+                        checked={supplier.status ? true : false}
+                        onChange={({ target }) =>
+                          handleChangeStatus(target.checked, supplier._id)
+                        }
+                      />
+                    </td>
+                    <td className="text-center">
+                      <MDBBtnGroup>
+                        <MDBBtn
+                          color="danger"
+                          size="sm"
+                          rounded
+                          onClick={() => handleDelete(supplier._id)}
+                        >
+                          <MDBIcon icon="trash" />
+                        </MDBBtn>
+                        <MDBBtn
+                          color="primary"
+                          size="sm"
+                          rounded
+                          onClick={() => {
+                            setSelected(supplier);
+                            setShow(true);
+                            setWillCreate(false);
+                          }}
+                        >
+                          <MDBIcon icon="pencil-alt" />
+                        </MDBBtn>
+                      </MDBBtnGroup>
+                    </td>
+                  </tr>
+                )
+              )}
           </tbody>
         </MDBTable>
+        <PaginationButtons
+          max={maxPage}
+          page={page}
+          array={suppliers}
+          setPage={setPage}
+          title={"Supplier"}
+        />
       </MDBCardBody>
       <Modal
         show={show}

@@ -1,5 +1,5 @@
 import React from "react";
-import { ENDPOINT } from "../../../services/utilities";
+import { ENDPOINT, variation } from "../../../services/utilities";
 import {
   MDBPopover,
   MDBBtn,
@@ -220,6 +220,9 @@ export const Tbody = ({
                     }
                   />
                 )}
+              </td>
+              <td className="text-danger font-weight-bold">
+                ₱{variation.getTheSubTotal("srp", obj, product)}
               </td>
               <td>
                 <MDBBtn

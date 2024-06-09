@@ -17,7 +17,7 @@ export default function Platforms() {
     { email, auth } = useSelector(({ auth }) => auth),
     dispatch = useDispatch();
 
-  const handleResize = () => setWindowWidth(window.innerWidth);
+  const handleResize = () => setWindowWidth(window?.innerWidth);
 
   useEffect(() => {
     console.log("App initialized.");

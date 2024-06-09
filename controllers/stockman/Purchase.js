@@ -7,7 +7,9 @@ exports.browse = async (_, res) => {
   try {
     const purchases = await Entity.find()
       .populate("purchaseBy")
-      .populate("supplier");
+      .populate("supplier")
+      .select("-__v")
+      .sort({ createdAt: -1 });
 
     const container = [];
 

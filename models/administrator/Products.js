@@ -7,6 +7,14 @@ const modelSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
+    capital: {
+      type: Number,
+    },
+
+    srp: {
+      type: Number,
+    },
     price: {
       type: Number,
     },

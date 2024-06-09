@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./pos.css";
-import { BROWSE } from "../../../../services/redux/slices/administrator/products";
+import { SELLING_PRODUCTS } from "../../../../services/redux/slices/administrator/products";
 import { BROWSE as BROWSECART } from "../../../../services/redux/slices/cart";
 import { useDispatch, useSelector } from "react-redux";
 import Card from "./card";
@@ -24,7 +24,7 @@ const POS = () => {
   const toggleCart = () => setIsShowCart(!isShowCart);
 
   useEffect(() => {
-    dispatch(BROWSE({ token }));
+    dispatch(SELLING_PRODUCTS({ token }));
   }, [token, dispatch]);
 
   useEffect(() => {

@@ -12,7 +12,8 @@ import { v4 as uuidv4 } from "uuid";
 import Table from "./table";
 
 function Variations({ variations = [], setVariations, media, setMedia }) {
-  const [price, setPrice] = useState(0);
+  const [capital, setCapital] = useState(0),
+    [srp, setSrp] = useState(0);
 
   const handleChangeOptions = (option, index, optionIndex) => {
     var updatedVariations = [...variations];
@@ -94,6 +95,7 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
           ...newOption,
           prices: updatedVariations[1].options.map((option) => ({
             ...option,
+            capital: 0,
             srp: 0,
             disable: false,
           })),
@@ -103,7 +105,14 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
         const vr1Options = [...updatedVariations[0].options];
         const newVr1Options = vr1Options.map((option) => {
           const prices = option.prices;
-          prices.push({ name: "", _id: priceID, disable: false, srp: 0 });
+          prices.push({
+            name: "",
+            _id: priceID,
+            disable: false,
+            srp: 0,
+            capital: 0,
+          });
+
           return {
             ...option,
             prices,
@@ -117,6 +126,7 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
       const newOptions = [...newVr.options];
       newOptions.push({
         ...newOption,
+        capital: 0,
         srp: 0,
         disable: false,
       });
@@ -133,7 +143,7 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
   };
 
   const handleRemoveOption = (index, optionIndex) => {
-    if (optionIndex === 0) return false;
+    if (variations[index].options.length === 1) return false;
     const updatedVariations = [...variations];
     if (updatedVariations.length === 2) {
       if (index === 0) {
@@ -212,6 +222,7 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
             options: variant.options.map(({ name, _id }) => ({
               name,
               _id,
+              capital: 0,
               srp: 0,
               disable: false,
             })),
@@ -233,13 +244,16 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
   };
 
   const handleAddVr = () => {
+    // para sa pag add ng pangalawang variation
     const priceID = uuidv4();
     const updatedVariations = [...variations];
     updatedVariations[0] = {
       ...updatedVariations[0],
       options: updatedVariations[0].options.map((option) => ({
         ...option,
-        prices: [{ _id: priceID, name: "", srp: 0, disable: false }],
+        prices: [
+          { _id: priceID, name: "", srp: 0, capital: 0, disable: false },
+        ],
       })),
     };
     updatedVariations.push({
@@ -260,19 +274,21 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
     const vr1 = { ...updatedVariations[0] };
     const options = [...vr1.options];
 
-    if (price <= 0) return false;
+    if (capital <= 0 && srp <= 0) return false;
 
     if (updatedVariations.length === 2) {
+      //para ma update yung bawat prices ng bawat options
       const newOptions = options.map((option) => {
         const newPrices = option.prices.map((objPrice) => {
-          return { ...objPrice, srp: price };
+          return { ...objPrice, srp, capital };
         });
         return { ...option, prices: newPrices };
       });
       updatedVariations[0] = { ...vr1, options: newOptions };
       setVariations(updatedVariations);
     } else {
-      const newOPtions = options.map((option) => ({ ...option, srp: price }));
+      //para iupdate yung srp at capital ng option
+      const newOPtions = options.map((option) => ({ ...option, srp, capital }));
       updatedVariations[0] = { ...vr1, options: newOPtions };
     }
 
@@ -311,7 +327,7 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
                     <MDBCol md="8">
                       <input
                         className="form-control"
-                        value={variation.name}
+                        value={variation.name || ""}
                         onChange={({ target }) =>
                           handleChangeVrName(target.value, index)
                         }
@@ -397,19 +413,29 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
         </React.Fragment>
       ))}
 
-      <MDBRow className="d-flex align-items-center mt-4">
+      <MDBRow className="d-flex align-items-center mt-5">
         <MDBCol
           md="2"
           className="d-flex justify-content-end align-content-center "
         >
           <h6>Variation Information</h6>
         </MDBCol>
-        <MDBCol md="8">
+        <MDBCol md="4" className="d-flex align-items-center">
+          <h6 className="mt-2 mr-2">Capital:</h6>
           <MDBInputGroup
             prepend="₱"
             type="number"
-            value={String(price)}
-            onChange={({ target }) => setPrice(Number(target.value))}
+            value={String(capital)}
+            onChange={({ target }) => setCapital(Number(target.value))}
+          />
+        </MDBCol>
+        <MDBCol md="4" className="d-flex align-items-center">
+          <h6 className="mt-2 mr-2">SRP:</h6>
+          <MDBInputGroup
+            prepend="₱"
+            type="number"
+            value={String(srp)}
+            onChange={({ target }) => setSrp(Number(target.value))}
           />
         </MDBCol>
         <MDBCol md="2">

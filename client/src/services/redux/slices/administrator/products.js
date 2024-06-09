@@ -24,6 +24,24 @@ export const BROWSE = createAsyncThunk(`${name}`, ({ token }, thunkAPI) => {
   }
 });
 
+export const SELLING_PRODUCTS = createAsyncThunk(
+  `${name}/SELLING_PRODUCTS`,
+  ({ token }, thunkAPI) => {
+    try {
+      return axioKit.universal(`${name}/sellingProducts`, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const FIND = createAsyncThunk(`${name}/find`, (form, thunkAPI) => {
   try {
     return axioKit.universal(`${name}/find`, form.token, form.key);
@@ -124,6 +142,22 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(BROWSE.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(SELLING_PRODUCTS.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(SELLING_PRODUCTS.fulfilled, (state, action) => {
+        const { payload } = action.payload;
+        state.collections = payload;
+        state.isLoading = false;
+      })
+      .addCase(SELLING_PRODUCTS.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;

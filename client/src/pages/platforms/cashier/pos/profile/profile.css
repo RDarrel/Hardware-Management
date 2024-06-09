@@ -1,8 +1,6 @@
 .profile-popover-body {
   height: auto;
-  width: 250px;
-  max-width: 250px;
-  background-color: white;
+  max-width: 170px !important;
 }
 
 .profile-pop-over-btn {

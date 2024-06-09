@@ -70,16 +70,25 @@ const Cart = ({ show, toggle, collections }) => {
         Shoppping Cart
       </MDBModalHeader>
       <MDBModalBody>
-        <Table
-          cart={cart}
-          handleChangeSelectAll={handleChangeSelectAll}
-          isCheckAll={isCheckAll}
-          checkOutProducts={checkOutProducts}
-          handleActionInCheckOut={handleActionInCheckOut}
-        />
+        {cart.length > 0 ? (
+          <Table
+            cart={cart}
+            handleChangeSelectAll={handleChangeSelectAll}
+            isCheckAll={isCheckAll}
+            checkOutProducts={checkOutProducts}
+            handleActionInCheckOut={handleActionInCheckOut}
+          />
+        ) : (
+          <h6 className="text-center">No Cart</h6>
+        )}
       </MDBModalBody>
       <MDBModalFooter className="d-flex justify-content-end  fixed-footer">
-        <MDBBtn color="primary" outline onClick={handleCheckOut}>
+        <MDBBtn
+          color="primary"
+          outline
+          onClick={handleCheckOut}
+          disabled={cart.length === 0}
+        >
           <span>
             Check Out
             <i className="fas fa-long-arrow-alt-right ms-2"></i>

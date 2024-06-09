@@ -1,18 +1,6 @@
 const Entity = require("../../models/administrator/Products"),
-  { v4: uuidv4 } = require("uuid"),
+  Stocks = require("../../models/stockman/Stocks"),
   fs = require("fs");
-
-const upload = (name, _id, base64) => {
-  const url = `./assets/products`;
-  if (!fs.existsSync(url)) {
-    fs.mkdirSync(url, { recursive: true });
-  }
-  try {
-    fs.writeFileSync(`${url}/${name}-${_id}.jpg`, base64, "base64");
-  } catch (error) {
-    console.log(error.message);
-  }
-};
 
 const handleVariantImagesUpload = (productID, variantImages) => {
   const options = variantImages.options;
@@ -63,6 +51,113 @@ exports.browse = (req, res) =>
       })
     )
     .catch((error) => res.status(400).json({ error: error.message }));
+
+const filteredVariations = async (product, options, has2Variant) => {
+  const container = [];
+
+  for (const option of options) {
+    const { prices = [] } = option;
+
+    if (has2Variant) {
+      const pricesPromises = prices.map(async (price) => {
+        const isExist = await Stocks.find({
+          product: product._id,
+          variant1: option._id,
+          variant2: price._id,
+        });
+
+        if (isExist.length > 0) return price;
+      });
+
+      const resolvedPrices = await Promise.all(pricesPromises);
+      const filteredPrices = resolvedPrices.filter(Boolean);
+
+      if (filteredPrices.length > 0) {
+        //ang ginagawa lang neto kukunin niya parin yung prices kahit walang stock pero magiging disable yugn walang stock
+        const newFilteredPrices = option.prices.map((price) => {
+          const isExist = filteredPrices.some(({ _id }) => _id === price._id);
+          if (isExist) {
+            return price;
+          } else {
+            return { ...price, disable: true };
+          }
+        });
+        container.push({ ...option, prices: newFilteredPrices });
+      }
+    } else {
+      const isExist = await Stocks.find({
+        product: product._id,
+        variant1: option._id,
+      });
+
+      if (isExist.length > 0) {
+        container.push(option);
+      }
+    }
+  }
+
+  return container;
+};
+
+exports.sellingProducts = async (_, res) => {
+  try {
+    const products = await Entity.find();
+    const container = [];
+
+    for (const product of products) {
+      const { has2Variant, hasVariant } = product;
+
+      if (hasVariant) {
+        const { variations = [] } = product;
+        const options = [...variations[0].options];
+
+        const filteredOptions = await filteredVariations(
+          product,
+          options,
+          has2Variant
+        );
+
+        var optionsInVariant2 = {};
+        if (has2Variant) {
+          //para kunin yung pinaka maraming choices na prices para yun yung isoshow na available sa variant2
+          optionsInVariant2 = objectWithMaxArray = filteredOptions.reduce(
+            (maxObj, currentObj) => {
+              return currentObj.prices.length > (maxObj.prices?.length || 0)
+                ? currentObj
+                : maxObj;
+            },
+            {}
+          );
+        }
+
+        if (filteredOptions.length > 0) {
+          container.push({
+            ...product._doc,
+            variations: [
+              { ...variations[0], options: filteredOptions },
+              has2Variant && {
+                ...variations[1],
+                options: optionsInVariant2.prices,
+              },
+            ],
+          });
+        }
+      } else {
+        const isExist = await Stocks.find({ product: product._id });
+        if (isExist.length > 0) {
+          container.push(product);
+        }
+      }
+    }
+
+    res.status(200).json({
+      payload: container,
+      success: "Successfully Fetch Selling Products",
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 const handleRemoveTheBase64 = (media) => {
   const product = media.product.map(({ label }) => ({

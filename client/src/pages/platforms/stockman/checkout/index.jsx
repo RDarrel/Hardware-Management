@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { SUPPLIERS, BUY } from "../../../../services/redux/slices/cart";
-import { fullName } from "../../../../services/utilities";
+import { fullName, variation } from "../../../../services/utilities";
 import "./style.css";
 
 import {
@@ -17,6 +17,7 @@ import {
 
 import Table from "./table";
 import Swal from "sweetalert2";
+
 const Checkout = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
     { checkOutProducts, suppliers: supplierCollections } = useSelector(
@@ -26,8 +27,8 @@ const Checkout = () => {
     [suppliers, setSuppliers] = useState([]),
     [isShowNote, setIsShowNote] = useState(true),
     [supplier, setSupplier] = useState(""),
-    [isAllProductHaveSubtotal, setIsAllProductHaveSubtotal] = useState(false),
-    [total, setTotal] = useState(0),
+    // [isAllProductHaveSubtotal, setIsAllProductHaveSubtotal] = useState(false),
+    // [total, setTotal] = useState(0),
     dispatch = useDispatch(),
     history = useHistory();
 
@@ -54,33 +55,35 @@ const Checkout = () => {
     }
   }, [supplierCollections]);
 
-  useEffect(() => {
-    const _isAllProductHaveSubtotal = cart.every(
-      (item) => item.hasOwnProperty("subtotal") && item.subtotal > 0
-    );
+  console.log(cart);
 
-    if (_isAllProductHaveSubtotal) {
-      const _total = cart.reduce((accumulator, currentValue) => {
-        return (accumulator += currentValue.subtotal);
-      }, 0);
+  // useEffect(() => {
+  //   const _isAllProductHaveSubtotal = cart.every(
+  //     (item) => item.hasOwnProperty("subtotal") && item.subtotal > 0
+  //   );
 
-      setTotal(_total);
-      setIsAllProductHaveSubtotal(true);
-    } else {
-      setIsAllProductHaveSubtotal(false);
-    }
-  }, [cart]);
+  //   if (_isAllProductHaveSubtotal) {
+  //     const _total = cart.reduce((accumulator, currentValue) => {
+  //       return (accumulator += currentValue.capital);
+  //     }, 0);
+
+  //     setTotal(_total);
+  //     setIsAllProductHaveSubtotal(true);
+  //   } else {
+  //     setIsAllProductHaveSubtotal(false);
+  //   }
+  // }, [cart]);
 
   const handleBuy = async () => {
-    if (!isAllProductHaveSubtotal) {
-      return await Swal.fire({
-        title: "Warning!",
-        text: "Please make sure to enter the price for all products.",
-        icon: "info",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-    }
+    // if (!isAllProductHaveSubtotal) {
+    //   return await Swal.fire({
+    //     title: "Warning!",
+    //     text: "Please make sure to enter the price for all products.",
+    //     icon: "info",
+    //     confirmButtonColor: "#3085d6",
+    //     confirmButtonText: "OK",
+    //   });
+    // }
     const supplierName = suppliers.find(({ _id }) => _id === supplier).company;
     Swal.fire({
       title: "Are you sure?",
@@ -98,24 +101,34 @@ const Checkout = () => {
           text: `Your purchase has been confirmed with supplier: "${supplierName}".`,
           icon: "success",
         }).then(() => {
+          const carthWithSubtotalAndCapital = cart.map((obj) => ({
+            ...obj,
+            subtotal: variation.getTheSubTotal("capital", obj, obj.product),
+            capital: variation.getTheCapitalOrSrp("capital", obj, obj.product),
+          }));
+          const total = carthWithSubtotalAndCapital.reduce(
+            (accumulator, currentValue) => {
+              return (accumulator += currentValue.subtotal);
+            },
+            0
+          );
+
           const purchase = {
             purchaseBy: auth._id,
             supplier,
             total,
           };
-          dispatch(BUY({ token, data: { purchase, cart } }));
+
+          dispatch(
+            BUY({
+              token,
+              data: { purchase, cart: carthWithSubtotalAndCapital },
+            })
+          );
           history.push("/store");
         });
       }
     });
-
-    // return await Swal.fire({
-    //   title: "Success!",
-    //   text: "Purchase completed successfully.",
-    //   icon: "info",
-    //   confirmButtonColor: "#3085d6",
-    //   confirmButtonText: "OK",
-    // });
   };
 
   return (
@@ -202,15 +215,15 @@ const Checkout = () => {
             <Table cart={cart} setCart={setCart} />
           </div>
           <hr className="dotted" />
-          <MDBRow className="mr-2">
+          <MDBRow>
             <MDBCol
               md="12"
               className="text-right d-flex align-items-center justify-content-end"
             >
-              <h5 className="mr-5">Order Total ({cart.length} Item):</h5>
-              <h2 style={{ fontWeight: 900 }} className="text-danger  ml-2">
+              <h5 className="mr-4">Order Total ({cart.length} Item)</h5>
+              {/* <h2 style={{ fontWeight: 900 }} className="text-danger  ml-2">
                 {isAllProductHaveSubtotal ? `₱${total}` : `₱--`}
-              </h2>
+              </h2> */}
             </MDBCol>
           </MDBRow>
           <MDBRow className="mt-3 mr-1 mb-3">

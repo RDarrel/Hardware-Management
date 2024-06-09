@@ -10,13 +10,13 @@ const Card = ({ products, setSelected, setIsView }) => {
       <MDBCol size="12" className=" d-flex justify-content-center">
         <MDBRow className="mt-4 w-75">
           {products.map((product, index) => {
-            const { variations = [], hasVariant, has2Variant, price } = product;
+            const { variations = [], hasVariant, has2Variant, srp } = product;
 
             const showPrice = hasVariant
               ? has2Variant
                 ? variations[0]?.options[0].prices[0]?.srp
                 : variations[0]?.options[0].srp
-              : price;
+              : srp;
             return (
               <MDBCol md="3" className="mt-2 " key={index}>
                 <MDBCard

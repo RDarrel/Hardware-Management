@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./table.css";
 import { MDBTable } from "mdbreact";
 import {
@@ -22,6 +22,8 @@ const Table = ({
     [variant1, setVariant1] = useState(""),
     [variant2, setVariant2] = useState(""),
     dispatch = useDispatch();
+
+  useEffect(() => {}, [cart]);
 
   const handleClose = () => {
     setPopoverKey((prevKey) => prevKey + 1);
@@ -145,7 +147,8 @@ const Table = ({
               </div>
             </th>
             <th className="text-center">Quantity/Kilo</th>
-            <th>Action</th>
+            <th>Subtotal</th>
+            <th className="text-center">Action</th>
           </tr>
         </thead>
         <Tbody

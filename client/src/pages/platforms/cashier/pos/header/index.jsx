@@ -11,26 +11,11 @@ import {
   MDBBtn,
 } from "mdbreact";
 import Profile from "../profile";
-import { ENDPOINT } from "../../../../../services/utilities";
+import { ENDPOINT, variation } from "../../../../../services/utilities";
 
 export const Header = ({ cart, setIsShowCart }) => {
   const [id, setID] = useState(-1);
 
-  const getThePrice = (cart, product) => {
-    const { variant1 = "", variant2 = "" } = cart;
-    const { hasVariant, has2Variant, variations = [] } = product;
-    if (hasVariant) {
-      if (has2Variant) {
-        return variations[0].options
-          .find(({ _id }) => _id === variant1)
-          .prices.find(({ _id }) => _id === variant2).srp;
-      } else {
-        return variations[0].options.find(({ _id }) => _id === variant1).srp;
-      }
-    } else {
-      return product.price;
-    }
-  };
   return (
     <MDBCard style={{ position: "sticky", top: "0", zIndex: "1000" }}>
       <MDBCardBody className="bg-danger m-0 p-0 ">
@@ -51,7 +36,7 @@ export const Header = ({ cart, setIsShowCart }) => {
                 </h4>
                 <div className="input-container ml-3">
                   <input
-                    className="form-control"
+                    className="form-control input"
                     style={{ height: "50px" }}
                     placeholder="Search..."
                   />
@@ -124,7 +109,7 @@ export const Header = ({ cart, setIsShowCart }) => {
                             </MDBCol>
                             <MDBCol md="2">
                               <h5 className="text-danger ">
-                                ₱{getThePrice(obj, product)}{" "}
+                                ₱{variation.getTheSubTotal("srp", obj, product)}{" "}
                               </h5>
                             </MDBCol>
                           </MDBRow>

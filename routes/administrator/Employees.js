@@ -1,7 +1,7 @@
 const router = require("express").Router(),
-  { browse } = require("../../controllers/administrator/Employees"),
+  { browse, save } = require("../../controllers/administrator/Employees"),
   { validate } = require("../../middleware/jwt");
 
-router.get("/", validate, browse);
+router.get("/", validate, browse).post("/save", validate, save);
 
 module.exports = router;
