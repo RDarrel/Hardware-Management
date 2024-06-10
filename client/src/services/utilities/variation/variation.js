@@ -21,12 +21,13 @@ const computeSubtotal = ({ srp, isPerKilo, kilo, kiloGrams, quantity }) => {
 
 const variation = {
   name: (obj, variations) => {
-    const foundVariant1 = variations[0].options.find(
+    const _variations = variations.filter(Boolean);
+    const foundVariant1 = _variations[0].options?.find(
       ({ _id }) => _id === obj.variant1
     )?.name;
 
-    if (variations.length > 1) {
-      const foundVariant2 = variations[1].options.find(
+    if (_variations.length > 1) {
+      const foundVariant2 = _variations[1].options.find(
         ({ _id }) => _id === obj.variant2
       )?.name;
 
@@ -80,8 +81,9 @@ const variation = {
   },
 
   getTheCapitalOrSrp: (name, cart, product) => {
-    const { hasVariant, has2Variant, variations, isPerKilo } = product;
-    const { variant1 = "", variant2 = "", kiloGrams, kilo, quantity } = cart;
+    //name= srp or capital
+    const { hasVariant, has2Variant, variations } = product;
+    const { variant1 = "", variant2 = "" } = cart;
 
     if (hasVariant) {
       if (has2Variant) {
@@ -89,10 +91,7 @@ const variation = {
           .find(({ _id }) => _id === variant1)
           .prices.find(({ _id }) => _id === variant2)[name];
       } else {
-        const srp = variations[0].options.find(
-          ({ _id }) => _id === variant1
-        ).srp;
-        return computeSubtotal({ srp, isPerKilo, kilo, kiloGrams, quantity });
+        return variations[0].options.find(({ _id }) => _id === variant1)[name];
       }
     } else {
       return product[name];

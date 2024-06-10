@@ -18,12 +18,12 @@ const modelSchema = new mongoose.Schema(
       required: true,
     },
 
-    purchase: {
+    purchases: {
       type: [
         {
           product: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Products", // Tamang reference ng model
+            ref: "Products",
             required: true,
           },
           srp: {

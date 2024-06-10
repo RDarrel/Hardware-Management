@@ -30,34 +30,14 @@ export const Stocks = () => {
     }
   }, [collections]);
 
-  const getTheGrams = (grams) => {
-    switch (grams) {
-      case "25":
-        return "1/4";
-      case "50":
-        return "1/2";
-      case "75":
-        return "3/4";
-      default:
-        return grams;
-    }
-  };
-
   const formattedStock = (obj, isPerKilo) => {
-    const stock = Number(obj.stock);
+    const stock = Number(isPerKilo ? obj.kiloStock : obj.quantityStock);
     const stockColor = stock < 5 ? "red" : "green";
 
     if (isPerKilo) {
-      const kilos = stock.toString().split(".");
-      const kilo = Number(kilos[0]);
-      const grams = kilos[1] ? getTheGrams(kilos[1]) : null;
-
       return (
         <MDBBadge color={stockColor} className="p-2" pill>
-          <h6 className="font-weight-bold">
-            {kilo} kilo{kilo > 1 ? "s" : ""}
-            {grams && ` and ${grams}`}
-          </h6>
+          <h6 className="font-weight-bold">{stock}</h6>
         </MDBBadge>
       );
     } else {

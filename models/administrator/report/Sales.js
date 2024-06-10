@@ -9,7 +9,7 @@ const modelSchema = new mongoose.Schema(
     },
 
     invoice_no: {
-      type: Number,
+      type: String,
       required: true,
     },
 
@@ -26,7 +26,6 @@ const modelSchema = new mongoose.Schema(
     kilo: {
       type: Number,
     },
-
     kiloGrams: {
       type: Number,
     },

@@ -13,18 +13,17 @@ exports.browse = async (_, res) => {
 
       if (index > -1) {
         if (currentValue.product.isPerKilo) {
-          accumulator[index].stock +=
-            currentValue.kilo + currentValue.kiloGrams;
+          accumulator[index].kiloStock += currentValue.kiloStock;
         } else {
           accumulator[index].stock += currentValue.quantity;
         }
       } else {
-        const { product, kilo = 0, kiloGrams = 0, quantity = 0 } = currentValue;
+        const { product, kiloStock = 0, quantity = 0 } = currentValue;
         const { isPerKilo } = product;
         accumulator.push({
           ...currentValue._doc,
           key,
-          stock: isPerKilo ? kilo + kiloGrams : quantity,
+          stock: isPerKilo ? kiloStock : quantity,
         });
       }
 

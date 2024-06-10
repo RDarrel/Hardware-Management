@@ -20,6 +20,14 @@ const modelSchema = new mongoose.Schema(
       type: String,
     },
 
+    kiloStock: {
+      type: Number,
+    },
+
+    quantityStock: {
+      type: Number,
+    },
+
     capital: {
       type: Number,
     },

@@ -55,8 +55,6 @@ const Checkout = () => {
     }
   }, [supplierCollections]);
 
-  console.log(cart);
-
   // useEffect(() => {
   //   const _isAllProductHaveSubtotal = cart.every(
   //     (item) => item.hasOwnProperty("subtotal") && item.subtotal > 0
@@ -105,6 +103,11 @@ const Checkout = () => {
             ...obj,
             subtotal: variation.getTheSubTotal("capital", obj, obj.product),
             capital: variation.getTheCapitalOrSrp("capital", obj, obj.product),
+            ...(obj.product.isPerkilo
+              ? {
+                  kiloStock: obj.kilo + obj.kiloGrams,
+                }
+              : { quantityStock: obj.quantity }),
           }));
           const total = carthWithSubtotalAndCapital.reduce(
             (accumulator, currentValue) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import { SUPPLIERS, BUY } from "../../../services/redux/slices/cart";
+import { SAVE } from "../../../services/redux/slices/cashier/pos";
 import {
   formattedDate,
   fullName,
@@ -20,72 +20,38 @@ import Table from "./table";
 import Swal from "sweetalert2";
 const Checkout = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
-    { checkOutProducts, suppliers: supplierCollections } = useSelector(
-      ({ cart }) => cart
-    ),
+    { checkOutProducts } = useSelector(({ cart }) => cart),
     [cart, setCart] = useState([]),
-    [suppliers, setSuppliers] = useState([]),
-    [supplier, setSupplier] = useState(""),
-    [isAllProductHaveSubtotal, setIsAllProductHaveSubtotal] = useState(false),
     [total, setTotal] = useState(0),
     dispatch = useDispatch(),
     history = useHistory();
 
   useEffect(() => {
-    dispatch(SUPPLIERS({ token }));
-  }, [dispatch, token]);
-
-  useEffect(() => {
     const productWihtSubtotal = checkOutProducts.map((obj) => ({
       ...obj,
       subtotal: variation.getTheSubTotal("srp", obj, obj.product),
+      srp: variation.getTheCapitalOrSrp("srp", obj, obj.product),
     }));
 
     setCart(productWihtSubtotal);
   }, [checkOutProducts]);
 
   useEffect(() => {
-    if (supplierCollections.length > 0) {
-      setSuppliers(supplierCollections);
-      setSupplier(supplierCollections[0]._id);
-    }
-  }, [supplierCollections]);
+    const _total = cart.reduce((accumulator, currentValue) => {
+      return (accumulator += currentValue.subtotal);
+    }, 0);
 
-  useEffect(() => {
-    const _isAllProductHaveSubtotal = cart.every(
-      (item) => item.hasOwnProperty("subtotal") && item.subtotal > 0
-    );
-
-    if (_isAllProductHaveSubtotal) {
-      const _total = cart.reduce((accumulator, currentValue) => {
-        return (accumulator += currentValue.subtotal);
-      }, 0);
-
-      setTotal(_total);
-      setIsAllProductHaveSubtotal(true);
-    } else {
-      setIsAllProductHaveSubtotal(false);
-    }
+    setTotal(_total);
   }, [cart]);
 
+  console.log(cart);
   const handleBuy = async () => {
-    if (!isAllProductHaveSubtotal) {
-      return await Swal.fire({
-        title: "Warning!",
-        text: "Please make sure to enter the price for all products.",
-        icon: "info",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-    }
-    const supplierName = suppliers.find(({ _id }) => _id === supplier).company;
     const timestamp = Date.now(); // Get the current timestamp
     const randomNum = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
-    const invoiceNo = `${timestamp}${randomNum}`;
-    console.log(invoiceNo);
+    const invoice_no = `${timestamp}${randomNum}`;
     Swal.fire({
       title: "Are you sure?",
-      text: `Before proceeding with your purchase, please double-check that the supplier "${supplierName}" is correct.`,
+      text: `You want to buy this product kindly check your products.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -94,29 +60,20 @@ const Checkout = () => {
       cancelButtonText: "No, cancel",
     }).then((result) => {
       if (result.isConfirmed) {
+        dispatch(
+          SAVE({
+            token,
+            data: { invoice_no, cashier: auth._id, total, purchases: cart },
+          })
+        );
         Swal.fire({
-          title: "Purchase Confirmed",
-          text: `Your purchase has been confirmed with supplier: "${supplierName}".`,
+          title: "Successfully",
           icon: "success",
         }).then(() => {
-          const purchase = {
-            purchaseBy: auth._id,
-            supplier,
-            total,
-          };
-          dispatch(BUY({ token, data: { purchase, cart } }));
-          history.push("/store");
+          history.push("/pos");
         });
       }
     });
-
-    // return await Swal.fire({
-    //   title: "Success!",
-    //   text: "Purchase completed successfully.",
-    //   icon: "info",
-    //   confirmButtonColor: "#3085d6",
-    //   confirmButtonText: "OK",
-    // });
   };
 
   return (
@@ -189,7 +146,7 @@ const Checkout = () => {
                 >
                   <h5 className="mr-5">Order Total ({cart.length} Item):</h5>
                   <h2 style={{ fontWeight: 900 }} className="text-danger  ml-2">
-                    {isAllProductHaveSubtotal ? `₱${total}` : `₱--`}
+                    ₱${total}
                   </h2>
                 </MDBCol>
               </MDBRow>

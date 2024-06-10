@@ -1,7 +1,7 @@
 .cart-popover-body {
   position: absolute !important;
   z-index: 999 !important;
-  max-width: 500px !important;
+  max-width: 620px !important;
   background-color: white !important;
   left: -400px !important;
   transform: scale(0.99);
