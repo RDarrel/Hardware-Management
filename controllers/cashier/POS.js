@@ -1,6 +1,8 @@
 const Sales = require("../../models/administrator/report/Sales"),
   Stocks = require("../../models/stockman/Stocks"),
-  Transactions = require("../../models/administrator/report/Transactions");
+  Transactions = require("../../models/administrator/report/Transactions"),
+  Cart = require("../../models/Cart"),
+  handleDuplicate = require("../../config/duplicate");
 
 const stocksPerKilo = async (
   stock,
@@ -19,7 +21,7 @@ const stocksPerKilo = async (
     const { has2Variant, hasVariant, _id } = product;
 
     const totalPurchase = kiloPurchase + gramsPurchase;
-    const stockIsEnough = stock.kilo >= totalPurchase;
+    const stockIsEnough = stock.kiloStock >= totalPurchase;
 
     const query = {
       product: _id,
@@ -44,12 +46,19 @@ const stocksPerKilo = async (
 
     await Stocks.findByIdAndUpdate(
       stock._id,
-      { kilo: !stockIsEnough ? 0 : Number(remainingStock - 0.005).toFixed(2) },
+      {
+        kiloStock: !stockIsEnough
+          ? 0
+          : Number(remainingStock - 0.001).toFixed(2),
+      },
       { new: true }
     );
 
     if (!stockIsEnough) {
       const newStock = await Stocks.findOne(query).sort({ createdAt: 1 });
+      if (!newStock) {
+        newStock = await Stocks.findOne(query).sort({ createdAt: -1 });
+      }
       const remainingPurchaseKilo = Math.abs(remainingStock);
       const remainingNewStock = newStock.kiloStock - remainingPurchaseKilo;
 
@@ -63,7 +72,7 @@ const stocksPerKilo = async (
 
       await Stocks.findByIdAndUpdate(
         newStock._id,
-        { kilo: Number(remainingNewStock - 0.005).toFixed(2) },
+        { kiloStock: Number(remainingNewStock - 0.001).toFixed(2) },
         { new: true }
       );
     }
@@ -78,9 +87,9 @@ const stocksPerQuantity = async (
   purchasesWithCapital,
   invoice_no
 ) => {
-  const { quantity: purchaseQty, product } = purchase;
+  const { quantity: purchaseQty, product, variant1, variant2 } = purchase;
   const { has2Variant, hasVariant, _id } = product;
-  const stockIsEnough = stock.quantity >= purchaseQty;
+  const stockIsEnough = stock.quantityStock >= purchaseQty;
   const query = {
     product: _id,
     quantity: { $ne: 0 },
@@ -102,7 +111,7 @@ const stocksPerQuantity = async (
 
     await Stocks.findByIdAndUpdate(
       stock._id,
-      { quantity: !stockIsEnough ? 0 : remainingStock },
+      { quantityStock: !stockIsEnough ? 0 : remainingStock },
       { new: true }
     );
 
@@ -110,6 +119,9 @@ const stocksPerQuantity = async (
       const remaingPurchaseQty = Math.abs(remainingStock); // kaya ko siya sinalin jan kasi yung result na naging negative yun yung quantity na hindi pa na sasave sa sales
 
       const newStock = await Stocks.findOne(query).sort({ createdAt: 1 });
+      if (!newStock) {
+        newStock = await Stocks.findOne(query).sort({ createdAt: -1 });
+      }
       const remainingNewStock = newStock.quantityStock - remaingPurchaseQty;
       purchasesWithCapital.push({
         ...purchase,
@@ -121,7 +133,7 @@ const stocksPerQuantity = async (
 
       await Stocks.findByIdAndUpdate(
         newStock._id,
-        { quantity: remainingNewStock },
+        { quantityStock: remainingNewStock },
         { new: true }
       );
     }
@@ -134,17 +146,25 @@ const stocks = async (purchases, invoice_no) => {
   try {
     const purchasesWithCapital = [];
     for (const purchase of purchases) {
-      const { variant1, variant2, product } = purchase;
+      delete purchase._id;
+      const { variant1 = "", variant2 = "", product } = purchase;
       const { _id, isPerKilo, has2Variant, hasVariant } = product;
+
       const query = {
         product: _id,
         ...(!isPerKilo && { quantity: { $ne: 0 } }),
         ...(isPerKilo && { kilo: { $ne: 0 } }),
-        ...(hasVariant && { variant1 }),
-        ...(has2Variant && { variant2 }),
+        ...(hasVariant && { variant1: variant1 }),
+        ...(has2Variant && { variant2: variant2 }),
       };
 
       const stock = await Stocks.findOne(query).sort({ createdAt: 1 });
+
+      if (!stock) {
+        //para kapag wala siyang mahanap na meron pang stock mag nenegative siya sa pinaka unang nabili na stock
+        stock = await Stocks.findOne(query).sort({ createdAt: -1 });
+      }
+
       if (isPerKilo) {
         await stocksPerKilo(stock, purchase, purchasesWithCapital, invoice_no);
       } else {
@@ -163,10 +183,13 @@ const stocks = async (purchases, invoice_no) => {
   }
 };
 
-exports.save = async (req, res) => {
+exports.pos = async (req, res) => {
   try {
     const { purchases, invoice_no, cashier, total } = req.body;
+    const cartIdsToDelete = purchases.map(({ _id }) => _id).filter(Boolean);
+
     const purchasesWithCapital = await stocks(purchases, invoice_no);
+
     await Sales.insertMany(purchasesWithCapital);
     await Transactions.create({
       cashier,
@@ -175,7 +198,9 @@ exports.save = async (req, res) => {
       purchases,
     });
 
-    res.json({ success: "Successfully Buy", payload: {} });
+    await Cart.deleteMany({ _id: { $in: cartIdsToDelete } });
+
+    res.json({ success: "Successfully Buy", payload: cartIdsToDelete });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

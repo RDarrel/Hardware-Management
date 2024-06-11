@@ -56,7 +56,12 @@ const POS = () => {
         isView={isView}
         toggleView={toggleView}
       />
-      <Cart toggle={toggleCart} collections={cart} show={isShowCart} />
+      <Cart
+        toggle={toggleCart}
+        collections={cart}
+        show={isShowCart}
+        isCashier={true}
+      />
     </div>
   );
 };

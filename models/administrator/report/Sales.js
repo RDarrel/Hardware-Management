@@ -26,6 +26,7 @@ const modelSchema = new mongoose.Schema(
     kilo: {
       type: Number,
     },
+
     kiloGrams: {
       type: Number,
     },

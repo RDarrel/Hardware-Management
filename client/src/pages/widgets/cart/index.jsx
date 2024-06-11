@@ -13,7 +13,7 @@ import {
 import Table from "./table";
 import { useDispatch } from "react-redux";
 
-const Cart = ({ show, toggle, collections }) => {
+const Cart = ({ show, toggle, collections, isCashier = false }) => {
   const [isCheckAll, setIsCheckAll] = useState(true),
     [checkOutProducts, setCheckOutProducts] = useState([]),
     [cart, setCart] = useState([]),
@@ -53,15 +53,20 @@ const Cart = ({ show, toggle, collections }) => {
   };
 
   const handleCheckOut = () => {
-    dispatch(CHECKOUT(checkOutProducts));
-    history.push("/pos/checkout");
+    if (isCashier) {
+      dispatch(CHECKOUT(checkOutProducts));
+      history.push("pos/checkout");
+    } else {
+      dispatch(CHECKOUT(checkOutProducts));
+      history.push("/checkout");
+    }
   };
   return (
     <MDBModal
       isOpen={show}
       toggle={() => toggle()}
       size="lg"
-      className="modal-notify modal-primary "
+      className="modal-notify modal-primary"
       fullHeight
       position="right"
     >
@@ -69,18 +74,18 @@ const Cart = ({ show, toggle, collections }) => {
         <MDBIcon icon="shopping-cart" className="mr-2" />
         Shoppping Cart
       </MDBModalHeader>
-      <MDBModalBody className="pr-0">
+      <MDBModalBody>
         {cart.length > 0 ? (
           <Table
             cart={cart}
-            setCart={setCart}
             handleChangeSelectAll={handleChangeSelectAll}
             isCheckAll={isCheckAll}
+            isCashier={isCashier}
             checkOutProducts={checkOutProducts}
             handleActionInCheckOut={handleActionInCheckOut}
           />
         ) : (
-          <h5 className="text-center">No Cart</h5>
+          <h6 className="text-center">No Cart</h6>
         )}
       </MDBModalBody>
       <MDBModalFooter className="d-flex justify-content-end  fixed-footer">

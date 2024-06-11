@@ -31,7 +31,7 @@ export const Stocks = () => {
   }, [collections]);
 
   const formattedStock = (obj, isPerKilo) => {
-    const stock = Number(isPerKilo ? obj.kiloStock : obj.quantityStock);
+    const stock = Number(obj.stock);
     const stockColor = stock < 5 ? "red" : "green";
 
     if (isPerKilo) {
@@ -43,7 +43,7 @@ export const Stocks = () => {
     } else {
       return (
         <MDBBadge color={stockColor} className="p-2" pill>
-          <h6 className="font-weight-bold">{stock} qty</h6>
+          <h6 className="font-weight-bold">{stock} </h6>
         </MDBBadge>
       );
     }
@@ -59,6 +59,7 @@ export const Stocks = () => {
             <tr>
               <th>#</th>
               <th>Product Name</th>
+              <th>Unit</th>
               <th>Stock</th>
             </tr>
           </thead>
@@ -106,6 +107,7 @@ export const Stocks = () => {
                       </div>
                     </div>
                   </td>
+                  <td>{obj.product.isPerKilo ? "Kilo" : "Pcs"}</td>
                   <td>{formattedStock(obj, product.isPerKilo)}</td>
                 </tr>
               );

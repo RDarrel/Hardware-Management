@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import { SAVE } from "../../../services/redux/slices/cashier/pos";
+import { POS } from "../../../services/redux/slices/cart";
 import {
   formattedDate,
   fullName,
@@ -61,7 +61,7 @@ const Checkout = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(
-          SAVE({
+          POS({
             token,
             data: { invoice_no, cashier: auth._id, total, purchases: cart },
           })

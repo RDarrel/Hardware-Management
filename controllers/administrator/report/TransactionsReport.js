@@ -1,39 +1,20 @@
-const Entity = require("../../models/stockman/Stocks"),
-  handleDuplicate = require("../../config/duplicate");
+const Entity = require("../../../models/administrator/report/Transactions"),
+  handleDuplicate = require("../../../config/duplicate");
 
-exports.browse = async (_, res) => {
-  try {
-    const stocks = await Entity.find().populate("product");
-    const computedStocks = stocks.reduce((accumulator, currentValue) => {
-      const key = `${currentValue.product._id}-${currentValue.variant1 || ""}-${
-        currentValue.variant2 || ""
-      }`;
-
-      const index = accumulator.findIndex((accu) => accu.key === key);
-
-      if (index > -1) {
-        if (currentValue.product.isPerKilo) {
-          accumulator[index].stock += currentValue.kiloStock;
-        } else {
-          accumulator[index].stock += currentValue.quantityStock;
-        }
-      } else {
-        const { product, kiloStock = 0, quantityStock = 0 } = currentValue;
-        const { isPerKilo } = product;
-        accumulator.push({
-          ...currentValue._doc,
-          key,
-          stock: isPerKilo ? kiloStock : quantityStock,
-        });
-      }
-
-      return accumulator;
-    }, []);
-    res.json({ payload: computedStocks });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
+exports.browse = (_, res) =>
+  Entity.find()
+    .populate("purchases.product")
+    .populate("cashier")
+    .select("-__v")
+    .sort({ createdAt: -1 })
+    .lean()
+    .then((items) =>
+      res.json({
+        success: "Transactions Fetched Successfully",
+        payload: items.filter((item) => item.name !== "ADMINISTRATOR"),
+      })
+    )
+    .catch((error) => res.status(400).json({ error: error.message }));
 
 exports.save = (req, res) =>
   Entity.create(req.body)

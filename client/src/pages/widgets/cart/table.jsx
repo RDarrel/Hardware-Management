@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./table.css";
 import { MDBTable } from "mdbreact";
 import {
@@ -16,14 +16,13 @@ const Table = ({
   handleActionInCheckOut,
   handleChangeSelectAll,
   isCheckAll,
+  isCashier,
 }) => {
   const { token } = useSelector(({ auth }) => auth),
     [popoverKey, setPopoverKey] = useState(0),
     [variant1, setVariant1] = useState(""),
     [variant2, setVariant2] = useState(""),
     dispatch = useDispatch();
-
-  useEffect(() => {}, [cart]);
 
   const handleClose = () => {
     setPopoverKey((prevKey) => prevKey + 1);
@@ -147,8 +146,8 @@ const Table = ({
               </div>
             </th>
             <th className="text-center">Quantity/Kilo</th>
-            <th>Subtotal</th>
-            <th className="text-center">Action</th>
+            {isCashier && <th>Subtotal</th>}
+            <th>Action</th>
           </tr>
         </thead>
         <Tbody
@@ -168,6 +167,7 @@ const Table = ({
           popoverKey={popoverKey}
           isCheckAll={isCheckAll}
           handleActionInCheckOut={handleActionInCheckOut}
+          isCashier={isCashier}
         />
       </MDBTable>
     </>

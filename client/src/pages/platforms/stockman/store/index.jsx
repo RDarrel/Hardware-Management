@@ -15,7 +15,7 @@ import { Header } from "./header";
 import View from "./view/index";
 import "./product.css";
 import { ProducCard } from "./card";
-import Cart from "./cart";
+import Cart from "../../../widgets/cart";
 
 const Store = () => {
   const { token, auth } = useSelector(({ auth }) => auth),

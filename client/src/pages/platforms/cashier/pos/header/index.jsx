@@ -32,7 +32,7 @@ export const Header = ({ cart, setIsShowCart }) => {
                   className="mr-2"
                 />
                 <h4 className="mt-3 text-white text-nowrap">
-                  PERLA'S HARDWARE
+                  LIBERTY'S HARDWARE
                 </h4>
                 <div className="input-container ml-3">
                   <input

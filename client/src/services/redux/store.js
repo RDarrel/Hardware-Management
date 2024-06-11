@@ -11,6 +11,9 @@ import suppliers from "./slices/administrator/suppliers";
 import cart from "./slices/cart";
 import purchases from "./slices/stockman/purchases";
 import stocks from "./slices/stockman/stocks";
+import pos from "./slices/cashier/pos";
+import salesReport from "./slices/administrator/report/salesReport";
+import transactionsReport from "./slices/administrator/report/transactionsReport";
 const store = configureStore({
   reducer: {
     auth,
@@ -25,6 +28,9 @@ const store = configureStore({
     cart,
     purchases,
     stocks,
+    pos,
+    salesReport,
+    transactionsReport,
   },
 });
 

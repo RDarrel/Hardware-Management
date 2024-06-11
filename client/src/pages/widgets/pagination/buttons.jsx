@@ -9,6 +9,7 @@ import {
 
 const PaginationButtons = ({
   title,
+  mt = 5,
   page = 1,
   setPage,
   max, // max of page
@@ -102,7 +103,7 @@ const PaginationButtons = ({
   };
 
   return (
-    <MDBRow className="mt-5 d-flex align-items-center">
+    <MDBRow className={`mt-${mt} d-flex align-items-center`}>
       {array.length !== 0 && (
         <>
           <MDBCol>

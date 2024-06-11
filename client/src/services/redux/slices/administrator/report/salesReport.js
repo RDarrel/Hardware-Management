@@ -1,11 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axioKit, bulkPayload } from "../../../utilities";
+import { axioKit, bulkPayload } from "../../../../utilities";
 
-const name = "cashier/pos";
+const name = "administrator/SalesReport";
 
 const initialState = {
   collections: [],
-  cart: [],
   progress: 0,
   isSuccess: false,
   isLoading: false,
@@ -220,10 +219,8 @@ export const reduxSlice = createSlice({
       })
       .addCase(SAVE.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
-        state.cart = state.cart.filter(
-          (collection) => !payload.includes(collection._id)
-        );
         state.message = success;
+        state.collections.unshift(payload);
         state.isSuccess = true;
         state.isLoading = false;
       })
@@ -232,7 +229,6 @@ export const reduxSlice = createSlice({
         state.message = error.message;
         state.isLoading = false;
       })
-
       .addCase(DESTROY.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
         const index = state.collections.findIndex(

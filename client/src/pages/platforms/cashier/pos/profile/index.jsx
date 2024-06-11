@@ -9,6 +9,7 @@ import {
   MDBPopoverBody,
 } from "mdbreact";
 import { useSelector } from "react-redux";
+import { fullName } from "../../../../../services/utilities";
 
 const Profile = () => {
   const { auth } = useSelector(({ auth }) => auth);
@@ -27,12 +28,12 @@ const Profile = () => {
         </div>
         <MDBPopover placement="bottom" popover id={`popover-${id}`} key={id}>
           <MDBBtn
-            className="d-flex align-items-center m-0 p-0 profile-pop-over-btn mr-3"
+            className="d-flex align-items-center m-0 p-0 profile-pop-over-btn mr-5"
             size="sm"
             id={`btn-pop-over-${id}`}
           >
             <MDBIcon icon="user-alt" size="2x" style={{ color: "white" }} />
-            <h6 className="text-white mt-2 ml-3">Ric Darrel Pajarilaga</h6>
+            <h6 className="text-white mt-2 ml-3">{fullName(auth.fullName)}</h6>
           </MDBBtn>
           <MDBPopoverBody
             className="profile-popover-body"

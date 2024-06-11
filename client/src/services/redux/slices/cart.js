@@ -75,6 +75,19 @@ export const SAVE = createAsyncThunk(`${name}/save`, (form, thunkAPI) => {
   }
 });
 
+export const POS = createAsyncThunk(`${name}/pos`, (form, thunkAPI) => {
+  try {
+    return axioKit.save(name, form.data, form.token, "pos");
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
 export const BUY = createAsyncThunk(`${name}/BUY`, (form, thunkAPI) => {
   try {
     return axioKit.save(name, form.data, form.token, "buy");
@@ -316,6 +329,26 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(BUY.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(POS.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(POS.fulfilled, (state, action) => {
+        const { success, payload } = action.payload;
+        state.collections = state.collections.filter(
+          (collection) => !payload.includes(collection._id)
+        );
+        state.message = success;
+        state.isSuccess = true;
+        state.isLoading = false;
+      })
+      .addCase(POS.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;

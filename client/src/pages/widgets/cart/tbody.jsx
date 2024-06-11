@@ -12,6 +12,7 @@ import {
 import Variations from "../variations";
 
 export const Tbody = ({
+  isCashier,
   cart,
   handleChangeKilo,
   handleChangeKiloGrams,
@@ -221,9 +222,11 @@ export const Tbody = ({
                   />
                 )}
               </td>
-              <td className="text-danger font-weight-bold">
-                ₱{variation.getTheSubTotal("srp", obj, product)}
-              </td>
+              {isCashier && (
+                <td className="text-danger font-weight-bold">
+                  ₱{variation.getTheSubTotal("srp", obj, product)}
+                </td>
+              )}
               <td>
                 <MDBBtn
                   color="danger"

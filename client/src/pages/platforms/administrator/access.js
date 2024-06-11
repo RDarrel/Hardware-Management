@@ -2,6 +2,8 @@ import Dashboard from "./dashboard";
 import Employees from "./employees";
 import Products from "./products";
 import Purchases from "./purchases";
+import Sales from "./report/sales";
+import { Transactions } from "./report/transactions";
 import Suppliers from "./suppliers";
 
 const access = [
@@ -46,10 +48,12 @@ const access = [
       {
         name: "Sales",
         path: "/Sales",
+        component: Sales,
       },
       {
-        name: "Transaction",
+        name: "Transactions",
         path: "/Transaction",
+        component: Transactions,
       },
       {
         name: "Employee",
@@ -57,36 +61,6 @@ const access = [
       },
     ],
   },
-  // {
-  //   path: "/work-management",
-  //   name: "Work Management",
-  //   icon: "city",
-  //   children: [
-  //     {
-  //       name: "Projects",
-  //       path: "/projects",
-  //       component: Projects,
-  //     },
-  //     {
-  //       name: "Tasks",
-
-  //       path: "/tasks",
-  //       component: Tasks,
-  //     },
-  //     {
-  //       name: "Events",
-
-  //       path: "/events",
-  //       component: Events,
-  //     },
-  //     {
-  //       name: "Tickets",
-
-  //       path: "/tickets",
-  //       component: Events,
-  //     },
-  //   ],
-  // },
 ];
 
 export default access;

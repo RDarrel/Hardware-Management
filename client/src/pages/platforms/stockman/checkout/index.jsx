@@ -99,17 +99,15 @@ const Checkout = () => {
           text: `Your purchase has been confirmed with supplier: "${supplierName}".`,
           icon: "success",
         }).then(() => {
-          const carthWithSubtotalAndCapital = cart.map((obj) => ({
+          const cartWithSubtotalAndCapital = cart.map((obj) => ({
             ...obj,
             subtotal: variation.getTheSubTotal("capital", obj, obj.product),
             capital: variation.getTheCapitalOrSrp("capital", obj, obj.product),
-            ...(obj.product.isPerkilo
-              ? {
-                  kiloStock: obj.kilo + obj.kiloGrams,
-                }
+            ...(obj.product.isPerKilo
+              ? { kiloStock: obj.kilo + obj.kiloGrams }
               : { quantityStock: obj.quantity }),
           }));
-          const total = carthWithSubtotalAndCapital.reduce(
+          const total = cartWithSubtotalAndCapital.reduce(
             (accumulator, currentValue) => {
               return (accumulator += currentValue.subtotal);
             },
@@ -125,7 +123,7 @@ const Checkout = () => {
           dispatch(
             BUY({
               token,
-              data: { purchase, cart: carthWithSubtotalAndCapital },
+              data: { purchase, cart: cartWithSubtotalAndCapital },
             })
           );
           history.push("/store");
