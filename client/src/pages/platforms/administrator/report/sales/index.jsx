@@ -26,7 +26,7 @@ const Sales = () => {
         title="Sales"
       />
 
-      <MDBCard className="mt-3">
+      <MDBCard className="mt-2">
         <MDBCardBody>
           <MDBTable responsive bordered striped>
             <thead>
@@ -34,7 +34,7 @@ const Sales = () => {
                 <th>#</th>
                 <th>Product</th>
                 <th>Unit</th>
-                <th className="th-lg">Sales</th>
+                <th className="th-lg text-center">Sold</th>
                 <th>Capital</th>
                 <th>SRP</th>
                 <th>INCOME</th>
@@ -71,7 +71,7 @@ const Sales = () => {
                         </div>
                       </td>
                       <td>{product.isPerKilo ? "Kilo" : "Pcs"}</td>
-                      <td>{product.isPerKilo ? sale.kilo : sale.quantity}</td>
+                      <td className="text-center">{sale?.sold}</td>
                       <td>
                         <span className="font-weight-bold text-danger">
                           ₱{sale.capital}

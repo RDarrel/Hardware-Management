@@ -26,8 +26,8 @@ const MONTHS = [
 export const Header = ({
   collections,
   setFilteredData,
-  keyToGetTheSale = "srp",
   isTransaction = false,
+  isEmployees = false,
   title = "",
 }) => {
   const [params, setParams] = useState({
@@ -81,53 +81,29 @@ export const Header = ({
         0
       );
 
-      const totalSales = _sales.reduce(
-        (accumulator, currentValue) =>
-          accumulator + currentValue[keyToGetTheSale],
-        0
-      );
+      const totalSales = _sales.reduce((accumulator, currentValue) => {
+        if (isTransaction || isEmployees) {
+          return (accumulator += currentValue.total);
+        }
+        return (accumulator += currentValue.srp * currentValue.sold);
+      }, 0);
       return { income: totalIncome, sales: totalSales };
     },
-    [keyToGetTheSale]
+    [isTransaction, isEmployees]
   );
 
   useEffect(() => {
     const _years = new Set(
       collections.map(({ createdAt }) => new Date(createdAt).getFullYear())
     );
-
     const sortedYears = Array.from(_years).sort((a, b) => b - a);
-
-    const defaultFilteredSales = collections.filter(
-      (item) => new Date(item.createdAt).getFullYear() === sortedYears[0]
-    );
-    const salesWithIncome = defaultFilteredSales.map((sale) => {
-      return handleFormatData(sale);
-    });
-
     const salesWithoutFiltered = collections.map((sale) => {
       return handleFormatData(sale);
     });
 
-    const _months = handleGetMonths(salesWithIncome);
-
-    const totalIncome = computeTotalSalesAndIncome(salesWithIncome).income;
-
-    const totalSales = computeTotalSalesAndIncome(salesWithIncome).sales;
-
-    setMonths(_months);
     setYears(sortedYears);
-    setFilteredData(salesWithIncome);
     setSales(salesWithoutFiltered);
-    setTotalSales(totalSales);
-    setTotalIncome(totalIncome);
-  }, [
-    setFilteredData,
-    collections,
-    handleFormatData,
-    handleGetMonths,
-    computeTotalSalesAndIncome,
-  ]);
+  }, [collections, handleFormatData, handleGetMonths]);
 
   const handleIncome = (sale, isPerKilo) => {
     const { kilo, quantity, capital, srp } = sale;
@@ -138,10 +114,57 @@ export const Header = ({
 
   const handleChangeSales = useCallback(
     (data, isMonth) => {
+      //use this to get the months in the year what we choose this is based on the main array
       const filteredData = sales.filter(({ year }) => year === params.year);
+      //arrange the sales
+      var arrangeSales = [];
+      if (isTransaction) {
+        arrangeSales = data;
+      } else if (isEmployees) {
+        arrangeSales = data //this is for the employees report arrange by transaction
+          .reduce((accumulator, currentValue) => {
+            const { cashier, total } = currentValue;
+            const key = `${cashier._id}`;
+            const index = accumulator?.findIndex((accu) => accu.key === key);
+            if (index > -1) {
+              accumulator[index].transactionsHandle += 1;
+              accumulator[index].total += total;
+            } else {
+              accumulator.push({
+                ...currentValue,
+                key,
+                transactionsHandle: 1,
+                total,
+              });
+            }
+            return accumulator;
+          }, [])
+          .sort((a, b) => b.transactionsHandle - a.transactionsHandle);
+      } else {
+        arrangeSales = data //this is for the sales i arranged the data by the product then sort this into the sold
+          .reduce((accumulator, currentValue) => {
+            const { product, variant1, variant2, quantity, kilo, income } =
+              currentValue;
+            const key = `${product._id}-${variant1}-${variant2}`;
+            const index = accumulator?.findIndex((accu) => accu.key === key);
+            if (index > -1) {
+              accumulator[index].sold += quantity || kilo;
+              accumulator[index].income += income;
+            } else {
+              accumulator.push({
+                ...currentValue,
+                key,
+                sold: quantity || kilo,
+              });
+            }
+            return accumulator;
+          }, [])
+          .sort((a, b) => b.sold - a.sold);
+      }
+
       const _months = handleGetMonths(filteredData);
-      const _income = computeTotalSalesAndIncome(data).income;
-      const _sales = computeTotalSalesAndIncome(data).sales;
+      const { sales: totalSales, income: totalIncome } =
+        computeTotalSalesAndIncome(arrangeSales);
 
       if (isMonth) {
         const _days = new Set(data.map(({ day }) => day));
@@ -151,17 +174,19 @@ export const Header = ({
         setDays(sortedDays);
         setWeeks(sortedWeeks);
       }
-      setTotalSales(_sales);
-      setTotalIncome(_income);
-      setFilteredData(data);
+      setTotalSales(totalSales);
+      setTotalIncome(totalIncome);
+      setFilteredData(arrangeSales);
       setMonths(_months);
     },
     [
       computeTotalSalesAndIncome,
       handleGetMonths,
       sales,
+      isTransaction,
       params,
       setFilteredData,
+      isEmployees,
     ]
   );
 
@@ -171,7 +196,7 @@ export const Header = ({
       month: 0,
       week: 0,
       day: 0,
-      [name]: "",
+      [name || "key"]: "",
     }));
   }, []);
 
@@ -199,16 +224,7 @@ export const Header = ({
 
       handleChangeSales(filteredData, true);
 
-      if (filteredData.length === 0) {
-        resetParams();
-
-        setParams((prev) => ({
-          ...prev,
-          month: 0,
-          week: 0,
-          day: 0,
-        }));
-      }
+      if (filteredData.length === 0) resetParams();
 
       if (params[params.option]) {
         //params.option = week || day
@@ -238,8 +254,6 @@ export const Header = ({
     handleChangeSales,
   ]);
 
-  console.log(params);
-
   const handleRemoveOption = () => setParams({ ...params, option: "" });
 
   const handleWeekShow = () => {
@@ -268,6 +282,8 @@ export const Header = ({
       return `${params.year}`;
     }
   };
+
+  const isShowIncome = isEmployees || isTransaction;
   return (
     <MDBCard>
       <MDBCardBody className="sales-report-body">
@@ -413,7 +429,7 @@ export const Header = ({
           >
             &nbsp; ₱{totalSales}
           </MDBTypography>
-          {!isTransaction && (
+          {!isShowIncome && (
             <MDBTypography
               className="mb-0 text-black-80 ml-1 w-25 text-center"
               noteColor="danger"

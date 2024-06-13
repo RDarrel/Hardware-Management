@@ -3,9 +3,11 @@ const Entity = require("../../models/stockman/Purchases"),
   Stocks = require("../../models/stockman/Stocks"),
   handleDuplicate = require("../../config/duplicate");
 
-exports.browse = async (_, res) => {
+exports.browse = async (req, res) => {
   try {
-    const purchases = await Entity.find()
+    const filter =
+      req.query.isAdmin === "true" ? {} : { purchaseBy: req.query.purchaseBy };
+    const purchases = await Entity.find(filter)
       .populate("purchaseBy")
       .populate("supplier")
       .select("-__v")

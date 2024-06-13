@@ -1,4 +1,5 @@
 import Dashboard from "./dashboard";
+import EmployeesReport from "./report/employees";
 import Employees from "./employees";
 import Products from "./products";
 import Purchases from "./purchases";
@@ -56,8 +57,9 @@ const access = [
         component: Transactions,
       },
       {
-        name: "Employee",
+        name: "Employees",
         path: "/Employee",
+        component: EmployeesReport,
       },
     ],
   },

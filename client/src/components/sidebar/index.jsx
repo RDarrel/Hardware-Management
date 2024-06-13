@@ -80,6 +80,7 @@ export default function SideNavigation({
       <MDBSideNav
         logo="https://mdbootstrap.com/img/Marketing/general/logo/medium/mdb-react.png"
         bg="https://mdbootstrap.com/img/Photos/Others/sidenav2.jpg"
+        // className="bg-danger"
         mask="strong"
         href="/dashboard"
         fixed

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BROWSE } from "../../../services/redux/slices/stockman/purchases";
 import { Search } from "../search";
@@ -10,6 +10,7 @@ import {
   MDBTable,
   MDBRow,
   MDBCol,
+  MDBIcon,
 } from "mdbreact";
 import {
   ENDPOINT,
@@ -22,27 +23,58 @@ import handlePagination from "../pagination";
 import PaginationButtons from "../pagination/buttons";
 
 const GlobalPurchases = ({ isAdmin = false }) => {
-  const { token, maxPage } = useSelector(({ auth }) => auth),
+  const { token, maxPage, auth } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ purchases }) => purchases),
     [purchases, setPurchases] = useState([]),
+    [stockmans, setStockMans] = useState([]),
     [page, setPage] = useState(1),
     [activeId, setActiveId] = useState(0),
     dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(BROWSE({ token }));
-  }, [token, dispatch]);
+    dispatch(BROWSE({ token, key: { isAdmin, purchaseBy: auth?._id } }));
+  }, [token, dispatch, auth]);
 
+  const handleFilter = useCallback((array, key) => {
+    return array
+      .filter((collec, index, copy) => {
+        return (
+          index === copy.findIndex((orig) => orig[key]._id === collec[key]._id)
+        );
+      })
+      .map((obj) => obj[key]);
+  }, []);
   useEffect(() => {
+    const stockman = handleFilter(collections, "purchaseBy");
+    const suppliers = handleFilter(collections, "supplier");
+    console.log(suppliers);
     setPurchases(collections);
-  }, [collections]);
+  }, [collections, handleFilter]);
 
   const [didHoverId, setDidHoverId] = useState(-1);
 
   return (
     <MDBCard>
       <MDBCardBody>
-        <Search title={"Purchase List"} disable={{ create: true }} />
+        <MDBRow className="d-flex align-items-center">
+          <MDBCol md="7" className="d-flex align-items-center">
+            <MDBIcon
+              icon="shopping-basket"
+              size="2x"
+              style={{ color: "red" }}
+              className="ml-2"
+            />
+            <h4 className="ml-2  mr-4 text-nowrap mt-2">Purchase List</h4>
+            <select className="form-control mr-3">
+              <option>supplier</option>
+              <option>All</option>
+            </select>
+            <select className="form-control">
+              <option>stockman</option>
+            </select>
+          </MDBCol>
+        </MDBRow>
+
         <MDBRow className="mt-3">
           <MDBCol md="12">
             {purchases.map((purchase, index) => {
@@ -99,12 +131,14 @@ const GlobalPurchases = ({ isAdmin = false }) => {
                     isOpen={index === activeId}
                     className="border border-black"
                   >
-                    <h6 className="text-start mt-2 ml-3">
-                      Purchase By:&nbsp;
-                      <strong>
-                        {fullName(purchase?.purchaseBy?.fullName)}
-                      </strong>
-                    </h6>
+                    {isAdmin && (
+                      <h6 className="text-start mt-2 ml-3">
+                        Purchase By:&nbsp;
+                        <strong>
+                          {fullName(purchase?.purchaseBy?.fullName)}
+                        </strong>
+                      </h6>
+                    )}
                     <MDBTable responsive hover>
                       <thead>
                         <tr>
