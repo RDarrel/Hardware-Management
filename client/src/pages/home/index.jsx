@@ -34,8 +34,8 @@ export default class Home extends React.Component {
 
   toggle = () => this.setState({ show: !this.state.show });
 
-  toggleCollapse = collapseID => () =>
-    this.setState(prevState => ({
+  toggleCollapse = (collapseID) => () =>
+    this.setState((prevState) => ({
       collapseID: prevState.collapseID !== collapseID ? collapseID : "",
     }));
 
@@ -45,9 +45,7 @@ export default class Home extends React.Component {
         <MDBNavbar dark expand="md" fixed="top" scrolling transparent>
           <MDBContainer>
             <MDBNavbarBrand>
-              <strong className="white-text">
-                TechnoWiz Solution Providers
-              </strong>
+              <strong className="white-text">Liberty Hardware</strong>
             </MDBNavbarBrand>
             <MDBNavbarToggler onClick={this.toggleCollapse("navbarCollapse")} />
             <MDBCollapse
@@ -81,9 +79,9 @@ export default class Home extends React.Component {
         </section>
         <MDBContainer>
           <Description />
-          <hr className="mb-5" />
+          {/* <hr className="mb-5" /> */}
 
-          <Pioneers />
+          {/* <Pioneers /> */}
 
           <hr className="mb-4" />
 

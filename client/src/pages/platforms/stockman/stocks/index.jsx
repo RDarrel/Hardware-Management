@@ -52,7 +52,11 @@ export const Stocks = () => {
   return (
     <MDBCard>
       <MDBCardBody>
-        <Search title={"Stock List"} disable={{ create: true }} />
+        <Search
+          title={"Stock List"}
+          disable={{ create: true }}
+          icon="warehouse"
+        />
 
         <MDBTable responsive hover>
           <thead>

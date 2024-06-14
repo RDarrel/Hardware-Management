@@ -85,7 +85,11 @@ const Suppliers = () => {
   return (
     <MDBCard>
       <MDBCardBody>
-        <Search title="Supplier List" toggleCreate={() => setShow(!show)} />
+        <Search
+          title="Supplier List"
+          toggleCreate={() => setShow(!show)}
+          icon="hands-helping"
+        />
         <MDBTable>
           <thead>
             <tr>

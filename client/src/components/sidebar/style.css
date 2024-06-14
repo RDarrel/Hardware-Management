@@ -1,0 +1,18 @@
+.logo-wrapper a {
+  height: 100px !important;
+  width: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  flex-direction: row;
+}
+
+.img-fluid {
+  width: 100% !important;
+}
+
+.logo-wrapper {
+  height: 100px !important;
+  width: 100% !important;
+}

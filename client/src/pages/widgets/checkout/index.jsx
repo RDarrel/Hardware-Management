@@ -146,7 +146,7 @@ const Checkout = () => {
                 >
                   <h5 className="mr-5">Order Total ({cart.length} Item):</h5>
                   <h2 style={{ fontWeight: 900 }} className="text-danger  ml-2">
-                    ₱${total}
+                    ₱{total}
                   </h2>
                 </MDBCol>
               </MDBRow>

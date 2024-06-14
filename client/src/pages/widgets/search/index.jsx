@@ -1,16 +1,22 @@
 import React from "react";
 import { MDBRow, MDBCol, MDBIcon, MDBBtn } from "mdbreact";
 
-export const Search = ({ title, disable, toggleCreate }) => {
+export const Search = ({ title, disable, toggleCreate, icon = "" }) => {
   const { create = false } = disable || {};
   return (
     <MDBRow className="mt-0  mb-2 d-flex align-items-center">
-      <MDBCol md="2">
-        <h4 className="ml-4" style={{ fontWeight: 400 }}>
+      <MDBCol md="4" className="d-flex align-items-center">
+        <MDBIcon
+          className="ml-2"
+          size="2x"
+          style={{ color: "red" }}
+          icon={icon}
+        />
+        <h4 style={{ fontWeight: 400 }} className="mt-2 ml-3">
           {title}
         </h4>
       </MDBCol>
-      <MDBCol className="d-flex justify-content-end align-items-center" md="10">
+      <MDBCol className="d-flex justify-content-end align-items-center" md="8">
         <div className="cashier-search-cotaniner ">
           <form className="cashier-search">
             <input

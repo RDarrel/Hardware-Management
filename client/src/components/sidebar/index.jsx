@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./style.css";
 import {
   MDBSideNavLink,
   MDBSideNavCat,
@@ -8,6 +9,7 @@ import {
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
 import ACCESS from "../../pages/platforms/access";
+import navbarLogo from "../../assets/logo/navbar1.jpg";
 import { SETROUTE } from "../../services/redux/slices/auth";
 
 export default function SideNavigation({
@@ -78,7 +80,7 @@ export default function SideNavigation({
   return (
     <div className="white-skin">
       <MDBSideNav
-        logo="https://mdbootstrap.com/img/Marketing/general/logo/medium/mdb-react.png"
+        logo={navbarLogo}
         bg="https://mdbootstrap.com/img/Photos/Others/sidenav2.jpg"
         // className="bg-danger"
         mask="strong"

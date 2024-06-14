@@ -39,8 +39,8 @@ export const EmployeesReport = () => {
               <tr>
                 <th>#</th>
                 <th className="text-center">Cashier</th>
-                <th className="text-center">Total Transactions Generated</th>
-                <th className="text-center">Total Sales Generated</th>
+                <th className="text-center"> Transactions Generated</th>
+                <th className="text-center"> Sales Generated</th>
               </tr>
             </thead>
             <tbody>
@@ -51,14 +51,12 @@ export const EmployeesReport = () => {
                     <tr key={index}>
                       <td>{index + 1}</td>
                       <td className="text-center">
-                        {" "}
                         {fullName(cashier.fullName)}
                       </td>
                       <td className="text-center font-weight-bold">
                         {transactionsHandle}
                       </td>
                       <td className="text-center text-danger font-weight-bold">
-                        {" "}
                         ₱{total}
                       </td>
                     </tr>

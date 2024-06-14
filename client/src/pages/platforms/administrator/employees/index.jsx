@@ -35,7 +35,7 @@ export default function Employees() {
   return (
     <MDBCard>
       <MDBCardBody>
-        <Search title={"Employee List"} toggleCreate={toggle} />
+        <Search title={"Employee List"} toggleCreate={toggle} icon="users" />
         <MDBTable striped responsive>
           <thead>
             <tr>

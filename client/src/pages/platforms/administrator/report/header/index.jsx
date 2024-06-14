@@ -287,9 +287,11 @@ export const Header = ({
   return (
     <MDBCard>
       <MDBCardBody className="sales-report-body">
-        <h4 className="text-nowrap mr-3 mt-1 text-center font-weight-bold">
-          {title} Report
-        </h4>
+        <div className=" d-flex align-items-center justify-content-center mb-2">
+          <h4 className="text-nowrap mr-3 mt-1  font-weight-bold">
+            {title} Report
+          </h4>
+        </div>
         <MDBRow className=" ml-2 mt-0  ">
           <MDBCol
             md="12"
@@ -412,7 +414,7 @@ export const Header = ({
         <hr />
         <div className="d-flex mt-2 mb-3 justify-content-around ">
           <MDBTypography
-            className="mb-0 text-black-80 ml-1 w-25 text-center"
+            className="mb-0 text-black-80 ml-1 w-25 text-center h5"
             noteColor="success"
             colorText="grey"
             note
@@ -422,7 +424,7 @@ export const Header = ({
           </MDBTypography>
 
           <MDBTypography
-            className="mb-0 text-black-80 ml-1 w-25 text-center"
+            className="mb-0 text-black-80 ml-1 w-25 text-center h5"
             noteColor="danger"
             note
             noteTitle="Total Sales:"
@@ -431,8 +433,9 @@ export const Header = ({
           </MDBTypography>
           {!isShowIncome && (
             <MDBTypography
-              className="mb-0 text-black-80 ml-1 w-25 text-center"
+              className="mb-0 text-black-80 ml-1 w-25 text-center h5"
               noteColor="danger"
+              tag="display-1"
               note
               noteTitle="Total Income:"
             >

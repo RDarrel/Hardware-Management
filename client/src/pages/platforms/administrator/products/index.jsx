@@ -216,7 +216,11 @@ const Products = () => {
         <>
           <MDBCard>
             <MDBCardBody>
-              <Search toggleCreate={toggleCreate} title="Product List" />
+              <Search
+                toggleCreate={toggleCreate}
+                title="Product List"
+                icon="award"
+              />
               <Table
                 products={products}
                 handleTableData={handleTableData}

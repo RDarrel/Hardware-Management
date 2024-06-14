@@ -1,5 +1,6 @@
 .sales-report-body {
   padding: 0; /* Remove padding to make it more compact */
+  border: dotted 2px black;
 }
 
 .product-info {
