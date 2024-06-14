@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "-": "^0.0.1",
     "bcryptjs": "^2.4.3",
     "colorette": "^2.0.20",
     "cors": "^2.8.5",

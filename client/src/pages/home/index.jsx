@@ -21,7 +21,7 @@ import Register from "./register";
 import ContactUs from "./contact";
 import Login from "./login";
 import Description from "./description";
-import Pioneers from "./pioneers";
+// import Pioneers from "./pioneers";
 
 export default class Home extends React.Component {
   constructor(props) {
