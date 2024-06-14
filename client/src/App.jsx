@@ -17,7 +17,7 @@ export default function App() {
       dispatch(VALIDATEREFRESH(token));
     }
   }, [auth, token, dispatch]);
-
+  console.log("running");
   return (
     <Switch>
       <Route path="/" exact component={Home} />
