@@ -7,7 +7,6 @@ import Card from "./card";
 import { Header } from "./header";
 import ViewProduct from "../../../widgets/viewProduct";
 import Cart from "../../../widgets/cart";
-import { MDBCard, MDBCardBody, MDBCol, MDBRow } from "mdbreact";
 
 const POS = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
@@ -43,14 +42,27 @@ const POS = () => {
   }, [collections]);
 
   return (
-    <>
-      <MDBRow>
-        <MDBCol md="8">test</MDBCol>
-        <MDBCol>
-          <h2>Order Details</h2>
-        </MDBCol>
-      </MDBRow>
-    </>
+    <div style={{ overflowX: "hidden", height: "100vh" }} className="100vh">
+      <Header cart={cart} setIsShowCart={setIsShowCart} />
+      <Card
+        products={products}
+        setSelected={setSelected}
+        setIsView={setIsView}
+      />
+      <ViewProduct
+        selected={selected}
+        isCashier={true}
+        setIsView={setIsView}
+        isView={isView}
+        toggleView={toggleView}
+      />
+      <Cart
+        toggle={toggleCart}
+        collections={cart}
+        show={isShowCart}
+        isCashier={true}
+      />
+    </div>
   );
 };
 

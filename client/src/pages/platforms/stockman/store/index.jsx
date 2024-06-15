@@ -8,7 +8,7 @@ import {
   MDBView,
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
-import { BROWSE } from "../../../../services/redux/slices/administrator/products";
+import { BROWSE } from "../../../../services/redux/slices/administrator/productManagement/products";
 import { BROWSE as BROWSECART } from "../../../../services/redux/slices/cart";
 import { Pagination } from "./pagination";
 import { Header } from "./header";

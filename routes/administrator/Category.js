@@ -4,17 +4,15 @@ const router = require("express").Router(),
     save,
     update,
     destroy,
-    variation_update,
-    sellingProducts,
-  } = require("../../controllers/administrator/productManagement/Products"),
+    status,
+  } = require("../../controllers/administrator/productManagement/Category.js"),
   { validate } = require("../../middleware/jwt");
 
 router
   .get("/", validate, browse)
-  .get("/sellingProducts", validate, sellingProducts)
   .post("/save", validate, save)
   .put("/update", validate, update)
-  .put("/variation", validate, variation_update)
+  .put("/status", validate, status)
   .delete("/destroy", validate, destroy);
 
 module.exports = router;

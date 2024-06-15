@@ -1,11 +1,12 @@
 import Dashboard from "./dashboard";
 import EmployeesReport from "./report/employees";
 import Employees from "./employees";
-import Products from "./products";
+import Products from "./productMangement/products";
 import Purchases from "./purchases";
 import Sales from "./report/sales";
 import { Transactions } from "./report/transactions";
 import Suppliers from "./suppliers";
+import Category from "./productMangement/category";
 
 const access = [
   {
@@ -22,10 +23,25 @@ const access = [
   },
 
   {
-    name: "Products",
-    path: "/products",
+    path: "/product",
+    name: "Product Mangement",
     icon: "award",
-    component: Products,
+    children: [
+      {
+        name: "Products",
+        path: "/products",
+        component: Products,
+      },
+      {
+        name: "Category",
+        path: "/category",
+        component: Category,
+      },
+      {
+        name: "Materials",
+        path: "/material",
+      },
+    ],
   },
 
   {

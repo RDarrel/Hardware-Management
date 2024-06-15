@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import handlePagination from "../../../widgets/pagination";
-import PaginationButtons from "../../../widgets/pagination/buttons";
+import handlePagination from "../../../../widgets/pagination";
+import PaginationButtons from "../../../../widgets/pagination/buttons";
 import { MDBBtn, MDBBtnGroup, MDBIcon } from "mdbreact";
 import { useSelector } from "react-redux";
 

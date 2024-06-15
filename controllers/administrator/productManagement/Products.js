@@ -1,5 +1,5 @@
-const Entity = require("../../models/administrator/Products"),
-  Stocks = require("../../models/stockman/Stocks"),
+const Entity = require("../../../models/administrator/productManagement/Products"),
+  Stocks = require("../../../models/stockman/Stocks"),
   fs = require("fs");
 
 const handleVariantImagesUpload = (productID, variantImages) => {

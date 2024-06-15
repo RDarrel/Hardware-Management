@@ -8,17 +8,17 @@ import {
   MDBSwitch,
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
-import { ENDPOINT } from "../../../../services/utilities";
+import { ENDPOINT } from "../../../../../services/utilities";
 import {
   BROWSE,
   DESTROY,
   VARIATION_UPDATE,
-} from "../../../../services/redux/slices/administrator/products";
+} from "../../../../../services/redux/slices/administrator/productManagement/products";
 import Swal from "sweetalert2";
-import ProductInformation from "../../../../components/product/index";
+import ProductInformation from "../../../../../components/product/index";
 import "./product.css";
 import { Table } from "./table";
-import { Search } from "../../../widgets/search";
+import { Search } from "../../../../widgets/search";
 
 const Products = () => {
   const { token } = useSelector(({ auth }) => auth),

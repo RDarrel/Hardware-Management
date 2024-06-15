@@ -8,7 +8,7 @@ import Media from "./media";
 import {
   SAVE,
   UPDATE,
-} from "../../services/redux/slices/administrator/products";
+} from "../../services/redux/slices/administrator/productManagement/products";
 import { useDispatch, useSelector } from "react-redux";
 import { ENDPOINT } from "../../services/utilities";
 

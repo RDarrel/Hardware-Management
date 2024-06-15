@@ -6,12 +6,13 @@ import projects from "./slices/projects";
 import tasks from "./slices/tasks";
 import events from "./slices/events";
 import employees from "./slices/administrator/employees";
-import products from "./slices/administrator/products";
+import products from "./slices/administrator/productManagement/products";
 import suppliers from "./slices/administrator/suppliers";
 import cart from "./slices/cart";
 import purchases from "./slices/stockman/purchases";
 import stocks from "./slices/stockman/stocks";
 import pos from "./slices/cashier/pos";
+import category from "./slices/administrator/productManagement/category";
 import salesReport from "./slices/administrator/report/salesReport";
 import transactionsReport from "./slices/administrator/report/transactionsReport";
 const store = configureStore({
@@ -31,6 +32,7 @@ const store = configureStore({
     pos,
     salesReport,
     transactionsReport,
+    category,
   },
 });
 
