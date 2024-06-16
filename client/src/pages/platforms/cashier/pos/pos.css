@@ -1,20 +1,59 @@
-.input-container {
+.search-container {
   position: relative;
-  width: 100%;
+  overflow: visible;
 }
 
-.input {
-  width: 100%;
-  padding-right: 80px; /* Adjust based on the width of the select */
+.paid-icon {
+  margin-top: 1px;
 }
 
-.form-select {
+.search-input {
+  border-radius: 15px;
+}
+
+.search-btn {
   position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  border: none;
-  background: none;
-  padding: 0 10px;
-  /* Additional styles to match the input */
+  z-index: 1;
+  top: -3px;
+  right: -5px;
+}
+
+.transac {
+  position: fixed;
+  bottom: 0;
+  z-index: 999;
+  width: 38%;
+  padding: 10px; /* Example: Adjust padding as needed */
+}
+.order-details {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.order-details p {
+  margin: 0;
+}
+
+.product-details {
+  flex-grow: 1;
+}
+
+.text-truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.scrollable-buttons {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: none; /* Hide scrollbar on Firefox */
+  padding: 5px; /* Optional: Dagdag na padding para sa mga button */
+}
+
+.scrollable-buttons button {
+  flex: 0 0 auto;
+  margin: 0 5px;
+  white-space: nowrap;
 }
