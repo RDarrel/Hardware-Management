@@ -54,7 +54,13 @@ const variation = {
   getTheSubTotal: (name, cart, product) => {
     // name= 'capital' || 'srp'
     const { hasVariant, has2Variant, variations, isPerKilo } = product;
-    const { variant1 = "", variant2 = "", kiloGrams, kilo, quantity } = cart;
+    const {
+      variant1 = "",
+      variant2 = "",
+      kiloGrams = 0,
+      kilo,
+      quantity,
+    } = cart;
 
     if (hasVariant) {
       if (has2Variant) {
@@ -95,6 +101,22 @@ const variation = {
       }
     } else {
       return product[name];
+    }
+  },
+  getTheVariant: (_variant1, _variant2, variations) => {
+    variations = variations.filter(Boolean);
+    const foundVariant1 = variations[0]?.options.find(
+      ({ _id }) => _id === _variant1
+    )?.name;
+
+    if (variations.length > 1) {
+      const foundVariant2 = variations[1].options.find(
+        ({ _id }) => _id === _variant2
+      )?.name;
+
+      return `${foundVariant1}/${foundVariant2}`;
+    } else {
+      return `${foundVariant1}`;
     }
   },
 };

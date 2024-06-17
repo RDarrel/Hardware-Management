@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import "./pos.css";
+import React, { useEffect, useRef, useState } from "react";
 import { SELLING_PRODUCTS } from "../../../../services/redux/slices/administrator/productManagement/products";
 import { BROWSE as BROWSECART } from "../../../../services/redux/slices/cart";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,15 +14,21 @@ import {
   MDBIcon,
 } from "mdbreact";
 import { ENDPOINT } from "../../../../services/utilities";
-import { categories } from "../../../../services/fakeDb";
+import "./pos.css";
 import Orders from "./orders";
+import Categories from "./categories";
+import Modal from "./modal";
 const POS = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ products }) => products),
     { collections: cartCollections } = useSelector(({ cart }) => cart),
     [cart, setCart] = useState([]),
+    [orders, setOrders] = useState([]),
+    [selectedProduct, setSelectedProduct] = useState({}),
     [products, setProducts] = useState([]),
+    [didSearch, setDidSearch] = useState(false),
     [search, setSearch] = useState(""),
+    [showVariant, setShowVariant] = useState(false),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -44,13 +49,83 @@ const POS = () => {
     setProducts(collections);
   }, [collections]);
 
-  const handleSearch = (e) => {
-    setSearch(e.target.value);
+  const handleSearch = (event) => {
+    event.preventDefault();
+
+    const results = collections.filter((product) =>
+      product.name.toLowerCase().includes(search.toLocaleLowerCase())
+    );
+
+    if (results.length > 1) return setProducts(results);
+
+    const product = results[0];
+
+    if (product.hasVariant) {
+      setShowVariant(true);
+      setSelectedProduct(results[0]);
+    } else {
+      handleAddOrder(product);
+    }
+    setDidSearch(true);
+    //to check if product is exist in order details
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleAddOrder = (product) => {
+    let index = orders.findIndex((item) => {
+      if (item.product?._id !== product._id) {
+        return false;
+      }
+      if (product.hasVariant) {
+        if (product.has2Variant) {
+          return (
+            item.variant1 === product.variant1 &&
+            item.variant2 === product.variant2
+          );
+        } else {
+          return item.variant1 === product.variant1;
+        }
+      }
+      return true; // No variants to compare
+    });
+
+    const _orders = [...orders];
+    if (index > -1) {
+      if (product.isPerKilo) {
+        _orders[index].kilo += 1;
+      } else {
+        _orders[index].quantity += 1;
+      }
+      setOrders(_orders);
+    } else {
+      setOrders((prev) => [
+        {
+          product,
+          ...(product.isPerKilo ? { kilo: 1 } : { quantity: 1 }),
+          ...(product.hasVariant && product.has2Variant
+            ? { variant1: product.variant1, variant2: product.variant2 }
+            : { variant1: product.variant1 }),
+        },
+        ...prev,
+      ]);
+    }
+  };
+
+  const componentRef = useRef(null);
+  const [componentHeight, setComponentHeight] = useState(0);
+
+  const updateHeight = () => {
+    if (componentRef.current) {
+      setComponentHeight(componentRef.current.offsetHeight);
+    }
+  };
+
+  useEffect(() => {
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+    return () => {
+      window.removeEventListener("resize", updateHeight);
+    };
+  }, []);
 
   return (
     <MDBContainer
@@ -80,40 +155,43 @@ const POS = () => {
           <MDBCard className="mb-3">
             <MDBCardBody className="m-0 p-1">
               <div className="m-2  search-container">
-                <input
-                  className="form-control search-input"
-                  placeholder="Seach.."
-                />
-                <MDBBtn
-                  size="sm"
-                  color="primary"
-                  rounded
-                  className="search-btn"
-                >
-                  <MDBIcon icon="search" />
-                </MDBBtn>
-                <div className="scrollable-buttons m-0 mt-2 p-0">
-                  <MDBBtn size="sm" color="primary">
-                    All
+                <form onSubmit={handleSearch}>
+                  <input
+                    className="form-control search-input"
+                    placeholder="Seach.."
+                    value={search}
+                    onChange={({ target }) => setSearch(target.value)}
+                    name="search"
+                  />
+                  <MDBBtn
+                    size="sm"
+                    color="primary"
+                    rounded
+                    onClick={() => {
+                      if (didSearch) {
+                        setDidSearch(false);
+                        setProducts(collections);
+                      } else {
+                        return;
+                      }
+                    }}
+                    type={didSearch ? "button" : "submit"}
+                    className="search-btn"
+                  >
+                    <MDBIcon icon={didSearch ? "times" : "search"} />
                   </MDBBtn>
-                  {categories.map((category, index) => (
-                    <MDBBtn
-                      key={index}
-                      size="sm"
-                      outline
-                      color="primary"
-                      className="category-btn"
-                    >
-                      {category}
-                    </MDBBtn>
-                  ))}
-                </div>
+                </form>
+                <Categories />
               </div>
             </MDBCardBody>
           </MDBCard>
-          <div className="product-container">
+          <div
+            className="product-container"
+            ref={componentRef}
+            style={{ maxHeight: componentHeight }}
+          >
             <MDBRow>
-              {filteredProducts.slice(0, 12).map((product, index) => {
+              {products.slice(0, 12).map((product, index) => {
                 const {
                   variations = [],
                   hasVariant,
@@ -127,7 +205,19 @@ const POS = () => {
                     : variations[0]?.options[0].srp
                   : srp;
                 return (
-                  <MDBCol key={index} md="3" className="mt-1">
+                  <MDBCol
+                    key={index}
+                    md="3"
+                    className="mt-1 cursor-pointer"
+                    onClick={() => {
+                      if (product.hasVariant) {
+                        setShowVariant(true);
+                        setSelectedProduct(product);
+                      } else {
+                        handleAddOrder(product);
+                      }
+                    }}
+                  >
                     <MDBCard className="h-100">
                       <MDBCardImage
                         top
@@ -152,9 +242,15 @@ const POS = () => {
           </div>
         </MDBCol>
         <MDBCol md="5">
-          <Orders orders={cart} />
+          <Orders orders={orders} setOrders={setOrders} />
         </MDBCol>
       </MDBRow>
+      <Modal
+        show={showVariant}
+        toggle={() => setShowVariant(!showVariant)}
+        selected={selectedProduct}
+        handleAddOrder={handleAddOrder}
+      />
     </MDBContainer>
   );
 };

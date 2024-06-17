@@ -26,7 +26,7 @@
   padding: 10px; /* Example: Adjust padding as needed */
 }
 .order-details {
-  max-height: 400px;
+  height: 400px;
   overflow-y: auto;
 }
 
@@ -44,16 +44,22 @@
   text-overflow: ellipsis;
 }
 
-.scrollable-buttons {
-  display: flex;
+.scrollable-buttons-container {
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  scrollbar-width: none; /* Hide scrollbar on Firefox */
-  padding: 5px; /* Optional: Dagdag na padding para sa mga button */
+  white-space: nowrap;
+  cursor: grab; /* Optional: Change cursor to grab */
 }
 
-.scrollable-buttons button {
+.scrollable-buttons-container:active {
+  cursor: grabbing; /* Optional: Change cursor to grabbing when active */
+}
+
+.scrollable-buttons-container::-webkit-scrollbar {
+  display: none; /* Hide the scrollbar */
+}
+
+.category-btn {
   flex: 0 0 auto;
   margin: 0 5px;
-  white-space: nowrap;
+  transition: background-color 0.3s;
 }
