@@ -40,7 +40,7 @@ const variation = {
   qtyOrKilo: (obj, isPerKilo) => {
     if (isPerKilo) {
       return `${
-        obj.kiloGrams === 0
+        obj.kiloGrams === 0 || !obj.kiloGrams
           ? `${obj.kilo} kilo${obj.kilo > 1 ? "s" : ""}`
           : `${obj.kilo} kilo${obj.kilo > 1 ? "s" : ""} and ${getTheGrams(
               obj.kiloGrams

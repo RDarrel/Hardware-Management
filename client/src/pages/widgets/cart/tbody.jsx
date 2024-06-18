@@ -59,7 +59,7 @@ export const Tbody = ({
                   />
                   <img
                     src={`${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`}
-                    height={"80px"}
+                    height={"60px"}
                     alt={`${product.name}`}
                   />
                   <div className="ml-3">

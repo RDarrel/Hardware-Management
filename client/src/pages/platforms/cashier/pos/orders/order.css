@@ -15,3 +15,60 @@
   padding: 0;
   margin: 0;
 }
+
+.transac {
+  position: fixed;
+  bottom: 0;
+  z-index: 999;
+  width: 38%;
+  padding: 10px; /* Example: Adjust padding as needed */
+}
+
+/* big for laptop monitor */
+@media (min-height: 700px) and (min-width: 900px) {
+  .order-details {
+    height: 350px;
+  }
+  .btn-paid {
+    height: 40px;
+  }
+  .order-details-card {
+    height: 1110px;
+  }
+}
+/* for laptop */
+@media (min-height: 800px) and (min-width: 900px) {
+  .order-details {
+    height: 430px;
+  }
+}
+
+@media (min-height: 1000px) and (min-width: 900px) {
+  .order-details {
+    height: 670px;
+  }
+}
+
+/* big monitor */
+
+@media (min-height: 850px) and (min-width: 1200px) {
+  .order-details {
+    height: 480px;
+  }
+}
+
+@media (min-height: 950px) and (min-width: 1200px) {
+  .order-details {
+    height: 570px;
+  }
+}
+
+@media (min-height: 1000px) and (min-width: 1200px) {
+  .order-details {
+    height: 670px;
+  }
+}
+
+.order-details {
+  overflow-y: auto; /* Common property extracted to avoid repetition */
+}

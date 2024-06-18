@@ -11,27 +11,15 @@
   border-radius: 15px;
 }
 
+.checkout {
+  border-radius: 20px;
+}
+
 .search-btn {
   position: absolute;
   z-index: 1;
   top: -3px;
   right: -5px;
-}
-
-.transac {
-  position: fixed;
-  bottom: 0;
-  z-index: 999;
-  width: 38%;
-  padding: 10px; /* Example: Adjust padding as needed */
-}
-.order-details {
-  height: 400px;
-  overflow-y: auto;
-}
-
-.order-details p {
-  margin: 0;
 }
 
 .product-details {

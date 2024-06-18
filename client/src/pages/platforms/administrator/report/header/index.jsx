@@ -1,13 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  MDBCard,
-  MDBCardBody,
-  MDBCol,
-  MDBIcon,
-  MDBRow,
-  MDBTypography,
-} from "mdbreact";
-import "./header.css";
+import { MDBCol, MDBIcon, MDBRow } from "mdbreact";
+import "../header/header.css";
 
 const MONTHS = [
   "January",
@@ -28,7 +21,12 @@ export const Header = ({
   setFilteredData,
   isTransaction = false,
   isEmployees = false,
-  title = "",
+  mb = "3",
+  title = "Sales",
+  setSoldQty = () => {},
+  setSoldKilo = () => {},
+  setTotalIncome = () => {},
+  setTotalSales = () => {},
 }) => {
   const [params, setParams] = useState({
     year: 2024,
@@ -38,8 +36,6 @@ export const Header = ({
   });
   const [sales, setSales] = useState([]);
   const [years, setYears] = useState([]);
-  const [totalIncome, setTotalIncome] = useState(0);
-  const [totalSales, setTotalSales] = useState(0);
   const [months, setMonths] = useState([]);
   const [weeks, setWeeks] = useState([]);
   const [days, setDays] = useState([]);
@@ -112,6 +108,20 @@ export const Header = ({
       : srp * quantity - capital * quantity;
   };
 
+  const hnadleGetSold = useCallback((_sales) => {
+    const _soldQty = _sales.reduce((acc, curr) => {
+      acc += curr.soldQty;
+      return acc;
+    }, 0);
+
+    const _soldKilo = _sales.reduce((acc, curr) => {
+      acc += curr.soldKilo;
+      return acc;
+    }, 0);
+
+    return { _soldKilo, _soldQty };
+  }, []);
+
   const handleChangeSales = useCallback(
     (data, isMonth) => {
       //use this to get the months in the year what we choose this is based on the main array
@@ -150,11 +160,15 @@ export const Header = ({
             if (index > -1) {
               accumulator[index].sold += quantity || kilo;
               accumulator[index].income += income;
+              accumulator[index].soldKilo += kilo || 0;
+              accumulator[index].soldQty += quantity || 0;
             } else {
               accumulator.push({
                 ...currentValue,
                 key,
                 sold: quantity || kilo,
+                soldQty: quantity || 0,
+                soldKilo: kilo || 0,
               });
             }
             return accumulator;
@@ -166,6 +180,8 @@ export const Header = ({
       const { sales: totalSales, income: totalIncome } =
         computeTotalSalesAndIncome(arrangeSales);
 
+      const { _soldKilo = 0, _soldQty = 0 } = hnadleGetSold(arrangeSales);
+
       if (isMonth) {
         const _days = new Set(data.map(({ day }) => day));
         const sortedDays = Array.from(_days).sort((a, b) => b - a);
@@ -174,6 +190,8 @@ export const Header = ({
         setDays(sortedDays);
         setWeeks(sortedWeeks);
       }
+      setSoldKilo(_soldKilo);
+      setSoldQty(_soldQty);
       setTotalSales(totalSales);
       setTotalIncome(totalIncome);
       setFilteredData(arrangeSales);
@@ -182,6 +200,11 @@ export const Header = ({
     [
       computeTotalSalesAndIncome,
       handleGetMonths,
+      hnadleGetSold,
+      setSoldKilo,
+      setSoldQty,
+      setTotalSales,
+      setTotalIncome,
       sales,
       isTransaction,
       params,
@@ -200,6 +223,7 @@ export const Header = ({
     }));
   }, []);
 
+  //for filtering the year months days weeks
   useEffect(() => {
     var filteredData = [];
     if (params.year && !params.month) {
@@ -245,205 +269,129 @@ export const Header = ({
         }
       }
     }
-  }, [
-    params,
-    sales,
-    resetParams,
-    handleGetMonths,
-    computeTotalSalesAndIncome,
-    handleChangeSales,
-  ]);
+  }, [params, sales, resetParams, handleGetMonths, handleChangeSales]);
 
   const handleRemoveOption = () => setParams({ ...params, option: "" });
-
-  const handleWeekShow = () => {
-    switch (params.week) {
-      case 1:
-        return "1st Week";
-      case 2:
-        return "2nd Week";
-      case 3:
-        return "3rd Week";
-      default:
-        return "4th Week";
-    }
-  };
-
-  const handleTitleReport = () => {
-    if (params.week && params.option === "week") {
-      return `${handleWeekShow()} of ${MONTHS[params.month - 1]}, ${
-        params.year
-      }`;
-    } else if (params.day && params.option === "day") {
-      return ` ${MONTHS[params.month - 1]} ${params.day} ,${params.year}`;
-    } else if (params.month && !params[params.option]) {
-      return ` ${MONTHS[params.month - 1]}, ${params.year}`;
-    } else if (params.year && !params.month && !params[params.option]) {
-      return `${params.year}`;
-    }
-  };
-
-  const isShowIncome = isEmployees || isTransaction;
+  const isSales = !isEmployees && !isTransaction;
   return (
-    <MDBCard>
-      <MDBCardBody className="sales-report-body">
-        <div className=" d-flex align-items-center justify-content-center mb-2">
-          <h4 className="text-nowrap mr-3 mt-1  font-weight-bold">
-            {title} Report
-          </h4>
-        </div>
-        <MDBRow className=" ml-2 mt-0  ">
-          <MDBCol
-            md="12"
-            className="d-flex align-items-center justify-content-center "
+    <MDBRow className={`d-flex align-items-center mb-${mb}`}>
+      <MDBCol md={isSales ? "2" : "3"}>
+        <h4 className={`mt-3 ${isSales ? "font-weight-bolder" : ""}`}>
+          {title} Report
+        </h4>
+      </MDBCol>
+      <MDBCol md={isSales ? "10" : "9"} className="d-flex align-items-center ">
+        <label className="w-25">
+          <span className="ml-1 text-primary font-weight-bold">Year</span>
+          <select
+            className="form-control mr-3 custom-select"
+            value={String(params.year)}
+            onChange={({ target }) =>
+              setParams({ ...params, year: Number(target.value) })
+            }
           >
-            <label className="w-25">
-              <span className="ml-1 text-primary font-weight-bold">Year</span>
-              <select
-                className="form-control mr-3 custom-select"
-                value={String(params.year)}
-                onChange={({ target }) =>
-                  setParams({ ...params, year: Number(target.value) })
-                }
-              >
-                {years.map((year, index) => (
-                  <option key={index} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {years.map((year, index) => (
+              <option key={index} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </label>
 
+        <label className="w-25 ml-3">
+          <span className="ml-1 text-primary font-weight-bold">Month</span>
+          <select
+            className="form-control custom-select"
+            value={String(params.month)}
+            onChange={({ target }) =>
+              setParams({ ...params, month: Number(target.value) })
+            }
+          >
+            <option>Choose a month</option>
+            {months.map((month, index) => (
+              <option key={index} value={month}>
+                {MONTHS[month - 1]}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {params.option === "day" ? (
+          <div className="close-container">
             <label className="w-25 ml-3">
-              <span className="ml-1 text-primary font-weight-bold">Month</span>
+              <span className="ml-1 text-primary">Day</span>
               <select
                 className="form-control custom-select"
-                value={String(params.month)}
+                style={{ width: "160px" }}
+                value={String(params.day)}
                 onChange={({ target }) =>
-                  setParams({ ...params, month: Number(target.value) })
+                  setParams({ ...params, day: Number(target.value) })
                 }
               >
-                <option>Choose a month</option>
-                {months.map((month, index) => (
-                  <option key={index} value={month}>
-                    {MONTHS[month - 1]}
+                <option>Choose a day</option>
+                {days.map((day, index) => (
+                  <option key={index} value={day}>
+                    {day}
                   </option>
                 ))}
               </select>
+              <MDBIcon
+                icon="times"
+                className="remove-option"
+                onClick={handleRemoveOption}
+              />
             </label>
+          </div>
+        ) : (
+          ""
+        )}
 
-            {params.option === "day" ? (
-              <div className="close-container">
-                <label className="w-25 ml-3">
-                  <span className="ml-1 text-primary">Day</span>
-                  <select
-                    className="form-control custom-select"
-                    style={{ width: "160px" }}
-                    value={String(params.day)}
-                    onChange={({ target }) =>
-                      setParams({ ...params, day: Number(target.value) })
-                    }
-                  >
-                    <option>Choose a day</option>
-                    {days.map((day, index) => (
-                      <option key={index} value={day}>
-                        {day}
-                      </option>
-                    ))}
-                  </select>
-                  <MDBIcon
-                    icon="times"
-                    className="remove-option"
-                    onClick={handleRemoveOption}
-                  />
-                </label>
-              </div>
-            ) : (
-              ""
-            )}
-
-            {params.option === "week" ? (
-              <div className="close-container">
-                <label className="w-25 ml-3">
-                  <span className="ml-1 text-primary font-weight-bold">
-                    Week
-                  </span>
-                  <select
-                    className="form-control custom-select"
-                    style={{ width: "165px" }}
-                    value={String(params.week)}
-                    onChange={({ target }) =>
-                      setParams({ ...params, week: Number(target.value) })
-                    }
-                  >
-                    <option>Choose a week</option>
-                    {weeks.map((week, index) => (
-                      <option key={index} value={week}>
-                        {week}
-                      </option>
-                    ))}
-                  </select>
-                  <MDBIcon
-                    icon="times"
-                    className="remove-option"
-                    onClick={handleRemoveOption}
-                  />
-                </label>
-              </div>
-            ) : (
-              ""
-            )}
-            {!params.option && params.month ? (
+        {params.option === "week" ? (
+          <div className="close-container">
+            <label className="w-25 ml-3">
+              <span className="ml-1 text-primary font-weight-bold">Week</span>
               <select
-                className="form-control custom-select  ml-3 mt-3"
-                style={{ width: "160px" }}
-                value={params.option}
+                className="form-control custom-select"
+                style={{ width: "165px" }}
+                value={String(params.week)}
                 onChange={({ target }) =>
-                  setParams({ ...params, option: target.value })
+                  setParams({ ...params, week: Number(target.value) })
                 }
               >
-                <option value={""}>Other Options..</option>
-                <option value={"week"}>Week</option>
-                <option value={"day"}>Day</option>
+                <option>Choose a week</option>
+                {weeks.map((week, index) => (
+                  <option key={index} value={week}>
+                    {week}
+                  </option>
+                ))}
               </select>
-            ) : (
-              ""
-            )}
-          </MDBCol>
-        </MDBRow>
-        <hr />
-        <div className="d-flex mt-2 mb-3 justify-content-around ">
-          <MDBTypography
-            className="mb-0 text-black-80 ml-1 w-25 text-center h5"
-            noteColor="success"
-            colorText="grey"
-            note
-            noteTitle="Report On:"
+              <MDBIcon
+                icon="times"
+                className="remove-option"
+                onClick={handleRemoveOption}
+              />
+            </label>
+          </div>
+        ) : (
+          ""
+        )}
+        {!params.option && params.month ? (
+          <select
+            className="form-control custom-select  ml-3 mt-3"
+            style={{ width: "160px" }}
+            value={params.option}
+            onChange={({ target }) =>
+              setParams({ ...params, option: target.value })
+            }
           >
-            &nbsp;{handleTitleReport()}
-          </MDBTypography>
-
-          <MDBTypography
-            className="mb-0 text-black-80 ml-1 w-25 text-center h5"
-            noteColor="danger"
-            note
-            noteTitle="Total Sales:"
-          >
-            &nbsp; ₱{totalSales}
-          </MDBTypography>
-          {!isShowIncome && (
-            <MDBTypography
-              className="mb-0 text-black-80 ml-1 w-25 text-center h5"
-              noteColor="danger"
-              tag="display-1"
-              note
-              noteTitle="Total Income:"
-            >
-              &nbsp; ₱{totalIncome}
-            </MDBTypography>
-          )}
-        </div>
-      </MDBCardBody>
-    </MDBCard>
+            <option value={""}>Other Options..</option>
+            <option value={"week"}>Week</option>
+            <option value={"day"}>Day</option>
+          </select>
+        ) : (
+          ""
+        )}
+      </MDBCol>
+    </MDBRow>
   );
 };

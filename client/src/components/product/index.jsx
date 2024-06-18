@@ -223,12 +223,20 @@ const ProductInformation = ({
       .map((product) => (product.img ? product : ""))
       .filter(Boolean);
 
+    const variantImages = media?.variant.options
+      .map((variant) => (variant.img ? variant : ""))
+      .filter(Boolean);
+
     const newForm = {
       ...form,
       hasVariant: variations.length > 0 ? true : false,
       has2Variant: variations.length === 2 ? true : false,
       variations: variations,
-      media: { ...media, product: productsImages },
+      media: {
+        ...media,
+        product: productsImages,
+        variant: { ...media.variant, options: variantImages },
+      },
     };
     const title = willCreate ? "publish" : "Update";
     Swal.fire({
@@ -265,7 +273,6 @@ const ProductInformation = ({
     setSelected({});
   };
 
-  console.log(variations);
   return (
     <>
       <form onSubmit={handleSubmit}>

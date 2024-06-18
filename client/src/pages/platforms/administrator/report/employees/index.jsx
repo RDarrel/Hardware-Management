@@ -26,13 +26,15 @@ export const EmployeesReport = () => {
 
   return (
     <>
-      <Header
-        isEmployees={true}
-        collections={collections}
-        setFilteredData={setTransactions}
-        title="Employees"
-      />
-      <MDBCard className="mt-2">
+      <MDBCard>
+        <div className="ml-4 mt-2">
+          <Header
+            isEmployees={true}
+            collections={collections}
+            setFilteredData={setTransactions}
+            title="Employees"
+          />
+        </div>
         <MDBCardBody>
           <MDBTable bordered responsive striped>
             <thead>
@@ -57,7 +59,7 @@ export const EmployeesReport = () => {
                         {transactionsHandle}
                       </td>
                       <td className="text-center text-danger font-weight-bold">
-                        ₱{total}
+                        ₱{total.toLocaleString()}
                       </td>
                     </tr>
                   );

@@ -1,5 +1,6 @@
-import { MDBCol, MDBInputGroup, MDBRow, MDBTable } from "mdbreact";
 import React from "react";
+import { MDBCol, MDBInputGroup, MDBRow, MDBTable } from "mdbreact";
+
 function Table({ variations, setVariations }) {
   const handleChangePriceHaveVr2 = (
     value,

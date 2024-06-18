@@ -47,7 +47,7 @@ const Table = ({ cart, setCart }) => {
                     src={img}
                     alt={product.name}
                     className="mr-2"
-                    style={{ width: "80px" }}
+                    style={{ width: "60px" }}
                   />
                   <div>
                     <h5

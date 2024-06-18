@@ -47,6 +47,7 @@ const View = ({
         thumb: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
         label: _id,
       }));
+
       setBaseImages([]);
       setSelectedImage({});
       setIsFullView(false);

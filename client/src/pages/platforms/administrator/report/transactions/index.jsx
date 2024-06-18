@@ -41,16 +41,19 @@ export const Transactions = () => {
 
   return (
     <>
-      <Header
-        setFilteredData={setTransactions}
-        collections={collections}
-        keyToGetTheSale="total"
-        isTransaction={true}
-        title="Transactions"
-      />
-      <MDBCard className="mt-2">
+      <MDBCard>
+        <div className="ml-4 mt-2">
+          <Header
+            setFilteredData={setTransactions}
+            collections={collections}
+            keyToGetTheSale="total"
+            isTransaction={true}
+            title="Transactions"
+            mb="0"
+          />
+        </div>
         <MDBCardBody>
-          <MDBRow className="mt-3">
+          <MDBRow>
             <MDBCol md="12">
               {handlePagination(transactions, page, maxPage).map(
                 (transaction, index) => {
@@ -91,7 +94,9 @@ export const Transactions = () => {
                             <label
                               className={`d-flex justify-content-end mt-2 text-danger mr-2`}
                             >
-                              <strong>Amount: ₱{transaction.total}</strong>
+                              <strong>
+                                Amount: ₱{transaction.total.toLocaleString()}
+                              </strong>
                             </label>
                             <i
                               style={{
@@ -137,16 +142,16 @@ export const Transactions = () => {
                                 <tr key={index}>
                                   <td>{index + 1}</td>
                                   <td>
-                                    <div className="product-info">
+                                    <div className="d-flex align-items-center">
                                       <img
                                         src={img}
                                         alt={product.name}
                                         className="product-image mr-2"
                                       />
                                       <div>
-                                        <h5 className="product-name">
+                                        <h6 className="product-name">
                                           {product.name}
-                                        </h5>
+                                        </h6>
                                         {product.hasVariant && (
                                           <div className="d-flex align-items-center">
                                             <span className="mr-1">

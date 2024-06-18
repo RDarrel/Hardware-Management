@@ -7,7 +7,13 @@ const OrderType = ({ item, index, handleChange, handleChangeGrams }) => {
         <MDBInputGroup
           type="number"
           value={String(item.kilo)}
-          onChange={({ target }) => handleChange(index, target.value, true)}
+          onChange={({ target }) => {
+            if (target.value < 0) {
+              handleChange(index, 0, true);
+            } else {
+              handleChange(index, target.value, true);
+            }
+          }}
           min={0}
           style={{ width: "25%", height: "30%" }}
           append={
@@ -29,14 +35,25 @@ const OrderType = ({ item, index, handleChange, handleChangeGrams }) => {
           className="text-center border border-light"
           style={{ width: "25%", height: "30%" }}
           value={String(item.quantity)}
-          onChange={({ target }) => handleChange(index, target.value, false)}
-          min="1"
+          onChange={({ target }) => {
+            if (target.value < 1) {
+              handleChange(index, 1, false);
+            } else {
+              handleChange(index, target.value, false);
+            }
+          }}
           size="sm"
           prepend={
             <MDBBtn
               className="m-0 px-2 py-0"
               size="sm"
               color="light"
+              onClick={() =>
+                handleChange(
+                  index,
+                  item.quantity > 1 ? item.quantity - 1 : item.quantity
+                )
+              }
               style={{ boxShadow: "0px 0px 0px 0px" }}
               outline
             >
@@ -47,6 +64,7 @@ const OrderType = ({ item, index, handleChange, handleChangeGrams }) => {
             <MDBBtn
               className="m-0 px-2  py-0"
               size="sm"
+              onClick={() => handleChange(index, item.quantity + 1)}
               color="light"
               style={{ boxShadow: "0px 0px 0px 0px" }}
               outline

@@ -63,8 +63,8 @@ export const Stocks = () => {
             <tr>
               <th>#</th>
               <th>Product Name</th>
-              <th>Unit</th>
               <th>Stock</th>
+              <th>Unit</th>
             </tr>
           </thead>
           <tbody>
@@ -88,7 +88,7 @@ export const Stocks = () => {
                         src={img}
                         alt={product.name}
                         className="mr-2"
-                        style={{ width: "80px", borderRadius: "4px" }}
+                        style={{ width: "60px", borderRadius: "4px" }}
                       />
                       <div>
                         <h6
@@ -111,8 +111,8 @@ export const Stocks = () => {
                       </div>
                     </div>
                   </td>
-                  <td>{obj.product.isPerKilo ? "Kilo" : "Pcs"}</td>
                   <td>{formattedStock(obj, product.isPerKilo)}</td>
+                  <td>{obj.product.isPerKilo ? "kg" : "Pcs"}</td>
                 </tr>
               );
             })}

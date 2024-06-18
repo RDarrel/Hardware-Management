@@ -186,7 +186,7 @@ const stocks = async (purchases, invoice_no) => {
 exports.pos = async (req, res) => {
   try {
     const { purchases, invoice_no, cashier, total } = req.body;
-    const cartIdsToDelete = purchases.map(({ _id }) => _id).filter(Boolean);
+    // const cartIdsToDelete = purchases.map(({ _id }) => _id).filter(Boolean);
 
     const purchasesWithCapital = await stocks(purchases, invoice_no);
 
@@ -198,7 +198,7 @@ exports.pos = async (req, res) => {
       purchases,
     });
 
-    await Cart.deleteMany({ _id: { $in: cartIdsToDelete } });
+    // await Cart.deleteMany({ _id: { $in: cartIdsToDelete } });
 
     res.json({ success: "Successfully Buy", payload: cartIdsToDelete });
   } catch (error) {

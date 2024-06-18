@@ -84,12 +84,14 @@ const Variations = ({
       })
       .filter(Boolean);
 
-    const prices = variation1.options.find(
-      (option) => option._id === option1ID
-    ).prices;
+    if (option1ID) {
+      const prices = variation1.options.find(
+        (option) => option._id === option1ID
+      ).prices;
+      const srp = prices.find((price) => price._id === _id).srp;
+      setPrice(srp);
+    }
     setOption2ID(_id);
-    const srp = prices.find((price) => price._id === _id).srp;
-    setPrice(srp);
 
     if (disableOptionsID.length > 0) {
       setDisableIDSVr1(disableOptionsID);

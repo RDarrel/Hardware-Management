@@ -20,7 +20,7 @@ export default function Modal({ show, toggle, selected, handleAddOrder }) {
   const handleClose = () => {
     toggle();
   };
-
+  const isDisabled = selected.has2Variant ? !(variant1 && variant2) : !variant1;
   return (
     <MDBModal isOpen={show} toggle={toggle} backdrop size="lg">
       <MDBModalHeader
@@ -49,6 +49,7 @@ export default function Modal({ show, toggle, selected, handleAddOrder }) {
             <MDBBtn
               type="submit"
               color="success"
+              disabled={isDisabled}
               size="md"
               className="mb-2 float-right"
             >

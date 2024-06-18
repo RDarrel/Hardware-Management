@@ -10,7 +10,7 @@ const Variations = ({
   isCart = false,
   variant2,
   setSelectedImage,
-  setPrice,
+  setPrice = () => {},
   setVariant2,
 }) => {
   const [variation1, setVariation1] = useState(null),
@@ -56,8 +56,9 @@ const Variations = ({
         ).prices;
         const srp = prices.find((price) => price._id === option2ID).srp;
         setPrice(srp);
+      } else {
+        setOption1ID(_id);
       }
-      setOption1ID(_id);
     } else {
       const srp = variation1.options.find((option) => option._id === _id).srp;
       setPrice(srp);
@@ -84,13 +85,17 @@ const Variations = ({
       })
       .filter(Boolean);
 
-    const prices = variation1.options.find(
-      (option) => option._id === option1ID
-    ).prices;
+    if (option1ID) {
+      const prices = variation1.options.find(
+        (option) => option._id === option1ID
+      ).prices;
+
+      const srp = prices.find((price) => price._id === _id).srp;
+
+      setPrice(srp);
+    }
 
     setOption2ID(_id);
-    const srp = prices.find((price) => price._id === _id).srp;
-    setPrice(srp);
 
     if (disableOptionsID.length > 0) {
       setDisableIDSVr1(disableOptionsID);

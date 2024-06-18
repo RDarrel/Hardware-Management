@@ -30,7 +30,7 @@ export const ProducCard = ({ index, product, setIsView, setSelected }) => {
               waves
               className="img-fluid d-flex justify-content-center"
               src={`${ENDPOINT}/assets/products/${product._id}/Cover Photo.jpg`}
-              style={{ height: "160px", width: "70%" }}
+              style={{ height: "130px", width: "100%" }}
             />
           </div>
           {/* <MDBBtn
