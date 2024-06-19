@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { MDBCol, MDBIcon, MDBRow } from "mdbreact";
 import "../header/header.css";
+import arrangeBy from "./arrangeBy";
 
 const MONTHS = [
   "January",
@@ -18,11 +19,11 @@ const MONTHS = [
 ];
 export const Header = ({
   collections,
-  setFilteredData,
   isTransaction = false,
   isEmployees = false,
   mb = "3",
   title = "Sales",
+  setFilteredData = () => {},
   setSoldQty = () => {},
   setSoldKilo = () => {},
   setTotalIncome = () => {},
@@ -34,6 +35,10 @@ export const Header = ({
     week: 0,
     day: 0,
   });
+  const [soldKiloState, setSoldKiloState] = useState(0);
+  const [soldQtyState, setSoldQtyState] = useState(0);
+  const [totalIncomeState, setTotalIncomeState] = useState(0);
+  const [totalSalesState, setTotalSalesState] = useState(0);
   const [sales, setSales] = useState([]);
   const [years, setYears] = useState([]);
   const [months, setMonths] = useState([]);
@@ -41,16 +46,25 @@ export const Header = ({
   const [days, setDays] = useState([]);
 
   const getWeek = (day) => {
-    if (day >= 1 && day <= 7) {
-      return 1;
-    } else if (day >= 8 && day <= 14) {
-      return 2;
-    } else if (day >= 9 && day <= 21) {
-      return 3;
-    } else {
-      return 4;
-    }
+    return Math.ceil(day / 7);
   };
+
+  //use this to avoid the infinite loop
+  useEffect(() => {
+    setSoldKilo(soldKiloState);
+    setSoldQty(soldQtyState);
+    setTotalIncome(totalIncomeState);
+    setTotalSales(totalSalesState);
+  }, [
+    soldKiloState,
+    totalIncomeState,
+    totalSalesState,
+    soldQtyState,
+    setSoldKilo,
+    setSoldQty,
+    setTotalIncome,
+    setTotalSales,
+  ]);
 
   const handleFormatData = useCallback((sale) => {
     const date = new Date(sale.createdAt);
@@ -99,7 +113,7 @@ export const Header = ({
 
     setYears(sortedYears);
     setSales(salesWithoutFiltered);
-  }, [collections, handleFormatData, handleGetMonths]);
+  }, [collections, handleFormatData]);
 
   const handleIncome = (sale, isPerKilo) => {
     const { kilo, quantity, capital, srp } = sale;
@@ -108,7 +122,7 @@ export const Header = ({
       : srp * quantity - capital * quantity;
   };
 
-  const hnadleGetSold = useCallback((_sales) => {
+  const handleGetSold = useCallback((_sales) => {
     const _soldQty = _sales.reduce((acc, curr) => {
       acc += curr.soldQty;
       return acc;
@@ -123,64 +137,18 @@ export const Header = ({
   }, []);
 
   const handleChangeSales = useCallback(
-    (data, isMonth) => {
+    (data, _params, isMonth) => {
       //use this to get the months in the year what we choose this is based on the main array
-      const filteredData = sales.filter(({ year }) => year === params.year);
-      //arrange the sales
+      const years = sales.filter(({ year }) => year === _params.year);
       var arrangeSales = [];
-      if (isTransaction) {
-        arrangeSales = data;
-      } else if (isEmployees) {
-        arrangeSales = data //this is for the employees report arrange by transaction
-          .reduce((accumulator, currentValue) => {
-            const { cashier, total } = currentValue;
-            const key = `${cashier._id}`;
-            const index = accumulator?.findIndex((accu) => accu.key === key);
-            if (index > -1) {
-              accumulator[index].transactionsHandle += 1;
-              accumulator[index].total += total;
-            } else {
-              accumulator.push({
-                ...currentValue,
-                key,
-                transactionsHandle: 1,
-                total,
-              });
-            }
-            return accumulator;
-          }, [])
-          .sort((a, b) => b.transactionsHandle - a.transactionsHandle);
+
+      if (isTransaction || isEmployees) {
+        arrangeSales = isTransaction ? data : arrangeBy.employees(data);
       } else {
-        arrangeSales = data //this is for the sales i arranged the data by the product then sort this into the sold
-          .reduce((accumulator, currentValue) => {
-            const { product, variant1, variant2, quantity, kilo, income } =
-              currentValue;
-            const key = `${product._id}-${variant1}-${variant2}`;
-            const index = accumulator?.findIndex((accu) => accu.key === key);
-            if (index > -1) {
-              accumulator[index].sold += quantity || kilo;
-              accumulator[index].income += income;
-              accumulator[index].soldKilo += kilo || 0;
-              accumulator[index].soldQty += quantity || 0;
-            } else {
-              accumulator.push({
-                ...currentValue,
-                key,
-                sold: quantity || kilo,
-                soldQty: quantity || 0,
-                soldKilo: kilo || 0,
-              });
-            }
-            return accumulator;
-          }, [])
-          .sort((a, b) => b.sold - a.sold);
+        arrangeSales = arrangeBy.sales(data);
       }
 
-      const _months = handleGetMonths(filteredData);
-      const { sales: totalSales, income: totalIncome } =
-        computeTotalSalesAndIncome(arrangeSales);
-
-      const { _soldKilo = 0, _soldQty = 0 } = hnadleGetSold(arrangeSales);
+      const _months = handleGetMonths(years);
 
       if (isMonth) {
         const _days = new Set(data.map(({ day }) => day));
@@ -190,25 +158,30 @@ export const Header = ({
         setDays(sortedDays);
         setWeeks(sortedWeeks);
       }
-      setSoldKilo(_soldKilo);
-      setSoldQty(_soldQty);
-      setTotalSales(totalSales);
-      setTotalIncome(totalIncome);
-      setFilteredData(arrangeSales);
+
+      if (!isEmployees || !isTransaction) {
+        const { sales: totalSales, income: totalIncome } =
+          computeTotalSalesAndIncome(arrangeSales);
+        const { _soldKilo = 0, _soldQty = 0 } = handleGetSold(arrangeSales);
+        setSoldKiloState(_soldKilo);
+        setSoldQtyState(_soldQty);
+        setTotalSalesState(totalSales);
+        setTotalIncomeState(totalIncome);
+      }
       setMonths(_months);
+      setFilteredData(arrangeSales);
     },
     [
       computeTotalSalesAndIncome,
       handleGetMonths,
-      hnadleGetSold,
-      setSoldKilo,
-      setSoldQty,
-      setTotalSales,
-      setTotalIncome,
+      handleGetSold,
+      setSoldKiloState,
+      setSoldQtyState,
+      setTotalIncomeState,
+      setTotalSalesState,
+      setFilteredData,
       sales,
       isTransaction,
-      params,
-      setFilteredData,
       isEmployees,
     ]
   );
@@ -228,7 +201,7 @@ export const Header = ({
     var filteredData = [];
     if (params.year && !params.month) {
       filteredData = sales.filter(({ year }) => year === params.year);
-      handleChangeSales(filteredData);
+      handleChangeSales(filteredData, params);
 
       if (params.option) {
         setParams((prev) => ({
@@ -246,7 +219,7 @@ export const Header = ({
         ({ year, month }) => year === params.year && month === params.month
       );
 
-      handleChangeSales(filteredData, true);
+      handleChangeSales(filteredData, params, true);
 
       if (filteredData.length === 0) resetParams();
 
@@ -258,7 +231,7 @@ export const Header = ({
             sale.month === params.month &&
             sale[params.option] === params[params.option]
         );
-        handleChangeSales(filteredData, false);
+        handleChangeSales(filteredData, params, false);
 
         if (filteredData.length === 0) {
           setParams((prev) => ({
@@ -269,7 +242,7 @@ export const Header = ({
         }
       }
     }
-  }, [params, sales, resetParams, handleGetMonths, handleChangeSales]);
+  }, [params, sales, resetParams, handleChangeSales]);
 
   const handleRemoveOption = () => setParams({ ...params, option: "" });
   const isSales = !isEmployees && !isTransaction;

@@ -20,10 +20,6 @@ export const EmployeesReport = () => {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
 
-  useEffect(() => {
-    setTransactions(collections);
-  }, [collections]);
-
   return (
     <>
       <MDBCard>

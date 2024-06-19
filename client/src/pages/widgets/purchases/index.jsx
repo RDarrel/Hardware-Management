@@ -199,7 +199,9 @@ const GlobalPurchases = ({ isAdmin = false }) => {
                             <label
                               className={`d-flex justify-content-end mt-2 text-danger mr-2`}
                             >
-                              <strong>Total Amount: ₱{purchase.total}</strong>
+                              <strong>
+                                Total Amount: ₱{purchase.total.toLocaleString()}
+                              </strong>
                             </label>
                           )}
                           <i

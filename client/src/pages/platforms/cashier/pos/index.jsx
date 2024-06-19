@@ -2,14 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SELLING_PRODUCTS } from "../../../../services/redux/slices/administrator/productManagement/products";
 import { BROWSE as BROWSECART } from "../../../../services/redux/slices/cart";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  MDBCard,
-  MDBCardHeader,
-  MDBCol,
-  MDBRow,
-  MDBContainer,
-  MDBIcon,
-} from "mdbreact";
+import { MDBCol, MDBRow, MDBContainer } from "mdbreact";
 import "./pos.css";
 import Orders from "./orders";
 import Modal from "./modal";

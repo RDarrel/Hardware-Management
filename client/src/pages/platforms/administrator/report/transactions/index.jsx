@@ -35,10 +35,6 @@ export const Transactions = () => {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
 
-  useEffect(() => {
-    setTransactions(collections);
-  }, [collections]);
-
   return (
     <>
       <MDBCard>
@@ -46,7 +42,6 @@ export const Transactions = () => {
           <Header
             setFilteredData={setTransactions}
             collections={collections}
-            keyToGetTheSale="total"
             isTransaction={true}
             title="Transactions"
             mb="0"

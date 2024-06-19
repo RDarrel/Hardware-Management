@@ -340,10 +340,8 @@ export const reduxSlice = createSlice({
         state.message = "";
       })
       .addCase(POS.fulfilled, (state, action) => {
-        const { success, payload } = action.payload;
-        state.collections = state.collections.filter(
-          (collection) => !payload.includes(collection._id)
-        );
+        const { success } = action.payload;
+
         state.message = success;
         state.isSuccess = true;
         state.isLoading = false;
