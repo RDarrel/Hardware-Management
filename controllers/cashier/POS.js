@@ -4,83 +4,6 @@ const Sales = require("../../models/administrator/report/Sales"),
   Cart = require("../../models/Cart"),
   handleDuplicate = require("../../config/duplicate");
 
-const stocksPerKilo = async (
-  stock,
-  purchase,
-  purchasesWithCapital,
-  invoice_no
-) => {
-  try {
-    const {
-      kilo: kiloPurchase,
-      kiloGrams: gramsPurchase,
-      product,
-      variant1,
-      variant2,
-    } = purchase;
-    const { has2Variant, hasVariant, _id } = product;
-
-    const totalPurchase = kiloPurchase + gramsPurchase;
-    const stockIsEnough = stock.kiloStock >= totalPurchase;
-
-    const query = {
-      product: _id,
-      kilo: { $gte: 1 },
-      ...(hasVariant && { variant1 }),
-      ...(has2Variant && { variant2 }),
-    };
-
-    const remainingStock = stock.kiloStock - totalPurchase;
-    //yung remaining stock na ito kapag nag negative ang result yun yung gagamitin kong pang bawas sa next new Stock
-    purchasesWithCapital.push({
-      ...purchase,
-      capital: stock.capital,
-      kilo: Number(
-        !stockIsEnough
-          ? totalPurchase - Math.abs(remainingStock) //cinoconvert ko siya sa positive kapag -2 magiging 2
-          : totalPurchase
-      ).toFixed(2),
-      product: _id,
-      invoice_no,
-    });
-
-    await Stocks.findByIdAndUpdate(
-      stock._id,
-      {
-        kiloStock: !stockIsEnough
-          ? 0
-          : Number(remainingStock - 0.001).toFixed(2),
-      },
-      { new: true }
-    );
-
-    if (!stockIsEnough) {
-      const newStock = await Stocks.findOne(query).sort({ createdAt: 1 });
-      if (!newStock) {
-        newStock = await Stocks.findOne(query).sort({ createdAt: -1 });
-      }
-      const remainingPurchaseKilo = Math.abs(remainingStock);
-      const remainingNewStock = newStock.kiloStock - remainingPurchaseKilo;
-
-      purchasesWithCapital.push({
-        ...purchase,
-        capital: newStock.capital,
-        kilo: Number(remainingPurchaseKilo).toFixed(2),
-        product: _id,
-        invoice_no,
-      });
-
-      await Stocks.findByIdAndUpdate(
-        newStock._id,
-        { kiloStock: Number(remainingNewStock - 0.001).toFixed(2) },
-        { new: true }
-      );
-    }
-  } catch (error) {
-    console.log(`Stock Perkilo:${error.message}`);
-  }
-};
-
 const checkerOfLastStock = async (productID, currentStock) => {
   try {
     const stocks = await Stocks.find({ product: productID });
@@ -94,11 +17,37 @@ const checkerOfLastStock = async (productID, currentStock) => {
   }
 };
 
+const findAnotherStock = async (stock, query) => {
+  try {
+    return await Stocks.findOne({
+      ...query,
+      _id: { $ne: stock._id },
+    }).sort({ createdAt: 1 });
+  } catch (error) {
+    console.log("Find another stock Error", error.message);
+  }
+};
+
+const updateStock = async (stock, key, newStock) => {
+  try {
+    await Stocks.findByIdAndUpdate(
+      stock._id,
+      {
+        [key]: newStock,
+      },
+      { new: true }
+    );
+  } catch (error) {
+    console.log("Update Stock error", error.message);
+  }
+};
+
 const stocksPerQuantity = async (
   stock,
   purchase,
   purchasesWithCapital,
-  invoice_no
+  invoice_no,
+  baseStockIsNotEnough
 ) => {
   var {
     quantity: purchaseQty,
@@ -112,26 +61,33 @@ const stocksPerQuantity = async (
 
   const baseStockKey = isPerKilo ? "kiloStock" : "quantityStock";
   const basePurchaseKey = isPerKilo ? "kilo" : "quantity";
-  const basePurchase = isPerKilo ? kilo + kiloGrams : purchaseQty;
+  var basePurchase = isPerKilo ? kilo + kiloGrams : purchaseQty;
+
   const query = {
     product: _id,
     [baseStockKey]: { $gt: 0 },
     ...(hasVariant && { variant1: variant1 }),
     ...(has2Variant && { variant2: variant2 }),
   };
+
   try {
     var isLoopAgain = true;
     var hasLastStock = false;
     while (isLoopAgain) {
       const stocks = await Stocks.find({ product: product._id });
+
       const stockIsEnough = stock[baseStockKey] >= basePurchase;
       var remainingStock = stock[baseStockKey] - basePurchase;
       const have1Stock = stocks.length === 1;
+
+      const shouldAdjustPurchase =
+        !stockIsEnough && !have1Stock && !hasLastStock && !baseStockIsNotEnough; // if this is true it means have another stock
+
       purchasesWithCapital.push({
         ...purchase,
         capital: stock.capital,
         [basePurchaseKey]: Number(
-          !stockIsEnough && !have1Stock && !hasLastStock
+          shouldAdjustPurchase
             ? basePurchase - Math.abs(remainingStock) //cinoconvert ko siya sa positive kapag -2 magiging 2
             : basePurchase
         ).toFixed(2),
@@ -139,20 +95,11 @@ const stocksPerQuantity = async (
         invoice_no,
       });
 
-      await Stocks.findByIdAndUpdate(
-        stock._id,
-        {
-          [baseStockKey]:
-            !stockIsEnough && !hasLastStock && !have1Stock ? 0 : remainingStock,
-        },
-        { new: true }
-      );
+      const newStockCount = shouldAdjustPurchase ? 0 : remainingStock;
+      await updateStock(stock, baseStockKey, newStockCount);
 
-      if (!stockIsEnough && !hasLastStock && !have1Stock) {
-        nextStock = await Stocks.findOne({
-          ...query,
-          _id: { $ne: stock._id },
-        }).sort({ createdAt: 1 });
+      if (shouldAdjustPurchase) {
+        var nextStock = await findAnotherStock(stock, query);
 
         const hasNoMoreStock = await checkerOfLastStock(product._id, nextStock);
         let nextStockRemainingQty =
@@ -171,28 +118,20 @@ const stocksPerQuantity = async (
           product: _id,
           invoice_no,
         });
-        // console.log(baseRemainingStock);
-        await Stocks.findByIdAndUpdate(
-          nextStock._id,
-          {
-            [baseStockKey]:
-              nextStockRemainingQty < 0 && !hasNoMoreStock
-                ? 0
-                : nextStockRemainingQty,
-          },
-          { new: true }
-        );
+
+        const nextStockCount = //kung ilang stock ang ilalagay sa iuupdate na stock
+          nextStockRemainingQty < 0 && !hasNoMoreStock
+            ? 0
+            : nextStockRemainingQty;
+
+        await updateStock(nextStock, baseStockKey, nextStockCount);
 
         if (nextStockRemainingQty < 0 && !hasNoMoreStock) {
           basePurchase = Math.abs(nextStockRemainingQty);
-
-          stock = await Stocks.findOne({
-            ...query,
-            _id: { $ne: nextStock._id },
-          }).sort({ createdAt: 1 });
+          stock = await findAnotherStock(nextStock, query);
 
           if (await checkerOfLastStock(product._id, stock)) {
-            hasLastStock = true;
+            hasLastStock = true; //if this is true it means the stock is last
           }
 
           isLoopAgain = true;
@@ -207,6 +146,7 @@ const stocksPerQuantity = async (
     console.log(`Error Per Quantity:${error.message}`);
   }
 };
+
 const stocks = async (purchases, invoice_no) => {
   try {
     const purchasesWithCapital = [];
@@ -214,31 +154,38 @@ const stocks = async (purchases, invoice_no) => {
       delete purchase._id;
       const { variant1 = "", variant2 = "", product } = purchase;
       const { _id, isPerKilo, has2Variant, hasVariant } = product;
-
-      const query = {
+      var baseStockIsNotEnough = false;
+      var query = {
         product: _id,
-        ...(!isPerKilo && { quantity: { $gte: 1 } }),
-        ...(isPerKilo && { kilo: { $gte: 1 } }),
+        ...(!isPerKilo && { quantityStock: { $gt: 0 } }),
+        ...(isPerKilo && { kiloStock: { $gt: 0 } }),
         ...(hasVariant && { variant1: variant1 }),
         ...(has2Variant && { variant2: variant2 }),
       };
 
-      const stock = await Stocks.findOne(query).sort({ createdAt: 1 });
+      var stock = await Stocks.findOne(query).sort({ createdAt: 1 });
       if (!stock) {
+        delete query.quantityStock;
+        delete query.kiloStock;
+        baseStockIsNotEnough = true;
         //para kapag wala siyang mahanap na meron pang stock mag nenegative siya sa pinaka unang nabili na stock
         stock = await Stocks.findOne(query).sort({ createdAt: -1 });
+      } else {
+        const haveAnotherStock = await findAnotherStock(stock, query);
+        if (!haveAnotherStock) {
+          baseStockIsNotEnough = true;
+        } else {
+          baseStockIsNotEnough = false;
+        } //to check don't have another stock
       }
 
-      if (isPerKilo) {
-        await stocksPerKilo(stock, purchase, purchasesWithCapital, invoice_no);
-      } else {
-        await stocksPerQuantity(
-          stock,
-          purchase,
-          purchasesWithCapital,
-          invoice_no
-        );
-      }
+      await stocksPerQuantity(
+        stock,
+        purchase,
+        purchasesWithCapital,
+        invoice_no,
+        baseStockIsNotEnough
+      );
     }
 
     return purchasesWithCapital;
@@ -250,19 +197,14 @@ const stocks = async (purchases, invoice_no) => {
 exports.pos = async (req, res) => {
   try {
     const { purchases, invoice_no, cashier, total } = req.body;
-    // const cartIdsToDelete = purchases.map(({ _id }) => _id).filter(Boolean);
-
     const purchasesWithCapital = await stocks(purchases, invoice_no);
-
     await Sales.insertMany(purchasesWithCapital);
-    // await Transactions.create({
-    //   cashier,
-    //   invoice_no,
-    //   total,
-    //   purchases,
-    // });
-
-    // await Cart.deleteMany({ _id: { $in: cartIdsToDelete } });
+    await Transactions.create({
+      cashier,
+      invoice_no,
+      total,
+      purchases,
+    });
 
     res.json({ success: "Successfully Buy" });
   } catch (error) {

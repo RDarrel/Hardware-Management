@@ -1,6 +1,6 @@
 import React from "react";
-import navbarLogo from "../../../../../assets//logo/navbar.jpg";
-import { formattedDate } from "../../../../../services/utilities";
+import navbarLogo from "../../../assets//logo/navbar.jpg";
+import { formattedDate } from "../../../services/utilities";
 
 const Header = ({ invoice_no }) => {
   return (

@@ -163,9 +163,10 @@ const handleRemoveTheBase64 = (media) => {
   const product = media.product.map(({ label }) => ({
     label,
   }));
-  const variant = media.variant.options.map(({ label, _id }) => ({
+  const variant = media.variant.options.map(({ label, _id, isUpload }) => ({
     _id,
     label,
+    isUpload,
   }));
 
   return { product, variant };

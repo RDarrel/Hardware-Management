@@ -42,11 +42,13 @@ const View = ({
         label,
       }));
 
-      const variantImages = media.variant?.options?.map(({ _id }) => ({
-        large: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
-        thumb: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
-        label: _id,
-      }));
+      const variantImages = media.variant?.options
+        ?.filter(({ isUpload }) => isUpload)
+        .map(({ _id }) => ({
+          large: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
+          thumb: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
+          label: _id,
+        }));
 
       setBaseImages([]);
       setSelectedImage({});

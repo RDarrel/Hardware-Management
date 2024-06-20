@@ -3,10 +3,10 @@ import { useEffect } from "react";
 import { MDBCard, MDBCardBody, MDBCol } from "mdbreact";
 import "./order.css";
 import Swal from "sweetalert2";
-import Checkout from "../checkout";
 import Footer from "./footer";
 import Body from "./body";
 import { variation } from "../../../../../services/utilities";
+import Receipt from "../../../../widgets/receipt";
 
 const Orders = ({ orders, setOrders, invoice_no }) => {
   const [total, setTotal] = useState(0),
@@ -115,7 +115,7 @@ const Orders = ({ orders, setOrders, invoice_no }) => {
           />
         </MDBCardBody>
       </MDBCard>
-      <Checkout
+      <Receipt
         show={checkout}
         toggle={() => setCheckout(!checkout)}
         invoice_no={invoice_no}

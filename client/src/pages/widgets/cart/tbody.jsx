@@ -35,7 +35,7 @@ export const Tbody = ({
       {cart.length > 0 &&
         cart.map((obj, index) => {
           const { product } = obj;
-          const hasVariant = product.hasVariant;
+          const hasVariant = product?.hasVariant;
           const { media } = product;
           const checkOutProduct = checkOutProducts.find(
             ({ _id }) => _id === obj._id

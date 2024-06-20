@@ -122,7 +122,7 @@ const GlobalPurchases = ({ isAdmin = false }) => {
             <MDBIcon
               icon="shopping-basket"
               size="2x"
-              style={{ color: "red" }}
+              style={{ color: "blue" }}
               className="ml-2"
             />
             <h4 className="ml-2  mr-4 text-nowrap mt-2">Purchase List</h4>
@@ -257,7 +257,7 @@ const GlobalPurchases = ({ isAdmin = false }) => {
                                         src={img}
                                         alt={product.name}
                                         className="mr-2"
-                                        style={{ width: "80px" }}
+                                        style={{ width: "60px" }}
                                       />
                                       <div>
                                         <h6

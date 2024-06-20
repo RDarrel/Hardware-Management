@@ -1,18 +1,19 @@
 import React from "react";
 import Swal from "sweetalert2";
-import { POS } from "../../../../../services/redux/slices/cart";
+import { POS } from "../../../services/redux/slices/cart";
 import { MDBBtn, MDBModal, MDBModalBody } from "mdbreact";
-import { variation } from "../../../../../services/utilities";
+import { variation } from "../../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
-import "./checkout.css";
+import "./receipt.css";
 import Header from "./header";
-export default function Checkout({
+export default function Receipt({
   show,
   toggle,
-  total,
-  invoice_no,
-  orderDetails,
-  setOrders,
+  total = 0,
+  invoice_no = "",
+  orderDetails = [],
+  setOrders = () => {},
+  isAdmin = false,
 }) {
   const { auth, token } = useSelector(({ auth }) => auth),
     dispatch = useDispatch();
@@ -42,10 +43,10 @@ export default function Checkout({
               <thead>
                 <tr>
                   <th>Items</th>
-                  <th>Quantity/Kilo</th>
+                  <th className="text-center">Quantity/Kilo</th>
 
-                  <th>SRP</th>
-                  <th>Subtotal</th>
+                  <th className="text-center">SRP</th>
+                  <th className="text-center">Subtotal</th>
                 </tr>
               </thead>
               <tbody>
@@ -76,12 +77,14 @@ export default function Checkout({
                         )}
                       </div>
                     </td>
-                    <td>
+                    <td className="text-center">
                       {variation.qtyOrKilo(order, order.product.isPerKilo)}
                     </td>
 
-                    <td>₱{order.srp}</td>
-                    <td>₱{order.subtotal}</td>
+                    <td className="text-center">₱{order.srp}</td>
+                    <td className="text-center">
+                      ₱{order.subtotal.toLocaleString()}
+                    </td>
                   </tr>
                 ))}
                 <tr>
@@ -94,6 +97,7 @@ export default function Checkout({
                   ></td>
                   <td
                     colSpan="2"
+                    className="text-center"
                     style={{ borderRight: "none", fontSize: "1rem" }}
                   >
                     <p>Total: ₱{total.toLocaleString()}</p>
@@ -103,20 +107,22 @@ export default function Checkout({
             </table>
           </div>
           <div className="text-center mb-1-half mt-2">
-            <MDBBtn
-              type="submit"
-              color="primary"
-              className="mb-2 font-weight-bold float-right"
-            >
-              Proceed
-            </MDBBtn>
+            {!isAdmin && (
+              <MDBBtn
+                type="submit"
+                color="primary"
+                className="mb-2 font-weight-bold float-right"
+              >
+                Proceed
+              </MDBBtn>
+            )}
             <MDBBtn
               type="button"
               onClick={() => toggle()}
               color="light"
               className="mb-2 font-weight-bold float-right"
             >
-              Cancel
+              {!isAdmin ? "Cancel" : "Close"}
             </MDBBtn>
           </div>
         </form>

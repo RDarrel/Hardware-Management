@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage } from "mdbreact";
 import { ENDPOINT } from "../../../../../services/utilities";
+import { Pagination } from "./pagination";
 
 export const Products = ({
   products,
@@ -8,10 +9,29 @@ export const Products = ({
   setSelectedProduct,
   handleAddOrder,
 }) => {
+  const [currentPage, setCurrentPage] = useState(1),
+    [itemsPerPage] = useState(12); // Adjust the number of items per page as needed
+
+  const indexOfLastProduct = currentPage * itemsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="product-container">
       <MDBRow>
-        {products.slice(0, 12).map((product, index) => {
+        {currentProducts.map((product, index) => {
           const { variations = [], hasVariant, has2Variant, srp } = product;
 
           const showPrice = hasVariant
@@ -52,6 +72,11 @@ export const Products = ({
           );
         })}
       </MDBRow>
+      <Pagination
+        currentPage={currentPage}
+        pageNumbers={pageNumbers}
+        handlePageChange={handlePageChange}
+      />
     </div>
   );
 };

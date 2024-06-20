@@ -13,17 +13,36 @@ exports.browse = async (_, res) => {
 
       if (index > -1) {
         if (currentValue.product.isPerKilo) {
-          accumulator[index].stock += currentValue.kiloStock;
+          accumulator[index].available += currentValue.kiloStock;
+          accumulator[index].beginning +=
+            currentValue.kilo + currentValue.kiloGrams;
+          accumulator[index].sold +=
+            currentValue.kilo + currentValue.kiloGrams - currentValue.kiloStock;
         } else {
-          accumulator[index].stock += currentValue.quantityStock;
+          accumulator[index].available += currentValue.quantityStock;
+          accumulator[index].beginning += currentValue.quantity;
+          accumulator[index].sold +=
+            currentValue.quantity - currentValue.quantityStock;
         }
       } else {
-        const { product, kiloStock = 0, quantityStock = 0 } = currentValue;
+        const {
+          product,
+          kiloStock = 0,
+          quantityStock = 0,
+          kilo = 0,
+          kiloGrams = 0,
+          quantity = 0,
+        } = currentValue;
         const { isPerKilo } = product;
+        const sold = isPerKilo
+          ? kilo + kiloGrams - kiloStock
+          : quantity - quantityStock;
         accumulator.push({
           ...currentValue._doc,
           key,
-          stock: isPerKilo ? kiloStock : quantityStock,
+          available: isPerKilo ? kiloStock : quantityStock,
+          beginning: isPerKilo ? kilo + kiloGrams : quantity,
+          sold,
         });
       }
 

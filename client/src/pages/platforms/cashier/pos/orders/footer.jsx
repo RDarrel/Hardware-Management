@@ -3,7 +3,7 @@ import { MDBBtn, MDBIcon } from "mdbreact";
 
 const Footer = ({ invoice_no, total, setCheckout, orderDetails }) => {
   return (
-    <div className="transac">
+    <div className="transac mb-1">
       <hr className="dotted" />
       <div className="mb-3 bg-light p-1">
         <div className="d-flex justify-content-between m-1">

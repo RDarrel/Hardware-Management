@@ -248,7 +248,13 @@ export const Header = ({
   const isSales = !isEmployees && !isTransaction;
   return (
     <MDBRow className={`d-flex align-items-center mb-${mb}`}>
-      <MDBCol md={isSales ? "2" : "3"}>
+      <MDBCol md={isSales ? "2" : "3"} className="d-flex align-items-center">
+        <MDBIcon
+          icon="newspaper"
+          size="2x"
+          className="mt-2 mr-2"
+          style={{ color: "blue" }}
+        />{" "}
         <h4 className={`mt-3 ${isSales ? "font-weight-bolder" : ""}`}>
           {title} Report
         </h4>

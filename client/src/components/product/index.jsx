@@ -224,7 +224,11 @@ const ProductInformation = ({
       .filter(Boolean);
 
     const variantImages = media?.variant.options
-      .map((variant) => (variant.img ? variant : ""))
+      .map((variant) =>
+        variant.img
+          ? { ...variant, isUpload: true }
+          : { ...variant, isUpload: false }
+      )
       .filter(Boolean);
 
     const newForm = {

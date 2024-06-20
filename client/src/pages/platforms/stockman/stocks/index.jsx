@@ -24,14 +24,14 @@ export const Stocks = () => {
   useEffect(() => {
     if (collections.length > 0) {
       const sortedCollections = [...collections].sort(
-        (a, b) => a.stock - b.stock
+        (a, b) => a.available - b.available
       );
       setStocks(sortedCollections);
     }
   }, [collections]);
 
   const formattedStock = (obj, isPerKilo) => {
-    const stock = Number(obj.stock);
+    const stock = Number(obj.sold);
     const stockColor = stock < 5 ? "red" : "green";
 
     if (isPerKilo) {
@@ -63,7 +63,9 @@ export const Stocks = () => {
             <tr>
               <th>#</th>
               <th>Product Name</th>
-              <th>Stock</th>
+              <th>Beginning</th>
+              <th>Available</th>
+              <th>Sold</th>
               <th>Unit</th>
             </tr>
           </thead>
@@ -111,7 +113,21 @@ export const Stocks = () => {
                       </div>
                     </div>
                   </td>
-                  <td>{formattedStock(obj, product.isPerKilo)}</td>
+                  <td>
+                    <MDBBadge pill className="p-2" color="blue">
+                      <h6>{obj.beginning}</h6>
+                    </MDBBadge>
+                  </td>
+                  <td>
+                    <MDBBadge pill className="p-2" color="green">
+                      <h6> {obj.available}</h6>
+                    </MDBBadge>
+                  </td>
+                  <td>
+                    <MDBBadge pill className="p-2" color="red">
+                      <h6> {obj.sold}</h6>
+                    </MDBBadge>
+                  </td>
                   <td>{obj.product.isPerKilo ? "kg" : "Pcs"}</td>
                 </tr>
               );

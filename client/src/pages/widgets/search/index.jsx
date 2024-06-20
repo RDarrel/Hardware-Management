@@ -9,7 +9,7 @@ export const Search = ({ title, disable, toggleCreate, icon = "" }) => {
         <MDBIcon
           className="ml-2"
           size="2x"
-          style={{ color: "red" }}
+          style={{ color: "blue" }}
           icon={icon}
         />
         <h4 style={{ fontWeight: 400 }} className="mt-2 ml-3">

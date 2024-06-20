@@ -24,9 +24,9 @@ const arrangeBy = {
   sales: (sales) => {
     return sales //this is for the sales i arranged the data by the product then sort this into the sold
       .reduce((accumulator, currentValue) => {
-        const { product, variant1, variant2, quantity, kilo, income } =
+        const { product, variant1, variant2, quantity, kilo, income, capital } =
           currentValue;
-        const key = `${product._id}-${variant1}-${variant2}`;
+        const key = `${product._id}-${variant1}-${variant2}-${capital}`;
         const index = accumulator?.findIndex((accu) => accu.key === key);
         if (index > -1) {
           accumulator[index].sold += quantity || kilo;
