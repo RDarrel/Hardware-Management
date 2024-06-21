@@ -63,7 +63,7 @@ export const Table = ({
                 <td>
                   <div className="d-flex align-items-center text-truncate">
                     {getProductImg(product)}
-                    <h5
+                    <h6
                       className="text-truncate"
                       style={{
                         maxWidth: "250px",
@@ -73,15 +73,19 @@ export const Table = ({
                       }}
                     >
                       {product.name}
-                    </h5>
+                    </h6>
                   </div>
                 </td>
                 <td>N/A</td>
                 <td>
-                  <h5>₱{product.capital}</h5>
+                  <h6 className="text-danger font-weight-bold">
+                    ₱{product.capital.toLocaleString()}
+                  </h6>
                 </td>
                 <td>
-                  <h5>₱{product.srp}</h5>
+                  <h6 className="text-danger font-weight-bold">
+                    ₱{product.srp.toLocaleString()}
+                  </h6>
                 </td>
                 <td className="text-center">
                   <MDBBtnGroup>

@@ -50,7 +50,7 @@ const Table = ({ cart, setCart }) => {
                     style={{ width: "60px" }}
                   />
                   <div>
-                    <h5
+                    <h6
                       className="text-truncate"
                       style={{
                         maxWidth: "400px",
@@ -60,7 +60,7 @@ const Table = ({ cart, setCart }) => {
                       }}
                     >
                       {product.name}
-                    </h5>
+                    </h6>
                     {product.hasVariant && (
                       <div className="d-flex align-items-center">
                         <h6 className="mr-1">Variations:</h6>

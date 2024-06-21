@@ -30,24 +30,24 @@ export const Stocks = () => {
     }
   }, [collections]);
 
-  const formattedStock = (obj, isPerKilo) => {
-    const stock = Number(obj.sold);
-    const stockColor = stock < 5 ? "red" : "green";
+  // const formattedStock = (obj, isPerKilo) => {
+  //   const stock = Number(obj.sold);
+  //   const stockColor = stock < 5 ? "red" : "green";
 
-    if (isPerKilo) {
-      return (
-        <MDBBadge color={stockColor} className="p-2" pill>
-          <h6 className="font-weight-bold">{stock}</h6>
-        </MDBBadge>
-      );
-    } else {
-      return (
-        <MDBBadge color={stockColor} className="p-2" pill>
-          <h6 className="font-weight-bold">{stock} </h6>
-        </MDBBadge>
-      );
-    }
-  };
+  //   if (isPerKilo) {
+  //     return (
+  //       <MDBBadge color={stockColor} className="p-2" pill>
+  //         <h6 className="font-weight-bold">{stock}</h6>
+  //       </MDBBadge>
+  //     );
+  //   } else {
+  //     return (
+  //       <MDBBadge color={stockColor} className="p-2" pill>
+  //         <h6 className="font-weight-bold">{stock} </h6>
+  //       </MDBBadge>
+  //     );
+  //   }
+  // };
 
   return (
     <MDBCard>

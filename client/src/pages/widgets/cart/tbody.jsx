@@ -69,6 +69,7 @@ export const Tbody = ({
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
+                        marginBottom: "-5px",
                       }}
                       className="font-weight-bold"
                     >
@@ -87,15 +88,15 @@ export const Tbody = ({
                           className="pop-over-btn"
                           id={`btn-pop-over-${index}`}
                         >
-                          <h6>Variations:</h6>
+                          <span>Variations:</span>
                           <div className="d-flex">
-                            <h6>
+                            <span style={{ marginTop: "-1px" }}>
                               {getTheVariant(
                                 obj.variant1,
                                 obj.variant2 || "",
                                 product.variations
                               )}
-                            </h6>
+                            </span>
                           </div>
                         </MDBBtn>
                         <MDBPopoverBody

@@ -267,6 +267,7 @@ const GlobalPurchases = ({ isAdmin = false }) => {
                                             whiteSpace: "nowrap",
                                             overflow: "hidden",
                                             textOverflow: "ellipsis",
+                                            marginBottom: "5px",
                                           }}
                                         >
                                           {product.name}

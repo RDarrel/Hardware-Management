@@ -6,7 +6,7 @@ import Purchases from "./purchases";
 import Sales from "./report/sales";
 import { Transactions } from "./report/transactions";
 import Suppliers from "./suppliers";
-import Category from "./productMangement/category";
+// import Category from "./productMangement/category";
 
 const access = [
   {
@@ -23,25 +23,27 @@ const access = [
   },
 
   {
-    path: "/product",
-    name: "Product Mangement",
+    path: "/products",
+    name: "Products",
     icon: "award",
-    children: [
-      {
-        name: "Products",
-        path: "/products",
-        component: Products,
-      },
-      {
-        name: "Category",
-        path: "/category",
-        component: Category,
-      },
-      {
-        name: "Materials",
-        path: "/material",
-      },
-    ],
+    component: Products,
+
+    // children: [
+    //   {
+    //     name: "Products",
+    //     path: "/products",
+    //     component: Products,
+    //   },
+    //   {
+    //     name: "Category",
+    //     path: "/category",
+    //     component: Category,
+    //   },
+    //   {
+    //     name: "Materials",
+    //     path: "/material",
+    //   },
+    // ],
   },
 
   {

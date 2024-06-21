@@ -116,7 +116,7 @@ const Products = () => {
       src={`${ENDPOINT}/assets/products/${product._id}/${product.media?.product[0].label}.jpg`}
       alt={product.name}
       className="mr-2"
-      style={{ width: "80px" }}
+      style={{ width: "60px" }}
     />
   );
 
@@ -149,7 +149,7 @@ const Products = () => {
             <td rowSpan={handleRowSpan(product, actionFor)}>
               <div className="d-flex align-items-center">
                 {getProductImg(product)}
-                <h5
+                <h6
                   className="text-truncate"
                   style={{
                     maxWidth: "250px",
@@ -159,7 +159,7 @@ const Products = () => {
                   }}
                 >
                   {product.name}
-                </h5>
+                </h6>
               </div>
             </td>
           </>
@@ -173,13 +173,23 @@ const Products = () => {
               handleDiasableVariant(target.checked, vrDisable)
             }
           />
-          <h5> {variantName}</h5>
+          <h6> {variantName}</h6>
         </td>
         <td>
-          <h5>₱{has2Variant ? price.capital : option.capital}</h5>
+          <h6 className="text-danger font-weight-bold">
+            ₱
+            {has2Variant
+              ? price.capital.toLocaleString()
+              : option.capital.toLocaleString()}
+          </h6>
         </td>
         <td>
-          <h5>₱{has2Variant ? price.srp : option.srp}</h5>
+          <h6 className="text-danger font-weight-bold">
+            ₱
+            {has2Variant
+              ? price.srp.toLocaleString()
+              : option.srp.toLocaleString()}
+          </h6>
         </td>
 
         {isFirstRow && (

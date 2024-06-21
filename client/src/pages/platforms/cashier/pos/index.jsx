@@ -9,6 +9,7 @@ import Modal from "./modal";
 import { Products } from "./products";
 import Search from "./search";
 import Header from "./header";
+import { useToasts } from "react-toast-notifications";
 const POS = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ products }) => products),
@@ -19,6 +20,7 @@ const POS = () => {
     [invoice_no, setInvoice_no] = useState(""),
     [search, setSearch] = useState(""),
     [showVariant, setShowVariant] = useState(false),
+    { addToast } = useToasts(),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -43,6 +45,9 @@ const POS = () => {
     );
 
     if (results.length === 0) {
+      addToast(`No results Found for ${search}`, {
+        appearance: "error",
+      });
       setProducts(collections);
     } else if (results.length > 1) {
       setProducts(results);
