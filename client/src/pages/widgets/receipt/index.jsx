@@ -13,6 +13,7 @@ export default function Receipt({
   invoice_no = "",
   orderDetails = [],
   setOrders = () => {},
+  createdAt = "",
   isAdmin = false,
 }) {
   const { auth, token } = useSelector(({ auth }) => auth),
@@ -36,7 +37,11 @@ export default function Receipt({
   return (
     <MDBModal isOpen={show} toggle={toggle} backdrop size="lg" centered>
       <MDBModalBody className="mb-0 m-0 p-0">
-        <Header invoice_no={invoice_no} />
+        <Header
+          invoice_no={invoice_no}
+          createdAt={createdAt}
+          isAdmin={isAdmin}
+        />
         <form onSubmit={handleSubmit}>
           <div className="mx-2 mt-4">
             <table className="invoice-table">

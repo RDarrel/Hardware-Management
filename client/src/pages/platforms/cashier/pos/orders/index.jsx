@@ -83,17 +83,17 @@ const Orders = ({ orders, setOrders, invoice_no }) => {
   };
 
   return (
-    <MDBCol md="5">
+    <MDBCol md="6">
       <MDBCard
         className="vh-100 d-flex flex-column order-details-card"
         style={{ position: "relative" }}
       >
         <MDBCardBody>
-          <h5 className="font-weight-bold">
+          <h5 className="font-weight-bold ">
             Order Details{" "}
             {orderDetails.length > 0 ? `(${orderDetails.length})` : ""}
           </h5>
-          <hr />
+          <hr className=" m-0 p-0" />
           <Body
             orderDetails={orderDetails}
             handleChange={handleChange}

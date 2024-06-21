@@ -123,7 +123,7 @@ const POS = () => {
     >
       <Header />
       <MDBRow>
-        <MDBCol md="7">
+        <MDBCol md="6">
           <Search
             didSearch={didSearch}
             handleSearch={handleSearch}

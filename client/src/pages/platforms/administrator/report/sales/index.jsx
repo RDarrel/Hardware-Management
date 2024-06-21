@@ -95,10 +95,11 @@ const Sales = () => {
               <tr>
                 <th>#</th>
                 <th>Product</th>
-                <th className="th-lg text-center">Sold</th>
+                <th className=" text-center">Sold</th>
                 <th>Unit</th>
                 <th>Capital</th>
                 <th>SRP</th>
+                <th>Sales</th>
                 <th>INCOME</th>
               </tr>
             </thead>
@@ -147,6 +148,11 @@ const Sales = () => {
                       <td>
                         <span className="font-weight-bold text-danger">
                           ₱{sale.srp.toLocaleString()}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="font-weight-bold text-danger">
+                          ₱{(sale.srp * sale.sold).toLocaleString()}
                         </span>
                       </td>
                       <td>

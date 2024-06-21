@@ -1,4 +1,4 @@
-function formattedDate(date = new Date()) {
+function formattedDate(date) {
   const months = [
     "January",
     "February",
@@ -14,7 +14,7 @@ function formattedDate(date = new Date()) {
     "December",
   ];
 
-  const now = new Date(date);
+  const now = new Date(date ? new Date(date) : new Date());
   const month = months[now.getMonth()];
   const day = now.getDate().toString().padStart(2, "0");
   const year = now.getFullYear();

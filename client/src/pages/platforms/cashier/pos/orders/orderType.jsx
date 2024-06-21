@@ -2,7 +2,7 @@ import React from "react";
 import { MDBInputGroup, MDBBtn, MDBIcon } from "mdbreact";
 const OrderType = ({ item, index, handleChange, handleChangeGrams }) => {
   return (
-    <>
+    <div>
       {item.product?.isPerKilo ? (
         <MDBInputGroup
           type="number"
@@ -15,7 +15,7 @@ const OrderType = ({ item, index, handleChange, handleChangeGrams }) => {
             }
           }}
           min={0}
-          style={{ width: "25%", height: "30%" }}
+          style={{ width: "100%" }}
           append={
             <select
               className="form-control"
@@ -32,8 +32,8 @@ const OrderType = ({ item, index, handleChange, handleChangeGrams }) => {
       ) : (
         <MDBInputGroup
           type="number"
-          className="text-center border border-light"
-          style={{ width: "25%", height: "30%" }}
+          className="text-center border border-light "
+          style={{ width: "100%" }}
           value={String(item.quantity)}
           onChange={({ target }) => {
             if (target.value < 1) {
@@ -74,7 +74,7 @@ const OrderType = ({ item, index, handleChange, handleChangeGrams }) => {
           }
         />
       )}
-    </>
+    </div>
   );
 };
 

@@ -2,7 +2,7 @@ import React from "react";
 import navbarLogo from "../../../assets//logo/navbar.jpg";
 import { formattedDate } from "../../../services/utilities";
 
-const Header = ({ invoice_no }) => {
+const Header = ({ invoice_no, createdAt, isAdmin = false }) => {
   return (
     <div className="invoice-header-row">
       <div className="invoice-header-col d-flex align-items-center">
@@ -24,7 +24,7 @@ const Header = ({ invoice_no }) => {
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span className="mr-3">Date:</span>
-              <span>{formattedDate()}</span>
+              <span>{formattedDate(isAdmin ? createdAt : "")}</span>
             </div>
           </div>
         </div>

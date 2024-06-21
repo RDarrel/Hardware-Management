@@ -22,6 +22,7 @@ export const Transactions = () => {
     [orderDetails, setOrderDetails] = useState([]),
     [invoce_no, setInvoice_no] = useState(""),
     [show, setShow] = useState(false),
+    [createdAt, setCreatedAt] = useState(""),
     [page, setPage] = useState(1),
     dispatch = useDispatch();
 
@@ -31,14 +32,14 @@ export const Transactions = () => {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
 
-  const hanldeShowPurchases = (purchases, invoice, total) => {
+  const hanldeShowPurchases = (purchases, invoice, total, date) => {
     setOrderDetails(
       purchases.map((purchase) => ({
         ...purchase,
         subtotal: variation.getTheSubTotal("srp", purchase, purchase.product),
       }))
     );
-
+    setCreatedAt(date);
     setInvoice_no(invoice);
     setTotal(total);
     toggle();
@@ -88,7 +89,8 @@ export const Transactions = () => {
                           hanldeShowPurchases(
                             transaction.purchases,
                             transaction.invoice_no,
-                            transaction.total
+                            transaction.total,
+                            transaction.createdAt
                           )
                         }
                       >
@@ -111,6 +113,7 @@ export const Transactions = () => {
       </MDBCard>
       <Receipt
         toggle={toggle}
+        createdAt={createdAt}
         invoice_no={invoce_no}
         total={total}
         orderDetails={orderDetails}
