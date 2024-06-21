@@ -3,7 +3,8 @@ const arrangeBy = {
     return sales //this is for the employees report arrange by transaction
       .reduce((accumulator, currentValue) => {
         const { cashier, total } = currentValue;
-        const key = `${cashier._id}`;
+        console.log(cashier);
+        const key = `${cashier?._id}`;
         const index = accumulator?.findIndex((accu) => accu.key === key);
         if (index > -1) {
           accumulator[index].transactionsHandle += 1;

@@ -246,7 +246,7 @@ const GlobalPurchases = ({ isAdmin = false }) => {
                           {handlePagination(purchase.stocks, page, maxPage).map(
                             (stock, index) => {
                               const { product, _id, capital } = stock;
-                              const { media } = product;
+                              const { media = {} } = product || {};
                               const img = `${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`;
                               return (
                                 <tr key={_id}>
