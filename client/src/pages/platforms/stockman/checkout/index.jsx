@@ -94,39 +94,38 @@ const Checkout = () => {
       cancelButtonText: "No, cancel",
     }).then((result) => {
       if (result.isConfirmed) {
+        const cartWithSubtotalAndCapital = cart.map((obj) => ({
+          ...obj,
+          subtotal: variation.getTheSubTotal("capital", obj, obj.product),
+          capital: variation.getTheCapitalOrSrp("capital", obj, obj.product),
+          ...(obj.product.isPerKilo
+            ? { kiloStock: obj.kilo + obj.kiloGrams }
+            : { quantityStock: obj.quantity }),
+        }));
+        const total = cartWithSubtotalAndCapital.reduce(
+          (accumulator, currentValue) => {
+            return (accumulator += currentValue.subtotal);
+          },
+          0
+        );
+
+        const purchase = {
+          purchaseBy: auth._id,
+          supplier,
+          total,
+        };
+
+        dispatch(
+          BUY({
+            token,
+            data: { purchase, cart: cartWithSubtotalAndCapital },
+          })
+        );
+        history.push("/store");
         Swal.fire({
           title: "Purchase Confirmed",
           text: `Your purchase has been confirmed with supplier: "${supplierName}".`,
           icon: "success",
-        }).then(() => {
-          const cartWithSubtotalAndCapital = cart.map((obj) => ({
-            ...obj,
-            subtotal: variation.getTheSubTotal("capital", obj, obj.product),
-            capital: variation.getTheCapitalOrSrp("capital", obj, obj.product),
-            ...(obj.product.isPerKilo
-              ? { kiloStock: obj.kilo + obj.kiloGrams }
-              : { quantityStock: obj.quantity }),
-          }));
-          const total = cartWithSubtotalAndCapital.reduce(
-            (accumulator, currentValue) => {
-              return (accumulator += currentValue.subtotal);
-            },
-            0
-          );
-
-          const purchase = {
-            purchaseBy: auth._id,
-            supplier,
-            total,
-          };
-
-          dispatch(
-            BUY({
-              token,
-              data: { purchase, cart: cartWithSubtotalAndCapital },
-            })
-          );
-          history.push("/store");
         });
       }
     });
