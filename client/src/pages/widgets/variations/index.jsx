@@ -12,6 +12,7 @@ const Variations = ({
   setSelectedImage,
   setPrice = () => {},
   setVariant2,
+  isChangeVariant = false, //para ito dun sa maliliit na modal
 }) => {
   const [variation1, setVariation1] = useState(null),
     [variation2, setVariation2] = useState(null),
@@ -25,30 +26,43 @@ const Variations = ({
       setVariation1(variations[0]);
       if (has2Variant && variations.length > 1) {
         setVariation2(variations[1]);
+        //this is for default filtering of disable option
+        if (isChangeVariant && !option1ID) {
+          handleDisableVr2(variations[0].options, variant1);
+        }
       }
     }
-    setVariant1("");
-    setVariant2("");
-  }, [has2Variant, variations, setVariant1, setVariant2]);
+    //to reset the variant1 and variant2
+    if (!option1ID) {
+      setVariant1("");
+      setVariant2("");
+    }
+  }, [
+    has2Variant,
+    variations,
+    setVariant1,
+    setVariant2,
+    isChangeVariant,
+    variant1,
+    option1ID,
+  ]);
+
+  const handleDisableVr2 = (options, variant) => {
+    const vr1Prices = options.find(({ _id }) => variant === _id)?.prices || [];
+    const disableVariant2 = vr1Prices
+      .filter(({ disable }) => disable)
+      .map(({ _id }) => _id)
+      .filter(Boolean);
+
+    setDisableIDSVr2(disableVariant2 || []);
+  };
 
   const handleClickVr1 = (_id) => {
     const vr1Img = !isCart && images.find(({ label }) => label === _id);
 
     if (has2Variant) {
-      const pricesOfVarian1Choose =
-        variation1.options.find(({ _id: optionID }) => _id === optionID)
-          .prices || [];
-
-      const vr2DisableIDS =
-        pricesOfVarian1Choose
-          .filter(({ disable }) => disable)
-          .map(({ _id }) => _id) || [];
-
-      if (vr2DisableIDS.length > 0) {
-        setDisableIDSVr2(vr2DisableIDS);
-      } else {
-        setDisableIDSVr2([]);
-      }
+      //first is to check if have a disable in vr2
+      handleDisableVr2(variation1.options, _id);
 
       if (option2ID) {
         const prices = variation1.options.find(

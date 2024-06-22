@@ -5,6 +5,7 @@ const name = "cashier/pos";
 
 const initialState = {
   collections: [],
+  transaction: {},
   cart: [],
   progress: 0,
   isSuccess: false,
@@ -37,6 +38,24 @@ export const FIND = createAsyncThunk(`${name}/find`, (form, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
+
+export const FIND_TRANSACTION = createAsyncThunk(
+  `${name}/find_transaction`,
+  ({ token, key }, thunkAPI) => {
+    try {
+      return axioKit.universal(`${name}/find_transaction`, token, key);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 export const SAVE = createAsyncThunk(`${name}/save`, (form, thunkAPI) => {
   try {
@@ -138,6 +157,22 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(BROWSE.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(FIND_TRANSACTION.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(FIND_TRANSACTION.fulfilled, (state, action) => {
+        const { payload } = action.payload;
+        state.transaction = payload;
+        state.isLoading = false;
+      })
+      .addCase(FIND_TRANSACTION.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;

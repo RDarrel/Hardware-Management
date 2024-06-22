@@ -101,7 +101,7 @@ export default function Receipt({
                     }}
                   ></td>
                   <td
-                    colSpan="2"
+                    colSpan="1"
                     className="text-center"
                     style={{ borderRight: "none", fontSize: "1rem" }}
                   >

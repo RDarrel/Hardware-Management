@@ -1,0 +1,147 @@
+.invoice-header-row {
+  display: flex;
+}
+
+.invoice-header-col {
+  width: 100%;
+  overflow: hidden;
+}
+
+.invoice-header {
+  position: relative;
+  width: 85%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background: linear-gradient(45deg, transparent 20%, rgba(24, 25, 26, 1) 20%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.invoice-header::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: 6%;
+  width: 20px;
+  height: 132px;
+  border-radius: 5px;
+  background: linear-gradient(
+    45deg,
+    transparent 20%,
+    rgba(24, 25, 26, 0.7) 20%
+  );
+  transform: rotate(-45deg);
+  z-index: -1;
+}
+
+.invoice-header::after {
+  content: "";
+  position: absolute;
+  top: -35%;
+  left: -3%;
+  width: 17px;
+  height: 130px;
+  border-radius: 5px;
+  background-color: violet;
+  background: linear-gradient(
+    45deg,
+    transparent 20%,
+    rgba(24, 25, 26, 0.5) 20%
+  );
+  transform: rotate(-45deg);
+  z-index: -1;
+  /* border-bottom-right-radius: 200px; */
+}
+
+.invoice-header-content {
+  width: 45%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-weight: 400;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+/* Header Styles */
+.invoice-table th {
+  background-color: #f2f2f2;
+  border: 2px solid black;
+  text-align: left;
+  padding: 0.4rem;
+  font-size: 1rem;
+  text-transform: capitalize;
+  color: black;
+}
+
+/* Row Styles */
+.invoice-table tr {
+  border: 2px solid black;
+}
+
+/* Cell Styles */
+.invoice-table td {
+  border: 2px solid black;
+  text-align: left;
+  padding: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 450;
+}
+
+.invoice-signature {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  margin-top: 3em;
+  /* margin-left: 90px; */
+}
+
+.invoice-signature::before {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 2px;
+  background-color: black;
+}
+
+.invoice-footer-container {
+  height: auto;
+}
+
+.invoice-footer-top {
+  text-align: end;
+  font-size: 1rem;
+  font-weight: 450;
+}
+
+.invoice-footer-top span:nth-child(1) {
+  border-right: 1px solid black;
+  margin-right: 0.5em;
+  padding-right: 0.3em;
+}
+
+.invoice-footer-top span:nth-child(2) {
+  border-right: 1px solid black;
+  margin-right: 0.5em;
+  padding-right: 0.3em;
+}
+
+.invoice-footer-bottom {
+  font-size: 1rem;
+  text-align: center;
+  background-color: rgba(24, 25, 26, 0.5);
+  color: white;
+  font-weight: 450;
+  text-transform: uppercase;
+}

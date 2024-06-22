@@ -211,3 +211,18 @@ exports.pos = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+exports.find_transaction = async (req, res) => {
+  try {
+    const transaction = await Transactions.findOne({
+      invoice_no: req.query.invoice_no,
+    }).populate("purchases.product");
+
+    res.json({
+      payload: transaction || {},
+      success: "Successfully Find Transaction",
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};

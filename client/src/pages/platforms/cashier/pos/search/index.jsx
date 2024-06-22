@@ -18,6 +18,7 @@ const Search = ({
             <input
               className="form-control search-input"
               placeholder="Seach.."
+              required
               value={search}
               onChange={({ target }) => setSearch(target.value)}
               name="search"

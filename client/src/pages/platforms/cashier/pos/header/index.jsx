@@ -10,22 +10,31 @@ import {
 import { fullName } from "../../../../../services/utilities";
 import { useSelector } from "react-redux";
 import "./header.css";
+import Transactions from "../transactions";
 
 const Header = () => {
   const { auth } = useSelector(({ auth }) => auth);
   const [id, setId] = useState(0);
+  const [show, setShow] = useState(false);
+
+  const toggle = () => setShow(!show);
+
   return (
     <MDBCard className="w-100 mb-2">
       <MDBCardHeader className="d-flex align-items-center justify-content-between ">
         <h5 className="font-weight-bold">Liberty Hardware </h5>
-        <div className="d-flex align-items-center">
+        <div
+          className="d-flex align-items-center cursor-pointer"
+          onClick={toggle}
+        >
           <MDBIcon
-            icon="american-sign-language-interpreting"
+            icon="handshake"
+            far
             size="2x"
             className="mr-3"
             style={{ color: "#4285F4" }}
           />
-          <h5>Transactions</h5>
+          <h5 className="mt-2">Transactions</h5>
         </div>
         <div onMouseLeave={() => setId((prev) => prev + 1)} className="p-1">
           <MDBPopover placement="bottom" popover id={`popover-${id}`} key={id}>
@@ -61,6 +70,7 @@ const Header = () => {
           </MDBPopover>
         </div>
       </MDBCardHeader>
+      <Transactions show={show} toggle={toggle} />
     </MDBCard>
   );
 };
