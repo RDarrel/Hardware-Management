@@ -21,6 +21,8 @@ function Informations({
   setMedia,
   variationsWithPrice,
   setVariationsWithPrice,
+  setHasDuplicateVariant,
+  setHasDuplicateOption,
 }) {
   const handleEnableVariation = () => {
     const optionID = uuidv4();
@@ -124,6 +126,8 @@ function Informations({
                 variationsWithPrice={variationsWithPrice}
                 setVariationsWithPrice={setVariationsWithPrice}
                 setMedia={setMedia}
+                setHasDuplicateVariant={setHasDuplicateVariant}
+                setHasDuplicateOption={setHasDuplicateOption}
               />
             )}
           </MDBCardBody>

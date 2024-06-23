@@ -13,6 +13,7 @@ import useCountdown from "./useCountdown";
 import taskBadge from "./taskBadge";
 import formattedDate from "./formattedDate";
 import variation from "./variation/variation";
+import isValid from "./duplicateChecker/index";
 const ENDPOINT = "http://localhost:5000";
 // const ENDPOINT = window.location.origin;
 const socket = io.connect(ENDPOINT);
@@ -29,6 +30,7 @@ export {
   axioKit,
   socket,
   variation,
+  isValid,
   formattedDate,
   handlePagination,
   fullName,

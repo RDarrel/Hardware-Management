@@ -82,6 +82,7 @@ export default function Employees() {
         />
       </MDBCardBody>
       <Modal
+        collections={collections}
         show={show}
         toggle={toggle}
         selected={{}}

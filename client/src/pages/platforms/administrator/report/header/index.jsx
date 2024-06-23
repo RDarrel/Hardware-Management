@@ -1,22 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { MDBCol, MDBIcon, MDBRow } from "mdbreact";
+import { MDBCol, MDBDatePicker, MDBIcon, MDBRow } from "mdbreact";
 import "../header/header.css";
+import GET from "./GET";
 import arrangeBy from "./arrangeBy";
 
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+const options = {
+  weekday: "short", // Huwag isama ang weekday (araw ng linggo)
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+};
 export const Header = ({
   collections,
   isTransaction = false,
@@ -29,27 +22,16 @@ export const Header = ({
   setTotalIncome = () => {},
   setTotalSales = () => {},
 }) => {
-  const [params, setParams] = useState({
-    year: 2024,
-    month: 0,
-    week: 0,
-    day: 0,
-  });
   const [soldKiloState, setSoldKiloState] = useState(0);
   const [soldQtyState, setSoldQtyState] = useState(0);
   const [totalIncomeState, setTotalIncomeState] = useState(0);
   const [totalSalesState, setTotalSalesState] = useState(0);
-  const [sales, setSales] = useState([]);
-  const [years, setYears] = useState([]);
-  const [months, setMonths] = useState([]);
-  const [weeks, setWeeks] = useState([]);
-  const [days, setDays] = useState([]);
+  const [from, setFrom] = useState(new Date()),
+    [sales, setSales] = useState([]),
+    [to, setTo] = useState(new Date()),
+    [minDate, setMinDate] = useState(new Date()),
+    [maxDate, setMaxDate] = useState(new Date());
 
-  const getWeek = (day) => {
-    return Math.ceil(day / 7);
-  };
-
-  //use this to avoid the infinite loop
   useEffect(() => {
     setSoldKilo(soldKiloState);
     setSoldQty(soldQtyState);
@@ -66,54 +48,38 @@ export const Header = ({
     setTotalSales,
   ]);
 
-  const handleFormatData = useCallback((sale) => {
-    const date = new Date(sale.createdAt);
-    return {
-      ...sale,
-      income: handleIncome(sale, sale?.product?.isPerKilo),
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      day: date.getDate(),
-      week: getWeek(date.getDate()),
-    };
-  }, []);
+  const getTheCreatedAt = useCallback(
+    (latest = false) => {
+      if (collections.length === 0) {
+        return null;
+      }
 
-  const handleGetMonths = useCallback((_sales) => {
-    const _months = new Set(_sales.map(({ month }) => month));
-    const sortedMonths = Array.from(_months).sort((a, b) => b - a);
-    return sortedMonths;
-  }, []);
-
-  const computeTotalSalesAndIncome = useCallback(
-    (_sales) => {
-      const totalIncome = _sales.reduce(
-        (accumulator, currentValue) => accumulator + currentValue?.income,
-        0
-      );
-
-      const totalSales = _sales.reduce((accumulator, currentValue) => {
-        if (isTransaction || isEmployees) {
-          return (accumulator += currentValue.total);
-        }
-        return (accumulator += currentValue.srp * currentValue.sold);
-      }, 0);
-      return { income: totalIncome, sales: totalSales };
+      if (latest) {
+        return collections.reduce((maxDate, currentItem) => {
+          const currentDate = new Date(currentItem.createdAt);
+          return currentDate > maxDate ? currentDate : maxDate;
+        }, new Date(0));
+      } else {
+        return collections.reduce((minDate, currentItem) => {
+          const currentDate = new Date(currentItem.createdAt);
+          return currentDate < minDate ? currentDate : minDate;
+        }, new Date());
+      }
     },
-    [isTransaction, isEmployees]
+    [collections]
   );
 
   useEffect(() => {
-    const _years = new Set(
-      collections.map(({ createdAt }) => new Date(createdAt).getFullYear())
+    setSales(
+      collections.map((sale) => {
+        return { ...sale, income: handleIncome(sale, sale.product?.isPerKilo) };
+      })
     );
-    const sortedYears = Array.from(_years).sort((a, b) => b - a);
-    const salesWithoutFiltered = collections.map((sale) => {
-      return handleFormatData(sale);
-    });
-
-    setYears(sortedYears);
-    setSales(salesWithoutFiltered);
-  }, [collections, handleFormatData]);
+    setFrom(getTheCreatedAt() || new Date());
+    setTo(getTheCreatedAt(true) || new Date());
+    setMinDate(getTheCreatedAt() || new Date());
+    setMaxDate(getTheCreatedAt(true) || new Date());
+  }, [collections, getTheCreatedAt]);
 
   const handleIncome = (sale, isPerKilo) => {
     const { kilo, quantity, capital, srp } = sale;
@@ -122,254 +88,90 @@ export const Header = ({
       : srp * quantity - capital * quantity;
   };
 
-  const handleGetSold = useCallback((_sales) => {
-    const _soldQty = _sales.reduce((acc, curr) => {
-      acc += curr.soldQty;
-      return acc;
-    }, 0);
+  const isSales = !isEmployees && !isTransaction;
 
-    const _soldKilo = _sales.reduce((acc, curr) => {
-      acc += curr.soldKilo;
-      return acc;
-    }, 0);
-
-    return { _soldKilo, _soldQty };
-  }, []);
-
-  const handleChangeSales = useCallback(
-    (data, _params, isMonth) => {
-      //use this to get the months in the year what we choose this is based on the main array
-      const years = sales.filter(({ year }) => year === _params.year);
-      var arrangeSales = [];
-
-      if (isTransaction || isEmployees) {
-        arrangeSales = isTransaction ? data : arrangeBy.employees(data);
-      } else {
-        arrangeSales = arrangeBy.sales(data);
-      }
-
-      const _months = handleGetMonths(years);
-
-      if (isMonth) {
-        const _days = new Set(data.map(({ day }) => day));
-        const sortedDays = Array.from(_days).sort((a, b) => b - a);
-        const _weeks = new Set(data.map(({ week }) => week));
-        const sortedWeeks = Array.from(_weeks).sort((a, b) => b - a);
-        setDays(sortedDays);
-        setWeeks(sortedWeeks);
-      }
-
-      if (!isEmployees || !isTransaction) {
-        const { sales: totalSales, income: totalIncome } =
-          computeTotalSalesAndIncome(arrangeSales);
-        const { _soldKilo = 0, _soldQty = 0 } = handleGetSold(arrangeSales);
-        setSoldKiloState(_soldKilo);
-        setSoldQtyState(_soldQty);
-        setTotalSalesState(totalSales);
-        setTotalIncomeState(totalIncome);
-      }
-      setMonths(_months);
-      setFilteredData(arrangeSales);
-    },
-    [
-      computeTotalSalesAndIncome,
-      handleGetMonths,
-      handleGetSold,
-      setSoldKiloState,
-      setSoldQtyState,
-      setTotalIncomeState,
-      setTotalSalesState,
-      setFilteredData,
-      sales,
-      isTransaction,
-      isEmployees,
-    ]
-  );
-
-  const resetParams = useCallback((name) => {
-    setParams((prev) => ({
-      ...prev,
-      month: 0,
-      week: 0,
-      day: 0,
-      [name || "key"]: "",
-    }));
-  }, []);
-
-  //for filtering the year months days weeks
   useEffect(() => {
-    var filteredData = [];
-    if (params.year && !params.month) {
-      filteredData = sales.filter(({ year }) => year === params.year);
-      handleChangeSales(filteredData, params);
+    if (from && to) {
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
 
-      if (params.option) {
-        setParams((prev) => ({
-          year: prev.year,
-          month: 0,
-          week: 0,
-          day: 0,
-          option: "",
-        }));
-      }
-    }
+      if (toDate < fromDate) {
+        setTo(fromDate);
+      } else {
+        const filteredSales = sales.filter(({ createdAt }) => {
+          const _from = fromDate.toLocaleDateString("en-US", options);
+          const _to = toDate.toLocaleDateString("en-US", options);
+          const _createdAt = new Date(createdAt).toLocaleDateString(
+            "en-US",
+            options
+          );
 
-    if (params.year && params.month) {
-      filteredData = sales.filter(
-        ({ year, month }) => year === params.year && month === params.month
-      );
+          return _createdAt >= _from && _createdAt <= _to;
+        });
 
-      handleChangeSales(filteredData, params, true);
+        let filteredCollections = [];
+        if (isTransaction || isEmployees) {
+          filteredCollections = isTransaction
+            ? filteredSales
+            : arrangeBy.employees(filteredSales);
+        } else {
+          filteredCollections = arrangeBy.sales(filteredSales);
+        }
 
-      if (filteredData.length === 0) resetParams();
+        setFilteredData(filteredCollections);
 
-      if (params[params.option]) {
-        //params.option = week || day
-        filteredData = sales.filter(
-          (sale) =>
-            sale.year === params.year &&
-            sale.month === params.month &&
-            sale[params.option] === params[params.option]
-        );
-        handleChangeSales(filteredData, params, false);
-
-        if (filteredData.length === 0) {
-          setParams((prev) => ({
-            ...prev,
-            week: 0,
-            day: 0,
-          }));
+        if (!isEmployees || !isTransaction) {
+          const { sales: totalSales, income: totalIncome } =
+            GET.salesAndIncome(filteredCollections);
+          const { _soldKilo = 0, _soldQty = 0 } = GET.sold(filteredCollections);
+          setSoldKiloState(_soldKilo);
+          setSoldQtyState(_soldQty);
+          setTotalSalesState(totalSales);
+          setTotalIncomeState(totalIncome);
         }
       }
     }
-  }, [params, sales, resetParams, handleChangeSales]);
+  }, [
+    from,
+    to,
+    isEmployees,
+    isTransaction,
+    sales,
+    setFilteredData,
+    setSoldKiloState,
+    setSoldQtyState,
+    setTotalSalesState,
+    setTotalIncomeState,
+  ]);
 
-  const handleRemoveOption = () => setParams({ ...params, option: "" });
-  const isSales = !isEmployees && !isTransaction;
   return (
     <MDBRow className={`d-flex align-items-center mb-${mb}`}>
-      <MDBCol md={isSales ? "2" : "3"} className="d-flex align-items-center">
+      <MDBCol md="12" className="d-flex align-items-center">
         <MDBIcon
           icon="newspaper"
           size="2x"
           className="mt-2 mr-2"
           style={{ color: "blue" }}
-        />{" "}
-        <h4 className={`mt-3 ${isSales ? "font-weight-bolder" : ""}`}>
+        />
+        <h4 className={`mt-3  ${isSales ? "font-weight-bolder" : ""}`}>
           {title} Report
         </h4>
-      </MDBCol>
-      <MDBCol md={isSales ? "10" : "9"} className="d-flex align-items-center ">
-        <label className="w-25">
-          <span className="ml-1 text-primary font-weight-bold">Year</span>
-          <select
-            className="form-control mr-3 custom-select"
-            value={String(params.year)}
-            onChange={({ target }) =>
-              setParams({ ...params, year: Number(target.value) })
-            }
-          >
-            {years.map((year, index) => (
-              <option key={index} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="w-25 ml-3">
-          <span className="ml-1 text-primary font-weight-bold">Month</span>
-          <select
-            className="form-control custom-select"
-            value={String(params.month)}
-            onChange={({ target }) =>
-              setParams({ ...params, month: Number(target.value) })
-            }
-          >
-            <option>Choose a month</option>
-            {months.map((month, index) => (
-              <option key={index} value={month}>
-                {MONTHS[month - 1]}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        {params.option === "day" ? (
-          <div className="close-container">
-            <label className="w-25 ml-3">
-              <span className="ml-1 text-primary">Day</span>
-              <select
-                className="form-control custom-select"
-                style={{ width: "160px" }}
-                value={String(params.day)}
-                onChange={({ target }) =>
-                  setParams({ ...params, day: Number(target.value) })
-                }
-              >
-                <option>Choose a day</option>
-                {days.map((day, index) => (
-                  <option key={index} value={day}>
-                    {day}
-                  </option>
-                ))}
-              </select>
-              <MDBIcon
-                icon="times"
-                className="remove-option"
-                onClick={handleRemoveOption}
-              />
-            </label>
-          </div>
-        ) : (
-          ""
-        )}
-
-        {params.option === "week" ? (
-          <div className="close-container">
-            <label className="w-25 ml-3">
-              <span className="ml-1 text-primary font-weight-bold">Week</span>
-              <select
-                className="form-control custom-select"
-                style={{ width: "165px" }}
-                value={String(params.week)}
-                onChange={({ target }) =>
-                  setParams({ ...params, week: Number(target.value) })
-                }
-              >
-                <option>Choose a week</option>
-                {weeks.map((week, index) => (
-                  <option key={index} value={week}>
-                    {week}
-                  </option>
-                ))}
-              </select>
-              <MDBIcon
-                icon="times"
-                className="remove-option"
-                onClick={handleRemoveOption}
-              />
-            </label>
-          </div>
-        ) : (
-          ""
-        )}
-        {!params.option && params.month ? (
-          <select
-            className="form-control custom-select  ml-3 mt-3"
-            style={{ width: "160px" }}
-            value={params.option}
-            onChange={({ target }) =>
-              setParams({ ...params, option: target.value })
-            }
-          >
-            <option value={""}>Other Options..</option>
-            <option value={"week"}>Week</option>
-            <option value={"day"}>Day</option>
-          </select>
-        ) : (
-          ""
-        )}
+        <div className="d-flex align-items-center mt-2 ml-5">
+          <h6 className="font-weight-bold mt-2 mr-3">From</h6>
+          <MDBDatePicker
+            value={new Date(from).toDateString()}
+            getValue={(value) => setFrom(new Date(value))}
+            minDate={new Date(minDate).toDateString()}
+            maxDate={new Date(maxDate).toDateString()}
+          />
+          <h6 className="font-weight-bold ml-3 mr-4 mt-2">To</h6>
+          <MDBDatePicker
+            value={new Date(to).toDateString()}
+            maxDate={new Date(maxDate).toDateString()}
+            getValue={(value) => setTo(new Date(value))}
+            minDate={new Date(from).toDateString()}
+          />
+        </div>
       </MDBCol>
     </MDBRow>
   );

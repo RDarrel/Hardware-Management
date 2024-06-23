@@ -76,7 +76,7 @@ export const Table = ({
                     </h6>
                   </div>
                 </td>
-                <td>N/A</td>
+                <td> </td>
                 <td>
                   <h6 className="text-danger font-weight-bold">
                     ₱{product.capital.toLocaleString()}

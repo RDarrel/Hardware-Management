@@ -243,6 +243,7 @@ const Products = () => {
         </>
       ) : (
         <ProductInformation
+          collections={collections}
           setIsViewProductInformation={setShow}
           selected={selected}
           willCreate={willCreate}

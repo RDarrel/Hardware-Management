@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { ENDPOINT, axioKit } from "../../utilities";
 
 const name = "auth",
-  maxPage = Number(localStorage.getItem("maxPage")) || 5,
+  maxPage = Number(localStorage.getItem("maxPage")) || 10,
   token = localStorage.getItem("token") || "",
   email = localStorage.getItem("email") || "",
   image = `${ENDPOINT}/assets/profile/${

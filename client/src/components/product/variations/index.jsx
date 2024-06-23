@@ -10,14 +10,30 @@ import {
 } from "mdbreact";
 import { v4 as uuidv4 } from "uuid";
 import Table from "./table";
+import { isValid } from "../../../services/utilities";
 
-function Variations({ variations = [], setVariations, media, setMedia }) {
+function Variations({
+  variations = [],
+  setVariations,
+  media,
+  setMedia,
+  setHasDuplicateVariant,
+  setHasDuplicateOption,
+}) {
   const [capital, setCapital] = useState(0),
     [srp, setSrp] = useState(0);
 
   const handleChangeOptions = (option, index, optionIndex) => {
     var updatedVariations = [...variations];
-
+    setHasDuplicateOption(
+      isValid(
+        updatedVariations.length === 2
+          ? [...updatedVariations[0].options, ...updatedVariations[1].options]
+          : updatedVariations[0].options,
+        option,
+        "name"
+      )
+    );
     if (updatedVariations.length === 2) {
       if (index === 0) {
         handleDefaultChangeOption(
@@ -91,20 +107,29 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
 
     if (updatedVariations.length === 2) {
       if (index === 0) {
-        updatedVariations[index].options.push({
-          ...newOption,
-          prices: updatedVariations[1].options.map((option) => ({
-            ...option,
-            capital: 0,
-            srp: 0,
-            disable: false,
-          })),
-        });
+        updatedVariations[index] = {
+          ...updatedVariations[index],
+          options: [
+            ...updatedVariations[index].options,
+            {
+              ...newOption,
+              prices: updatedVariations[1].options.map((option) => ({
+                ...option,
+                capital: 0,
+                srp: 0,
+                disable: false,
+              })),
+            },
+          ],
+        };
+
+        console.log(updatedVariations);
       } else {
         const priceID = uuidv4();
         const vr1Options = [...updatedVariations[0].options];
         const newVr1Options = vr1Options.map((option) => {
-          const prices = option.prices;
+          const prices = option.prices ? [...option.prices] : [];
+
           prices.push({
             name: "",
             _id: priceID,
@@ -118,8 +143,21 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
             prices,
           };
         });
-        updatedVariations[0].options = newVr1Options;
-        updatedVariations[index].options.push({ name: "", _id: priceID });
+        updatedVariations[0] = {
+          ...updatedVariations[0],
+          options: newVr1Options,
+        };
+
+        // Add a new option to the specific index
+        updatedVariations[index] = {
+          ...updatedVariations[index],
+          options: [
+            ...updatedVariations[index].options,
+            { name: "", _id: priceID }, // Generate a new ID for the new option
+          ],
+        };
+        // updatedVariations[0].options = newVr1Options;
+        // updatedVariations[index].options.push({ name: "", _id: priceID });
       }
     } else {
       const newVr = { ...updatedVariations[index] };
@@ -205,6 +243,8 @@ function Variations({ variations = [], setVariations, media, setMedia }) {
         variant: { ...media.variant, name: value },
       });
     }
+
+    setHasDuplicateVariant(isValid(variations, value, "name"));
   };
 
   const handleRemoveVr = (index) => {

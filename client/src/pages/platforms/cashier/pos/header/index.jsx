@@ -34,7 +34,7 @@ const Header = () => {
             className="mr-3"
             style={{ color: "#4285F4" }}
           />
-          <h5 className="mt-2">Transactions</h5>
+          <h5 className="mt-2">Transaction</h5>
         </div>
         <div onMouseLeave={() => setId((prev) => prev + 1)} className="p-1">
           <MDBPopover placement="bottom" popover id={`popover-${id}`} key={id}>

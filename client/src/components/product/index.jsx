@@ -1,4 +1,3 @@
-import { MDBBtn, MDBCol, MDBRow } from "mdbreact";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import "./product.css";
@@ -10,7 +9,7 @@ import {
   UPDATE,
 } from "../../services/redux/slices/administrator/productManagement/products";
 import { useDispatch, useSelector } from "react-redux";
-import { ENDPOINT } from "../../services/utilities";
+import { ENDPOINT, isValid } from "../../services/utilities";
 
 const _media = {
   product: [
@@ -34,6 +33,7 @@ const _media = {
 const ProductInformation = ({
   setIsViewProductInformation,
   selected,
+  collections = [],
   willCreate = true,
   setWillCreate,
   setSelected,
@@ -42,7 +42,10 @@ const ProductInformation = ({
   const [media, setMedia] = useState(_media);
   const [form, setForm] = useState({ isPerKilo: false });
   const [variations, setVariations] = useState([]);
-  const disptach = useDispatch();
+  const disptach = useDispatch(),
+    [isDuplicateName, setIsDuplicateName] = useState(false),
+    [hasDuplicateOption, setHasDuplicateOption] = useState(false),
+    [hasDuplicateVariant, setHasDuplicateVariant] = useState(false);
 
   const imgToBase64 = async (url) => {
     try {
@@ -201,6 +204,14 @@ const ProductInformation = ({
     }
   };
 
+  useEffect(() => {
+    if (form?.name) {
+      setIsDuplicateName(
+        isValid(collections, form.name, "name", selected.name)
+      );
+    }
+  }, [form, selected, collections]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const coverPhoto = media.product.find(
@@ -286,7 +297,9 @@ const ProductInformation = ({
           setVariations={setVariations}
           form={form}
           setForm={setForm}
+          setHasDuplicateVariant={setHasDuplicateVariant}
           media={media}
+          setHasDuplicateOption={setHasDuplicateOption}
           setMedia={setMedia}
         />
         <Media
@@ -294,18 +307,13 @@ const ProductInformation = ({
           handleDrop={handleDrop}
           media={media}
           setMedia={setMedia}
+          hasDuplicateVariant={hasDuplicateVariant}
           variations={variations}
+          handleClearForm={handleClearForm}
+          isDuplicateName={isDuplicateName}
+          willCreate={willCreate}
+          hasDuplicateOption={hasDuplicateOption}
         />
-        <MDBRow>
-          <MDBCol md="12" className="d-flex justify-content-end mt-3 mr-5">
-            <MDBBtn color="white" onClick={handleClearForm}>
-              Cancel
-            </MDBBtn>
-            <MDBBtn color="primary" type="submit">
-              {willCreate ? "Publish" : "Update"}
-            </MDBBtn>
-          </MDBCol>
-        </MDBRow>
       </form>
     </>
   );

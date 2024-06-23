@@ -1,3 +1,4 @@
+const e = require("cors");
 const Sales = require("../../models/administrator/report/Sales"),
   Stocks = require("../../models/stockman/Stocks"),
   Transactions = require("../../models/administrator/report/Transactions"),
@@ -222,6 +223,64 @@ exports.find_transaction = async (req, res) => {
       payload: transaction || {},
       success: "Successfully Find Transaction",
     });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const handleReturnAction = async (purchase) => {
+  try {
+    const {
+      isPerKilo,
+      _id,
+      variant1,
+      variant2,
+      has2Variant,
+      hasVariant,
+      kiloReturn = 0,
+      quantityReturn = 0,
+    } = purchase;
+    const baseReturn = isPerKilo ? kiloReturn : quantityReturn;
+    const baseSaleKey = isPerKilo ? "kilo" : "quantity";
+    const baseStockKey = isPerKilo ? "kiloStock" : "quantityStock";
+    var query = {
+      product: _id,
+      ...(!isPerKilo && { quantity: { $gt: 0 } }),
+      ...(isPerKilo && { kilo: { $gt: 0 } }),
+      ...(hasVariant && { variant1: variant1 }),
+      ...(has2Variant && { variant2: variant2 }),
+    };
+
+    var isLoopAgain = true;
+    while (isLoopAgain) {
+      const sale = await Sales.findOne(query).sort({ createdAt: 1 });
+      const currentSaleReturn = sale[baseSaleKey];
+      var returnPruchase = sale[baseSaleKey] - baseReturn;
+
+      // const stock =await Stocks.finde(sale.stock,{[baseStockKey]:hasEnough?})
+
+      if (hasEnough) {
+        isLoopAgain = false;
+      }
+    }
+  } catch (error) {
+    console.log("Error Handle return action", error.message);
+  }
+};
+
+exports.return = async (req, res) => {
+  try {
+    const {
+      returnProductCount = 0,
+      returnPurchases = [
+        { product: { _id: "" }, quantityReturn: 0, kiloReturn: 0 },
+      ],
+      invoice_no = "",
+    } = req.body;
+
+    for (let index = 0; index < returnPurchases.length; index++) {
+      const purchase = returnPurchases[index];
+    }
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

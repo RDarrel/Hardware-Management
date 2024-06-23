@@ -8,6 +8,7 @@ import {
   MDBInput,
   MDBRow,
   MDBCol,
+  MDBTypography,
 } from "mdbreact";
 import { useToasts } from "react-toast-notifications";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +19,7 @@ import {
 import { isEqual } from "lodash";
 import CustomSelect from "../../../../components/customSelect";
 import Swal from "sweetalert2";
+import { isValid } from "../../../../services/utilities";
 
 const _form = {
   fullName: {
@@ -31,9 +33,15 @@ const _form = {
   confirmPassword: "",
 };
 
-export default function Modal({ show, toggle, selected, willCreate }) {
+export default function Modal({
+  show,
+  toggle,
+  selected,
+  willCreate,
+  collections,
+}) {
   const { token } = useSelector(({ auth }) => auth),
-    { isLoading } = useSelector(({ suppliers }) => suppliers),
+    [isDuplicate, setIsDuplicate] = useState(false),
     [form, setForm] = useState(_form),
     dispatch = useDispatch(),
     { addToast } = useToasts();
@@ -41,6 +49,12 @@ export default function Modal({ show, toggle, selected, willCreate }) {
   useEffect(() => {
     if (!willCreate && selected._id) setForm(selected);
   }, [willCreate, selected]);
+
+  useEffect(() => {
+    if (form.email) {
+      setIsDuplicate(isValid(collections, form.email, "email"));
+    }
+  }, [form, collections]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -177,10 +191,25 @@ export default function Modal({ show, toggle, selected, willCreate }) {
             </MDBCol>
           </MDBRow>
 
-          <div className="text-center mb-1-half">
+          <div
+            className={`d-flex justify-content-${
+              isDuplicate ? "between" : "end"
+            } mb-1-half mt-4 align-items-center`}
+          >
+            {isDuplicate && (
+              <MDBTypography
+                variant="h2"
+                className="mb-0 text-black-50"
+                noteColor="danger"
+                note
+                noteTitle="Warning: "
+              >
+                Sorry But this email is Already Exist
+              </MDBTypography>
+            )}
             <MDBBtn
               type="submit"
-              disabled={isLoading}
+              disabled={isDuplicate}
               color="primary"
               className="mb-2 float-right"
             >

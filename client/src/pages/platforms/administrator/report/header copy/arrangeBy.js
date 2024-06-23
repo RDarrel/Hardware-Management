@@ -3,6 +3,7 @@ const arrangeBy = {
     return sales //this is for the employees report arrange by transaction
       .reduce((accumulator, currentValue) => {
         const { cashier, total } = currentValue;
+        console.log(cashier);
         const key = `${cashier?._id}`;
         const index = accumulator?.findIndex((accu) => accu.key === key);
         if (index > -1) {
@@ -21,8 +22,8 @@ const arrangeBy = {
       .sort((a, b) => b.transactionsHandle - a.transactionsHandle);
   },
 
-  sales: (_sales) => {
-    return _sales //this is for the sales i arranged the data by the product then sort this into the sold
+  sales: (sales) => {
+    return sales //this is for the sales i arranged the data by the product then sort this into the sold
       .reduce((accumulator, currentValue) => {
         const {
           product,
@@ -45,7 +46,6 @@ const arrangeBy = {
           accumulator.push({
             ...currentValue,
             key,
-            income,
             sold: quantity || kilo,
             soldQty: quantity || 0,
             soldKilo: kilo || 0,

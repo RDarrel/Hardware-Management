@@ -159,6 +159,7 @@ const Suppliers = () => {
       </MDBCardBody>
       <Modal
         show={show}
+        collections={collections}
         toggle={() => {
           if (!willCreate) {
             setWillCreate(true);

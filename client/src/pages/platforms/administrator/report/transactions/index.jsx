@@ -65,7 +65,7 @@ export const Transactions = () => {
                 <th>Cashier</th>
                 <th>Invoice No.</th>
                 <th>Date</th>
-                <th>Total</th>
+                <th className="text-center">Total Amount</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -77,7 +77,7 @@ export const Transactions = () => {
                     <td>{fullName(transaction.cashier?.fullName)}</td>
                     <td>{transaction.invoice_no}</td>
                     <td>{formattedDate(transaction.createdAt)}</td>
-                    <td className="text-danger font-weight-bold">
+                    <td className="text-danger text-center font-weight-bold">
                       ₱{transaction.total.toLocaleString()}
                     </td>
                     <td>

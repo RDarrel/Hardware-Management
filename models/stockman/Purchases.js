@@ -7,12 +7,29 @@ const modelSchema = new mongoose.Schema(
       ref: "Suppliers",
       required: true,
     },
+    requestBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Suppliers",
+      required: true,
+    },
+
     purchaseBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
       required: true,
     },
 
+    status: {
+      type: String,
+      enum: {
+        values: ["pending", "approved", "cancel", "denied", "received"],
+        message: "{VALUE} is not supported",
+      },
+    },
+    expected: { type: String },
+    approved: { type: String },
+    received: { type: String },
+    remarks: { type: String },
     total: {
       type: Number,
     },

@@ -1,9 +1,29 @@
 import React from "react";
-import { MDBRow, MDBCol, MDBCard, MDBCardBody } from "mdbreact";
+import {
+  MDBRow,
+  MDBCol,
+  MDBCard,
+  MDBCardBody,
+  MDBBtn,
+  MDBTypography,
+} from "mdbreact";
 import ProductImg from "./mediaPlaceHolder/product";
 import OptionImg from "./mediaPlaceHolder/variant";
 
-function Media({ handleDrop, media, dragOver, setMedia, variations }) {
+function Media({
+  handleDrop,
+  media,
+  dragOver,
+  setMedia,
+  variations,
+  willCreate,
+  handleClearForm,
+  isDuplicateName = false,
+  hasDuplicateVariant = false,
+  hasDuplicateOption = false,
+}) {
+  const isDisAble =
+    isDuplicateName || hasDuplicateVariant || hasDuplicateOption;
   return (
     <MDBRow className="mt-3">
       <MDBCol md="12">
@@ -81,6 +101,62 @@ function Media({ handleDrop, media, dragOver, setMedia, variations }) {
                 </MDBCol>
               </MDBRow>
             )}
+
+            <MDBRow>
+              <MDBCol
+                md="12"
+                className={`d-flex justify-content-${
+                  isDisAble ? "between" : "end"
+                } align-items-center mt-3 mr-5`}
+              >
+                {isDuplicateName && (
+                  <MDBTypography
+                    variant="h2"
+                    bqColor="primary"
+                    className="mb-0 text-black-50"
+                    noteColor="danger"
+                    note
+                    noteTitle="Warning: "
+                  >
+                    Sorry But this product is Already Exist
+                  </MDBTypography>
+                )}
+
+                {hasDuplicateVariant && (
+                  <MDBTypography
+                    variant="h2"
+                    bqColor="primary"
+                    className="mb-0 text-black-50"
+                    noteColor="danger"
+                    note
+                    noteTitle="Warning: "
+                  >
+                    Sorry but you have a duplicate variant
+                  </MDBTypography>
+                )}
+
+                {hasDuplicateOption && (
+                  <MDBTypography
+                    variant="h2"
+                    bqColor="primary"
+                    className="mb-0 text-black-50"
+                    noteColor="danger"
+                    note
+                    noteTitle="Warning: "
+                  >
+                    Sorry but you have a duplicate option
+                  </MDBTypography>
+                )}
+                <div>
+                  <MDBBtn color="white" onClick={handleClearForm}>
+                    Cancel
+                  </MDBBtn>
+                  <MDBBtn color="primary" type="submit" disabled={isDisAble}>
+                    {willCreate ? "Publish" : "Update"}
+                  </MDBBtn>
+                </div>
+              </MDBCol>
+            </MDBRow>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
