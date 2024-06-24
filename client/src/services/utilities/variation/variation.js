@@ -12,10 +12,10 @@ const getTheGrams = (grams) => {
 
 const computeSubtotal = ({ srp, isPerKilo, kilo, kiloGrams, quantity }) => {
   if (isPerKilo) {
-    const totalKilo = kilo + kiloGrams;
-    return srp * totalKilo;
+    const totalKilo = Number(kilo) + Number(kiloGrams);
+    return Number(srp) * totalKilo;
   } else {
-    return srp * quantity;
+    return Number(srp) * Number(quantity);
   }
 };
 
@@ -70,9 +70,9 @@ const variation = {
 
         return computeSubtotal({ srp, isPerKilo, kilo, kiloGrams, quantity });
       } else {
-        const srp = variations[0].options.find(
-          ({ _id }) => _id === variant1
-        ).srp;
+        const srp = variations[0].options.find(({ _id }) => _id === variant1)[
+          name
+        ];
         return computeSubtotal({ srp, isPerKilo, kilo, kiloGrams, quantity });
       }
     } else {

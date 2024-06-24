@@ -5,15 +5,9 @@ const modelSchema = new mongoose.Schema(
     supplier: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Suppliers",
-      required: true,
-    },
-    requestBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Suppliers",
-      required: true,
     },
 
-    purchaseBy: {
+    requestBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
       required: true,

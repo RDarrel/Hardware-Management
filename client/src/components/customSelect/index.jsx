@@ -15,6 +15,7 @@ export default function CustomSelect({
   values = "",
   texts = "",
   className = "",
+  inputClassName = "",
   disableAll = false,
   multiple = false,
   disabledAllExceptSelected = false,
@@ -52,7 +53,7 @@ export default function CustomSelect({
       multiple={multiple}
       color="primary"
     >
-      <MDBSelectInput selected={preValue} />
+      <MDBSelectInput selected={preValue} className={inputClassName} />
       <MDBSelectOptions search={allowSearch ? choices.length >= 10 : false}>
         {choices.map((choice, index) => {
           const value = values ? choice[values] : choice,

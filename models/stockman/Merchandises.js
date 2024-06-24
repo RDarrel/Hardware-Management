@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const modelSchema = new mongoose.Schema(
   {
+    purchase: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Purchases",
+      required: true,
+    },
     product: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Products",
@@ -15,28 +20,20 @@ const modelSchema = new mongoose.Schema(
       type: String,
     },
 
-    kiloStock: {
-      type: Number,
-    },
-
-    quantityStock: {
-      type: Number,
-    },
-
     capital: {
       type: Number,
     },
 
     quantity: {
-      type: Number,
+      type: Object,
     },
 
     kilo: {
-      type: Number,
+      type: Object,
     },
 
     kiloGrams: {
-      type: Number,
+      type: Object,
     },
   },
   {
@@ -44,6 +41,6 @@ const modelSchema = new mongoose.Schema(
   }
 );
 
-const Entity = mongoose.model("Stocks", modelSchema);
+const Entity = mongoose.model("Merchandises", modelSchema);
 
 module.exports = Entity;

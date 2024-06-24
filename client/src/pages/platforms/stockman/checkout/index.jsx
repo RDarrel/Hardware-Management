@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { SUPPLIERS, BUY } from "../../../../services/redux/slices/cart";
-import { fullName, variation } from "../../../../services/utilities";
+import { variation } from "../../../../services/utilities";
 import "./style.css";
 
 import {
@@ -12,7 +12,9 @@ import {
   MDBCol,
   MDBBtn,
   MDBIcon,
-  MDBTypography,
+  MDBCardImage,
+  MDBInput,
+  MDBDatePicker,
 } from "mdbreact";
 
 import Table from "./table";
@@ -20,25 +22,12 @@ import Swal from "sweetalert2";
 
 const Checkout = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
-    { checkOutProducts, suppliers: supplierCollections } = useSelector(
-      ({ cart }) => cart
-    ),
+    { checkOutProducts } = useSelector(({ cart }) => cart),
     [cart, setCart] = useState([]),
-    [suppliers, setSuppliers] = useState([]),
-    [isShowNote, setIsShowNote] = useState(true),
-    [supplier, setSupplier] = useState(""),
-    // [isAllProductHaveSubtotal, setIsAllProductHaveSubtotal] = useState(false),
-    // [total, setTotal] = useState(0),
+    [remarks, setRemarks] = useState(""),
+    [expected, setExpected] = useState(new Date()),
     dispatch = useDispatch(),
     history = useHistory();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsShowNote(false);
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, []); // [] upang gawing tanging unang render lamang ang may epekto
 
   useEffect(() => {
     dispatch(SUPPLIERS({ token }));
@@ -48,44 +37,10 @@ const Checkout = () => {
     setCart(checkOutProducts);
   }, [checkOutProducts]);
 
-  useEffect(() => {
-    if (supplierCollections.length > 0) {
-      setSuppliers(supplierCollections);
-      setSupplier(supplierCollections[0]._id);
-    }
-  }, [supplierCollections]);
-
-  // useEffect(() => {
-  //   const _isAllProductHaveSubtotal = cart.every(
-  //     (item) => item.hasOwnProperty("subtotal") && item.subtotal > 0
-  //   );
-
-  //   if (_isAllProductHaveSubtotal) {
-  //     const _total = cart.reduce((accumulator, currentValue) => {
-  //       return (accumulator += currentValue.capital);
-  //     }, 0);
-
-  //     setTotal(_total);
-  //     setIsAllProductHaveSubtotal(true);
-  //   } else {
-  //     setIsAllProductHaveSubtotal(false);
-  //   }
-  // }, [cart]);
-
   const handleBuy = async () => {
-    // if (!isAllProductHaveSubtotal) {
-    //   return await Swal.fire({
-    //     title: "Warning!",
-    //     text: "Please make sure to enter the price for all products.",
-    //     icon: "info",
-    //     confirmButtonColor: "#3085d6",
-    //     confirmButtonText: "OK",
-    //   });
-    // }
-    const supplierName = suppliers.find(({ _id }) => _id === supplier).company;
     Swal.fire({
       title: "Are you sure?",
-      text: `Before proceeding with your purchase, please double-check that the supplier "${supplierName}" is correct.`,
+      text: `You want to request this all products.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -99,9 +54,27 @@ const Checkout = () => {
           subtotal: variation.getTheSubTotal("capital", obj, obj.product),
           capital: variation.getTheCapitalOrSrp("capital", obj, obj.product),
           ...(obj.product.isPerKilo
-            ? { kiloStock: obj.kilo + obj.kiloGrams }
-            : { quantityStock: obj.quantity }),
+            ? {
+                kilo: {
+                  request: obj.kilo,
+                  approved: obj.kilo,
+                  received: 0,
+                },
+                kiloGrams: {
+                  request: obj.kiloGrams,
+                  approved: obj.kiloGrams,
+                  received: 0,
+                },
+              }
+            : {
+                quantity: {
+                  request: obj.quantity,
+                  approved: obj.quantity,
+                  received: 0,
+                },
+              }),
         }));
+
         const total = cartWithSubtotalAndCapital.reduce(
           (accumulator, currentValue) => {
             return (accumulator += currentValue.subtotal);
@@ -110,8 +83,10 @@ const Checkout = () => {
         );
 
         const purchase = {
-          purchaseBy: auth._id,
-          supplier,
+          requestBy: auth._id,
+          expected,
+          remarks,
+          status: "pending",
           total,
         };
 
@@ -123,8 +98,7 @@ const Checkout = () => {
         );
         history.push("/store");
         Swal.fire({
-          title: "Purchase Confirmed",
-          text: `Your purchase has been confirmed with supplier: "${supplierName}".`,
+          title: "Request Successfully",
           icon: "success",
         });
       }
@@ -133,108 +107,101 @@ const Checkout = () => {
 
   return (
     <>
-      <div
-        className="d-flex  mb-2 ml-1 align-items-center cursor-pointer"
-        onClick={() => history.push("/store")}
-      >
-        <MDBIcon
-          icon="less-than"
-          className="mr-2"
-          style={{ color: "#7b95f5" }}
-        />
-        <h6 className="mt-2 text-primary">Back to store</h6>
-      </div>
-      <div className="d-flex align-items-center ml-2">
-        <MDBIcon
-          icon="shopping-cart"
-          size="3x"
-          className="mr-3"
-          style={{ color: "red" }}
-        />
-        <h4
-          className="mt-3 font-weight-bold"
-          style={{ color: "red", position: "relative" }}
-        >
-          Products &nbsp;&nbsp;&nbsp;&nbsp;Checkout
-          <span
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              height: "100%",
-              borderLeft: "1px solid black",
-            }}
-          />
-        </h4>
-      </div>
-      <MDBCard className="mt-3">
-        <MDBCardBody className="m-0 p-0">
-          <div className="striped-border"></div>
-
-          <div className="m-3">
-            <div className="d-flex align-items-center">
-              <h4 className="mt-2 mr-2">Supplier:</h4>
-              <select
-                className="form-control w-25 font-weight-bold"
-                value={supplier}
-                onChange={({ target }) => setSupplier(target.value)}
-              >
-                {suppliers.length > 0 &&
-                  suppliers.map((supplier, index) => (
-                    <option key={`supplier-${index}`} value={supplier._id}>
-                      {supplier.company}
-                    </option>
-                  ))}
-              </select>
-
-              {isShowNote && (
-                <MDBTypography
-                  variant="h2"
-                  className="mb-0 text-black-80 ml-3"
-                  noteColor="success"
-                  note
-                  noteTitle="Note: "
-                >
-                  Kindly verify your supplier.
-                </MDBTypography>
-              )}
-            </div>
-            <div className="supplier-content">
-              <p className="ml-2">
-                Purchase By:&nbsp;
-                <strong>{fullName(auth.fullName)} (+63) 9203552827</strong>
-              </p>
-            </div>
+      <MDBRow>
+        <MDBCol>
+          <div
+            className="d-flex  mb-2 ml-1 align-items-center cursor-pointer"
+            onClick={() => history.push("/store")}
+          >
+            <MDBIcon
+              icon="less-than"
+              className="mr-2"
+              style={{ color: "#7b95f5" }}
+            />
+            <h6 className="mt-2 text-primary">Back to store</h6>
           </div>
-        </MDBCardBody>
-      </MDBCard>
-      <MDBCard className="mt-3 dotted">
-        <MDBCardBody className="m-0 p-0">
-          <div className="m-1 p-2">
-            <Table cart={cart} setCart={setCart} />
-          </div>
-          <hr className="dotted" />
-          <MDBRow>
-            <MDBCol
-              md="12"
-              className="text-right d-flex align-items-center justify-content-end"
+          <div className="d-flex align-items-center ml-2">
+            <MDBIcon
+              icon="shopping-cart"
+              size="2x"
+              className="mr-3 mt-1"
+              style={{ color: "red" }}
+            />
+            <h5
+              className="mt-3 font-weight-bold"
+              style={{ color: "red", position: "relative" }}
             >
-              <h5 className="mr-4">Order Total ({cart.length} Item)</h5>
-              {/* <h2 style={{ fontWeight: 900 }} className="text-danger  ml-2">
-                {isAllProductHaveSubtotal ? `₱${total}` : `₱--`}
-              </h2> */}
-            </MDBCol>
-          </MDBRow>
-          <MDBRow className="mt-3 mr-1 mb-3">
-            <MDBCol md="12" className="text-right">
-              <MDBBtn color="danger" type="button" onClick={handleBuy}>
-                Buy Now
-              </MDBBtn>
-            </MDBCol>
-          </MDBRow>
-        </MDBCardBody>
-      </MDBCard>
+              Products &nbsp;&nbsp;&nbsp;&nbsp;Checkout
+              <span
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  height: "100%",
+                  borderLeft: "1px solid black",
+                }}
+              />
+            </h5>
+          </div>
+        </MDBCol>
+      </MDBRow>
+      <MDBRow className="mt-2">
+        <MDBCol md="8">
+          <MDBCard className="dotted">
+            <MDBCardBody className="m-0 p-0">
+              <div className="striped-border"></div>
+              <div className="m-1 p-2">
+                <Table cart={cart} setCart={setCart} />
+              </div>
+              <hr className="dotted" />
+              <MDBRow>
+                <MDBCol
+                  md="12"
+                  className="text-right d-flex align-items-center justify-content-end mb-1"
+                >
+                  <h5 className="mr-4">
+                    Product Request Total ({cart.length} Item)
+                  </h5>
+                </MDBCol>
+              </MDBRow>
+            </MDBCardBody>
+          </MDBCard>
+        </MDBCol>
+        <MDBCol>
+          <MDBCard narrow>
+            <MDBCardImage
+              className="view view-cascade gradient-card-header blue-gradient"
+              cascade
+              tag="div"
+            >
+              <h5 className="font-weight-500 mb-0">Request</h5>
+            </MDBCardImage>
+            <MDBCardBody cascade>
+              <div className="text-right">
+                <MDBInput
+                  type="textarea"
+                  label="Remarks"
+                  value={remarks}
+                  onChange={({ target }) => setRemarks(target.value)}
+                ></MDBInput>
+                <div className="d-flex align-items-center">
+                  Expected Date:{" "}
+                  <MDBDatePicker
+                    className="ml-3"
+                    value={expected}
+                    minDate={new Date().toDateString()}
+                    getValue={(value) => setExpected(value)}
+                  />
+                </div>
+                <MDBBtn color="primary" onClick={handleBuy}>
+                  Submit
+                </MDBBtn>
+              </div>
+            </MDBCardBody>
+          </MDBCard>
+        </MDBCol>
+      </MDBRow>
     </>
   );
 };

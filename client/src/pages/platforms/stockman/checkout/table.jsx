@@ -24,7 +24,7 @@ const Table = ({ cart, setCart }) => {
     <MDBTable>
       <thead>
         <tr>
-          <th>Product Ordered</th>
+          <th>Products</th>
           {/* <th>Unit Price</th> */}
           <th className="text-center">Quantity/Kilo</th>
           {/* <th>

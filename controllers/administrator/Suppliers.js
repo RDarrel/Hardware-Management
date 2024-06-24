@@ -1,18 +1,21 @@
 const Entity = require("../../models/administrator/Supplier"),
   handleDuplicate = require("../../config/duplicate");
 
-exports.browse = (req, res) =>
-  Entity.find()
+exports.browse = (req, res) => {
+  const status = req.query.status;
+  const query = status ? { status: status === "true" ? true : false } : {};
+  Entity.find(query)
     .select("-__v")
     .sort({ createdAt: -1 })
     .lean()
     .then((items) =>
       res.json({
-        success: "Roles Fetched Successfully",
+        success: "Suppliers Fetched Successfully",
         payload: items.filter((item) => item.name !== "ADMINISTRATOR"),
       })
     )
     .catch((error) => res.status(400).json({ error: error.message }));
+};
 
 exports.save = (req, res) =>
   Entity.create(req.body)

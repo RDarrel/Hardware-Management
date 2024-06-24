@@ -2,10 +2,11 @@ import Dashboard from "./dashboard";
 import EmployeesReport from "./report/employees";
 import Employees from "./employees";
 import Products from "./productMangement/products";
-import Purchases from "./purchases";
 import Sales from "./report/sales";
 import { Transactions } from "./report/transactions";
 import Suppliers from "./suppliers";
+import Request from "../../widgets/purchases/request";
+import Completed from "../../widgets/purchases/completed";
 // import Category from "./productMangement/category";
 
 const access = [
@@ -54,10 +55,21 @@ const access = [
   },
 
   {
+    path: "/purchases",
     name: "Purchases",
-    path: "/Purchases",
     icon: "shopping-basket",
-    component: Purchases,
+    children: [
+      {
+        name: "Request",
+        path: "/request",
+        component: Request,
+      },
+      {
+        name: "Completed",
+        path: "/rooms",
+        component: Completed,
+      },
+    ],
   },
   {
     path: "/report",

@@ -125,6 +125,7 @@ export const reduxSlice = createSlice({
       state.message = data.payload;
     },
     RESET: (state, data) => {
+      state.collections = [];
       state.isSuccess = false;
       state.message = "";
     },
@@ -170,7 +171,10 @@ export const reduxSlice = createSlice({
       })
       .addCase(UPDATE.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
-        bulkPayload(state, payload);
+        const index = state.collections.findIndex(
+          ({ _id }) => _id === payload._id
+        );
+        state.collections = state.collections.splice(index, 1);
         state.message = success;
         state.isSuccess = true;
         state.isLoading = false;

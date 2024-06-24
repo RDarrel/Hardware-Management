@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BROWSE } from "../../../services/redux/slices/stockman/purchases";
+import { BROWSE } from "../../../../services/redux/slices/stockman/purchases";
 import {
   MDBCard,
   MDBCardBody,
@@ -16,12 +16,12 @@ import {
   formattedDate,
   fullName,
   variation,
-} from "../../../services/utilities";
+} from "../../../../services/utilities";
 import "./style.css";
-import handlePagination from "../pagination";
-import PaginationButtons from "../pagination/buttons";
+import handlePagination from "../../pagination";
+import PaginationButtons from "../../pagination/buttons";
 
-const GlobalPurchases = ({ isAdmin = false }) => {
+const Completed = ({ isAdmin = false }) => {
   const { token, maxPage, auth } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ purchases }) => purchases),
     [purchases, setPurchases] = useState([]),
@@ -34,7 +34,12 @@ const GlobalPurchases = ({ isAdmin = false }) => {
     dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(BROWSE({ token, key: { isAdmin, purchaseBy: auth?._id } }));
+    dispatch(
+      BROWSE({
+        token,
+        key: { isAdmin, requestBy: auth?._id, status: "received" },
+      })
+    );
   }, [token, dispatch, auth, isAdmin]);
 
   const handleFilter = useCallback((array, key) => {
@@ -329,4 +334,4 @@ const GlobalPurchases = ({ isAdmin = false }) => {
   );
 };
 
-export default GlobalPurchases;
+export default Completed;

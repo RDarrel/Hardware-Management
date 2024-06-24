@@ -1,8 +1,15 @@
-const bulkWrite = (req, res, Entity, message, action = "updateOne") => {
+const bulkWrite = (
+  req,
+  res,
+  Entity,
+  array = [],
+  message,
+  action = "updateOne"
+) => {
   let options = [];
-
-  for (const index in req.body) {
-    const item = req.body[index];
+  const baseArray = array.length > 0 ? array : req.body;
+  for (const index in baseArray) {
+    const item = baseArray[index];
 
     options.push({
       [action]: {
@@ -19,7 +26,7 @@ const bulkWrite = (req, res, Entity, message, action = "updateOne") => {
         payload: req.body,
       });
     })
-    .catch(error => res.status(400).json({ error: error.message }));
+    .catch((error) => res.status(400).json({ error: error.message }));
 };
 
 module.exports = bulkWrite;

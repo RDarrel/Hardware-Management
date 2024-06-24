@@ -1,6 +1,6 @@
 const Entity = require("../models/Cart"),
   Purchase = require("../models/stockman/Purchases"),
-  Stocks = require("../models/stockman/Stocks"),
+  Merchandises = require("../models/stockman/Merchandises"),
   Suppliers = require("../models/administrator/Supplier"),
   handleDuplicate = require("../config/duplicate");
 
@@ -208,7 +208,7 @@ exports.buy = async (req, res) => {
 
     const idsToDelete = cart.map(({ _id }) => _id).filter(Boolean);
 
-    await Stocks.insertMany(cartWithPurchaseID);
+    await Merchandises.insertMany(cartWithPurchaseID);
     await Entity.deleteMany({ _id: { $in: idsToDelete } });
 
     res.status(201).json({

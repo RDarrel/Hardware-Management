@@ -1,25 +1,30 @@
+const bulkWrite = require("../../config/bulkWrite");
 const Entity = require("../../models/stockman/Purchases"),
   Cart = require("../../models/Cart"),
   Stocks = require("../../models/stockman/Stocks"),
+  Merchandises = require("../../models/stockman/Merchandises"),
   handleDuplicate = require("../../config/duplicate");
 
 exports.browse = async (req, res) => {
   try {
+    const status = req.query.status;
     const filter =
-      req.query.isAdmin === "true" ? {} : { purchaseBy: req.query.purchaseBy };
+      req.query.isAdmin === "true"
+        ? { status }
+        : { requestBy: req.query.requestBy, status };
+
     const purchases = await Entity.find(filter)
-      .populate("purchaseBy")
+      .populate("requestBy")
       .populate("supplier")
       .select("-__v")
       .sort({ createdAt: -1 });
-
     const container = [];
 
     for (const element of purchases) {
-      const stocks = await Stocks.find({ purchase: element._id }).populate(
-        "product"
-      );
-      container.push({ ...element._doc, stocks });
+      const merchandises = await Merchandises.find({
+        purchase: element._id,
+      }).populate("product");
+      container.push({ ...element._doc, merchandises });
     }
 
     res.json({ success: "Successfully fetched Purchase", payload: container });
@@ -54,22 +59,15 @@ exports.save = async (req, res) => {
   }
 };
 
-exports.update = (req, res) =>
-  Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
-    .then((item) => {
-      if (item) {
-        res.json({
-          success: "Role Updated Successfully",
-          payload: item,
-        });
-      } else {
-        res.status(404).json({
-          error: "ID Not Found",
-          message: "The provided ID does not exist.",
-        });
-      }
-    })
-    .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
+exports.update = async (req, res) => {
+  try {
+    const { purchase, merchandises } = req.body;
+    await Entity.findByIdAndUpdate(purchase._id, purchase);
+    bulkWrite(req, res, Merchandises, merchandises, "Successfully Approved");
+  } catch (error) {
+    res.json({ error: error.message });
+  }
+};
 
 exports.status = (req, res) =>
   Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
