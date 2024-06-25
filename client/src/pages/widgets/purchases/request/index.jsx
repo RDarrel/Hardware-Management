@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   MDBBtn,
   MDBBtnGroup,
+  MDBIcon,
   MDBModalBody,
   MDBTabContent,
   MDBTabPane,
@@ -14,8 +15,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import Pending from "./pending";
 import Approved from "./approved";
+import { Completed } from "./completed";
 
-export default function Request({ props: isAdmin = true }) {
+export default function Request({ isAdmin }) {
   const [activeTab, setActiveTab] = useState("pending");
   const { token, auth } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ purchases }) => purchases),
@@ -29,11 +31,11 @@ export default function Request({ props: isAdmin = true }) {
       })
     );
     return () => dispatch(RESET());
-  }, [token, dispatch, activeTab, isAdmin]);
+  }, [token, dispatch, activeTab, isAdmin, auth]);
 
   return (
     <>
-      <h2>Purchase Request</h2>
+      <MDBIcon icon="basket" /> <h4>Purchase</h4>
       <MDBBtnGroup>
         <MDBBtn
           className="m-0 rounded-top"
@@ -50,6 +52,15 @@ export default function Request({ props: isAdmin = true }) {
           outline={"approved" !== activeTab}
         >
           Approved
+        </MDBBtn>
+
+        <MDBBtn
+          className="m-0 rounded-top"
+          color="primary z-depth-0"
+          onClick={() => setActiveTab("received")}
+          outline={"received" !== activeTab}
+        >
+          Completed
         </MDBBtn>
       </MDBBtnGroup>
       <MDBTabContent
@@ -68,6 +79,15 @@ export default function Request({ props: isAdmin = true }) {
         <MDBTabPane tabId="approved">
           <MDBModalBody className="pt-1 p-0 bg-primary">
             <Approved collections={collections} isAdmin={isAdmin} />
+          </MDBModalBody>
+        </MDBTabPane>
+        <MDBTabPane tabId="received">
+          <MDBModalBody className="pt-1 p-0 bg-primary">
+            <Approved
+              collections={collections}
+              isAdmin={isAdmin}
+              isReceived={true}
+            />
           </MDBModalBody>
         </MDBTabPane>
       </MDBTabContent>

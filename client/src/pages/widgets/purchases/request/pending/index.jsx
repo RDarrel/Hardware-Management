@@ -10,7 +10,7 @@ import {
   MDBBadge,
 } from "mdbreact";
 import { formattedDate, fullName } from "../../../../../services/utilities";
-import Modal from "./modal";
+import Modal from "../modal";
 import CustomSelect from "../../../../../components/customSelect";
 import Remarks from "./remarks";
 import filterBy from "../../filterBy";
@@ -27,8 +27,11 @@ const Pending = ({ collections, isAdmin }) => {
 
   useEffect(() => {
     if (!!collections) {
-      setStockmans(filterBy("requestBy", collections) || []);
-      setPurchases(collections);
+      const _collections = collections.filter(
+        ({ status }) => status === "pending"
+      );
+      setStockmans(filterBy("requestBy", _collections) || []);
+      setPurchases(_collections || []);
     }
   }, [collections]);
 
@@ -83,10 +86,11 @@ const Pending = ({ collections, isAdmin }) => {
               <tr>
                 <th>#</th>
                 {isAdmin && <th>Stockman</th>}
-                <th>Expected Date</th>
+                <th>Request Date</th>
+                <th>Expected Approved Date</th>
                 <th>Remarks</th>
-                <th>Total Amount</th>
-                <th className="text-center">Request Products</th>
+                {isAdmin && <th>Total Amount</th>}
+                <th className="text-center"> Products</th>
               </tr>
             </thead>
             <tbody>
@@ -94,6 +98,7 @@ const Pending = ({ collections, isAdmin }) => {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   {isAdmin && <td>{fullName(purchase.requestBy.fullName)}</td>}
+                  <td>{formattedDate(purchase.createdAt)}</td>
                   <td>{formattedDate(purchase.expected)}</td>
                   <td>
                     <MDBBadge
@@ -108,13 +113,16 @@ const Pending = ({ collections, isAdmin }) => {
                       <MDBIcon icon="comment-alt" size="1x" />
                     </MDBBadge>
                   </td>
-                  <td className="text-danger font-weight-bolder">
-                    ₱ {purchase.total.toLocaleString()}
-                  </td>
+                  {isAdmin && (
+                    <td className="text-danger font-weight-bolder">
+                      ₱ {purchase.total.toLocaleString()}
+                    </td>
+                  )}
                   <td className="text-center">
                     <MDBBtn
                       color="success"
                       size="sm"
+                      floating
                       onClick={() => {
                         setMerchandises(purchase.merchandises);
                         setPurchase(purchase);
@@ -124,6 +132,9 @@ const Pending = ({ collections, isAdmin }) => {
                     >
                       <MDBIcon icon="shopping-cart" />
                     </MDBBtn>
+                    <span className="counter mb-0">
+                      {purchase.merchandises?.length}
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -139,6 +150,7 @@ const Pending = ({ collections, isAdmin }) => {
       />
       <Modal
         toggle={toggle}
+        isAdmin={isAdmin}
         show={show}
         merchandises={merchandises}
         purchase={purchase}

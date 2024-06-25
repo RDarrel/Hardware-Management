@@ -17,7 +17,9 @@ exports.browse = async (req, res) => {
       .populate("requestBy")
       .populate("supplier")
       .select("-__v")
-      .sort({ createdAt: -1 });
+      .sort({
+        ...(status === "pending" ? { expected: 1 } : { expectedDelivered: 1 }),
+      });
     const container = [];
 
     for (const element of purchases) {
@@ -63,7 +65,54 @@ exports.update = async (req, res) => {
   try {
     const { purchase, merchandises } = req.body;
     await Entity.findByIdAndUpdate(purchase._id, purchase);
-    bulkWrite(req, res, Merchandises, merchandises, "Successfully Approved");
+    if (purchase.status === "approved") {
+      bulkWrite(req, res, Merchandises, merchandises, "Successfully Approved");
+    } else if (purchase.status === "received") {
+      await Promise.all(
+        merchandises.map(async (merchandise) => {
+          const {
+            product,
+            quantity,
+            kilo,
+            kiloGrams,
+            expiration,
+            variant1 = "",
+            variant2 = "",
+          } = merchandise;
+          const { received: qtyReceived = 0 } = quantity;
+          const { received: kiloReceived = 0 } = kilo;
+          const { received: kiloGramsReceived = 0 } = kiloGrams;
+
+          try {
+            const stocksData = {
+              product: product._id,
+              ...(product.hasVariant
+                ? product.has2Variant
+                  ? { variant1, variant2 }
+                  : { variant1 }
+                : {}),
+              ...(product.isPerKilo
+                ? {
+                    kilo: kiloReceived,
+                    kiloGrams: kiloGramsReceived,
+                    kiloStock: kiloReceived + kiloGramsReceived,
+                  }
+                : {
+                    quantity: qtyReceived,
+                    quantityStock: qtyReceived,
+                  }),
+              ...(product?.hasExpiration && { expiration }),
+            };
+
+            await Stocks.create(stocksData);
+          } catch (error) {
+            console.error("Error creating stock:", error.message);
+          }
+        })
+      );
+
+      res.json({ success: "Successfully Received", payload: { purchase } });
+    }
   } catch (error) {
     res.json({ error: error.message });
   }

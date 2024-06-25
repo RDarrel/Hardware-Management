@@ -171,10 +171,12 @@ export const reduxSlice = createSlice({
       })
       .addCase(UPDATE.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
-        const index = state.collections.findIndex(
-          ({ _id }) => _id === payload._id
+        const _collections = [...state.collections];
+        const index = _collections.findIndex(
+          ({ _id }) => _id === payload?.purchase?._id
         );
-        state.collections = state.collections.splice(index, 1);
+        _collections.splice(index, 1);
+        state.collections = _collections;
         state.message = success;
         state.isSuccess = true;
         state.isLoading = false;

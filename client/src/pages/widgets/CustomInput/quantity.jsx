@@ -1,7 +1,15 @@
 import React from "react";
 import { MDBCol, MDBRow, MDBIcon, MDBBtn, MDBInputGroup } from "mdbreact";
 
-export const Quantity = ({ quantity, setQuantity, index, setMerchandises }) => {
+export const Quantity = ({
+  isAdmin,
+  maxQuantity,
+  quantity,
+  setQuantity,
+  index,
+  setMerchandises,
+  baseKey,
+}) => {
   const handleChange = (newQuantity) => {
     setMerchandises((prev) => {
       const _merchandises = [...prev];
@@ -9,14 +17,14 @@ export const Quantity = ({ quantity, setQuantity, index, setMerchandises }) => {
         ..._merchandises[index],
         quantity: {
           ..._merchandises[index].quantity,
-          approved: newQuantity,
+          [baseKey]: newQuantity,
         },
       };
       return _merchandises;
     });
   };
   return (
-    <MDBRow className="d-flex align-items-center mt-3">
+    <MDBRow className="d-flex align-items-center mt-2">
       <MDBCol md="12" className="d-flex justify-content-center">
         <MDBInputGroup
           type="number"
@@ -26,7 +34,9 @@ export const Quantity = ({ quantity, setQuantity, index, setMerchandises }) => {
           min="1"
           onChange={({ target }) => {
             var quantity = Number(target.value);
-            if (quantity < 1) quantity = 1;
+            if (quantity < 1 && baseKey !== "defective") quantity = 1;
+            if (quantity < 1 && baseKey === "defective") quantity = 0;
+            if (!isAdmin && quantity > maxQuantity) quantity = maxQuantity;
             handleChange(quantity);
           }}
           size="sm"
@@ -35,9 +45,17 @@ export const Quantity = ({ quantity, setQuantity, index, setMerchandises }) => {
               className="m-0 px-2 py-0"
               size="sm"
               color="light"
-              onClick={() =>
-                handleChange(quantity > 1 ? quantity - 1 : quantity)
-              }
+              onClick={() => {
+                var newQuantity = quantity;
+
+                if (baseKey !== "defective" && newQuantity > 1) {
+                  newQuantity -= 1;
+                } else if (baseKey === "defective" && newQuantity > 0) {
+                  newQuantity -= 1;
+                }
+
+                handleChange(newQuantity);
+              }}
               style={{ boxShadow: "0px 0px 0px 0px" }}
               outline
             >
@@ -50,7 +68,13 @@ export const Quantity = ({ quantity, setQuantity, index, setMerchandises }) => {
               size="sm"
               color="light"
               style={{ boxShadow: "0px 0px 0px 0px" }}
-              onClick={() => handleChange(quantity + 1)}
+              onClick={() =>
+                handleChange(
+                  !isAdmin && quantity >= maxQuantity
+                    ? maxQuantity
+                    : quantity + 1
+                )
+              }
               outline
             >
               <MDBIcon icon="plus" style={{ color: "black" }} />

@@ -58,18 +58,8 @@ const access = [
     path: "/purchases",
     name: "Purchases",
     icon: "shopping-basket",
-    children: [
-      {
-        name: "Request",
-        path: "/request",
-        component: Request,
-      },
-      {
-        name: "Completed",
-        path: "/rooms",
-        component: Completed,
-      },
-    ],
+    component: Request,
+    props: { isAdmin: true },
   },
   {
     path: "/report",

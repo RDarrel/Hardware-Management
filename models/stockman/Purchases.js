@@ -24,6 +24,7 @@ const modelSchema = new mongoose.Schema(
     approved: { type: String },
     received: { type: String },
     remarks: { type: String },
+    expectedDelivered: { type: String },
     total: {
       type: Number,
     },

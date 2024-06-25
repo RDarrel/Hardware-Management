@@ -2,7 +2,11 @@ import { MDBRow, MDBCol, MDBInputGroup } from "mdbreact";
 import React from "react";
 
 const Kilo = ({
+  isAdmin,
+  baseKey,
   kilo,
+  maxKilo,
+  maxKiloGrams,
   setKilo,
   kiloGrams,
   setKiloGrams,
@@ -10,7 +14,7 @@ const Kilo = ({
   index,
 }) => {
   return (
-    <MDBRow className="mt-4 d-flex align-items-center">
+    <MDBRow className="mt-2 d-flex align-items-center">
       <MDBCol
         md="12"
         className="m-0 d-flex  justify-content-center align-items-center"
@@ -22,11 +26,12 @@ const Kilo = ({
           onChange={({ target }) => {
             var kilo = Number(target.value);
             if (kilo < 0) kilo = 0;
+            if (!isAdmin && kilo > maxKilo) kilo = maxKilo;
             setMerchandises((prev) => {
               const _merchandises = [...prev];
               _merchandises[index] = {
                 ..._merchandises[index],
-                kilo: { ..._merchandises[index].kilo, approved: kilo },
+                kilo: { ..._merchandises[index].kilo, [baseKey]: kilo },
               };
               return _merchandises;
             });
@@ -43,7 +48,7 @@ const Kilo = ({
                     ..._merchandises[index],
                     kiloGrams: {
                       ..._merchandises[index].kiloGrams,
-                      approved: target.value,
+                      [baseKey]: Number(target.value),
                     },
                   };
                   return _merchandises;
@@ -51,9 +56,33 @@ const Kilo = ({
               }
             >
               <option value={"0"}>kl</option>
-              <option value={"0.25"}>1/4 kl</option>
-              <option value={"0.5"}>1/2 kl</option>
-              <option value={"0.75"}>3/4 kl</option>
+              <option
+                disabled={!isAdmin && kilo === maxKilo && maxKiloGrams < 0.25}
+                value={"0.25"}
+                className={
+                  kilo === maxKilo && maxKiloGrams < 0.25 ? `bg-red` : ""
+                }
+              >
+                1/4 kl
+              </option>
+              <option
+                value={"0.5"}
+                disabled={!isAdmin && kilo === maxKilo && maxKiloGrams < 0.5}
+                className={
+                  kilo === maxKilo && maxKiloGrams < 0.5 ? `bg-red` : ""
+                }
+              >
+                1/2 kl
+              </option>
+              <option
+                value={"0.75"}
+                disabled={!isAdmin && kilo === maxKilo && maxKiloGrams < 0.75}
+                className={
+                  kilo === maxKilo && maxKiloGrams < 0.75 ? `bg-red` : ""
+                }
+              >
+                3/4 kl
+              </option>
             </select>
           }
         />

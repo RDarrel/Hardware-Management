@@ -43,6 +43,11 @@ const modelSchema = new mongoose.Schema(
       default: false,
     },
 
+    hasExpiration: {
+      type: Boolean,
+      default: false,
+    },
+
     hasVariant: {
       type: Boolean,
       default: false,

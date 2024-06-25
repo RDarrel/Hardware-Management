@@ -16,27 +16,40 @@ export default function Routes() {
   const handleRoutes = () => {
     const routes = ACCESS[role] || [];
 
-    return routes.map(({ path, component, children }, index) => {
-      if (children)
-        return children.map((child, cIndex) => (
+    return routes.map(
+      ({ path, component: Component, children, props }, index) => {
+        if (children)
+          return children.map((child, cIndex) => (
+            <Route
+              key={`route-${index}-${cIndex}`}
+              exact
+              path={`${path}${child.path}`}
+              render={() =>
+                child.component ? (
+                  <child.component props={child?.props} />
+                ) : (
+                  <NotFound />
+                )
+              }
+            />
+          ));
+
+        return (
           <Route
-            key={`route-${index}-${cIndex}`}
+            key={`route-${index}`}
             exact
-            path={`${path}${child.path}`}
-            render={() =>
-              child.component ? (
-                <child.component props={child?.props} />
+            path={path}
+            render={(routeProps) =>
+              Component ? (
+                <Component {...routeProps} {...props} />
               ) : (
                 <NotFound />
               )
             }
           />
-        ));
-
-      return (
-        <Route key={`route-${index}`} exact path={path} component={component} />
-      );
-    });
+        );
+      }
+    );
   };
 
   return (

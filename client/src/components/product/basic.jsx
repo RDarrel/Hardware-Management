@@ -106,6 +106,44 @@ function Basic({ form, setForm, selected }) {
 
             <MDBRow className="mt-5">
               <MDBCol
+                md="3"
+                className="d-flex justify-content-end align-items-center"
+              >
+                <h6>* This product have an expiration date??</h6>
+              </MDBCol>
+              <MDBCol md="9">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="yes expiration"
+                  checked={form?.hasExpiration || false}
+                  onChange={() => setForm({ ...form, hasExpiration: true })}
+                />
+                <label
+                  htmlFor="yes expiration"
+                  className="form-check-label mr-2 label-table"
+                >
+                  Yes
+                </label>
+
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="no expiration"
+                  checked={!form.hasExpiration}
+                  onChange={() => setForm({ ...form, hasExpiration: false })}
+                />
+                <label
+                  htmlFor="no expiration"
+                  className="form-check-label ml-3 label-table"
+                >
+                  No
+                </label>
+              </MDBCol>
+            </MDBRow>
+
+            <MDBRow className="mt-5">
+              <MDBCol
                 md="2"
                 className="d-flex justify-content-end align-items-center"
               >

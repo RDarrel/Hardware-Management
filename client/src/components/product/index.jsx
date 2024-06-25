@@ -40,7 +40,7 @@ const ProductInformation = ({
 }) => {
   const { token } = useSelector(({ auth }) => auth);
   const [media, setMedia] = useState(_media);
-  const [form, setForm] = useState({ isPerKilo: false });
+  const [form, setForm] = useState({ isPerKilo: false, hasExpiration: false });
   const [variations, setVariations] = useState([]);
   const disptach = useDispatch(),
     [isDuplicateName, setIsDuplicateName] = useState(false),
