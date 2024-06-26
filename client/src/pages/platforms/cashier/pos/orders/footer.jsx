@@ -27,7 +27,7 @@ const Footer = ({ invoice_no, total, setCheckout, orderDetails }) => {
       >
         <div className="d-flex ">
           <h5 className="text-white mr-2 font-weight-bold "> Paid</h5>
-          <MDBIcon icon="money-bill" className="paid-icon" size="2x" />
+          <MDBIcon icon="cash-register" className="paid-icon" size="2x" />
         </div>
       </MDBBtn>
     </div>

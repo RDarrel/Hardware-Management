@@ -54,7 +54,7 @@ const ModalBody = ({
                 <>
                   <th className="text-center">Received Quantity/kilo</th>
                   <th className="text-center">Defective Quantity/kilo</th>
-                  <th>Expiration Date</th>
+                  <th className="text-center">Expiration Date</th>
                 </>
               )}
             </tr>
@@ -178,8 +178,14 @@ const ModalBody = ({
                             />
                           </div>
                         </td>
-                        <td>
-                          {hasExpiration && (
+                        <td
+                          className={
+                            !hasExpiration
+                              ? "text-center font-weight-bolder"
+                              : "d-flex justify-content-center"
+                          }
+                        >
+                          {hasExpiration ? (
                             <input
                               type="date"
                               className="form-control w-75"
@@ -190,6 +196,8 @@ const ModalBody = ({
                                 handleChangeExpiration(e.target.value, index)
                               }
                             />
+                          ) : (
+                            "--"
                           )}
                         </td>
                       </>

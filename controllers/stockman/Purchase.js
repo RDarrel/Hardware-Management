@@ -26,9 +26,9 @@ exports.browse = async (req, res) => {
       const merchandises = await Merchandises.find({
         purchase: element._id,
       }).populate("product");
+
       container.push({ ...element._doc, merchandises });
     }
-
     res.json({ success: "Successfully fetched Purchase", payload: container });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -111,7 +111,7 @@ exports.update = async (req, res) => {
         })
       );
 
-      res.json({ success: "Successfully Received", payload: { purchase } });
+      bulkWrite(req, res, Merchandises, merchandises, "Successfully Approved");
     }
   } catch (error) {
     res.json({ error: error.message });

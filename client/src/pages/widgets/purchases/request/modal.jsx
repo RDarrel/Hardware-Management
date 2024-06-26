@@ -199,13 +199,13 @@ export default function Modal({
       <MDBModalHeader
         toggle={handleClose}
         className=" light-blue darken-3 white-text  d-flex align-items-center"
-        tag="h4"
+        tag="h5"
         style={{ fontWeight: "normal" }}
       >
         <MDBIcon icon={isAdmin ? "user" : "shopping-cart"} className="mr-2" />
         {!isAdmin
           ? "Products Request"
-          : `Requested by ${fullName(purchase?.requestBy?.fullName)}`}
+          : `Requested By: ${fullName(purchase?.requestBy?.fullName)}`}
       </MDBModalHeader>
       <ModalBody
         products={products}

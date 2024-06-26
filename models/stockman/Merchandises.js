@@ -12,7 +12,7 @@ const modelSchema = new mongoose.Schema(
       ref: "Products",
       required: true,
     },
-
+    expiration: { type: String },
     variant1: {
       type: String,
     },

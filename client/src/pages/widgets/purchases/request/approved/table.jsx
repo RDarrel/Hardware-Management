@@ -22,9 +22,11 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
       ...p, // Spread existing properties of each product
       ...(p.product?.hasExpiration && { expiration: expirationDate }), // Add expiration date if hasExpiration is true
     }));
-    const sortedMerchandises = productsWithExpiration.sort(
-      (a, b) => b.product?.hasExpiration - a.product?.hasExpiration
-    );
+    const sortedMerchandises = isReceived
+      ? products
+      : productsWithExpiration.sort(
+          (a, b) => b.product?.hasExpiration - a.product?.hasExpiration
+        );
 
     setMerchandises(sortedMerchandises);
     setPurchase(_purchase);
@@ -99,7 +101,13 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
             ))}
         </tbody>
       </MDBTable>
-      <Received show={viewReceived} toggle={toggleReceived} />
+      <Received
+        show={viewReceived}
+        toggle={toggleReceived}
+        isAdmin={isAdmin}
+        purchase={purchase}
+        merchandises={merchandises}
+      />
       <Modal
         isApproved={true}
         isAdmin={isAdmin}

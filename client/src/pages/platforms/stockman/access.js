@@ -1,5 +1,4 @@
 // import Checkout from "./checkout";
-import Completed from "../../widgets/purchases/completed";
 import Request from "../../widgets/purchases/request";
 import Dashboard from "./dashboard";
 

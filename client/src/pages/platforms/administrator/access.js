@@ -6,7 +6,6 @@ import Sales from "./report/sales";
 import { Transactions } from "./report/transactions";
 import Suppliers from "./suppliers";
 import Request from "../../widgets/purchases/request";
-import Completed from "../../widgets/purchases/completed";
 // import Category from "./productMangement/category";
 
 const access = [

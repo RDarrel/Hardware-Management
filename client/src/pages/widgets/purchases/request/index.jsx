@@ -15,7 +15,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import Pending from "./pending";
 import Approved from "./approved";
-import { Completed } from "./completed";
 
 export default function Request({ isAdmin }) {
   const [activeTab, setActiveTab] = useState("pending");
@@ -35,7 +34,10 @@ export default function Request({ isAdmin }) {
 
   return (
     <>
-      <MDBIcon icon="basket" /> <h4>Purchase</h4>
+      <div className="d-flex align-items-center mb-2 ">
+        <MDBIcon icon="clipboard-list" size="2x" style={{ color: "blue" }} />
+        <h4 className="mt-2 ml-2">Purchases</h4>
+      </div>
       <MDBBtnGroup>
         <MDBBtn
           className="m-0 rounded-top"
