@@ -30,7 +30,7 @@ const access = [
   {
     path: "/purchases",
     name: "Purchases",
-    icon: "shopping-basket",
+    icon: "clipboard-list",
     component: Request,
     props: { isAdmin: false },
   },

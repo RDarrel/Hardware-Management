@@ -75,6 +75,7 @@ exports.update = async (req, res) => {
             quantity,
             kilo,
             kiloGrams,
+            capital,
             expiration,
             variant1 = "",
             variant2 = "",
@@ -85,6 +86,7 @@ exports.update = async (req, res) => {
 
           try {
             const stocksData = {
+              capital,
               product: product._id,
               ...(product.hasVariant
                 ? product.has2Variant

@@ -8,7 +8,7 @@ import {
   formattedDate,
   fullName,
   handlePagination,
-  variation,
+  transaction,
 } from "../../../../../services/utilities";
 import Receipt from "../../../../widgets/receipt";
 
@@ -20,6 +20,7 @@ export const Transactions = () => {
     [transactions, setTransactions] = useState([]),
     [total, setTotal] = useState(0),
     [orderDetails, setOrderDetails] = useState([]),
+    [customerView, setCustomerView] = useState(""),
     [invoce_no, setInvoice_no] = useState(""),
     [show, setShow] = useState(false),
     [createdAt, setCreatedAt] = useState(""),
@@ -32,13 +33,9 @@ export const Transactions = () => {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
 
-  const hanldeShowPurchases = (purchases, invoice, total, date) => {
-    setOrderDetails(
-      purchases.map((purchase) => ({
-        ...purchase,
-        subtotal: variation.getTheSubTotal("srp", purchase, purchase.product),
-      }))
-    );
+  const hanldeShowPurchases = (purchases, invoice, total, date, customer) => {
+    setOrderDetails(transaction.computeSubtotal(purchases));
+    setCustomerView(customer);
     setCreatedAt(date);
     setInvoice_no(invoice);
     setTotal(total);
@@ -90,7 +87,8 @@ export const Transactions = () => {
                             transaction.purchases,
                             transaction.invoice_no,
                             transaction.total,
-                            transaction.createdAt
+                            transaction.createdAt,
+                            transaction.customer || "--"
                           )
                         }
                       >
@@ -118,6 +116,7 @@ export const Transactions = () => {
         total={total}
         orderDetails={orderDetails}
         show={show}
+        customerView={customerView}
         isAdmin={true}
       />
     </>

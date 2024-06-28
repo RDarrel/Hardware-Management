@@ -15,6 +15,7 @@ import pos from "./slices/cashier/pos";
 import category from "./slices/administrator/productManagement/category";
 import salesReport from "./slices/administrator/report/salesReport";
 import transactionsReport from "./slices/administrator/report/transactionsReport";
+import returnRefund from "./slices/administrator/returnRefund";
 const store = configureStore({
   reducer: {
     auth,
@@ -33,6 +34,7 @@ const store = configureStore({
     salesReport,
     transactionsReport,
     category,
+    returnRefund,
   },
 });
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { POS } from "../../../services/redux/slices/cart";
 import { MDBBtn, MDBModal, MDBModalBody } from "mdbreact";
@@ -12,24 +12,41 @@ export default function Receipt({
   total = 0,
   invoice_no = "",
   orderDetails = [],
+  setInvoice_no,
   setOrders = () => {},
+  customerView,
+  isReturnRefund = false,
+  isReturn = false,
+  cashier = "",
   createdAt = "",
   isAdmin = false,
 }) {
   const { auth, token } = useSelector(({ auth }) => auth),
+    [customer, setCustomer] = useState(""),
     dispatch = useDispatch();
+
+  useEffect(() => {
+    setCustomer("");
+  }, []);
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(
       POS({
         token,
-        data: { invoice_no, cashier: auth._id, total, purchases: orderDetails },
+        data: {
+          customer,
+          invoice_no,
+          cashier: auth._id,
+          total,
+          purchases: orderDetails,
+        },
       })
     );
     Swal.fire({
       title: "Successfully Paid",
       icon: "success",
     });
+    setInvoice_no("");
     setOrders([]);
     toggle();
   };
@@ -40,7 +57,13 @@ export default function Receipt({
         <Header
           invoice_no={invoice_no}
           createdAt={createdAt}
+          customer={customer}
+          setCustomer={setCustomer}
+          isReturn={isReturn}
+          isReturnRefund={isReturnRefund}
           isAdmin={isAdmin}
+          cashier={cashier}
+          customerView={customerView}
         />
         <form onSubmit={handleSubmit}>
           <div className="mx-2 mt-4">

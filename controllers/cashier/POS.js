@@ -1,8 +1,7 @@
-const e = require("cors");
 const Sales = require("../../models/administrator/report/Sales"),
   Stocks = require("../../models/stockman/Stocks"),
   Transactions = require("../../models/administrator/report/Transactions"),
-  Cart = require("../../models/Cart"),
+  ReturnRefund = require("../../models/administrator/ReturnRefund"),
   handleDuplicate = require("../../config/duplicate");
 
 const checkerOfLastStock = async (productID, currentStock) => {
@@ -197,14 +196,15 @@ const stocks = async (purchases, invoice_no) => {
 
 exports.pos = async (req, res) => {
   try {
-    const { purchases, invoice_no, cashier, total } = req.body;
-    const purchasesWithCapital = await stocks(purchases, invoice_no);
+    const { purchases, invoice_no, cashier, total, customer = "" } = req.body;
+    const purchasesWithCapital = await stocks(purchases, String(invoice_no));
     await Sales.insertMany(purchasesWithCapital);
     await Transactions.create({
       cashier,
       invoice_no,
       total,
       purchases,
+      customer,
     });
 
     res.json({ success: "Successfully Buy" });
@@ -228,60 +228,308 @@ exports.find_transaction = async (req, res) => {
   }
 };
 
-const handleReturnAction = async (purchase) => {
+exports.returnProducts = async (req, res) => {
   try {
     const {
-      isPerKilo,
-      _id,
-      variant1,
-      variant2,
-      has2Variant,
-      hasVariant,
-      kiloReturn = 0,
-      quantityReturn = 0,
-    } = purchase;
-    const baseReturn = isPerKilo ? kiloReturn : quantityReturn;
-    const baseSaleKey = isPerKilo ? "kilo" : "quantity";
-    const baseStockKey = isPerKilo ? "kiloStock" : "quantityStock";
+      returnBy,
+      products: returnProducts,
+      invoice_no,
+      reason,
+      customer,
+    } = req.body;
+    // const isExist = await ReturnRefund.findOne({ invoice_no });
+    await stocks(returnProducts, invoice_no);
+    // if (isExist) {
+    //   const productsExist = [...isExist.products];
+    //   for (const returnProduct of returnProducts) {
+    //     const {
+    //       product,
+    //       quantity = 0,
+    //       kilo = 0,
+    //       variant1,
+    //       variant2,
+    //       hasVariant,
+    //       has2Variant,
+    //       kiloGrams = 0,
+    //     } = returnProduct;
+    //     const { isPerKilo } = product;
+
+    //     const index = productsExist.findIndex((item) => {
+    //       return (
+    //         item.product === product._id &&
+    //         (!hasVariant ||
+    //           (variant1 === item.variant1 &&
+    //             (!has2Variant || variant2 === item.variant2)))
+    //       );
+    //     });
+
+    //     if (index > -1) {
+    //       const existProduct = productsExist[index];
+
+    //       if (isPerKilo) {
+    //         const totalKg = String(
+    //           existProduct.kilo + existProduct.kiloGrams + kilo + kiloGrams
+    //         ).split(".");
+
+    //         const kg = totalKg[0];
+    //         const grams = totalKg[1] || 0;
+    //         productsExist[index] = {
+    //           ...existProduct,
+    //           kilo: Number(kg),
+    //           kiloGrams: Number(grams),
+    //         };
+    //       } else {
+    //         productsExist[index] = {
+    //           ...existProduct,
+    //           quantity: existProduct.quantity + quantity,
+    //         };
+    //       }
+    //     } else {
+    //       productsExist.push({
+    //         ...returnProduct,
+    //         product: returnProduct?.product?._id,
+    //       });
+    //     }
+    //   }
+
+    //   await ReturnRefund.findByIdAndUpdate(isExist._id, {
+    //     products: productsExist,
+    //   });
+    // } else {
+    await ReturnRefund.create({
+      returnBy,
+      reason,
+      invoice_no,
+      status: "return",
+      customer,
+      products: returnProducts,
+    });
+    // }
+
+    res.json({
+      success: "Successfully Return",
+      payload: { invoice_no, products: returnProducts },
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const findAnotherSale = async (query, oldSale) => {
+  try {
+    return await Stocks.findOne({
+      ...query,
+      _id: { $ne: oldSale._id },
+    }).sort({ createdAt: 1 });
+  } catch (error) {
+    console.log("Find Another Sale Error", error.message);
+  }
+};
+
+const deductionForSales = async ({
+  product,
+  variant1 = "",
+  variant2 = "",
+  kilo = 0,
+  kiloGrams = 0,
+  quantity = 0,
+  invoice_no,
+}) => {
+  try {
+    const { isPerKilo, has2Variant, hasVariant } = product;
+    const baseKey = isPerKilo ? "kilo" : "quantity";
+    var baseRefound = isPerKilo ? kilo + kiloGrams : quantity;
+    var isLoopAgain = true;
     var query = {
-      product: _id,
-      ...(!isPerKilo && { quantity: { $gt: 0 } }),
-      ...(isPerKilo && { kilo: { $gt: 0 } }),
+      invoice_no: String(invoice_no),
+      product: product._id,
       ...(hasVariant && { variant1: variant1 }),
       ...(has2Variant && { variant2: variant2 }),
     };
+    var sale = await Sales.findOne(query).sort({ createdAt: 1 });
 
-    var isLoopAgain = true;
     while (isLoopAgain) {
-      const sale = await Sales.findOne(query).sort({ createdAt: 1 });
-      const currentSaleReturn = sale[baseSaleKey];
-      var returnPruchase = sale[baseSaleKey] - baseReturn;
+      const saleIsNotEnogh = sale[baseKey] >= baseRefound;
+      var remainingRefound = sale[baseKey] - baseRefound;
+      if (saleIsNotEnogh && remainingRefound === 0) {
+        await Sales.findByIdAndDelete(sale._id);
+      } else {
+        await Sales.findByIdAndUpdate(sale._id, {
+          [baseKey]: remainingRefound,
+        });
+      }
 
-      // const stock =await Stocks.finde(sale.stock,{[baseStockKey]:hasEnough?})
+      if (!saleIsNotEnogh) {
+        await Sales.findByIdAndDelete(sale._id);
+        var nextSale = await findAnotherSale(query, sale);
+        const nextSaleIsEnough =
+          nextSale[baseKey] >= Math.abs(remainingRefound);
 
-      if (hasEnough) {
+        const nextRemainingRefound =
+          nextSale[baseKey] - Math.abs(remainingRefound);
+
+        await Sales.findByIdAndUpdate(sale._id, {
+          [baseKey]: nextRemainingRefound,
+        });
+
+        if (!nextSaleIsEnough) {
+          baseRefound = Math.abs(nextRemainingRefound);
+          sale = await findAnotherSale(query, nextSale);
+          isLoopAgain = true;
+        } else {
+          isLoopAgain = false;
+        }
+      } else {
         isLoopAgain = false;
       }
     }
   } catch (error) {
-    console.log("Error Handle return action", error.message);
+    console.log("Error for deduction for sales", error.message);
   }
 };
 
-exports.return = async (req, res) => {
+const gramsConverter = (grams) => {
+  switch (grams) {
+    case 5:
+      return 0.5;
+    case 75:
+      return 0.75;
+    case 25:
+      return 0.25;
+    default:
+      return grams;
+  }
+};
+
+exports.refund = async (req, res) => {
   try {
     const {
-      returnProductCount = 0,
-      returnPurchases = [
-        { product: { _id: "" }, quantityReturn: 0, kiloReturn: 0 },
-      ],
-      invoice_no = "",
+      invoice_no,
+      products: refundProducts,
+      reason,
+      refundBy,
+      customer,
+      newTotal,
+      refundAll = false,
     } = req.body;
 
-    for (let index = 0; index < returnPurchases.length; index++) {
-      const purchase = returnPurchases[index];
+    const transaction = await Transactions.findOne({ invoice_no });
+    if (!transaction) {
+      return res.status(404).json({ error: "Transaction not found" });
     }
+
+    var purchases = transaction.purchases || [];
+
+    // This is for the deduction of sales and transactions
+    for (const refund of refundProducts) {
+      const {
+        product,
+        variant1,
+        variant2,
+        kilo = 0,
+        kiloGrams = 0,
+        quantity,
+      } = refund;
+      const { isPerKilo, has2Variant, hasVariant } = product;
+
+      const index = purchases.findIndex((item) => {
+        if (hasVariant) {
+          if (has2Variant) {
+            return (
+              item.variant1 === variant1 &&
+              item.variant2 === variant2 &&
+              String(product._id) === String(item.product)
+            );
+          } else {
+            return (
+              item.variant1 === variant1 &&
+              String(product._id) === String(item.product)
+            );
+          }
+        } else {
+          return String(product._id) === String(item.product);
+        }
+      });
+
+      if (index > -1) {
+        const purchase = purchases[index];
+        if (isPerKilo) {
+          const totalKgInPurchase =
+            (purchase?.kilo || 0) + gramsConverter(purchase.kiloGrams || 0);
+
+          const totalKgInRefund = kilo + kiloGrams;
+          const totalDeductionRes = totalKgInPurchase - totalKgInRefund;
+          var newKilo;
+          var newKiloGrams;
+          if (totalDeductionRes < 1) {
+            newKilo = 0;
+            newKiloGrams = totalDeductionRes;
+          } else {
+            const totalDeducConvertInArray =
+              String(totalDeductionRes).split(".");
+            console.log(totalDeducConvertInArray);
+            newKilo = Number(totalDeducConvertInArray[0] || 0);
+            newKiloGrams = Number(totalDeducConvertInArray[1] || 0);
+          }
+
+          if (newKilo === 0 && newKiloGrams === 0) {
+            purchases.splice(index, 1);
+          } else {
+            purchases[index] = {
+              ...purchase._doc,
+              kilo: newKilo || 0,
+              kiloGrams: gramsConverter(newKiloGrams),
+            };
+          }
+        } else {
+          // This is for quantity refund
+          const newQuantity = purchase.quantity - quantity;
+          if (newQuantity === 0) {
+            purchases.splice(index, 1);
+          } else {
+            purchases[index] = {
+              ...purchase._doc,
+              quantity: newQuantity,
+            };
+          }
+        }
+
+        await deductionForSales({
+          product,
+          variant1,
+          variant2,
+          kilo,
+          kiloGrams,
+          quantity,
+          invoice_no,
+        });
+      } else {
+        console.log("No purchase record for this product id", product._id);
+      }
+      // To remove in sales the refund product
+    }
+
+    await ReturnRefund.create({
+      reason,
+      invoice_no,
+      status: "refund",
+      refundBy,
+      customer,
+      products: refundProducts,
+    });
+
+    if (purchases.length === 0 || refundAll) {
+      await Transactions.findByIdAndDelete(transaction._id);
+    } else {
+      await Transactions.findByIdAndUpdate(transaction._id, {
+        purchases,
+        total: newTotal,
+      });
+    }
+
+    res.json({ success: "Successfully refunded products", payload: {} });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Error processing refund:", error);
+    res.status(500).json({ error: error.message });
   }
 };

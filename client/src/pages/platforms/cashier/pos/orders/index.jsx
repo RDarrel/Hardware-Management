@@ -8,7 +8,7 @@ import Body from "./body";
 import { variation } from "../../../../../services/utilities";
 import Receipt from "../../../../widgets/receipt";
 
-const Orders = ({ orders, setOrders, invoice_no }) => {
+const Orders = ({ orders, setOrders, invoice_no, setInvoice_no }) => {
   const [total, setTotal] = useState(0),
     [orderDetails, setOrderDetails] = useState([]),
     [checkout, setCheckout] = useState(false),
@@ -121,6 +121,7 @@ const Orders = ({ orders, setOrders, invoice_no }) => {
         invoice_no={invoice_no}
         total={total}
         orderDetails={orderDetails}
+        setInvoice_no={setInvoice_no}
         setOrders={setOrders}
       />
     </MDBCol>

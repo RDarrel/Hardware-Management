@@ -6,6 +6,7 @@ import Sales from "./report/sales";
 import { Transactions } from "./report/transactions";
 import Suppliers from "./suppliers";
 import Request from "../../widgets/purchases/request";
+import ReturnRefund from "./returnRefund";
 // import Category from "./productMangement/category";
 
 const access = [
@@ -56,10 +57,18 @@ const access = [
   {
     path: "/purchases",
     name: "Purchases",
-    icon: "shopping-basket",
+    icon: "clipboard-list",
     component: Request,
     props: { isAdmin: true },
   },
+
+  {
+    name: "Return/Refund",
+    path: "/ReturnRefund",
+    icon: "exchange-alt",
+    component: ReturnRefund,
+  },
+
   {
     path: "/report",
     name: "Report",

@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+import {
+  REFUND_PRODUCTS,
+  RETURN_PRODUCTS,
+} from "../../../../../services/redux/slices/cashier/pos";
 import { FIND_TRANSACTION } from "../../../../../services/redux/slices/cashier/pos";
 import {
   MDBBtn,
@@ -9,13 +13,17 @@ import {
   MDBTable,
   MDBBtnGroup,
 } from "mdbreact";
+
 import { useDispatch, useSelector } from "react-redux";
-import { formattedDate, variation } from "../../../../../services/utilities";
+import {
+  formattedDate,
+  transaction as transactionAction,
+} from "../../../../../services/utilities";
 import Swal from "sweetalert2";
 import Receipt from "./receipt";
 
 export default function Transactions({ show, toggle }) {
-  const { token } = useSelector(({ auth }) => auth),
+  const { token, auth } = useSelector(({ auth }) => auth),
     { transaction } = useSelector(({ pos }) => pos),
     [search, setSearch] = useState(""),
     [foundTransaction, setFoundTransaction] = useState({}),
@@ -33,6 +41,8 @@ export default function Transactions({ show, toggle }) {
     if (show) {
       setSearch("");
       setFoundTransaction({});
+    } else {
+      setPurchases([]);
     }
   }, [show]);
 
@@ -71,21 +81,82 @@ export default function Transactions({ show, toggle }) {
   };
 
   const handleViewTransaction = (orderDetails, invoice, _date, _total) => {
-    setPurchases(
-      orderDetails.map((purchase) => ({
-        ...purchase,
-        subtotal: variation.getTheSubTotal("srp", purchase, purchase.product),
-      }))
-    );
+    setPurchases(transactionAction.computeSubtotal(orderDetails));
     setInvoice_no(invoice);
     setDate(_date);
     setTotal(_total);
     toggleTransac();
   };
 
+  const handleAction = (isReturn) => {
+    Swal.fire({
+      title: `<h5 class='font-weight-bolder'>Kindly provide a reason for ${
+        isReturn ? "Returning" : "Refunding"
+      } the product.</h5>`,
+      html: '<textarea id="swal-input1" class="swal2-textarea form-control m-0 p-0" required></textarea>',
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: isReturn ? "Return" : "Refund",
+      reverseButtons: true,
+      focusConfirm: false,
+      preConfirm: () => {
+        const textAreaValue = document.getElementById("swal-input1").value;
+        if (!textAreaValue) {
+          Swal.showValidationMessage("You need to write a reason!");
+        } else {
+          return textAreaValue;
+        }
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const reason = result.value;
+        if (isReturn) {
+          dispatch(
+            RETURN_PRODUCTS({
+              token,
+              data: {
+                invoice_no,
+                returnBy: auth._id,
+                customer: transaction.customer || "",
+                products: transaction.purchases,
+                reason,
+              },
+            })
+          );
+        } else {
+          dispatch(
+            REFUND_PRODUCTS({
+              token,
+              data: {
+                customer: transaction.customer || "",
+                refundAll: true,
+                invoice_no: transaction.invoice_no,
+                refundBy: auth._id,
+                products: transaction.purchases,
+                reason,
+              },
+            })
+          );
+
+          toggle();
+        }
+        Swal.fire(
+          "Successfully!",
+          `${isReturn ? "Return" : "Refund"}`,
+          "success"
+        );
+      }
+    });
+  };
+
   return (
     <>
-      <MDBModal isOpen={show} toggle={toggle} backdrop size="lg">
+      <MDBModal
+        isOpen={show}
+        toggle={toggle}
+        backdrop
+        size={showTransac ? "xl" : "lg"}
+      >
         {!showTransac && (
           <MDBModalHeader
             toggle={handleClose}
@@ -101,11 +172,11 @@ export default function Transactions({ show, toggle }) {
               <div className="search-container">
                 <form onSubmit={handleSubmit}>
                   <input
-                    type="number"
+                    type="text"
                     className="form-control"
                     placeholder="Search Invoice..."
                     value={String(search)}
-                    onChange={({ target }) => setSearch(Number(target.value))}
+                    onChange={({ target }) => setSearch(target.value)}
                     required
                   />
                   <MDBBtn
@@ -147,13 +218,37 @@ export default function Transactions({ show, toggle }) {
                       </td>
                       <td className="text-center">
                         <MDBBtnGroup>
-                          <MDBBtn size="sm" color="primary" rounded>
+                          <MDBBtn
+                            size="sm"
+                            color="primary"
+                            rounded
+                            title="Print"
+                          >
                             <MDBIcon icon="print" />
                           </MDBBtn>
+
+                          <MDBBtn
+                            onClick={() => handleAction(true)}
+                            size="sm"
+                            color="info"
+                            title="Return All Product"
+                          >
+                            <MDBIcon icon="reply" size="1x" />
+                          </MDBBtn>
+                          <MDBBtn
+                            onClick={() => handleAction(false)}
+                            size="sm"
+                            color="danger"
+                            title="Refund All Product"
+                          >
+                            <MDBIcon icon="share" size="1x" />
+                          </MDBBtn>
+
                           <MDBBtn
                             size="sm"
                             color="warning"
                             type="button"
+                            title="View Products"
                             rounded
                             onClick={() =>
                               handleViewTransaction(
@@ -178,8 +273,12 @@ export default function Transactions({ show, toggle }) {
               toggle={toggleTransac}
               invoice_no={invoice_no}
               total={total}
+              customer={foundTransaction?.customer || ""}
+              setTotal={setTotal}
+              setPurchases={setPurchases}
               orderDetails={purchases}
               createdAt={date}
+              transactionToggle={toggle}
             />
           )}
         </MDBModalBody>

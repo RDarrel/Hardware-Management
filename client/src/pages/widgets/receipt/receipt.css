@@ -7,6 +7,11 @@
   overflow: hidden;
 }
 
+.customer-name {
+  height: 30px !important;
+  width: 100% !important;
+}
+
 .invoice-header {
   position: relative;
   width: 85%;
@@ -43,7 +48,7 @@
   content: "";
   position: absolute;
   top: -35%;
-  left: -3%;
+  left: -2.6%;
   width: 17px;
   height: 130px;
   border-radius: 5px;
@@ -69,6 +74,7 @@
 .invoice-table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: -8px;
   margin-bottom: 20px;
 }
 

@@ -140,7 +140,12 @@ const POS = () => {
             setSelectedProduct={setSelectedProduct}
           />
         </MDBCol>
-        <Orders orders={orders} setOrders={setOrders} invoice_no={invoice_no} />
+        <Orders
+          orders={orders}
+          setOrders={setOrders}
+          invoice_no={invoice_no}
+          setInvoice_no={setInvoice_no}
+        />
       </MDBRow>
       <Modal
         show={showVariant}

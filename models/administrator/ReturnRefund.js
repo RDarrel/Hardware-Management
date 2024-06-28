@@ -2,27 +2,33 @@ const mongoose = require("mongoose");
 
 const modelSchema = new mongoose.Schema(
   {
-    cashier: {
+    returnBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
-      required: true,
     },
 
-    invoice_no: {
+    refundBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+    },
+
+    reason: {
       type: String,
-      required: true,
-    },
-
-    total: {
-      type: Number,
-      required: true,
     },
 
     customer: {
       type: String,
     },
 
-    purchases: {
+    status: {
+      type: String,
+    },
+
+    invoice_no: {
+      type: String,
+    },
+
+    products: {
       type: [
         {
           product: {
@@ -33,9 +39,7 @@ const modelSchema = new mongoose.Schema(
           srp: {
             type: Number,
           },
-          capital: {
-            type: Number,
-          },
+
           variant1: {
             type: String,
           },
@@ -61,6 +65,6 @@ const modelSchema = new mongoose.Schema(
   }
 );
 
-const Entity = mongoose.model("TransactionsReport", modelSchema);
+const Entity = mongoose.model("ReturnRefund", modelSchema);
 
 module.exports = Entity;

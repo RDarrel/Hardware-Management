@@ -1,30 +1,33 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axioKit, bulkPayload } from "../../../utilities";
 
-const name = "cashier/pos";
+const name = "administrator/ReturnRefund";
 
 const initialState = {
   collections: [],
-  transaction: {},
-  cart: [],
   progress: 0,
   isSuccess: false,
   isLoading: false,
   message: "",
 };
 
-export const BROWSE = createAsyncThunk(`${name}`, ({ token }, thunkAPI) => {
-  try {
-    return axioKit.universal(name, token);
-  } catch (error) {
-    const message =
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString();
+export const BROWSE = createAsyncThunk(
+  `${name}`,
+  ({ token, key }, thunkAPI) => {
+    try {
+      return axioKit.universal(name, token, key);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
 
-    return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
 export const FIND = createAsyncThunk(`${name}/find`, (form, thunkAPI) => {
   try {
@@ -39,24 +42,6 @@ export const FIND = createAsyncThunk(`${name}/find`, (form, thunkAPI) => {
   }
 });
 
-export const FIND_TRANSACTION = createAsyncThunk(
-  `${name}/find_transaction`,
-  ({ token, key }, thunkAPI) => {
-    try {
-      return axioKit.universal(`${name}/find_transaction`, token, key);
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
-
 export const SAVE = createAsyncThunk(`${name}/save`, (form, thunkAPI) => {
   try {
     return axioKit.save(name, form.data, form.token);
@@ -69,42 +54,6 @@ export const SAVE = createAsyncThunk(`${name}/save`, (form, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
-
-export const RETURN_PRODUCTS = createAsyncThunk(
-  `${name}/return`,
-  (form, thunkAPI) => {
-    try {
-      return axioKit.save(name, form.data, form.token, "return");
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
-
-export const REFUND_PRODUCTS = createAsyncThunk(
-  `${name}/refund`,
-  (form, thunkAPI) => {
-    try {
-      return axioKit.save(name, form.data, form.token, "refund");
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
 
 export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   try {
@@ -198,22 +147,6 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
 
-      .addCase(FIND_TRANSACTION.pending, (state) => {
-        state.isLoading = true;
-        state.isSuccess = false;
-        state.message = "";
-      })
-      .addCase(FIND_TRANSACTION.fulfilled, (state, action) => {
-        const { payload } = action.payload;
-        state.transaction = payload;
-        state.isLoading = false;
-      })
-      .addCase(FIND_TRANSACTION.rejected, (state, action) => {
-        const { error } = action;
-        state.message = error.message;
-        state.isLoading = false;
-      })
-
       .addCase(FIND.pending, (state) => {
         state.isLoading = true;
         state.isSuccess = false;
@@ -291,10 +224,8 @@ export const reduxSlice = createSlice({
       })
       .addCase(SAVE.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
-        state.cart = state.cart.filter(
-          (collection) => !payload.includes(collection._id)
-        );
         state.message = success;
+        state.collections.unshift(payload);
         state.isSuccess = true;
         state.isLoading = false;
       })
@@ -303,47 +234,6 @@ export const reduxSlice = createSlice({
         state.message = error.message;
         state.isLoading = false;
       })
-
-      .addCase(RETURN_PRODUCTS.pending, (state) => {
-        state.isLoading = true;
-        state.isSuccess = false;
-        state.message = "";
-      })
-      .addCase(RETURN_PRODUCTS.fulfilled, (state, action) => {
-        const { success } = action.payload;
-        // state.cart = state.cart.filter(
-        //   (collection) => !payload.includes(collection._id)
-        // );
-        state.message = success;
-        state.isSuccess = true;
-        state.isLoading = false;
-      })
-      .addCase(RETURN_PRODUCTS.rejected, (state, action) => {
-        const { error } = action;
-        state.message = error.message;
-        state.isLoading = false;
-      })
-
-      .addCase(REFUND_PRODUCTS.pending, (state) => {
-        state.isLoading = true;
-        state.isSuccess = false;
-        state.message = "";
-      })
-      .addCase(REFUND_PRODUCTS.fulfilled, (state, action) => {
-        const { success } = action.payload;
-        // state.cart = state.cart.filter(
-        //   (collection) => !payload.includes(collection._id)
-        // );
-        state.message = success;
-        state.isSuccess = true;
-        state.isLoading = false;
-      })
-      .addCase(REFUND_PRODUCTS.rejected, (state, action) => {
-        const { error } = action;
-        state.message = error.message;
-        state.isLoading = false;
-      })
-
       .addCase(DESTROY.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
         const index = state.collections.findIndex(
