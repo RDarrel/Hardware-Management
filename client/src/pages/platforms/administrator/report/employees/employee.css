@@ -1,0 +1,15 @@
+.employees-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.employees-th,
+.employees-td {
+  text-align: center;
+  border: 1px solid #ddd;
+  white-space: nowrap; /* Prevent text wrap */
+}
+
+.employees-th {
+  background-color: #f2f2f2;
+}

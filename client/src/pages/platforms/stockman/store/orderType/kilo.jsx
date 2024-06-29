@@ -2,6 +2,7 @@ import { MDBRow, MDBCol, MDBBtn, MDBIcon, MDBInputGroup } from "mdbreact";
 import React from "react";
 
 const Kilo = ({ kilo, setKilo, kiloGrams, setKiloGrams, handleSubmit }) => {
+  console.log("running");
   return (
     <MDBRow className="mt-4 d-flex align-items-center">
       <MDBCol md="2">
@@ -48,7 +49,7 @@ const Kilo = ({ kilo, setKilo, kiloGrams, setKiloGrams, handleSubmit }) => {
           size="md"
           onClick={() => handleSubmit(false)}
         >
-          Buy Now
+          Request Now
         </MDBBtn>
       </MDBCol>
     </MDBRow>

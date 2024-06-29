@@ -6,7 +6,7 @@ import { Header } from "../header";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
 import handlePagination from "../../../../widgets/pagination";
 import { fullName } from "../../../../../services/utilities";
-
+import "./employee.css";
 export const EmployeesReport = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
     { collections } = useSelector(
@@ -23,28 +23,57 @@ export const EmployeesReport = () => {
   return (
     <>
       <MDBCard>
-        <div className="ml-4 mt-2">
+        <div className="ml-4">
           <Header
             isEmployees={true}
             collections={collections}
             setFilteredData={setTransactions}
             title="Employees"
+            mb="0"
           />
         </div>
         <MDBCardBody>
           <MDBTable bordered responsive striped>
             <thead>
               <tr>
-                <th>#</th>
-                <th className="text-center">Cashier</th>
-                <th className="text-center"> Transactions Generated</th>
-                <th className="text-center"> Sales Generated</th>
+                <th className="text-center th-sm" rowSpan="2">
+                  #
+                </th>
+                <th className="text-center th-lg" rowSpan="2">
+                  Cashier
+                </th>
+
+                <th className="text-center th-lg" colSpan="3">
+                  Details
+                </th>
+                <th className="text-center th-lg" rowSpan="2">
+                  Total Refund Amount
+                </th>
+                <th className="text-center th-lg" rowSpan="2">
+                  Total Return Amount
+                </th>
+                <th className="text-center th-lg" rowSpan="2">
+                  Total Sales Amount
+                </th>
+              </tr>
+              <tr>
+                <th className=" th-lg">Transactions Processed</th>
+                <th className="text-center th-lg">Refund Processed</th>
+                <th className="text-center th-lg">Return Processed</th>
               </tr>
             </thead>
             <tbody>
               {handlePagination(transactions, page, maxPage).map(
                 (transaction, index) => {
-                  const { cashier, transactionsHandle, total } = transaction;
+                  const {
+                    cashier,
+                    transactionsHandle,
+                    total,
+                    refundItemCount = 0,
+                    totalRefundSales = 0,
+                    returnItemCount = 0,
+                    totalReturnSales = 0,
+                  } = transaction;
                   return (
                     <tr key={index}>
                       <td>{index + 1}</td>
@@ -53,6 +82,18 @@ export const EmployeesReport = () => {
                       </td>
                       <td className="text-center font-weight-bold">
                         {transactionsHandle}
+                      </td>
+                      <td className="text-center font-weight-bold">
+                        {refundItemCount || 0}
+                      </td>
+                      <td className="text-center font-weight-bold">
+                        {returnItemCount || 0}
+                      </td>
+                      <td className="text-center text-danger font-weight-bold">
+                        ₱{totalRefundSales.toLocaleString()}
+                      </td>
+                      <td className="text-center text-danger font-weight-bold">
+                        ₱{totalReturnSales.toLocaleString()}
                       </td>
                       <td className="text-center text-danger font-weight-bold">
                         ₱{total.toLocaleString()}

@@ -228,6 +228,24 @@ exports.find_transaction = async (req, res) => {
   }
 };
 
+const getTotalReturnRefund = (products) => {
+  const getTheSubtotal = products.map((obj) => {
+    const { product, kilo = 0, kiloGrams = 0, quantity = 0, srp } = obj;
+    if (product.isPerKilo) {
+      return { ...obj, subtotal: kilo + kiloGrams * srp };
+    } else {
+      return { ...obj, subtotal: quantity * srp };
+    }
+  });
+
+  return (
+    getTheSubtotal.reduce((acc, curr) => {
+      acc += curr.subtotal;
+      return acc;
+    }, 0) || 0
+  );
+};
+
 exports.returnProducts = async (req, res) => {
   try {
     const {
@@ -237,65 +255,22 @@ exports.returnProducts = async (req, res) => {
       reason,
       customer,
     } = req.body;
-    // const isExist = await ReturnRefund.findOne({ invoice_no });
+
+    const transaction = await Transactions.findOne({ invoice_no });
+
+    if (transaction?._id) {
+      await Transactions.findByIdAndUpdate(transaction._id, {
+        totalReturnSales:
+          (transaction?.totalReturnSales || 0) +
+          getTotalReturnRefund(returnProducts),
+        returnItemCount:
+          (transaction?.returnItemCount || 0) + returnProducts.length,
+      });
+    } else {
+      console.log("no have transaction for this invoice_no", invoice_no);
+    }
+
     await stocks(returnProducts, invoice_no);
-    // if (isExist) {
-    //   const productsExist = [...isExist.products];
-    //   for (const returnProduct of returnProducts) {
-    //     const {
-    //       product,
-    //       quantity = 0,
-    //       kilo = 0,
-    //       variant1,
-    //       variant2,
-    //       hasVariant,
-    //       has2Variant,
-    //       kiloGrams = 0,
-    //     } = returnProduct;
-    //     const { isPerKilo } = product;
-
-    //     const index = productsExist.findIndex((item) => {
-    //       return (
-    //         item.product === product._id &&
-    //         (!hasVariant ||
-    //           (variant1 === item.variant1 &&
-    //             (!has2Variant || variant2 === item.variant2)))
-    //       );
-    //     });
-
-    //     if (index > -1) {
-    //       const existProduct = productsExist[index];
-
-    //       if (isPerKilo) {
-    //         const totalKg = String(
-    //           existProduct.kilo + existProduct.kiloGrams + kilo + kiloGrams
-    //         ).split(".");
-
-    //         const kg = totalKg[0];
-    //         const grams = totalKg[1] || 0;
-    //         productsExist[index] = {
-    //           ...existProduct,
-    //           kilo: Number(kg),
-    //           kiloGrams: Number(grams),
-    //         };
-    //       } else {
-    //         productsExist[index] = {
-    //           ...existProduct,
-    //           quantity: existProduct.quantity + quantity,
-    //         };
-    //       }
-    //     } else {
-    //       productsExist.push({
-    //         ...returnProduct,
-    //         product: returnProduct?.product?._id,
-    //       });
-    //     }
-    //   }
-
-    //   await ReturnRefund.findByIdAndUpdate(isExist._id, {
-    //     products: productsExist,
-    //   });
-    // } else {
     await ReturnRefund.create({
       returnBy,
       reason,
@@ -304,7 +279,6 @@ exports.returnProducts = async (req, res) => {
       customer,
       products: returnProducts,
     });
-    // }
 
     res.json({
       success: "Successfully Return",
@@ -506,7 +480,6 @@ exports.refund = async (req, res) => {
       } else {
         console.log("No purchase record for this product id", product._id);
       }
-      // To remove in sales the refund product
     }
 
     await ReturnRefund.create({
@@ -523,6 +496,11 @@ exports.refund = async (req, res) => {
     } else {
       await Transactions.findByIdAndUpdate(transaction._id, {
         purchases,
+        totalRefundSales:
+          (transaction.totalRefundSales || 0) +
+          getTotalReturnRefund(refundProducts),
+        refundItemCount:
+          (transaction.refundItemCount || 0) + refundProducts.length,
         total: newTotal,
       });
     }

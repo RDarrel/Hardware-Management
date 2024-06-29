@@ -5,6 +5,14 @@ exports.browse = async (_, res) => {
   try {
     const stocks = await Entity.find().populate("product");
     const computedStocks = stocks.reduce((accumulator, currentValue) => {
+      const {
+        kiloStock = 0,
+        kiloGrams = 0,
+        kilo = 0,
+        quantityStock = 0,
+        quantity = 0,
+        product,
+      } = currentValue;
       const key = `${currentValue.product._id}-${currentValue.variant1 || ""}-${
         currentValue.variant2 || ""
       }`;
@@ -13,26 +21,15 @@ exports.browse = async (_, res) => {
 
       if (index > -1) {
         if (currentValue.product.isPerKilo) {
-          accumulator[index].available += currentValue.kiloStock;
-          accumulator[index].beginning +=
-            currentValue.kilo + currentValue.kiloGrams;
-          accumulator[index].sold +=
-            currentValue.kilo + currentValue.kiloGrams - currentValue.kiloStock;
+          accumulator[index].available += kiloStock > 0 ? kiloStock : 0;
+          accumulator[index].beginning += kilo + kiloGrams;
+          accumulator[index].sold += kilo + kiloGrams - kiloStock;
         } else {
-          accumulator[index].available += currentValue.quantityStock;
-          accumulator[index].beginning += currentValue.quantity;
-          accumulator[index].sold +=
-            currentValue.quantity - currentValue.quantityStock;
+          accumulator[index].available += quantityStock > 0 ? quantityStock : 0;
+          accumulator[index].beginning += quantity;
+          accumulator[index].sold += quantity - quantityStock;
         }
       } else {
-        const {
-          product,
-          kiloStock = 0,
-          quantityStock = 0,
-          kilo = 0,
-          kiloGrams = 0,
-          quantity = 0,
-        } = currentValue;
         const { isPerKilo } = product;
         const sold = isPerKilo
           ? kilo + kiloGrams - kiloStock
@@ -40,7 +37,13 @@ exports.browse = async (_, res) => {
         accumulator.push({
           ...currentValue._doc,
           key,
-          available: isPerKilo ? kiloStock : quantityStock,
+          available: isPerKilo
+            ? kiloStock > 0
+              ? kiloStock
+              : 0
+            : quantityStock > 0
+            ? quantityStock
+            : 0,
           beginning: isPerKilo ? kilo + kiloGrams : quantity,
           sold,
         });

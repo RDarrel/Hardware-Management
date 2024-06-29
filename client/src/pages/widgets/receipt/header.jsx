@@ -68,6 +68,7 @@ const Header = ({
           <MDBInput
             value={customer}
             className=" customer-name"
+            label="Enter name (optional)"
             onChange={({ target }) => setCustomer(target.value.toUpperCase())}
           />
         )}

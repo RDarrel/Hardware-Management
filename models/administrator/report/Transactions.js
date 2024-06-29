@@ -22,6 +22,26 @@ const modelSchema = new mongoose.Schema(
       type: String,
     },
 
+    returnItemCount: {
+      type: Number,
+      default: 0,
+    },
+
+    refundItemCount: {
+      type: Number,
+      default: 0,
+    },
+
+    totalRefundSales: {
+      type: Number,
+      default: 0,
+    },
+
+    totalReturnSales: {
+      type: Number,
+      default: 0,
+    },
+
     purchases: {
       type: [
         {

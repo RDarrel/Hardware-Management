@@ -1,82 +1,121 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { categories } from "../../../../../services/fakeDb";
 import { MDBBtn } from "mdbreact";
+
 const Categories = () => {
-  const containerRef = useRef(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
-  const animationFrameId = useRef(null);
+  const carouselRef = useRef(null);
+  const [grabbed, setGrabbed] = useState(false);
+  const [startX, setStartX] = useState(null);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  const onMouseDown = (e) => {
-    const container = containerRef.current;
-    isDragging.current = true;
-    startX.current = e.pageX - container.offsetLeft;
-    scrollLeft.current = container.scrollLeft;
+  const totalItems = 5;
 
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-  };
+  useEffect(() => {
+    const handleMouseUp = () => {
+      if (!grabbed) return;
+      setGrabbed(false);
+      if (carouselRef.current) {
+        carouselRef.current.style.scrollBehavior = "smooth";
+      }
+    };
 
-  const onMouseUp = () => {
-    isDragging.current = false;
-    window.removeEventListener("mousemove", onMouseMove);
-    window.removeEventListener("mouseup", onMouseUp);
-    if (animationFrameId.current) {
-      cancelAnimationFrame(animationFrameId.current);
+    const handleMouseMove = (e) => {
+      if (!grabbed) return;
+      e.preventDefault();
+      const currentRef = carouselRef.current;
+      if (currentRef) {
+        const x = e.pageX - currentRef.offsetLeft;
+        const walk = (x - startX) * 2;
+        currentRef.scrollLeft = scrollLeft - walk;
+      }
+    };
+
+    const handleScroll = () => {
+      const currentRef = carouselRef.current;
+      if (currentRef) {
+        const { scrollWidth, clientWidth } = currentRef;
+        const newIndex = Math.round(
+          (currentRef.scrollLeft / (scrollWidth - clientWidth)) *
+            (totalItems - 1)
+        );
+        setActiveIndex(newIndex);
+      }
+    };
+
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    const currentRef = carouselRef.current;
+    if (currentRef) {
+      currentRef.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      if (currentRef) {
+        currentRef.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [grabbed, startX, scrollLeft]);
+
+  const handleMouseDown = (e) => {
+    setGrabbed(true);
+    const currentRef = carouselRef.current;
+    if (currentRef) {
+      setStartX(e.pageX - currentRef.offsetLeft);
+      setScrollLeft(currentRef.scrollLeft);
+      currentRef.style.scrollBehavior = "auto";
     }
   };
 
-  const onMouseMove = (e) => {
-    if (!isDragging.current) return;
-    e.preventDefault();
-    if (animationFrameId.current) {
-      cancelAnimationFrame(animationFrameId.current);
-    }
-    animationFrameId.current = requestAnimationFrame(() => {
-      const container = containerRef.current;
-      const x = e.pageX - container.offsetLeft;
-      const walk = (x - startX.current) * 3; // Scroll speed
-      container.scrollLeft = scrollLeft.current - walk;
-    });
-  };
-
-  const onMouseEnter = () => {
-    const container = containerRef.current;
-    container.style.cursor = "grab";
-  };
-
-  const onMouseLeave = () => {
-    const container = containerRef.current;
-    container.style.cursor = "auto"; // Optional: Change back to default cursor on leave
-    if (!isDragging.current && animationFrameId.current) {
-      cancelAnimationFrame(animationFrameId.current);
+  const handleDotClick = (index) => {
+    setActiveIndex(index);
+    const currentRef = carouselRef.current;
+    if (currentRef) {
+      currentRef.style.scrollBehavior = "smooth";
+      currentRef.scrollLeft =
+        (index / (totalItems - 1)) *
+        (currentRef.scrollWidth - currentRef.clientWidth);
     }
   };
+
+  const renderDots = () => {
+    return Array.from({ length: totalItems }, (_, i) => (
+      <span
+        key={i}
+        className={`dot ${i === activeIndex ? "active" : ""}`}
+        onClick={() => handleDotClick(i)}
+      />
+    ));
+  };
+
   return (
-    <div
-      className="scrollable-buttons-container mt-2"
-      ref={containerRef}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      <MDBBtn size="sm" color="primary">
-        All
-      </MDBBtn>
-      {categories.map((category, index) => (
-        <MDBBtn
-          key={index}
-          size="sm"
-          outline
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-          color="primary"
-          className="category-btn"
-        >
-          {category}
+    <>
+      <div
+        className="scrollable-buttons-container mt-2"
+        ref={carouselRef}
+        onMouseDown={handleMouseDown}
+      >
+        <MDBBtn size="sm" color="primary">
+          All
         </MDBBtn>
-      ))}
-    </div>
+        {categories.map((category, index) => (
+          <MDBBtn
+            key={index}
+            size="sm"
+            outline
+            color="primary"
+            className="category-btn"
+          >
+            {category}
+          </MDBBtn>
+        ))}
+      </div>
+      {categories.length > 4 && (
+        <div className="dots-container">{renderDots()}</div>
+      )}
+    </>
   );
 };
 

@@ -63,7 +63,7 @@ export const Quantity = ({ quantity, setQuantity, handleSubmit }) => {
           size="md"
           onClick={() => handleSubmit(false)}
         >
-          Buy Now
+          Request Now
         </MDBBtn>
       </MDBCol>
     </MDBRow>

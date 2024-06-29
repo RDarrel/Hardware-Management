@@ -2,11 +2,27 @@ const arrangeBy = {
   employees: (sales) => {
     return sales //this is for the employees report arrange by transaction
       .reduce((accumulator, currentValue) => {
-        const { cashier, total } = currentValue;
+        const {
+          cashier,
+          total,
+          returnItemCount = 0,
+          refundItemCount = 0,
+          totalRefundSales = 0,
+          totalReturnSales = 0,
+        } = currentValue;
         const key = `${cashier?._id}`;
         const index = accumulator?.findIndex((accu) => accu.key === key);
         if (index > -1) {
           accumulator[index].transactionsHandle += 1;
+          accumulator[index].returnItemCount =
+            (accumulator[index].returnItemCount || 0) + returnItemCount;
+          accumulator[index].refundItemCount =
+            (accumulator[index].refundItemCount || 0) + refundItemCount;
+          accumulator[index].totalRefundSales =
+            (accumulator[index].totalRefundSales || 0) + totalRefundSales;
+          accumulator[index].totalReturnSales =
+            (accumulator[index].totalReturnSales || 0) + totalReturnSales;
+
           accumulator[index].total += total;
         } else {
           accumulator.push({

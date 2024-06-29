@@ -40,6 +40,7 @@ th {
     height: 1110px;
   }
 }
+
 /* for laptop */
 @media (min-height: 800px) and (min-width: 900px) {
   .order-details {

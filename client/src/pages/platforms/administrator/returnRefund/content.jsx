@@ -51,6 +51,7 @@ const Content = ({ collections, isReturn = true, baseKey }) => {
       setReturnRefunds(collections || []);
     }
   }, [cashier, handleFilterByCashier, collections]);
+
   return (
     <>
       <MDBRow className="ml-3  text-white">
