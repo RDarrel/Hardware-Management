@@ -104,14 +104,16 @@ function Basic({ form, setForm, selected }) {
               </MDBCol>
             </MDBRow>
 
-            <MDBRow className="mt-5">
+            <MDBRow className="mt-5 d-flex justify-content-start text-start">
               <MDBCol
                 md="3"
                 className="d-flex justify-content-end align-items-center"
               >
-                <h6>* This product have an expiration date??</h6>
+                <h6 className="text-nowrap">
+                  * This product have an expiration date?
+                </h6>
               </MDBCol>
-              <MDBCol md="9">
+              <MDBCol md="7">
                 <input
                   className="form-check-input"
                   type="checkbox"
