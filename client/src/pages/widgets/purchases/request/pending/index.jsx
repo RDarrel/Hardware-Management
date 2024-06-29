@@ -94,50 +94,60 @@ const Pending = ({ collections, isAdmin }) => {
               </tr>
             </thead>
             <tbody>
-              {purchases.map((purchase, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  {isAdmin && <td>{fullName(purchase.requestBy.fullName)}</td>}
-                  <td>{formattedDate(purchase.createdAt)}</td>
-                  <td>{formattedDate(purchase.expected)}</td>
-                  <td>
-                    <MDBBadge
-                      className="cursor-pointer p-2"
-                      color="info"
-                      onClick={() => {
-                        setRemarks(purchase.remarks || "");
-                        setPurchase(purchase);
-                        toggleRemarks();
-                      }}
-                    >
-                      <MDBIcon icon="comment-alt" size="1x" />
-                    </MDBBadge>
-                  </td>
-                  {isAdmin && (
-                    <td className="text-danger font-weight-bolder">
-                      ₱ {purchase.total.toLocaleString()}
+              {purchases.length > 0 ? (
+                purchases.map((purchase, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    {isAdmin && (
+                      <td>{fullName(purchase.requestBy.fullName)}</td>
+                    )}
+                    <td>{formattedDate(purchase.createdAt)}</td>
+                    <td>{formattedDate(purchase.expected)}</td>
+                    <td>
+                      <MDBBadge
+                        className="cursor-pointer p-2"
+                        color="info"
+                        onClick={() => {
+                          setRemarks(purchase.remarks || "");
+                          setPurchase(purchase);
+                          toggleRemarks();
+                        }}
+                      >
+                        <MDBIcon icon="comment-alt" size="1x" />
+                      </MDBBadge>
                     </td>
-                  )}
-                  <td className="text-center">
-                    <MDBBtn
-                      color="success"
-                      size="sm"
-                      floating
-                      onClick={() => {
-                        setMerchandises(purchase.merchandises);
-                        setPurchase(purchase);
+                    {isAdmin && (
+                      <td className="text-danger font-weight-bolder">
+                        ₱ {purchase.total.toLocaleString()}
+                      </td>
+                    )}
+                    <td className="text-center">
+                      <MDBBtn
+                        color="success"
+                        size="sm"
+                        floating
+                        onClick={() => {
+                          setMerchandises(purchase.merchandises);
+                          setPurchase(purchase);
 
-                        setShow(true);
-                      }}
-                    >
-                      <MDBIcon icon="shopping-cart" />
-                    </MDBBtn>
-                    <span className="counter mb-0">
-                      {purchase.merchandises?.length}
-                    </span>
+                          setShow(true);
+                        }}
+                      >
+                        <MDBIcon icon="shopping-cart" />
+                      </MDBBtn>
+                      <span className="counter mb-0">
+                        {purchase.merchandises?.length}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={12} className="text-center">
+                    No Records
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </MDBTable>
         </MDBCardBody>

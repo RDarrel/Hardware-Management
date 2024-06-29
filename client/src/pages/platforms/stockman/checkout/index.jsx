@@ -161,7 +161,7 @@ const Checkout = () => {
                   className="text-right d-flex align-items-center justify-content-end mb-1"
                 >
                   <h5 className="mr-4">
-                    Product Request Total ({cart.length} Item)
+                    Total of ({cart.length}) Products Requesting
                   </h5>
                 </MDBCol>
               </MDBRow>

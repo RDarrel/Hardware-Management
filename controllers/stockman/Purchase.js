@@ -114,6 +114,8 @@ exports.update = async (req, res) => {
       );
 
       bulkWrite(req, res, Merchandises, merchandises, "Successfully Approved");
+    } else {
+      res.json({ success: "Successfully Rejected", payload: { purchase } });
     }
   } catch (error) {
     res.json({ error: error.message });

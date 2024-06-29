@@ -90,7 +90,7 @@ const Approved = ({ collections = [], isAdmin, isReceived }) => {
       </MDBRow>
       <MDBCard>
         <MDBCardBody>
-          {!!purchases &&
+          {purchases.length > 0 ? (
             purchases.map((purchase, index) => {
               const textColor =
                 activeId !== index
@@ -146,7 +146,10 @@ const Approved = ({ collections = [], isAdmin, isReceived }) => {
                   </MDBCollapse>
                 </div>
               );
-            })}
+            })
+          ) : (
+            <h6 className="text-center">No Records.</h6>
+          )}
         </MDBCardBody>
       </MDBCard>
     </>

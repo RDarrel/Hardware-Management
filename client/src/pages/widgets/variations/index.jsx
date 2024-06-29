@@ -22,6 +22,11 @@ const Variations = ({
     [disableIDSVr1, setDisableIDSVr1] = useState([]);
 
   useEffect(() => {
+    setVariant1("");
+    setVariant2("");
+  }, [setVariant1, setVariant2]);
+
+  useEffect(() => {
     if (variations && variations.length > 0) {
       setVariation1(variations[0]);
       if (has2Variant && variations.length > 1) {
@@ -32,20 +37,9 @@ const Variations = ({
         }
       }
     }
+
     //to reset the variant1 and variant2
-    if (!option1ID) {
-      setVariant1("");
-      setVariant2("");
-    }
-  }, [
-    has2Variant,
-    variations,
-    setVariant1,
-    setVariant2,
-    isChangeVariant,
-    variant1,
-    option1ID,
-  ]);
+  }, [has2Variant, variations, isChangeVariant, variant1, option1ID]);
 
   const handleDisableVr2 = (options, variant) => {
     const vr1Prices = options.find(({ _id }) => variant === _id)?.prices || [];

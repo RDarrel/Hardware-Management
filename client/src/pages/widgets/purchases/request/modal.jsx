@@ -89,11 +89,15 @@ export default function Modal({
     }
   }, [_suppliers]);
 
-  const handleSubmit = () => {
+  const handleSubmit = (status) => {
     const supplierName = suppliers.find(({ _id }) => _id === supplier).company;
     Swal.fire({
       title: "Are you sure?",
-      text: `Before proceeding with your approval, please double-check that the supplier ${supplierName} is correct.`,
+      text: `${
+        status === "approved"
+          ? `Before proceeding with your approval, please double-check that the supplier ${supplierName} is correct.`
+          : "you want to reject this"
+      }`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -111,7 +115,7 @@ export default function Modal({
                 expectedDelivered,
                 supplier,
                 total,
-                status: "approved",
+                status,
                 approved: new Date().toDateString(),
               },
               merchandises: products.map((product) => ({
@@ -138,8 +142,12 @@ export default function Modal({
         toggle();
 
         Swal.fire({
-          title: "Approval Confirmed",
-          text: `Your Approval has been confirmed with supplier: ${supplierName}.`,
+          title:
+            status === "approved" ? "Approval Confirmed" : "Rejected Confirm",
+          text:
+            status === "approved"
+              ? `Your Approval has been confirmed with supplier: ${supplierName}.`
+              : "",
           icon: "success",
         });
       }
@@ -227,9 +235,16 @@ export default function Modal({
             <MDBBtn
               color="success"
               className="float-right"
-              onClick={handleSubmit}
+              onClick={() => handleSubmit("approved")}
             >
               Approved
+            </MDBBtn>
+            <MDBBtn
+              color="danger"
+              className="float-right"
+              onClick={() => handleSubmit("reject")}
+            >
+              Reject
             </MDBBtn>
           </div>
         </MDBModalFooter>

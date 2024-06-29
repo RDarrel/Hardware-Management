@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   MDBBtn,
   MDBPopover,
@@ -25,6 +25,10 @@ const Body = ({
   variant2,
   setVariant2,
 }) => {
+  useEffect(() => {
+    setVariant1("");
+    setVariant2("");
+  }, [setVariant1, setVariant2]);
   return (
     <div className="order-details m-0 p-0 ">
       {orderDetails.length === 0 ? (
