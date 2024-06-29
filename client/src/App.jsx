@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { VALIDATEREFRESH } from "./services/redux/slices/auth";
 import POS from "./pages/platforms/cashier/pos";
 import Checkout from "./pages/widgets/checkout";
+import PrintOut from "./components/printOut";
 
 export default function App() {
   const { auth, token } = useSelector(({ auth }) => auth),
@@ -22,6 +23,7 @@ export default function App() {
     <Switch>
       <Route path="/" exact component={Home} />
       <Route path="/pos" exact component={POS} />
+      <Route path="/printOut" exact component={PrintOut} />
       <Route path="/pos/checkout" exact component={Checkout} />
       <Platforms />
     </Switch>

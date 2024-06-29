@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Categories from "../categories";
 import { MDBCard, MDBCardBody, MDBBtn, MDBIcon } from "mdbreact";
 const Search = ({
@@ -10,6 +10,13 @@ const Search = ({
   setProducts,
   collections,
 }) => {
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
   return (
     <MDBCard className="mb-3">
       <MDBCardBody className="m-0 p-1">
@@ -20,6 +27,7 @@ const Search = ({
               placeholder="Seach.."
               required
               value={search}
+              ref={inputRef}
               onChange={({ target }) => setSearch(target.value)}
               name="search"
             />

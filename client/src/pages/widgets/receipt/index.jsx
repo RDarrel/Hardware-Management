@@ -30,6 +30,7 @@ export default function Receipt({
   }, []);
   const handleSubmit = (e) => {
     e.preventDefault();
+
     dispatch(
       POS({
         token,
