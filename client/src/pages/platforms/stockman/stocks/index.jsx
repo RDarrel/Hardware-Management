@@ -90,7 +90,11 @@ export const Stocks = () => {
                         src={img}
                         alt={product.name}
                         className="mr-2"
-                        style={{ width: "60px", borderRadius: "4px" }}
+                        style={{
+                          width: "60px",
+                          borderRadius: "4px",
+                          height: "60px",
+                        }}
                       />
                       <div>
                         <h6
