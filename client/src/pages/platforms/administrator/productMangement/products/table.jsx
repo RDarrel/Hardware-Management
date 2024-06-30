@@ -79,12 +79,12 @@ export const Table = ({
                 <td> </td>
                 <td>
                   <h6 className="text-danger font-weight-bold">
-                    ₱{product.capital.toLocaleString()}
+                    ₱{product?.capital?.toLocaleString()}
                   </h6>
                 </td>
                 <td>
                   <h6 className="text-danger font-weight-bold">
-                    ₱{product.srp.toLocaleString()}
+                    ₱{product?.srp?.toLocaleString()}
                   </h6>
                 </td>
                 <td className="text-center">

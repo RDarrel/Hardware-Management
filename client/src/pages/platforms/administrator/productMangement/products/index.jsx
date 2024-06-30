@@ -179,16 +179,16 @@ const Products = () => {
           <h6 className="text-danger font-weight-bold">
             ₱
             {has2Variant
-              ? price.capital.toLocaleString()
-              : option.capital.toLocaleString()}
+              ? price?.capital?.toLocaleString()
+              : option?.capital?.toLocaleString()}
           </h6>
         </td>
         <td>
           <h6 className="text-danger font-weight-bold">
             ₱
             {has2Variant
-              ? price.srp.toLocaleString()
-              : option.srp.toLocaleString()}
+              ? price?.srp?.toLocaleString()
+              : option?.srp?.toLocaleString()}
           </h6>
         </td>
 
