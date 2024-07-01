@@ -10,6 +10,13 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
     [merchandises, setMerchandises] = useState([]),
     [purchase, setPurchase] = useState({});
 
+  stockmans =
+    !!stockmans &&
+    stockmans.sort((a, b) => {
+      const dateA = new Date(isReceived ? a?.received : a?.expectedDelivered);
+      const dateB = new Date(isReceived ? b?.received : b?.expectedDelivered);
+      return dateB - dateA; // Descending order
+    });
   const toggle = () => setShow(!show);
 
   const toggleReceived = () => setViewRecieved(!viewReceived);

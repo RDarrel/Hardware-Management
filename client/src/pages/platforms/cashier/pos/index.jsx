@@ -119,7 +119,7 @@ const POS = () => {
     <MDBContainer
       fluid
       className="pt-3"
-      style={{ overflowX: "hidden", height: "100vh" }}
+      style={{ overflowY: "auto", height: "100vh" }}
     >
       <Header />
       <MDBRow>

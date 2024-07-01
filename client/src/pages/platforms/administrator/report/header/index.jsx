@@ -4,12 +4,6 @@ import "../header/header.css";
 import GET from "./GET";
 import arrangeBy from "./arrangeBy";
 
-const options = {
-  weekday: "short", // Huwag isama ang weekday (araw ng linggo)
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-};
 export const Header = ({
   collections,
   isTransaction = false,
@@ -99,12 +93,9 @@ export const Header = ({
         setTo(fromDate);
       } else {
         const filteredSales = sales.filter(({ createdAt }) => {
-          const _from = fromDate.toLocaleDateString("en-US", options);
-          const _to = toDate.toLocaleDateString("en-US", options);
-          const _createdAt = new Date(createdAt).toLocaleDateString(
-            "en-US",
-            options
-          );
+          const _from = new Date(fromDate.setHours(0, 0, 0, 0));
+          const _to = new Date(toDate.setHours(23, 59, 59, 999));
+          const _createdAt = new Date(createdAt);
 
           return _createdAt >= _from && _createdAt <= _to;
         });

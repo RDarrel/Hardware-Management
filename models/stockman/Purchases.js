@@ -16,7 +16,7 @@ const modelSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ["pending", "approved", "cancel", "denied", "received"],
+        values: ["pending", "approved", "cancel", "reject", "received"],
         message: "{VALUE} is not supported",
       },
     },
@@ -27,6 +27,13 @@ const modelSchema = new mongoose.Schema(
     expectedDelivered: { type: String },
     total: {
       type: Number,
+    },
+    rejectedDate: {
+      type: String,
+    },
+
+    reason: {
+      type: String,
     },
   },
   {

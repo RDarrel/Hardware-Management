@@ -93,11 +93,7 @@ export default function Modal({
     const supplierName = suppliers.find(({ _id }) => _id === supplier).company;
     Swal.fire({
       title: "Are you sure?",
-      text: `${
-        status === "approved"
-          ? `Before proceeding with your approval, please double-check that the supplier ${supplierName} is correct.`
-          : "you want to reject this"
-      }`,
+      text: `Before proceeding with your approval, please double-check that the supplier ${supplierName} is correct.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -115,7 +111,7 @@ export default function Modal({
                 expectedDelivered,
                 supplier,
                 total,
-                status,
+                status: "approved",
                 approved: new Date().toDateString(),
               },
               merchandises: products.map((product) => ({
@@ -142,12 +138,8 @@ export default function Modal({
         toggle();
 
         Swal.fire({
-          title:
-            status === "approved" ? "Approval Confirmed" : "Rejected Confirm",
-          text:
-            status === "approved"
-              ? `Your Approval has been confirmed with supplier: ${supplierName}.`
-              : "",
+          title: "Approval Confirmed",
+          text: `Your Approval has been confirmed with supplier: ${supplierName}.`,
           icon: "success",
         });
       }
@@ -156,6 +148,46 @@ export default function Modal({
 
   const handleClose = () => {
     toggle();
+  };
+
+  const handleReject = () => {
+    Swal.fire({
+      title: "Submit your reason",
+      html: `<textarea id="reason-textarea" class="swal2-textarea form-control" placeholder="Enter your reason here"></textarea>`,
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonText: "Submit",
+      preConfirm: () => {
+        const reason = document.getElementById("reason-textarea").value;
+        if (!reason) {
+          Swal.showValidationMessage("Reason is required");
+          return false;
+        }
+        return reason;
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(
+          UPDATE({
+            token,
+            data: {
+              purchase: {
+                ...purchase,
+                reason: result.value,
+                status: "reject",
+                rejectedDate: new Date().toDateString(),
+              },
+            },
+          })
+        );
+        toggle();
+
+        Swal.fire({
+          title: "Rejected Confirm",
+          icon: "success",
+        });
+      }
+    });
   };
 
   const handleReceived = () => {
@@ -242,7 +274,7 @@ export default function Modal({
             <MDBBtn
               color="danger"
               className="float-right"
-              onClick={() => handleSubmit("reject")}
+              onClick={handleReject}
             >
               Reject
             </MDBBtn>

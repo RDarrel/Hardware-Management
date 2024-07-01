@@ -6,13 +6,11 @@ import {
   handlePagination,
   transaction,
 } from "../../../../services/utilities";
-import { useSelector } from "react-redux";
 import PaginationButtons from "../../../widgets/pagination/buttons";
 import Receipt from "../../../widgets/receipt";
 import Modal from "./modal";
 const Table = ({ collections, isReturn, baseKey }) => {
-  const { maxPage } = useSelector(({ auth }) => auth),
-    [page, setPage] = useState(1),
+  const [page, setPage] = useState(1),
     [show, setShow] = useState(false),
     [products, setProducts] = useState([]),
     [invoice_no, setInvoice_no] = useState(""),
@@ -22,22 +20,30 @@ const Table = ({ collections, isReturn, baseKey }) => {
     [showReason, setShowReason] = useState(false),
     [reason, setReason] = useState(""),
     [obj, setObj] = useState({}),
-    [cashier, setCashier] = useState("");
+    [cashier, setCashier] = useState(""),
+    maxPage = 5;
 
+  collections =
+    !!collections &&
+    collections.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return dateB - dateA; // Descending order
+    });
   const toggle = () => setShow(!show);
   const toggleReason = () => setShowReason(!showReason);
   const handleViewProducts = (
     _products,
     invoice,
-    customer,
+    _customer,
     _createdAt,
     _cashier
   ) => {
     setProducts(transaction.computeSubtotal(_products));
     setInvoice_no(invoice);
-    setCustomer(customer);
+    setCustomer(_customer);
     setTotal(transaction.getTotal(_products));
-    setCreatedAt(createdAt);
+    setCreatedAt(_createdAt);
     setCashier(fullName(_cashier.fullName));
     toggle();
   };

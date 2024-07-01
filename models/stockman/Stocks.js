@@ -7,7 +7,24 @@ const modelSchema = new mongoose.Schema(
       ref: "Products",
       required: true,
     },
-    expiration: { type: String },
+    expirationDate: { type: Date },
+
+    hasExpired: {
+      type: Boolean,
+      default: false,
+    },
+    expiredQuantity: {
+      type: Number,
+    },
+
+    expiredKilo: {
+      type: Number,
+    },
+
+    hasExpiration: {
+      type: Boolean,
+      default: false,
+    },
 
     variant1: {
       type: String,

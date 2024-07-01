@@ -91,9 +91,9 @@ export const Stocks = () => {
                         alt={product.name}
                         className="mr-2"
                         style={{
-                          width: "60px",
+                          width: "50px",
                           borderRadius: "4px",
-                          height: "60px",
+                          height: "50px",
                         }}
                       />
                       <div>
@@ -103,6 +103,7 @@ export const Stocks = () => {
                             maxWidth: "400px",
                             whiteSpace: "nowrap",
                             overflow: "hidden",
+                            marginBottom: "-15px",
                             textOverflow: "ellipsis",
                           }}
                         >
@@ -110,8 +111,10 @@ export const Stocks = () => {
                         </h6>
                         {product.hasVariant && (
                           <div className="d-flex align-items-center">
-                            <h6 className="mr-1">Variations:</h6>
-                            <h6>{variation.name(obj, product.variations)}</h6>
+                            <span className="mr-1">Variations:</span>
+                            <span>
+                              {variation.name(obj, product.variations)}
+                            </span>
                           </div>
                         )}
                       </div>

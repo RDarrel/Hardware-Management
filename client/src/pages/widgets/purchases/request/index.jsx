@@ -62,7 +62,16 @@ export default function Request({ isAdmin }) {
           onClick={() => setActiveTab("received")}
           outline={"received" !== activeTab}
         >
-          Completed
+          Received
+        </MDBBtn>
+
+        <MDBBtn
+          className="m-0 rounded-top"
+          color="primary z-depth-0"
+          onClick={() => setActiveTab("reject")}
+          outline={"reject" !== activeTab}
+        >
+          Rejected
         </MDBBtn>
       </MDBBtnGroup>
       <MDBTabContent
@@ -89,6 +98,15 @@ export default function Request({ isAdmin }) {
               collections={collections}
               isAdmin={isAdmin}
               isReceived={true}
+            />
+          </MDBModalBody>
+        </MDBTabPane>
+        <MDBTabPane tabId="reject">
+          <MDBModalBody className="pt-1 p-0 bg-primary">
+            <Pending
+              collections={collections}
+              isAdmin={isAdmin}
+              isRejected={true}
             />
           </MDBModalBody>
         </MDBTabPane>

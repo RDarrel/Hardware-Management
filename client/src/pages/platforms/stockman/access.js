@@ -1,6 +1,7 @@
 // import Checkout from "./checkout";
 import Request from "../../widgets/purchases/request";
 import Dashboard from "./dashboard";
+import ExpiredProducts from "./expiredProducts";
 
 import { Stocks } from "./stocks";
 import Store from "./store";
@@ -18,6 +19,13 @@ const access = [
     name: "Stocks",
     icon: "warehouse",
     component: Stocks,
+  },
+
+  {
+    path: "/expiredProducts",
+    name: "Expired Products",
+    icon: "exclamation-circle",
+    component: ExpiredProducts,
   },
 
   {

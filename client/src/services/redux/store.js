@@ -16,6 +16,7 @@ import category from "./slices/administrator/productManagement/category";
 import salesReport from "./slices/administrator/report/salesReport";
 import transactionsReport from "./slices/administrator/report/transactionsReport";
 import returnRefund from "./slices/administrator/returnRefund";
+import expiredProducts from "./slices/stockman/expiredProducts";
 const store = configureStore({
   reducer: {
     auth,
@@ -35,6 +36,7 @@ const store = configureStore({
     transactionsReport,
     category,
     returnRefund,
+    expiredProducts,
   },
 });
 

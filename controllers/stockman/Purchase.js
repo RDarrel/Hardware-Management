@@ -103,7 +103,10 @@ exports.update = async (req, res) => {
                     quantity: qtyReceived,
                     quantityStock: qtyReceived,
                   }),
-              ...(product?.hasExpiration && { expiration }),
+              ...(product?.hasExpiration && {
+                expirationDate: new Date(expiration),
+                hasExpiration: true,
+              }),
             };
 
             await Stocks.create(stocksData);

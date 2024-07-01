@@ -15,7 +15,7 @@ import CustomSelect from "../../../../../components/customSelect";
 import Remarks from "./remarks";
 import filterBy from "../../filterBy";
 
-const Pending = ({ collections, isAdmin }) => {
+const Pending = ({ collections, isAdmin, isRejected = false }) => {
   const [show, setShow] = useState(false),
     [purchase, setPurchase] = useState({}),
     [showRemarks, setShowRemarks] = useState(false),
@@ -27,13 +27,13 @@ const Pending = ({ collections, isAdmin }) => {
 
   useEffect(() => {
     if (!!collections) {
-      const _collections = collections.filter(
-        ({ status }) => status === "pending"
+      const _collections = collections.filter(({ status }) =>
+        isRejected ? status === "reject" : status === "pending"
       );
       setStockmans(filterBy("requestBy", _collections) || []);
       setPurchases(_collections || []);
     }
-  }, [collections]);
+  }, [collections, isRejected]);
 
   useEffect(() => {
     if (stockman === "all" || !stockman) {
@@ -87,9 +87,13 @@ const Pending = ({ collections, isAdmin }) => {
                 <th>#</th>
                 {isAdmin && <th>Stockman</th>}
                 <th>Request Date</th>
-                <th>Expected Approved Date</th>
-                <th>Remarks</th>
-                {isAdmin && <th>Total Amount</th>}
+                {isRejected ? (
+                  <th>Rejected Date</th>
+                ) : (
+                  <th>Expected Approved Date</th>
+                )}
+                {isRejected ? <th>Reason</th> : <th>Remarks</th>}
+                {isAdmin && !isRejected && <th>Total Amount</th>}
                 <th className="text-center"> Products</th>
               </tr>
             </thead>
@@ -102,13 +106,19 @@ const Pending = ({ collections, isAdmin }) => {
                       <td>{fullName(purchase.requestBy.fullName)}</td>
                     )}
                     <td>{formattedDate(purchase.createdAt)}</td>
-                    <td>{formattedDate(purchase.expected)}</td>
+                    <td>
+                      {formattedDate(
+                        isRejected ? purchase.rejectedDate : purchase.expected
+                      )}
+                    </td>
                     <td>
                       <MDBBadge
                         className="cursor-pointer p-2"
                         color="info"
                         onClick={() => {
-                          setRemarks(purchase.remarks || "");
+                          setRemarks(
+                            isRejected ? purchase.reason : purchase.remarks
+                          );
                           setPurchase(purchase);
                           toggleRemarks();
                         }}
@@ -116,7 +126,7 @@ const Pending = ({ collections, isAdmin }) => {
                         <MDBIcon icon="comment-alt" size="1x" />
                       </MDBBadge>
                     </td>
-                    {isAdmin && (
+                    {isAdmin && !isRejected && (
                       <td className="text-danger font-weight-bolder">
                         ₱ {purchase.total.toLocaleString()}
                       </td>
@@ -157,10 +167,12 @@ const Pending = ({ collections, isAdmin }) => {
         toggle={toggleRemarks}
         remarks={remarks}
         purchase={purchase}
+        isRejected={isRejected}
+        isAdmin={isAdmin}
       />
       <Modal
         toggle={toggle}
-        isAdmin={isAdmin}
+        isAdmin={isRejected ? false : isAdmin}
         show={show}
         merchandises={merchandises}
         purchase={purchase}

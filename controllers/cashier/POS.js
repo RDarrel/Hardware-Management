@@ -1,3 +1,4 @@
+const RemoveExpiredProducts = require("../../config/removeExpiredProducts");
 const Sales = require("../../models/administrator/report/Sales"),
   Stocks = require("../../models/stockman/Stocks"),
   Transactions = require("../../models/administrator/report/Transactions"),
@@ -149,6 +150,7 @@ const stocksPerQuantity = async (
 
 const stocks = async (purchases, invoice_no) => {
   try {
+    await RemoveExpiredProducts();
     const purchasesWithCapital = [];
     for (const purchase of purchases) {
       delete purchase._id;

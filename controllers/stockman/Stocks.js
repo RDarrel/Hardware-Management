@@ -1,8 +1,10 @@
 const Entity = require("../../models/stockman/Stocks"),
+  RemoveExpiredProducts = require("../../config/removeExpiredProducts"),
   handleDuplicate = require("../../config/duplicate");
 
 exports.browse = async (_, res) => {
   try {
+    await RemoveExpiredProducts();
     const stocks = await Entity.find().populate("product");
     const computedStocks = stocks.reduce((accumulator, currentValue) => {
       const {
@@ -12,6 +14,8 @@ exports.browse = async (_, res) => {
         quantityStock = 0,
         quantity = 0,
         product,
+        expiredQuantity = 0,
+        expiredKilo = 0,
       } = currentValue;
       const key = `${currentValue.product._id}-${currentValue.variant1 || ""}-${
         currentValue.variant2 || ""
@@ -23,17 +27,17 @@ exports.browse = async (_, res) => {
         if (currentValue.product.isPerKilo) {
           accumulator[index].available += kiloStock > 0 ? kiloStock : 0;
           accumulator[index].beginning += kilo + kiloGrams;
-          accumulator[index].sold += kilo + kiloGrams - kiloStock;
+          accumulator[index].sold += kilo + kiloGrams - kiloStock - expiredKilo;
         } else {
           accumulator[index].available += quantityStock > 0 ? quantityStock : 0;
           accumulator[index].beginning += quantity;
-          accumulator[index].sold += quantity - quantityStock;
+          accumulator[index].sold += quantity - quantityStock - expiredQuantity;
         }
       } else {
         const { isPerKilo } = product;
         const sold = isPerKilo
-          ? kilo + kiloGrams - kiloStock
-          : quantity - quantityStock;
+          ? kilo + kiloGrams - kiloStock - expiredKilo
+          : quantity - quantityStock - expiredQuantity;
         accumulator.push({
           ...currentValue._doc,
           key,
@@ -109,4 +113,21 @@ exports.destroy = (req, res) => {
       res.json({ success: "Successfuly Deleted Product", payload: item });
     })
     .catch((error) => res.status(400).json({ error: error.message }));
+};
+
+exports.expiredProducts = async (_, res) => {
+  try {
+    await RemoveExpiredProducts();
+
+    const expiredProducts = await Entity.find({ hasExpired: true }).populate(
+      "product"
+    );
+
+    res.json({
+      success: "Successfully Fetch expired products",
+      payload: expiredProducts,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
