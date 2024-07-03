@@ -142,6 +142,7 @@ const ModalBody = ({
                         )}
                       </td>
                     )}
+
                     {!isAdmin && isApproved && (
                       <>
                         <td>

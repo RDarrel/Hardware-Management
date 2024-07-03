@@ -179,7 +179,8 @@ export default function Received({
                             : {
                                 quantity:
                                   quantity.received - quantity?.defective || 0,
-                              }
+                              },
+                          product.isPerKilo
                         )}
                       </td>
                       <td className="text-center font-weight-bolder">
