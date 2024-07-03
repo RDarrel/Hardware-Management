@@ -233,7 +233,7 @@ export default function Modal({
       return _merchandises;
     });
   };
-  const size = isAdmin ? "fluid" : !isAdmin && isApproved ? "fluid" : "lg";
+  const size = isAdmin ? "fluid" : !isAdmin && isApproved ? "fluid" : "xl";
   return (
     <MDBModal isOpen={show} toggle={toggle} backdrop size={size}>
       <MDBModalHeader
