@@ -2,9 +2,8 @@ import { MDBRow, MDBCol, MDBBtn, MDBIcon, MDBInputGroup } from "mdbreact";
 import React from "react";
 
 const Kilo = ({ kilo, setKilo, kiloGrams, setKiloGrams, handleSubmit }) => {
-  console.log("running");
   return (
-    <MDBRow className="mt-4 d-flex align-items-center">
+    <MDBRow className="mt-1 d-flex align-items-center">
       <MDBCol md="2">
         <h6>Kilo:</h6>
       </MDBCol>

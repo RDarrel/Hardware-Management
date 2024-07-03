@@ -15,15 +15,21 @@ import {
   MDBCardImage,
   MDBInput,
   MDBDatePicker,
+  MDBBadge,
 } from "mdbreact";
 
 import Table from "./table";
 import Swal from "sweetalert2";
+import CustomSelect from "../../../../components/customSelect";
 
 const Checkout = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
-    { checkOutProducts } = useSelector(({ cart }) => cart),
+    { checkOutProducts, suppliers: supplierCollections } = useSelector(
+      ({ cart }) => cart
+    ),
     [cart, setCart] = useState([]),
+    [suppliers, setSuppliers] = useState([]),
+    [supplier, setSupplier] = useState("all"),
     [remarks, setRemarks] = useState(""),
     [expected, setExpected] = useState(new Date()),
     dispatch = useDispatch(),
@@ -34,8 +40,37 @@ const Checkout = () => {
   }, [dispatch, token]);
 
   useEffect(() => {
+    const _checkoutProducts = [...checkOutProducts];
+    const _supplierIDS = _checkoutProducts
+      .filter(
+        (obj, index, curr) =>
+          curr.findIndex(({ supplier }) => supplier === obj.supplier) === index
+      )
+      .map(({ supplier }) => supplier);
+    const populateSuppliers = supplierCollections.filter(({ _id }) =>
+      _supplierIDS.includes(_id)
+    );
+
+    setSuppliers(populateSuppliers);
+  }, [checkOutProducts, supplierCollections]);
+
+  useEffect(() => {
     setCart(checkOutProducts);
   }, [checkOutProducts]);
+
+  useEffect(() => {
+    if (!supplier || supplier === "all") {
+      setCart(checkOutProducts);
+    } else {
+      setCart(
+        checkOutProducts.filter(
+          ({ supplier: _supplier }) => _supplier === supplier
+        )
+      );
+    }
+  }, [supplier, checkOutProducts]);
+
+  // const getTheTotal = (merchandises) => {};
 
   const handleBuy = async () => {
     Swal.fire({
@@ -49,51 +84,100 @@ const Checkout = () => {
       cancelButtonText: "No, cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        const cartWithSubtotalAndCapital = cart.map((obj) => ({
-          ...obj,
-          subtotal: variation.getTheSubTotal("capital", obj, obj.product),
-          capital: variation.getTheCapitalOrSrp("capital", obj, obj.product),
-          ...(obj.product.isPerKilo
-            ? {
-                kilo: {
-                  request: obj.kilo,
-                  approved: obj.kilo,
-                  received: 0,
-                },
-                kiloGrams: {
-                  request: obj.kiloGrams,
-                  approved: obj.kiloGrams,
-                  received: 0,
-                },
-              }
-            : {
-                quantity: {
-                  request: obj.quantity,
-                  approved: obj.quantity,
-                  received: 0,
-                },
-              }),
-        }));
+        const purchases = suppliers.map((supplier) => {
+          const merchandises = cart.filter(
+            ({ supplier: supp }) => supp === supplier._id
+          );
 
-        const total = cartWithSubtotalAndCapital.reduce(
-          (accumulator, currentValue) => {
-            return (accumulator += currentValue.subtotal);
-          },
-          0
-        );
+          const merchandisesWithSubtotal = merchandises.map((obj) => ({
+            ...obj,
+            subtotal: variation.getTheSubTotal("capital", obj, obj.product),
+            capital: variation.getTheCapitalOrSrp("capital", obj, obj.product),
+            ...(obj.product.isPerKilo
+              ? {
+                  kilo: {
+                    request: obj.kilo,
+                    approved: obj.kilo,
+                    received: 0,
+                  },
+                  kiloGrams: {
+                    request: obj.kiloGrams,
+                    approved: obj.kiloGrams,
+                    received: 0,
+                  },
+                }
+              : {
+                  quantity: {
+                    request: obj.quantity,
+                    approved: obj.quantity,
+                    received: 0,
+                  },
+                }),
+          }));
 
-        const purchase = {
-          requestBy: auth._id,
-          expected,
-          remarks,
-          status: "pending",
-          total,
-        };
+          const total = merchandisesWithSubtotal.reduce(
+            (accumulator, currentValue) => {
+              return (accumulator += currentValue.subtotal);
+            },
+            0
+          );
+
+          return {
+            requestBy: auth._id,
+            supplier: supplier._id,
+            expected,
+            remarks,
+            status: "pending",
+            total,
+            merchandises: merchandisesWithSubtotal,
+          };
+        });
+
+        // const cartWithSubtotalAndCapital = cart.map((obj) => ({
+        //   ...obj,
+        //   subtotal: variation.getTheSubTotal("capital", obj, obj.product),
+        //   capital: variation.getTheCapitalOrSrp("capital", obj, obj.product),
+        //   ...(obj.product.isPerKilo
+        //     ? {
+        //         kilo: {
+        //           request: obj.kilo,
+        //           approved: obj.kilo,
+        //           received: 0,
+        //         },
+        //         kiloGrams: {
+        //           request: obj.kiloGrams,
+        //           approved: obj.kiloGrams,
+        //           received: 0,
+        //         },
+        //       }
+        //     : {
+        //         quantity: {
+        //           request: obj.quantity,
+        //           approved: obj.quantity,
+        //           received: 0,
+        //         },
+        //       }),
+        // }));
+
+        // const total = cartWithSubtotalAndCapital.reduce(
+        //   (accumulator, currentValue) => {
+        //     return (accumulator += currentValue.subtotal);
+        //   },
+        //   0
+        // );
+
+        // const purchase = {
+        //   requestBy: auth._id,
+        //   expected,
+        //   remarks,
+        //   status: "pending",
+        //   total,
+        // };
 
         dispatch(
           BUY({
             token,
-            data: { purchase, cart: cartWithSubtotalAndCapital },
+            data: purchases,
           })
         );
         history.push("/store");
@@ -148,23 +232,36 @@ const Checkout = () => {
       </MDBRow>
       <MDBRow className="mt-2">
         <MDBCol md="8">
-          <MDBCard className="dotted">
+          <MDBRow className="mb-2">
+            <MDBCol>
+              <MDBCard>
+                <div className="striped-border"></div>
+                <MDBRow>
+                  <MDBCol>
+                    <CustomSelect
+                      className="m-3 p-0"
+                      label={"Supplier"}
+                      choices={[{ company: "All", _id: "all" }, ...suppliers]}
+                      preValue={supplier}
+                      onChange={(value) => setSupplier(value)}
+                      texts="company"
+                      values="_id"
+                    />
+                  </MDBCol>
+                </MDBRow>
+              </MDBCard>
+            </MDBCol>
+          </MDBRow>
+          <MDBCard>
             <MDBCardBody className="m-0 p-0">
-              <div className="striped-border"></div>
               <div className="m-1 p-2">
                 <Table cart={cart} setCart={setCart} />
               </div>
-              <hr className="dotted" />
-              <MDBRow>
-                <MDBCol
-                  md="12"
-                  className="text-right d-flex align-items-center justify-content-end mb-1"
-                >
-                  <h5 className="mr-4">
-                    Total of ({cart.length}) Products Requesting
-                  </h5>
-                </MDBCol>
-              </MDBRow>
+              <MDBBadge color="light">
+                <h6 className="font-weight-bold text-dark">
+                  Total of ({cart.length || 0}) Products Requesting
+                </h6>
+              </MDBBadge>
             </MDBCardBody>
           </MDBCard>
         </MDBCol>

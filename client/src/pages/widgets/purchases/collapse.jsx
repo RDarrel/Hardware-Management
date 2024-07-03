@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MDBCard,
   MDBCardBody,
@@ -7,39 +7,28 @@ import {
   MDBCollapse,
   MDBCollapseHeader,
 } from "mdbreact";
-import CustomSelect from "../../../../../components/customSelect";
-import Table from "./table";
-import filterBy from "../../filterBy";
+import CustomSelect from "../../../components/customSelect";
+import PendingTable from "./request/pending/Table";
+import ApprovedTable from "./request/approved/table";
+import filterBy from "./filterBy";
+import GET from "./GET";
 
-const Approved = ({ collections = [], isAdmin, isReceived }) => {
+const Collapse = ({
+  collections = [],
+  isAdmin,
+  isReceived,
+  isRejected,
+  isApproved,
+}) => {
   const [purchases, setPurchases] = useState([]),
     [activeId, setActiveId] = useState(-1),
     [suppliers, setSuppliers] = useState([]),
     [supplier, setSupplier] = useState(""),
     [didHoverId, setDidHoverId] = useState(-1);
 
-  const handleArrangeData = useCallback((_collections = []) => {
-    return (
-      _collections.length > 0 &&
-      _collections.reduce((acc, curr) => {
-        const key = curr?.supplier?._id;
-        const index = acc.findIndex(({ key: _key }) => _key === key);
-        if (index > -1) {
-          acc[index].stockmans.push(curr);
-        } else {
-          acc.push({ ...curr, stockmans: [curr], key });
-        }
-        return acc;
-      }, [])
-    );
-  }, []);
-
   useEffect(() => {
-    const hasRender =
-      collections[0]?.status === "approved" ||
-      collections[0]?.status === "received";
-    if (collections.length > 0 && hasRender) {
-      const arrangeData = handleArrangeData(collections);
+    if (collections.length > 0) {
+      const arrangeData = GET.arrangeData(collections);
 
       setPurchases(arrangeData || []);
 
@@ -47,23 +36,32 @@ const Approved = ({ collections = [], isAdmin, isReceived }) => {
         setSuppliers(filterBy("supplier", collections || []));
       }
     }
-  }, [collections, handleArrangeData]);
+  }, [collections]);
 
   useEffect(() => {
-    if (supplier === "all" || !supplier) {
-      const _purchases = handleArrangeData(collections);
-      setPurchases(_purchases || []);
-    } else {
-      const _purchases =
-        (collections.length > 0 &&
-          collections?.filter(
-            ({ supplier: supp = {} }) => supp?._id === supplier
-          )) ||
-        [];
-      setPurchases(handleArrangeData(_purchases || []));
-    }
-  }, [supplier, collections, handleArrangeData]);
+    GET.changeSupplier(supplier, collections, setPurchases);
+  }, [supplier, collections]);
 
+  const renderTable = (purchase) => {
+    const isPendingOrReject = !isApproved || isRejected;
+    console.log(isPendingOrReject);
+    if (isPendingOrReject) {
+      return (
+        <PendingTable
+          purchases={purchase.stockmans}
+          isAdmin={isAdmin}
+          isRejected={isRejected}
+        />
+      );
+    }
+    return (
+      <ApprovedTable
+        stockmans={purchase.stockmans}
+        isAdmin={isAdmin}
+        isReceived={isReceived}
+      />
+    );
+  };
   return (
     <>
       <MDBRow className="ml-3  text-white">
@@ -138,11 +136,7 @@ const Approved = ({ collections = [], isAdmin, isReceived }) => {
                     isOpen={index === activeId}
                     className="border border-black"
                   >
-                    <Table
-                      stockmans={purchase.stockmans}
-                      isAdmin={isAdmin}
-                      isReceived={isReceived}
-                    />
+                    {renderTable(purchase)}
                   </MDBCollapse>
                 </div>
               );
@@ -156,4 +150,4 @@ const Approved = ({ collections = [], isAdmin, isReceived }) => {
   );
 };
 
-export default Approved;
+export default Collapse;

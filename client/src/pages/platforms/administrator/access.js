@@ -7,6 +7,7 @@ import { Transactions } from "./report/transactions";
 import Suppliers from "./suppliers";
 import Request from "../../widgets/purchases/request";
 import ReturnRefund from "./returnRefund";
+import PurchasesDefective from "../../widgets/purchases/purchasesDefective";
 // import Category from "./productMangement/category";
 
 const access = [
@@ -58,8 +59,20 @@ const access = [
     path: "/purchases",
     name: "Purchases",
     icon: "clipboard-list",
-    component: Request,
-    props: { isAdmin: true },
+    children: [
+      {
+        path: "Request",
+        name: "Request",
+        component: Request,
+        props: { isAdmin: true },
+      },
+      {
+        path: "Defective",
+        name: "Defective",
+        component: PurchasesDefective,
+        props: { isAdmin: true },
+      },
+    ],
   },
 
   {

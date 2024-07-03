@@ -3,7 +3,7 @@ import { MDBCol, MDBRow, MDBIcon, MDBBtn, MDBInputGroup } from "mdbreact";
 
 export const Quantity = ({ quantity, setQuantity, handleSubmit }) => {
   return (
-    <MDBRow className="d-flex align-items-center mt-3">
+    <MDBRow className="d-flex align-items-center mt-1">
       <MDBCol md="2">Quantity:</MDBCol>
       <MDBCol md="4">
         <MDBInputGroup

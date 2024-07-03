@@ -196,24 +196,41 @@ exports.suppliers = (_, res) => {
 
 exports.buy = async (req, res) => {
   try {
-    const { purchase, cart } = req.body;
+    // const { purchase, cart } = req.body;
+    const purchases = req.body;
 
-    const createdPurchase = await Purchase.create(purchase);
-    const cartWithPurchaseID = cart.map((obj) => ({
-      ...obj,
-      product: obj?.product?._id,
-      purchase: createdPurchase._id,
-      unitPrice: obj.price,
-    }));
+    for (const purchase of purchases) {
+      const createdPurchase = await Purchase.create(purchase);
+      const merchandisesWithPurchase = purchase.merchandises.map((obj) => ({
+        ...obj,
+        product: obj?.product?._id,
+        purchase: createdPurchase._id,
+        unitPrice: obj.price,
+      }));
+      const idsToDelete = purchase.merchandises
+        .map(({ _id }) => _id)
+        .filter(Boolean);
 
-    const idsToDelete = cart.map(({ _id }) => _id).filter(Boolean);
+      await Merchandises.insertMany(merchandisesWithPurchase);
+      await Entity.deleteMany({ _id: { $in: idsToDelete } });
+    }
 
-    await Merchandises.insertMany(cartWithPurchaseID);
-    await Entity.deleteMany({ _id: { $in: idsToDelete } });
+    // const createdPurchase = await Purchase.create(purchase);
+    // const cartWithPurchaseID = cart.map((obj) => ({
+    //   ...obj,
+    //   product: obj?.product?._id,
+    //   purchase: createdPurchase._id,
+    //   unitPrice: obj.price,
+    // }));
+
+    // const idsToDelete = cart.map(({ _id }) => _id).filter(Boolean);
+
+    // await Merchandises.insertMany(cartWithPurchaseID);
+    // await Entity.deleteMany({ _id: { $in: idsToDelete } });
 
     res.status(201).json({
       success: "Purchase is successful",
-      payload: idsToDelete,
+      payload: purchases,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });

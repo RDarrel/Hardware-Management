@@ -1,11 +1,14 @@
 /* search */
+
+.customSelect {
+}
 .cashier-search-cotaniner {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.cashier-search {
+.stockman-search {
   position: relative;
   display: flex;
   align-items: center;
@@ -15,20 +18,20 @@
   background-color: #fff;
 }
 
-.cashier-search input {
+.stockman-search input {
   /* width: 100%; */
   border: none;
   outline: none;
   margin-inline: 5px;
 }
 
-.cashier-search input::placeholder {
+.stockman-search input::placeholder {
   font-style: italic;
   color: hsl(0, 0%, 60%);
   letter-spacing: 0.5px;
 }
 
-.cashier-search button {
+.stockman-search button {
   border: none;
   background-color: #007bff;
   color: white;
@@ -38,22 +41,22 @@
   box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
 }
 
-.cashier-search button:active {
+.stockman-search button:active {
   transform: scale(0.95);
 }
 
-.cashier-search button:hover {
+.stockman-search button:hover {
   background-color: hsl(221.25, 70.8%, 61.1%);
 }
 
-.cashier-search.active {
+.stockman-search.active {
   border-radius: 0;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 }
 
 /* Suggestions Design */
-.cashier-search .cashier-search-suggestions {
+.stockman-search .cashier-search-suggestions {
   display: none;
   position: absolute;
   bottom: 0;
@@ -69,11 +72,11 @@
   z-index: 9999;
 }
 
-.cashier-search.active .cashier-search-suggestions {
+.stockman-search.active .cashier-search-suggestions {
   display: block;
 }
 
-.cashier-search .cashier-search-suggestions::before {
+.stockman-search .cashier-search-suggestions::before {
   content: "";
   position: absolute;
   top: 0;
@@ -85,7 +88,7 @@
   box-shadow: -1px 0 2px 0 rgba(0, 0, 0, 0.1);
 }
 
-.cashier-search .cashier-search-suggestions small {
+.stockman-search .cashier-search-suggestions small {
   font-size: 0.9rem;
   font-style: italic;
   color: grey;

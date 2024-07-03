@@ -16,6 +16,7 @@ import {
   variation,
 } from "../../../../../services/utilities";
 import CustomSelect from "../../../../../components/customSelect";
+import GET from "../../GET";
 
 export default function Received({
   show,
@@ -68,6 +69,7 @@ export default function Received({
                 <th className="text-center">Approved Quantity/kilo</th>
                 <th className="text-center">Received Quantity/kilo</th>
                 <th className="text-center">Defective Quantity/kilo</th>
+                <th className="text-center">Non-Defective Quantity/kilo</th>
                 <th className="text-center">Expiration Date</th>
                 {isAdmin && (
                   <>
@@ -91,7 +93,6 @@ export default function Received({
                   } = merchandise;
                   const { media = {}, hasExpiration = false } = product;
                   const img = `${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`;
-                  console.log(expiration);
                   return (
                     <tr key={index}>
                       <td>{index + 1}</td>
@@ -162,6 +163,23 @@ export default function Received({
                             kiloGrams: kiloGrams?.defective,
                           },
                           product?.isPerKilo
+                        )}
+                      </td>
+                      <td className="text-center font-weight-bold">
+                        {variation.qtyOrKilo(
+                          product.isPerKilo
+                            ? {
+                                ...GET.newKiloAndGrams(
+                                  kiloGrams.received,
+                                  kilo.received,
+                                  kiloGrams.defective,
+                                  kilo.defective
+                                ),
+                              }
+                            : {
+                                quantity:
+                                  quantity.received - quantity?.defective || 0,
+                              }
                         )}
                       </td>
                       <td className="text-center font-weight-bolder">

@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { MDBCard, MDBCardBody, MDBTable, MDBBtn, MDBIcon } from "mdbreact";
+import {
+  MDBCard,
+  MDBCardBody,
+  MDBTable,
+  MDBBtn,
+  MDBIcon,
+  MDBBadge,
+  MDBRow,
+  MDBCol,
+} from "mdbreact";
 import { BROWSE } from "../../../../../services/redux/slices/administrator/report/transactionsReport";
 import { Header } from "../header";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
@@ -63,7 +72,7 @@ export const Transactions = () => {
                 <th>Invoice No.</th>
                 <th>Date</th>
                 <th className="text-center">Total Amount</th>
-                <th>Action</th>
+                <th className="text-center">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -77,7 +86,7 @@ export const Transactions = () => {
                     <td className="text-danger text-center font-weight-bold">
                       ₱{transaction.total.toLocaleString()}
                     </td>
-                    <td>
+                    <td className="text-center">
                       <MDBBtn
                         size="sm"
                         color="warning"
@@ -98,8 +107,22 @@ export const Transactions = () => {
                   </tr>
                 )
               )}
+              <tr>
+                <td className="total-amount" colSpan={5}>
+                  asdf
+                </td>
+              </tr>
             </tbody>
           </MDBTable>
+          <MDBRow>
+            <MDBCol md="10" className="d-flex justify-content-end ">
+              <MDBBadge color="blue" className="">
+                <h6 className="font-weight-bolder text-white mx-5">
+                  Total: ₱2990
+                </h6>
+              </MDBBadge>
+            </MDBCol>
+          </MDBRow>
           <PaginationButtons
             page={page}
             setPage={setPage}

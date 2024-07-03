@@ -3,6 +3,7 @@ import { MDBRow, MDBCol, MDBIcon } from "mdbreact";
 import Kilo from "../orderType/kilo";
 import { Quantity } from "../orderType/quantity";
 import Variations from "../variations";
+import CustomSelect from "../../../../../components/customSelect";
 
 export const InformationView = ({
   selected,
@@ -30,6 +31,9 @@ export const InformationView = ({
   kiloGrams,
   isCashier,
   setKiloGrams,
+  suppliers,
+  supplier,
+  setSupplier,
   handleSubmit,
 }) => {
   const [price, setPrice] = useState(200);
@@ -162,6 +166,22 @@ export const InformationView = ({
             setSelectedImage={setSelectedImage}
           />
         )}
+
+        <MDBRow className="d-flex align-items-center mt-2 ">
+          <MDBCol md="2">
+            <h6>Supplier:</h6>
+          </MDBCol>
+          <MDBCol md="5">
+            <CustomSelect
+              className="m-0 p-0"
+              preValue={supplier}
+              choices={suppliers || []}
+              texts="company"
+              values="_id"
+              onChange={(value) => setSupplier(value)}
+            />
+          </MDBCol>
+        </MDBRow>
         {selected.isPerKilo ? (
           <Kilo
             toggleView={toggleView}
@@ -179,6 +199,7 @@ export const InformationView = ({
             setQuantity={setQuantity}
           />
         )}
+
         <MDBRow className="d-flex align-items-center mt-5">
           <MDBCol md="2">
             <h6>Description:</h6>

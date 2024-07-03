@@ -48,15 +48,16 @@ const Table = ({ cart, setCart }) => {
                       src={img}
                       alt={product.name}
                       className="mr-2"
-                      style={{ width: "60px" }}
+                      style={{ width: "50px", height: "50px" }}
                     />
                     <div>
                       <h6
-                        className="text-truncate"
+                        className="text-truncate d-flex justify-content-start font-weight-bold"
                         style={{
                           maxWidth: "400px",
                           whiteSpace: "nowrap",
                           overflow: "hidden",
+                          marginBottom: "1px",
                           textOverflow: "ellipsis",
                         }}
                       >

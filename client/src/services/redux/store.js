@@ -17,6 +17,7 @@ import salesReport from "./slices/administrator/report/salesReport";
 import transactionsReport from "./slices/administrator/report/transactionsReport";
 import returnRefund from "./slices/administrator/returnRefund";
 import expiredProducts from "./slices/stockman/expiredProducts";
+import defectivePurchases from "./slices/stockman/defectivePurchases";
 const store = configureStore({
   reducer: {
     auth,
@@ -37,6 +38,7 @@ const store = configureStore({
     category,
     returnRefund,
     expiredProducts,
+    defectivePurchases,
   },
 });
 

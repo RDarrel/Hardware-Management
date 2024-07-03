@@ -15,6 +15,7 @@ const View = ({
   toggleView,
   selected,
   setIsView,
+  suppliers = [],
   isCashier = false,
 }) => {
   const { token, auth } = useSelector(({ auth }) => auth),
@@ -23,6 +24,7 @@ const View = ({
     [variant2, setVariant2] = useState(""),
     [kilo, setKilo] = useState(1),
     [kiloGrams, setKiloGrams] = useState(0),
+    [supplier, setSupplier] = useState(""),
     [quantity, setQuantity] = useState(1),
     [isFullView, setIsFullView] = useState(false),
     [imgForFullView, setImgForFullView] = useState({}),
@@ -49,7 +51,7 @@ const View = ({
           thumb: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
           label: _id,
         }));
-
+      setSupplier(suppliers[0]?._id || "");
       setBaseImages([]);
       setSelectedImage({});
       setIsFullView(false);
@@ -63,7 +65,7 @@ const View = ({
       setKiloGrams(0);
       setQuantity(1);
     }
-  }, [selected, isView]);
+  }, [selected, isView, suppliers]);
 
   const handleClickThumbnail = (largeImage) => {
     setSelectedImage(largeImage);
@@ -98,7 +100,9 @@ const View = ({
       isPerKilo: selected.isPerKilo,
       hasVariant: selected.hasVariant,
       has2Variant: selected.has2Variant,
+      supplier,
     };
+
     if (selected.hasVariant) {
       if (selected.has2Variant) {
         if (!variant1 || !variant2)
@@ -130,21 +134,36 @@ const View = ({
     } else {
       form.quantity = quantity;
     }
-    if (isCart) {
-      dispatch(SAVE({ token, data: { ...form } }));
-      Swal.fire({
-        title: "Successfully",
-        text: "Added to your cart",
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-    } else {
-      dispatch(CHECKOUT([{ ...form, product: selected }]));
-      history.push("/checkout");
-    }
 
-    setIsView(false);
+    Swal.fire({
+      title: "Confirmation ",
+      text: `Are you sure that the supplier is ${
+        suppliers.find(({ _id }) => _id === supplier).company
+      }?`,
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "Yes, I'm sure",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (isCart) {
+          dispatch(SAVE({ token, data: { ...form } }));
+          Swal.fire({
+            title: "Successfully",
+            text: "Added to your cart",
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          });
+        } else {
+          dispatch(CHECKOUT([{ ...form, product: selected }]));
+          history.push("/checkout");
+          setIsView(false);
+        }
+        setIsView(false);
+      }
+    });
   };
 
   return (
@@ -161,7 +180,10 @@ const View = ({
           <InformationView
             selected={selected}
             baseImages={baseImages}
+            supplier={supplier}
+            setSupplier={setSupplier}
             selectedImage={selectedImage}
+            suppliers={suppliers}
             setIsFullView={setIsFullView}
             toggleView={toggleView}
             variant1={variant1}

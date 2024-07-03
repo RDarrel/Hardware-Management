@@ -2,40 +2,38 @@ const mongoose = require("mongoose");
 
 const modelSchema = new mongoose.Schema(
   {
+    purchase: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DefectivePurchases",
+      required: true,
+    },
     product: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Products",
       required: true,
     },
-    cartBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
-      required: true,
-    },
-
-    supplier: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Suppliers",
-    },
-
-    quantity: {
-      type: Number,
-    },
-
+    expiration: { type: String },
     variant1: {
       type: String,
     },
-
     variant2: {
       type: String,
     },
 
-    kilo: {
+    capital: {
       type: Number,
     },
 
+    quantity: {
+      type: Object,
+    },
+
+    kilo: {
+      type: Object,
+    },
+
     kiloGrams: {
-      type: Number,
+      type: Object,
     },
   },
   {
@@ -43,6 +41,6 @@ const modelSchema = new mongoose.Schema(
   }
 );
 
-const Entity = mongoose.model("Cart", modelSchema);
+const Entity = mongoose.model("DefectiveMerchandises", modelSchema);
 
 module.exports = Entity;

@@ -13,7 +13,6 @@ export default function Remarks({
   const handleClose = () => {
     toggle();
   };
-  console.log(isRejected, isAdmin);
   const handleTitle = () => {
     if (!isRejected) {
       return ` Remarks By ${fullName(purchase?.requestBy?.fullName)}`;

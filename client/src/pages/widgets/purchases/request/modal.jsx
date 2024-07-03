@@ -72,11 +72,11 @@ export default function Modal({
       const _total = productsWithSubtotal.reduce((acc, curr) => {
         return (acc += curr.subtotal);
       }, 0);
-
+      setSupplier(purchase?.supplier?._id);
       setTotal(_total);
       setProducts(productsWithSubtotal);
     }
-  }, [merchandises, isAdmin, show]);
+  }, [merchandises, isAdmin, show, purchase]);
 
   useEffect(() => {
     dispatch(BROWSE({ token, key: { status: "true" } }));
@@ -89,7 +89,7 @@ export default function Modal({
     }
   }, [_suppliers]);
 
-  const handleSubmit = (status) => {
+  const handleSubmit = () => {
     const supplierName = suppliers.find(({ _id }) => _id === supplier).company;
     Swal.fire({
       title: "Are you sure?",

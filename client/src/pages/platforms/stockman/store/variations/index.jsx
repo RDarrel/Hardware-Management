@@ -108,8 +108,8 @@ const Variations = ({
           <MDBCol md="2">
             <h6>{variation1.name}:</h6>
           </MDBCol>
-          <MDBCol md="10">
-            <div className="button-wrapper d-flex flex-wrap">
+          <MDBCol md="10" className="d-flex justify-content-start m-0 p-0">
+            <div className="button-wrapper d-flex flex-wrap ml-2">
               {variation1.options.map((option, index) => {
                 const image =
                   !isCart && images.find(({ label }) => option._id === label);
@@ -162,8 +162,8 @@ const Variations = ({
           <MDBCol md="2">
             <h6>{variation2.name}:</h6>
           </MDBCol>
-          <MDBCol md="10">
-            <div className="button-wrapper d-flex flex-wrap">
+          <MDBCol md="10" className="d-flex justify-content-start m-0 p-0">
+            <div className="button-wrapper d-flex flex-wrap ml-2">
               {variation2.options.map((option, index) => {
                 return (
                   <div key={index} className="button-container">

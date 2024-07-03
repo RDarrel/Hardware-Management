@@ -24,13 +24,20 @@ export default function Routes() {
               key={`route-${index}-${cIndex}`}
               exact
               path={`${path}${child.path}`}
-              render={() =>
+              render={(routeProps) =>
                 child.component ? (
-                  <child.component props={child?.props} />
+                  <child.component {...routeProps} {...child.props} />
                 ) : (
                   <NotFound />
                 )
               }
+              // render={() =>
+              //   child.component ? (
+              //     <child.component props={child?.props} />
+              //   ) : (
+              //     <NotFound />
+              //   )
+              // }
             />
           ));
 

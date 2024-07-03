@@ -3,6 +3,8 @@ const Entity = require("../../models/stockman/Purchases"),
   Cart = require("../../models/Cart"),
   Stocks = require("../../models/stockman/Stocks"),
   Merchandises = require("../../models/stockman/Merchandises"),
+  DefectiveMerchandises = require("../../models/stockman/DefectiveMerchandises"),
+  DefectivePurchases = require("../../models/stockman/DefectivePurchases"),
   handleDuplicate = require("../../config/duplicate");
 
 exports.browse = async (req, res) => {
@@ -33,6 +35,100 @@ exports.browse = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+};
+
+const getTheTotalAmountOfDefective = (merchandises) => {
+  const merchandisesWithSubtotal = merchandises.map(
+    ({ quantity, capital, product, kilo, kiloGrams }) =>
+      !product.isPerKilo
+        ? quantity.defective * capital
+        : ((kilo?.defective || 0) + (kiloGrams?.defective || 0)) * capital
+  );
+  return merchandisesWithSubtotal.reduce((acc, curr) => {
+    acc += curr;
+    return acc;
+  }, 0);
+};
+
+const defectiveCheckpoint = async (purchase, merchandises) => {
+  try {
+    const defectiveMerchandises = merchandises
+      .map((merchandise) => {
+        const { quantity, kilo, kiloGrams } = merchandise;
+        if (quantity.defective > 0) {
+          return {
+            ...merchandise,
+            quantity: { defective: quantity.defective },
+          };
+        } else if (kilo.defective > 0 || kiloGrams.defective > 0) {
+          return {
+            ...merchandise,
+            kilo: { defective: kilo.defective || 0 },
+            kiloGrams: { defective: kiloGrams.defective || 0 },
+          };
+        } else {
+          return false;
+        }
+      })
+      .filter(Boolean);
+
+    if (defectiveMerchandises.length > 0) {
+      const total = getTheTotalAmountOfDefective(defectiveMerchandises);
+      const defectivePurchase = await DefectivePurchases.create({
+        ...purchase,
+        status: "defective",
+        total,
+      });
+
+      await DefectiveMerchandises.insertMany(
+        defectiveMerchandises.map((merchandise) => ({
+          ...merchandise,
+          purchase: defectivePurchase._id,
+        }))
+      );
+    }
+  } catch (error) {
+    console.log("Error for defective checkpoint", error.message);
+  }
+};
+
+const gramsConverter = (grams) => {
+  switch (grams) {
+    case 5:
+      return 0.5;
+    case 75:
+      return 0.75;
+    case 25:
+      return 0.25;
+    default:
+      return grams;
+  }
+};
+
+const newKiloStocksInsert = (
+  _kiloGrams = 0,
+  _kilo = 0,
+  kiloGramsDefect = 0,
+  kiloDefect = 0
+) => {
+  const totalKiloAndGramsDefect = kiloGramsDefect + kiloDefect;
+  const totalKiloAndGrams = _kiloGrams + _kilo;
+  const newTotalKiloAndGramsRes = totalKiloAndGrams - totalKiloAndGramsDefect;
+  var newKilo = 0;
+  var newKiloGrams = 0;
+  if (newTotalKiloAndGramsRes < 1) {
+    newKilo = 0;
+    newKiloGrams = newTotalKiloAndGramsRes;
+  } else {
+    const totalDeducConvertInArray = String(newTotalKiloAndGramsRes).split(".");
+    newKilo = Number(totalDeducConvertInArray[0] || 0);
+    newKiloGrams = Number(totalDeducConvertInArray[1] || 0);
+  }
+  return {
+    kilo: newKilo || 0,
+    kiloGrams: gramsConverter(newKiloGrams),
+    kiloStock: newTotalKiloAndGramsRes,
+  };
 };
 
 exports.save = async (req, res) => {
@@ -68,6 +164,7 @@ exports.update = async (req, res) => {
     if (purchase.status === "approved") {
       bulkWrite(req, res, Merchandises, merchandises, "Successfully Approved");
     } else if (purchase.status === "received") {
+      defectiveCheckpoint(purchase, merchandises);
       await Promise.all(
         merchandises.map(async (merchandise) => {
           const {
@@ -80,9 +177,14 @@ exports.update = async (req, res) => {
             variant1 = "",
             variant2 = "",
           } = merchandise;
-          const { received: qtyReceived = 0 } = quantity;
-          const { received: kiloReceived = 0 } = kilo;
-          const { received: kiloGramsReceived = 0 } = kiloGrams;
+          const { received: qtyReceived = 0, defective: qtyDefective } =
+            quantity;
+          const { received: kiloReceived = 0, defective: kiloDefective = 0 } =
+            kilo;
+          const {
+            received: kiloGramsReceived = 0,
+            defective: kiloGramsDefective = 0,
+          } = kiloGrams;
 
           try {
             const stocksData = {
@@ -95,13 +197,16 @@ exports.update = async (req, res) => {
                 : {}),
               ...(product.isPerKilo
                 ? {
-                    kilo: kiloReceived,
-                    kiloGrams: kiloGramsReceived,
-                    kiloStock: kiloReceived + kiloGramsReceived,
+                    ...newKiloStocksInsert(
+                      kiloGramsReceived,
+                      kiloReceived,
+                      kiloGramsDefective,
+                      kiloDefective
+                    ),
                   }
                 : {
-                    quantity: qtyReceived,
-                    quantityStock: qtyReceived,
+                    quantity: qtyReceived - qtyDefective,
+                    quantityStock: qtyReceived - qtyDefective,
                   }),
               ...(product?.hasExpiration && {
                 expirationDate: new Date(expiration),

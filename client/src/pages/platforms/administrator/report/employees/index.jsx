@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { MDBCard, MDBCardBody, MDBTable } from "mdbreact";
+import { MDBBadge, MDBCard, MDBCardBody, MDBIcon, MDBTable } from "mdbreact";
 import { BROWSE } from "../../../../../services/redux/slices/administrator/report/transactionsReport";
 import { Header } from "../header";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
@@ -81,13 +81,28 @@ export const EmployeesReport = () => {
                         {fullName(cashier.fullName)}
                       </td>
                       <td className="text-center font-weight-bold">
-                        {transactionsHandle}
+                        <MDBIcon
+                          icon="hand-holding"
+                          size="2x"
+                          style={{ color: "#007bff" }}
+                        />
+                        <span className="counter"> {transactionsHandle}</span>
                       </td>
                       <td className="text-center font-weight-bold">
-                        {refundItemCount || 0}
+                        <MDBIcon
+                          icon="hand-holding"
+                          size="2x"
+                          style={{ color: "#007bff" }}
+                        />
+                        <span className="counter"> {refundItemCount || 0}</span>
                       </td>
                       <td className="text-center font-weight-bold">
-                        {returnItemCount || 0}
+                        <MDBIcon
+                          icon="hand-holding"
+                          size="2x"
+                          style={{ color: "#007bff" }}
+                        />
+                        <span className="counter"> {returnItemCount || 0}</span>
                       </td>
                       <td className="text-center text-danger font-weight-bold">
                         ₱{totalRefundSales.toLocaleString()}
@@ -104,6 +119,11 @@ export const EmployeesReport = () => {
               )}
             </tbody>
           </MDBTable>
+          <div className="d-flex justify-content-end ">
+            <MDBBadge color="blue">
+              <h6 className="font-weight-bolder text-white">Total: ₱2990</h6>
+            </MDBBadge>
+          </div>
           <PaginationButtons
             array={transactions}
             max={maxPage}

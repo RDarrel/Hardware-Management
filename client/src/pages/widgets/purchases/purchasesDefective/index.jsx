@@ -10,15 +10,17 @@ import {
 import {
   BROWSE,
   RESET,
-} from "../../../../services/redux/slices/stockman/purchases";
+} from "../../../../services/redux/slices/stockman/defectivePurchases";
 
 import { useDispatch, useSelector } from "react-redux";
-import Collapse from "../collapse";
+import Collapse from "./collapse";
 
-export default function Request({ isAdmin }) {
-  const [activeTab, setActiveTab] = useState("pending");
+export default function PurchasesDefective({ isAdmin }) {
+  const [activeTab, setActiveTab] = useState("defective");
   const { token, auth } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(({ purchases }) => purchases),
+    { collections } = useSelector(
+      ({ defectivePurchases }) => defectivePurchases
+    ),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,16 +37,16 @@ export default function Request({ isAdmin }) {
     <>
       <div className="d-flex align-items-center mb-2 ">
         <MDBIcon icon="clipboard-list" size="2x" style={{ color: "blue" }} />
-        <h4 className="mt-2 ml-2">Purchases Request</h4>
+        <h4 className="mt-2 ml-2">Purchases Defective</h4>
       </div>
       <MDBBtnGroup>
         <MDBBtn
           className="m-0 rounded-top"
           color="primary z-depth-0"
-          onClick={() => setActiveTab("pending")}
-          outline={"pending" !== activeTab}
+          onClick={() => setActiveTab("defective")}
+          outline={"defective" !== activeTab}
         >
-          Pending
+          Defective
         </MDBBtn>
         <MDBBtn
           className="m-0 rounded-top"
@@ -52,9 +54,8 @@ export default function Request({ isAdmin }) {
           onClick={() => setActiveTab("approved")}
           outline={"approved" !== activeTab}
         >
-          Approved
+          Replacement
         </MDBBtn>
-
         <MDBBtn
           className="m-0 rounded-top"
           color="primary z-depth-0"
@@ -67,10 +68,10 @@ export default function Request({ isAdmin }) {
         <MDBBtn
           className="m-0 rounded-top"
           color="primary z-depth-0"
-          onClick={() => setActiveTab("reject")}
-          outline={"reject" !== activeTab}
+          onClick={() => setActiveTab("refund")}
+          outline={"refund" !== activeTab}
         >
-          Rejected
+          Refund
         </MDBBtn>
       </MDBBtnGroup>
       <MDBTabContent
@@ -81,42 +82,12 @@ export default function Request({ isAdmin }) {
         }}
         className="p-0 border-primary z-depth-1"
       >
-        <MDBTabPane tabId="pending">
+        <MDBTabPane tabId="defective">
           <MDBModalBody className="pt-1 p-0 bg-primary">
             <Collapse
               collections={collections}
+              status="defective"
               isAdmin={isAdmin}
-              isApproved={false}
-            />
-          </MDBModalBody>
-        </MDBTabPane>
-        <MDBTabPane tabId="approved">
-          <MDBModalBody className="pt-1 p-0 bg-primary">
-            <Collapse
-              collections={collections}
-              isAdmin={isAdmin}
-              isApproved={true}
-              isRejected={false}
-            />
-          </MDBModalBody>
-        </MDBTabPane>
-        <MDBTabPane tabId="received">
-          <MDBModalBody className="pt-1 p-0 bg-primary">
-            <Collapse
-              collections={collections}
-              isAdmin={isAdmin}
-              isApproved={true}
-              isReceived={true}
-              isRejected={false}
-            />
-          </MDBModalBody>
-        </MDBTabPane>
-        <MDBTabPane tabId="reject">
-          <MDBModalBody className="pt-1 p-0 bg-primary">
-            <Collapse
-              collections={collections}
-              isAdmin={isAdmin}
-              isRejected={true}
             />
           </MDBModalBody>
         </MDBTabPane>

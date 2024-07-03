@@ -1,9 +1,0 @@
-.transition {
-  transition: background-color 0.5s ease-in;
-  border-radius: 50%;
-}
-
-.ease-out {
-  border-radius: 50%;
-  transition: background-color 0.5s ease-out;
-}

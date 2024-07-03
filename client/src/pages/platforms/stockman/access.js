@@ -1,4 +1,5 @@
 // import Checkout from "./checkout";
+import PurchasesDefective from "../../widgets/purchases/purchasesDefective";
 import Request from "../../widgets/purchases/request";
 import Dashboard from "./dashboard";
 import ExpiredProducts from "./expiredProducts";
@@ -39,8 +40,20 @@ const access = [
     path: "/purchases",
     name: "Purchases",
     icon: "clipboard-list",
-    component: Request,
-    props: { isAdmin: false },
+    children: [
+      {
+        path: "Request",
+        name: "Request",
+        component: Request,
+        props: { isAdmin: false },
+      },
+      {
+        path: "Defective",
+        name: "Defective",
+        component: PurchasesDefective,
+        props: { isAdmin: false },
+      },
+    ],
   },
 ];
 

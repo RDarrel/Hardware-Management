@@ -10,6 +10,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { BROWSE } from "../../../../services/redux/slices/administrator/productManagement/products";
 import { BROWSE as BROWSECART } from "../../../../services/redux/slices/cart";
+import { SUPPLIERS } from "../../../../services/redux/slices/cart";
 import { Pagination } from "./pagination";
 import { Header } from "./header";
 import View from "./view/index";
@@ -20,7 +21,9 @@ import Cart from "../../../widgets/cart";
 const Store = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
     { collections, isLoading } = useSelector(({ products }) => products),
+    { suppliers: suppliersCollections } = useSelector(({ cart }) => cart),
     { collections: cartCollections } = useSelector(({ cart }) => cart),
+    [suppliers, setSuppliers] = useState([]),
     [products, setProducts] = useState([]),
     [cart, setCart] = useState([]),
     [isView, setIsView] = useState(false),
@@ -41,6 +44,10 @@ const Store = () => {
   }, [token, dispatch, auth]);
 
   useEffect(() => {
+    dispatch(SUPPLIERS({ token }));
+  }, [dispatch, token]);
+
+  useEffect(() => {
     setCart(cartCollections);
   }, [cartCollections]);
 
@@ -48,9 +55,15 @@ const Store = () => {
     setProducts(collections);
   }, [collections]);
 
+  useEffect(() => {
+    setSuppliers(suppliersCollections);
+  }, [suppliersCollections]);
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  console.log(suppliers);
 
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
@@ -67,10 +80,7 @@ const Store = () => {
   return (
     <>
       <MDBCard className="mt-4 p-0 pb-3" narrow>
-        <MDBView
-          cascade
-          className="gradient-card-header blue py-2 mx-4 d-flex justify-content-between align-items-center"
-        >
+        <MDBView cascade className="gradient-card-header blue py-2 mx-4 ">
           <Header />
         </MDBView>
 
@@ -118,6 +128,7 @@ const Store = () => {
         toggleView={toggleView}
         selected={selected}
         setIsView={setIsView}
+        suppliers={suppliers}
       />
 
       <Cart
