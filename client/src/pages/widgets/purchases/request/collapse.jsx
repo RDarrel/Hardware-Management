@@ -7,11 +7,11 @@ import {
   MDBCollapse,
   MDBCollapseHeader,
 } from "mdbreact";
-import CustomSelect from "../../../components/customSelect";
-import PendingTable from "./request/pending/Table";
-import ApprovedTable from "./request/approved/table";
-import filterBy from "./filterBy";
-import GET from "./GET";
+import CustomSelect from "../../../../components/customSelect";
+import PendingTable from "./pending/Table";
+import ApprovedTable from "./approved/table";
+import filterBy from "../filterBy";
+import GET from "../GET";
 
 const Collapse = ({
   collections = [],
@@ -44,7 +44,6 @@ const Collapse = ({
 
   const renderTable = (purchase) => {
     const isPendingOrReject = !isApproved || isRejected;
-    console.log(isPendingOrReject);
     if (isPendingOrReject) {
       return (
         <PendingTable

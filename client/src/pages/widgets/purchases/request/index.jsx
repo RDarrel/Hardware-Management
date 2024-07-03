@@ -13,7 +13,7 @@ import {
 } from "../../../../services/redux/slices/stockman/purchases";
 
 import { useDispatch, useSelector } from "react-redux";
-import Collapse from "../collapse";
+import Collapse from "./collapse";
 
 export default function Request({ isAdmin }) {
   const [activeTab, setActiveTab] = useState("pending");

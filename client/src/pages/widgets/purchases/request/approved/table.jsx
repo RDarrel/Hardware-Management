@@ -29,12 +29,10 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
       ...p, // Spread existing properties of each product
       ...(p.product?.hasExpiration && { expiration: expirationDate }), // Add expiration date if hasExpiration is true
     }));
-    const sortedMerchandises = isReceived
-      ? products
-      : productsWithExpiration.sort(
-          (a, b) => b.product?.hasExpiration - a.product?.hasExpiration
-        );
-
+    const baseMerchandises = isReceived ? _products : productsWithExpiration;
+    const sortedMerchandises = baseMerchandises.sort(
+      (a, b) => b.product?.hasExpiration - a.product?.hasExpiration
+    );
     setMerchandises(sortedMerchandises);
     setPurchase(_purchase);
     if (isReceived) {
@@ -52,17 +50,17 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
             {isAdmin && <th className="th-lg">Stockman</th>}
             {!isReceived && (
               <>
-                <th>Approved Date</th>
-                <th>Expected Delivered Date</th>
+                <th className="text-center">Approved Date</th>
+                <th className="text-center">Expected Delivered Date</th>
               </>
             )}
             {isReceived && (
               <>
-                <th>Expected Delivered Date</th>
-                <th>Received Date</th>
+                <th className="text-center">Expected Delivered Date</th>
+                <th className="text-center">Received Date</th>
               </>
             )}
-            {isAdmin && <th>Total Amount</th>}
+            {isAdmin && <th className="text-center">Total Amount</th>}
             <th className="th-lg text-center">Products</th>
           </tr>
         </thead>
@@ -74,14 +72,22 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
                 {isAdmin && <td>{fullName(stockman?.requestBy?.fullName)}</td>}
                 {!isReceived && (
                   <>
-                    <td>{formattedDate(stockman?.approved)}</td>
-                    <td>{formattedDate(stockman?.expectedDelivered)}</td>
+                    <td className="text-center">
+                      {formattedDate(stockman?.approved)}
+                    </td>
+                    <td className="text-center">
+                      {formattedDate(stockman?.expectedDelivered)}
+                    </td>
                   </>
                 )}
                 {isReceived && (
                   <>
-                    <td>{formattedDate(stockman?.expectedDelivered)}</td>
-                    <td>{formattedDate(stockman?.received)}</td>
+                    <td className="text-center">
+                      {formattedDate(stockman?.expectedDelivered)}
+                    </td>
+                    <td className="text-center">
+                      {formattedDate(stockman?.received)}
+                    </td>
                   </>
                 )}
                 {isAdmin && (
