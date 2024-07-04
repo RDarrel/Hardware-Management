@@ -3,6 +3,7 @@ import { MDBBtn, MDBIcon, MDBTable } from "mdbreact";
 import { formattedDate, fullName } from "../../../../../services/utilities";
 import Modal from "../modal";
 import Received from "./Received";
+import GET from "../../GET";
 
 const Table = ({ stockmans = [], isAdmin, isReceived }) => {
   const [show, setShow] = useState(false),
@@ -56,11 +57,21 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
             )}
             {isReceived && (
               <>
-                <th className="text-center">Expected Delivered Date</th>
                 <th className="text-center">Received Date</th>
               </>
             )}
-            {isAdmin && <th className="text-center">Total Amount</th>}
+            {isAdmin && (
+              <>
+                <th className="text-center">Total Payment</th>
+                {isReceived && (
+                  <>
+                    <th className="text-center"> Total Defective Amount</th>
+                    <th className="text-center"> Total Products Amount</th>
+                  </>
+                )}
+              </>
+            )}
+
             <th className="th-lg text-center">Products</th>
           </tr>
         </thead>
@@ -83,17 +94,30 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
                 {isReceived && (
                   <>
                     <td className="text-center">
-                      {formattedDate(stockman?.expectedDelivered)}
-                    </td>
-                    <td className="text-center">
                       {formattedDate(stockman?.received)}
                     </td>
                   </>
                 )}
                 {isAdmin && (
-                  <td className="font-weight-bolder text-danger">
-                    ₱ {stockman.total.toLocaleString()}
-                  </td>
+                  <>
+                    <td className="font-weight-bolder text-danger text-center">
+                      ₱ {stockman.total.toLocaleString()}
+                    </td>
+                    {isReceived && (
+                      <>
+                        <td className="font-weight-bolder text-danger text-center">
+                          ₱{" "}
+                          {GET.totalAmount(
+                            stockman.merchandises,
+                            "defective"
+                          ).toLocaleString()}
+                        </td>
+                        <td className="font-weight-bolder text-danger text-center">
+                          ₱ {stockman.totalReceived?.toLocaleString()}
+                        </td>
+                      </>
+                    )}
+                  </>
                 )}
                 <td className="text-center">
                   <MDBBtn

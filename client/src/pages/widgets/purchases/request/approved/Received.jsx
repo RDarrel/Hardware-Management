@@ -15,7 +15,7 @@ import {
   fullName,
   variation,
 } from "../../../../../services/utilities";
-import CustomSelect from "../../../../../components/customSelect";
+// import CustomSelect from "../../../../../components/customSelect";
 import GET from "../../GET";
 
 export default function Received({
@@ -23,6 +23,7 @@ export default function Received({
   toggle,
   purchase = {},
   merchandises,
+  isDefective = false,
   isAdmin,
 }) {
   const handleClose = () => {
@@ -41,6 +42,14 @@ export default function Received({
       return totalForDeductionQty * capital;
     }
   };
+
+  const label = !isDefective
+    ? isAdmin
+      ? `Received By: ${fullName(purchase?.requestBy?.fullName)}`
+      : "Products Received"
+    : `Received By: ${fullName(purchase?.requestBy?.fullName)}`;
+
+  const baseKeyInMerchandise = isDefective ? "replacement" : "approved";
   return (
     <MDBModal
       isOpen={show}
@@ -51,13 +60,11 @@ export default function Received({
     >
       <MDBModalHeader
         toggle={handleClose}
-        className="light-blue darken-3 white-text "
+        className="light-blue darken-3 white-text d-flex  align-items-center"
         tag="h5"
       >
         <MDBIcon icon="shipping-fast" className="mr-2" />
-        {isAdmin
-          ? `Received By: ${fullName(purchase?.requestBy?.fullName)}`
-          : "Products Received"}
+        {label}
       </MDBModalHeader>
       <MDBModalBody className="mb-0">
         <div style={{ maxHeight: "500px", overflowY: "auto" }}>
@@ -66,7 +73,9 @@ export default function Received({
               <tr>
                 <th>#</th>
                 <th className="th-lg">Product</th>
-                <th className="text-center">Approved Quantity/kilo</th>
+                <th className="text-center">
+                  {!isDefective ? "Approved" : "Replacement"} Quantity/kilo
+                </th>
                 <th className="text-center">Received Quantity/kilo</th>
                 <th className="text-center">Defective Quantity/kilo</th>
                 <th className="text-center">Non-Defective Quantity/kilo</th>
@@ -136,9 +145,10 @@ export default function Received({
                         {variation.qtyOrKilo(
                           {
                             ...merchandise,
-                            quantity: quantity.approved,
-                            kilo: kilo?.approved,
-                            kiloGrams: kiloGrams?.approved,
+                            quantity: quantity[baseKeyInMerchandise],
+
+                            kilo: kilo[baseKeyInMerchandise],
+                            kiloGrams: kiloGrams[baseKeyInMerchandise],
                           },
                           product?.isPerKilo
                         )}
@@ -148,8 +158,8 @@ export default function Received({
                           {
                             ...merchandise,
                             quantity: quantity?.received,
-                            kilo: kilo?.approved,
-                            kiloGrams: kiloGrams?.approved,
+                            kilo: kilo?.received,
+                            kiloGrams: kiloGrams?.received,
                           },
                           product?.isPerKilo
                         )}
@@ -208,7 +218,7 @@ export default function Received({
           </MDBTable>
         </div>
         <MDBRow className="d-flex align-items-center m-0">
-          <MDBCol md="4">
+          <MDBCol md="2">
             <MDBBadge color="light">
               <h6>
                 Total of ({!!merchandises ? merchandises.length : 0}) Products
@@ -216,10 +226,10 @@ export default function Received({
             </MDBBadge>
           </MDBCol>
           <MDBCol
-            md="8"
+            md="10"
             className="d-flex align-items-center justify-content-end"
           >
-            <div className="w-25 mr-3">
+            {/* <div className="w-25 mr-3">
               <CustomSelect
                 choices={[purchase?.supplier]}
                 texts="company"
@@ -233,13 +243,30 @@ export default function Received({
               <h6 className="font-weight-bolder">
                 Received On: {formattedDate(purchase?.received)}
               </h6>
-            </div>
+            </div> */}
             {isAdmin && (
-              <MDBBadge color="light" className="float-right">
-                <h6 className="font-weight-bolder text-danger">
-                  Total Amount: ₱ {purchase?.total?.toLocaleString() || 0}
-                </h6>
-              </MDBBadge>
+              <>
+                <MDBBadge color="success" className="float-right mr-3 p-1">
+                  <h6 className="font-weight-bolder text-white">
+                    Total Payment : ₱{purchase?.total?.toLocaleString() || 0}
+                  </h6>
+                </MDBBadge>
+                <MDBBadge color="danger" className="float-right mr-3 p-1">
+                  <h6 className="font-weight-bolder text-white">
+                    Total Defective Amount: ₱
+                    {GET.totalAmount(
+                      purchase?.merchandises,
+                      "defective"
+                    )?.toLocaleString()}
+                  </h6>
+                </MDBBadge>
+                <MDBBadge color="light" className="float-right p-1">
+                  <h6 className="font-weight-bolder text-danger">
+                    Total Products Amount: ₱{" "}
+                    {purchase.totalReceived?.toLocaleString()}
+                  </h6>
+                </MDBBadge>
+              </>
             )}
           </MDBCol>
         </MDBRow>

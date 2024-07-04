@@ -52,6 +52,8 @@ const getTheTotalAmountOfDefective = (merchandises) => {
 
 const defectiveCheckpoint = async (purchase, merchandises) => {
   try {
+    delete purchase._id;
+
     const defectiveMerchandises = merchandises
       .map((merchandise) => {
         const { quantity, kilo, kiloGrams } = merchandise;
@@ -81,10 +83,13 @@ const defectiveCheckpoint = async (purchase, merchandises) => {
       });
 
       await DefectiveMerchandises.insertMany(
-        defectiveMerchandises.map((merchandise) => ({
-          ...merchandise,
-          purchase: defectivePurchase._id,
-        }))
+        defectiveMerchandises.map((merchandise) => {
+          delete merchandise._id;
+          return {
+            ...merchandise,
+            purchase: defectivePurchase._id,
+          };
+        })
       );
     }
   } catch (error) {
@@ -159,10 +164,18 @@ exports.save = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const { purchase, merchandises } = req.body;
-    await Entity.findByIdAndUpdate(purchase._id, purchase);
-    if (purchase.status === "approved") {
-      bulkWrite(req, res, Merchandises, merchandises, "Successfully Approved");
+    const { purchase, merchandises = [], isDefective = false } = req.body;
+    const basePurchase = isDefective ? DefectivePurchases : Entity;
+    const baseMerchandises = isDefective ? DefectiveMerchandises : Merchandises;
+    await basePurchase.findByIdAndUpdate(purchase._id, purchase);
+    if (purchase.status === "approved" || purchase.status === "replacement") {
+      bulkWrite(
+        req,
+        res,
+        baseMerchandises,
+        merchandises,
+        "Successfully Approved"
+      );
     } else if (purchase.status === "received") {
       defectiveCheckpoint(purchase, merchandises);
       await Promise.all(
@@ -213,7 +226,6 @@ exports.update = async (req, res) => {
                 hasExpiration: true,
               }),
             };
-
             await Stocks.create(stocksData);
           } catch (error) {
             console.error("Error creating stock:", error.message);
@@ -221,7 +233,13 @@ exports.update = async (req, res) => {
         })
       );
 
-      bulkWrite(req, res, Merchandises, merchandises, "Successfully Approved");
+      bulkWrite(
+        req,
+        res,
+        baseMerchandises,
+        merchandises,
+        "Successfully Approved"
+      );
     } else {
       res.json({ success: "Successfully Rejected", payload: { purchase } });
     }

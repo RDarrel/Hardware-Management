@@ -24,7 +24,9 @@ const ModalBody = ({
   total,
   suppliers,
   supplier,
+  isDefective,
 }) => {
+  const baseKeyAction = isDefective ? "replacement" : "approved";
   return (
     <MDBModalBody className="mb-0">
       <div style={{ maxHeight: "500px", overflowY: "auto" }}>
@@ -36,7 +38,11 @@ const ModalBody = ({
               {!isAdmin && (
                 <>
                   <th className="text-center">
-                    {!isApproved ? "Requested " : "Approved "}
+                    {!isApproved
+                      ? "Requested "
+                      : isDefective
+                      ? "Replacement "
+                      : "Approved "}
                     Quantity/Kilo
                   </th>
                 </>
@@ -44,8 +50,14 @@ const ModalBody = ({
 
               {isAdmin && (
                 <>
-                  <th className="text-center">Request Quantity/kilo</th>
-                  <th className="text-center">Approved Quantity/kilo</th>
+                  {isDefective ? (
+                    <th className="text-center">Replacement Quantity/kilo</th>
+                  ) : (
+                    <>
+                      <th className="text-center">Request Quantity/kilo</th>
+                      <th className="text-center">Approved Quantity/kilo</th>
+                    </>
+                  )}
                   <th className="text-center">Capital</th>
                   <th className="text-center">Subtotal</th>
                 </>
@@ -134,9 +146,9 @@ const ModalBody = ({
                         {variation.qtyOrKilo(
                           {
                             ...merchandise,
-                            quantity: quantity?.approved,
-                            kilo: kilo?.approved,
-                            kiloGrams: kiloGrams?.approved,
+                            quantity: quantity[baseKeyAction],
+                            kilo: kilo[baseKeyAction],
+                            kiloGrams: kiloGrams[baseKeyAction],
                           },
                           product.isPerKilo
                         )}
@@ -148,16 +160,16 @@ const ModalBody = ({
                         <td>
                           <div className="d-flex justify-content-center">
                             <CustomInput
-                              kilo={kilo?.received || kilo?.approved}
+                              kilo={kilo?.received || kilo[baseKeyAction]}
                               kiloGrams={kiloGrams?.received}
                               quantity={
-                                quantity?.received || quantity?.approved
+                                quantity?.received || quantity[baseKeyAction]
                               }
                               baseKey={"received"}
                               isAdmin={false}
-                              maxKilo={kilo?.approved}
-                              maxQuantity={quantity?.approved}
-                              maxKiloGrams={kiloGrams?.approved}
+                              maxKilo={kilo[baseKeyAction]}
+                              maxQuantity={quantity[baseKeyAction]}
+                              maxKiloGrams={kiloGrams[baseKeyAction]}
                               isPerKilo={product.isPerKilo}
                               setMerchandises={setMerchandises}
                               index={index}
@@ -170,9 +182,9 @@ const ModalBody = ({
                               kilo={kilo?.defective || 0}
                               kiloGrams={kiloGrams?.defective || 0}
                               quantity={quantity?.defective || 0}
-                              maxKilo={kilo?.approved}
-                              maxQuantity={quantity?.approved}
-                              maxKiloGrams={kiloGrams?.approved}
+                              maxKilo={kilo[baseKeyAction]}
+                              maxQuantity={quantity[baseKeyAction]}
+                              maxKiloGrams={kiloGrams[baseKeyAction]}
                               isAdmin={false}
                               isPerKilo={product.isPerKilo}
                               baseKey={"defective"}
@@ -194,7 +206,7 @@ const ModalBody = ({
                                 }
                               : {
                                   quantity:
-                                    quantity.received - quantity?.defective,
+                                    quantity?.received - quantity?.defective,
                                 },
                             product.isPerKilo
                           )}
@@ -227,7 +239,7 @@ const ModalBody = ({
                     {/* for admin */}
                     {isAdmin && (
                       <>
-                        {isApproved && (
+                        {isApproved && !isDefective && (
                           <td className="text-center font-weight-bolder">
                             {variation.qtyOrKilo(
                               {
@@ -262,9 +274,9 @@ const ModalBody = ({
                               {variation.qtyOrKilo(
                                 {
                                   ...merchandise,
-                                  quantity: quantity?.approved,
-                                  kilo: kilo?.approved,
-                                  kiloGrams: kiloGrams?.approved,
+                                  quantity: quantity[baseKeyAction],
+                                  kilo: kilo[baseKeyAction],
+                                  kiloGrams: kiloGrams[baseKeyAction],
                                 },
                                 product.isPerKilo
                               )}

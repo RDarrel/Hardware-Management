@@ -57,7 +57,7 @@ export const SAVE = createAsyncThunk(`${name}/save`, (form, thunkAPI) => {
 
 export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   try {
-    return axioKit.update(name, form.data, form.token);
+    return axioKit.update("stockman/Purchase", form.data, form.token);
   } catch (error) {
     const message =
       (error.response && error.response.data && error.response.data.message) ||
@@ -140,6 +140,7 @@ export const reduxSlice = createSlice({
       .addCase(BROWSE.fulfilled, (state, action) => {
         const { payload } = action.payload;
         state.collections = payload;
+        state.isSuccess = true;
         state.isLoading = false;
       })
       .addCase(BROWSE.rejected, (state, action) => {
@@ -163,7 +164,6 @@ export const reduxSlice = createSlice({
         state.message = error.message;
         state.isLoading = false;
       })
-
       .addCase(UPDATE.pending, (state) => {
         state.isLoading = true;
         state.isSuccess = false;
@@ -186,7 +186,6 @@ export const reduxSlice = createSlice({
         state.message = error.message;
         state.isLoading = false;
       })
-
       .addCase(STATUS.pending, (state) => {
         state.isLoading = true;
         state.isSuccess = false;

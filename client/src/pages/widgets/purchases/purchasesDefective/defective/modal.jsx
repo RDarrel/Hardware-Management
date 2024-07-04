@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   MDBModal,
   MDBModalBody,
@@ -12,20 +12,14 @@ import {
   MDBModalFooter,
   MDBBtn,
 } from "mdbreact";
-import { useToasts } from "react-toast-notifications";
 import { useDispatch, useSelector } from "react-redux";
 import {
   ENDPOINT,
   fullName,
   variation,
 } from "../../../../../services/utilities";
-import CustomSelect from "../../../../../components/customSelect";
-
-const _form = {
-  name: "",
-  description: "",
-  capacity: 50,
-};
+import { UPDATE } from "../../../../../services/redux/slices/stockman/defectivePurchases";
+import Swal from "sweetalert2";
 
 export default function Modal({
   show,
@@ -37,14 +31,103 @@ export default function Modal({
   setExpectedDelivered,
   supplier,
   total,
+  isRefund,
+  purchase,
 }) {
   const { token } = useSelector(({ auth }) => auth),
-    [form, setForm] = useState(_form),
     dispatch = useDispatch();
 
   const handleClose = () => {
-    setForm(_form);
     toggle();
+  };
+
+  const handleReplacement = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to replace this products?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, replace it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(
+          UPDATE({
+            token,
+            data: {
+              purchase: {
+                ...purchase,
+                status: "replacement",
+                expectedDelivered: new Date().toDateString(),
+              },
+              merchandises: merchandises.map((merchandise) => {
+                const { product, kilo, quantity, kiloGrams } = merchandise;
+                const { isPerKilo } = product;
+
+                return {
+                  ...merchandise,
+                  ...(isPerKilo
+                    ? {
+                        kilo: {
+                          ...kilo,
+                          defective: 0,
+                          replacement: kilo.defective || 0,
+                          received: kilo.defective || 0,
+                        },
+                        kiloGrams: {
+                          ...kiloGrams,
+                          defective: 0,
+                          replacement: kiloGrams.defective || 0,
+                          received: kiloGrams.defective || 0,
+                        },
+                      }
+                    : {
+                        quantity: {
+                          ...quantity,
+                          defective: 0,
+                          replacement: quantity.defective || 0,
+                          received: quantity.defective || 0,
+                        },
+                      }),
+                };
+              }),
+              isDefective: true,
+            },
+          })
+        );
+        toggle();
+      }
+    });
+  };
+
+  const handleRefund = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to refund this products?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, refund it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(
+          UPDATE({
+            token,
+            data: {
+              purchase: {
+                ...purchase,
+                status: "refund",
+                received: new Date().toDateString(),
+              },
+              isDefective: true,
+            },
+          })
+        );
+        toggle();
+      }
+    });
   };
 
   return (
@@ -75,15 +158,9 @@ export default function Modal({
           <tbody>
             {!!merchandises &&
               merchandises.map((merchandise, index) => {
-                const {
-                  product,
-                  kilo,
-                  capital,
-                  quantity,
-                  kiloGrams,
-                  expiration = "",
-                } = merchandise;
-                const { media = {}, hasExpiration = false } = product;
+                const { product, kilo, capital, quantity, kiloGrams } =
+                  merchandise;
+                const { media = {} } = product;
                 const img = `${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`;
                 return (
                   <tr key={index}>
@@ -143,9 +220,9 @@ export default function Modal({
                         <td className="text-danger text-center font-weight-bold">
                           ₱{" "}
                           {product.isPerKilo
-                            ? kilo.defective ||
-                              0 + kiloGrams.defective ||
-                              0 * capital
+                            ? ((kilo.defective || 0) +
+                                (kiloGrams.defective || 0)) *
+                              capital
                             : quantity.defective * capital}
                         </td>
                       </>
@@ -175,17 +252,19 @@ export default function Modal({
                 </span>
               </div>
 
-              <div className="d-flex align-items-center">
-                Expected Delivered:
-                <MDBDatePicker
-                  className="mr-2 ml-2"
-                  value={expectedDelivered}
-                  getValue={(value) =>
-                    setExpectedDelivered(value.toLocaleString())
-                  }
-                  minDate={new Date().toLocaleString()}
-                />
-              </div>
+              {!isRefund && (
+                <div className="d-flex align-items-center">
+                  Expected Delivered:
+                  <MDBDatePicker
+                    className="mr-2 ml-2"
+                    value={expectedDelivered}
+                    getValue={(value) =>
+                      setExpectedDelivered(value.toLocaleString())
+                    }
+                    minDate={new Date().toLocaleString()}
+                  />
+                </div>
+              )}
               <MDBBadge color="light" className="float-right">
                 <h6 className="font-weight-bolder text-danger">
                   Total Amount: ₱{total.toLocaleString()}
@@ -195,10 +274,14 @@ export default function Modal({
           )}
         </MDBRow>
       </MDBModalBody>
-      {isAdmin && (
+      {isAdmin && !isRefund && (
         <MDBModalFooter className="m-0 p-0">
-          <MDBBtn color="danger">Refund</MDBBtn>
-          <MDBBtn color="primary">Replace</MDBBtn>
+          <MDBBtn color="danger" onClick={handleRefund}>
+            Refund
+          </MDBBtn>
+          <MDBBtn color="primary" onClick={handleReplacement}>
+            Replace
+          </MDBBtn>
         </MDBModalFooter>
       )}
     </MDBModal>

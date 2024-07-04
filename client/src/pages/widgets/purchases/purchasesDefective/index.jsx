@@ -18,7 +18,8 @@ import Collapse from "./collapse";
 export default function PurchasesDefective({ isAdmin }) {
   const [activeTab, setActiveTab] = useState("defective");
   const { token, auth } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(
+    [purchases, setPurchases] = useState([]),
+    { collections = [] } = useSelector(
       ({ defectivePurchases }) => defectivePurchases
     ),
     dispatch = useDispatch();
@@ -32,6 +33,10 @@ export default function PurchasesDefective({ isAdmin }) {
     );
     return () => dispatch(RESET());
   }, [token, dispatch, activeTab, isAdmin, auth]);
+  console.log(collections);
+  useEffect(() => {
+    setPurchases(collections || []);
+  }, [collections]);
 
   return (
     <>
@@ -51,8 +56,8 @@ export default function PurchasesDefective({ isAdmin }) {
         <MDBBtn
           className="m-0 rounded-top"
           color="primary z-depth-0"
-          onClick={() => setActiveTab("approved")}
-          outline={"approved" !== activeTab}
+          onClick={() => setActiveTab("replacement")}
+          outline={"replacement" !== activeTab}
         >
           Replacement
         </MDBBtn>
@@ -64,15 +69,16 @@ export default function PurchasesDefective({ isAdmin }) {
         >
           Received
         </MDBBtn>
-
-        <MDBBtn
-          className="m-0 rounded-top"
-          color="primary z-depth-0"
-          onClick={() => setActiveTab("refund")}
-          outline={"refund" !== activeTab}
-        >
-          Refund
-        </MDBBtn>
+        {isAdmin && (
+          <MDBBtn
+            className="m-0 rounded-top"
+            color="primary z-depth-0"
+            onClick={() => setActiveTab("refund")}
+            outline={"refund" !== activeTab}
+          >
+            Refund
+          </MDBBtn>
+        )}
       </MDBBtnGroup>
       <MDBTabContent
         activeItem={activeTab}
@@ -85,8 +91,37 @@ export default function PurchasesDefective({ isAdmin }) {
         <MDBTabPane tabId="defective">
           <MDBModalBody className="pt-1 p-0 bg-primary">
             <Collapse
-              collections={collections}
+              collections={purchases}
               status="defective"
+              isAdmin={isAdmin}
+            />
+          </MDBModalBody>
+        </MDBTabPane>
+
+        <MDBTabPane tabId="replacement">
+          <MDBModalBody className="pt-1 p-0 bg-primary">
+            <Collapse
+              collections={purchases}
+              status="replacement"
+              isAdmin={isAdmin}
+            />
+          </MDBModalBody>
+        </MDBTabPane>
+        <MDBTabPane tabId="received">
+          <MDBModalBody className="pt-1 p-0 bg-primary">
+            <Collapse
+              collections={purchases}
+              status="received"
+              isAdmin={isAdmin}
+            />
+          </MDBModalBody>
+        </MDBTabPane>
+
+        <MDBTabPane tabId="refund">
+          <MDBModalBody className="pt-1 p-0 bg-primary">
+            <Collapse
+              collections={purchases}
+              status="refund"
               isAdmin={isAdmin}
             />
           </MDBModalBody>

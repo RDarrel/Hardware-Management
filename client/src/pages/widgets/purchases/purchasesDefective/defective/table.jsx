@@ -3,11 +3,12 @@ import React, { useState } from "react";
 import { formattedDate, fullName } from "../../../../../services/utilities";
 import Modal from "./modal";
 
-const Table = ({ purchases, isAdmin }) => {
+const Table = ({ purchases, isAdmin, isRefund = false }) => {
   const [show, setShow] = useState(""),
     [stockman, setStockman] = useState(""),
     [expectedDelivered, setExpectedDelivered] = useState(""),
     [supplier, setSupplier] = useState({}),
+    [purchase, setPurchase] = useState({}),
     [total, setTotal] = useState(""),
     [merchandises, setMerchandises] = useState("");
 
@@ -18,8 +19,12 @@ const Table = ({ purchases, isAdmin }) => {
         <thead>
           <tr>
             <th>#</th>
-            {isAdmin && <th className="text-center">Received By</th>}
-            <th className="text-center">Received On</th>
+            {isAdmin && !isRefund && (
+              <th className="text-center">Received By</th>
+            )}
+            <th className="text-center">
+              {isRefund ? "Refund " : "Received"} On
+            </th>
             {isAdmin && <th className="text-center">Total Amount</th>}
             <th className="text-center">Products</th>
           </tr>
@@ -29,12 +34,14 @@ const Table = ({ purchases, isAdmin }) => {
             purchases.map((purchase, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
-                {isAdmin && (
+                {isAdmin && !isRefund && (
                   <td className="text-center">
                     {fullName(purchase.requestBy?.fullName)}
                   </td>
                 )}
-                <td className="text-center">{formattedDate()}</td>
+                <td className="text-center">
+                  {formattedDate(purchase.received)}
+                </td>
                 {isAdmin && (
                   <td className="text-danger text-center font-weight-bolder">
                     ₱ {purchase.total.toLocaleString()}
@@ -50,6 +57,7 @@ const Table = ({ purchases, isAdmin }) => {
                       setStockman(purchase.requestBy);
                       setTotal(purchase.total);
                       setSupplier(purchase.supplier);
+                      setPurchase(purchase);
                       toggle();
                     }}
                   >
@@ -75,6 +83,8 @@ const Table = ({ purchases, isAdmin }) => {
         merchandises={merchandises}
         total={total}
         supplier={supplier}
+        isRefund={isRefund}
+        purchase={purchase}
         isAdmin={isAdmin}
         expectedDelivered={expectedDelivered}
         setExpectedDelivered={setExpectedDelivered}

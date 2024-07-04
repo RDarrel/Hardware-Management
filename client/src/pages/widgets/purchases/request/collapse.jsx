@@ -47,7 +47,7 @@ const Collapse = ({
     if (isPendingOrReject) {
       return (
         <PendingTable
-          purchases={purchase.stockmans}
+          purchases={purchase.stockmans || []}
           isAdmin={isAdmin}
           isRejected={isRejected}
         />
@@ -55,7 +55,7 @@ const Collapse = ({
     }
     return (
       <ApprovedTable
-        stockmans={purchase.stockmans}
+        stockmans={purchase.stockmans || []}
         isAdmin={isAdmin}
         isReceived={isReceived}
       />

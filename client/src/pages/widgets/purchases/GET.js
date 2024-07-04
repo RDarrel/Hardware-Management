@@ -78,6 +78,35 @@ const GET = {
       return totalForDeductionQty * capital;
     }
   },
+
+  totalAmount: (merchandises = [], key = "") => {
+    if (
+      merchandises.length === 0 ||
+      !merchandises[0]?.quantity?.hasOwnProperty("defective")
+    )
+      return 0;
+    const arrangeData = merchandises.map((merchandise) => {
+      const { quantity, kilo, kiloGrams, product, capital } = merchandise;
+      return {
+        quantity: quantity[key] || 0,
+        kilo: (kilo[key] || 0) + (kiloGrams[key] || 0),
+        isPerKilo: product.isPerKilo,
+        capital,
+      };
+    });
+
+    const subtotals = arrangeData.map(
+      ({ quantity, kilo, isPerKilo, capital }) => {
+        return isPerKilo ? capital * kilo : capital * quantity;
+      }
+    );
+    return (
+      subtotals.reduce((acc, curr) => {
+        acc += curr;
+        return acc;
+      }, 0) || 0
+    );
+  },
 };
 
 export default GET;

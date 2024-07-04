@@ -27,6 +27,10 @@ const modelSchema = new mongoose.Schema(
       type: Number,
     },
 
+    totalReceived: {
+      type: Number,
+    },
+
     reason: {
       type: String,
     },

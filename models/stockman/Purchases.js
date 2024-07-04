@@ -25,9 +25,14 @@ const modelSchema = new mongoose.Schema(
     received: { type: String },
     remarks: { type: String },
     expectedDelivered: { type: String },
+
     total: {
       type: Number,
     },
+    totalReceived: {
+      type: Number,
+    },
+
     rejectedDate: {
       type: String,
     },

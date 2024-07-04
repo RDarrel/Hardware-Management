@@ -11,13 +11,14 @@ import filterBy from "../filterBy";
 import CustomSelect from "../../../../components/customSelect";
 import GET from "../GET";
 import DefectiveTable from "./defective/table";
+import ReplacementTable from "./replacement/table";
 const Collapse = ({ collections = [], isAdmin, status = "defective" }) => {
   const [purchases, setPurchases] = useState([]),
     [activeId, setActiveId] = useState(-1),
     [suppliers, setSuppliers] = useState([]),
     [supplier, setSupplier] = useState(""),
     [didHoverId, setDidHoverId] = useState(-1);
-  console.log(collections);
+
   useEffect(() => {
     if (collections.length > 0) {
       const arrangeData = GET.arrangeData(collections);
@@ -27,6 +28,9 @@ const Collapse = ({ collections = [], isAdmin, status = "defective" }) => {
       if (collections[0]?.supplier) {
         setSuppliers(filterBy("supplier", collections || []));
       }
+    } else {
+      setPurchases([]);
+      setSuppliers([]);
     }
   }, [collections]);
 
@@ -43,10 +47,33 @@ const Collapse = ({ collections = [], isAdmin, status = "defective" }) => {
           <DefectiveTable isAdmin={isAdmin} purchases={purchase.stockmans} />
         );
 
+      case "replacement":
+        return (
+          <ReplacementTable
+            isAdmin={isAdmin}
+            purchases={purchase.stockmans}
+            isApproved={true}
+          />
+        );
+
+      case "received":
+        return (
+          <ReplacementTable
+            isAdmin={isAdmin}
+            isApproved={false}
+            purchases={purchase.stockmans}
+            isReceived={true}
+          />
+        );
       default:
-        break;
+        return (
+          <DefectiveTable
+            isAdmin={isAdmin}
+            purchases={purchase.stockmans}
+            isRefund={true}
+          />
+        );
     }
-    return <h2>test</h2>;
   };
   return (
     <>
