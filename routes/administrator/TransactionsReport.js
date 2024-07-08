@@ -4,12 +4,14 @@ const router = require("express").Router(),
     save,
     update,
     destroy,
+    return_refund,
     status,
   } = require("../../controllers/administrator/report/TransactionsReport"),
   { validate } = require("../../middleware/jwt");
 
 router
   .get("/", validate, browse)
+  .get("/return_refund", validate, return_refund)
   .post("/save", validate, save)
   .put("/update", validate, update)
   .put("/status", validate, status)

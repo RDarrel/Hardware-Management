@@ -117,6 +117,77 @@ export const DESTROY = createAsyncThunk(
   }
 );
 
+const handleRemoveNoStocks = (products) => {
+  const _products = [...JSON.parse(JSON.stringify(products))];
+  for (const product of _products) {
+    const productIndex = _products.findIndex(({ _id }) => _id === product._id);
+    const { hasVariant, has2Variant } = product;
+    if (hasVariant) {
+      const options = [...product.variations[0]?.options] || [];
+      const optionsHaveStocks = options.filter((item) => item.max !== 0);
+
+      if (optionsHaveStocks.length > 0) {
+        _products[productIndex].variations[0] = {
+          ..._products[productIndex].variations[0],
+          options: optionsHaveStocks,
+        };
+      } else {
+        _products.splice(productIndex, 1);
+      }
+
+      if (has2Variant) {
+        const allPricesHaveNoStocks = options.every((option) =>
+          option.prices.every((price) => price?.max === 0 || !price.max)
+        );
+
+        if (!allPricesHaveNoStocks) {
+          // kapag meron pang stocks yung bawat prices ng options
+          for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            const { prices = [] } = option;
+            const pricesHaveStocks = prices.filter(({ max }) => max && max > 0);
+            if (pricesHaveStocks.length > 0) {
+              const newPrices = prices.map((price) =>
+                price.max > 0
+                  ? { ...price, disable: false }
+                  : { ...price, disable: true }
+              );
+              options[i] = { ...options[i], prices: newPrices };
+            } else {
+              options.splice(i, 1);
+            }
+          }
+
+          //para kapag iisa nalang yung option mapalitan na yung option sa vr2
+          if (options.length === 1) {
+            const vr1 = _products[productIndex].variations[1];
+            _products[productIndex].variations[1] = {
+              ...vr1,
+              options: options[0].prices.filter(
+                ({ disable }) => disable === false
+              ),
+            };
+          }
+
+          _products[productIndex].variations[0] = {
+            ..._products[productIndex].variations[0],
+            options,
+          };
+        } else {
+          //kapag wala ng stocks yung bawat prices ng option ireremove na yung product na yun
+          _products.splice(productIndex, 1);
+        }
+      }
+    } else {
+      if (product.max === 0) {
+        _products.splice(productIndex, 1);
+      }
+    }
+  }
+
+  return _products;
+};
+
 export const reduxSlice = createSlice({
   name,
   initialState,
@@ -127,6 +198,59 @@ export const reduxSlice = createSlice({
     RESET: (state, data) => {
       state.isSuccess = false;
       state.message = "";
+    },
+
+    UPDATE_MAX: (state, data) => {
+      const _collections = [...state.collections];
+      const order = data.payload;
+      const { purchases = [] } = order;
+      for (const purchase of purchases) {
+        const {
+          product,
+          quantity,
+          kilo = 0,
+          kiloGrams = 0,
+          variant1,
+          variant2,
+        } = purchase;
+        const { hasVariant, has2Variant, isPerKilo } = product;
+
+        const index = _collections.findIndex(({ _id }) => product._id === _id);
+        const _product = _collections[index];
+
+        if (hasVariant) {
+          const options = [..._product.variations[0].options];
+          const indexOption = options.findIndex(({ _id }) => _id === variant1);
+          if (isPerKilo) {
+            options[indexOption].max -= kilo + kiloGrams;
+          } else {
+            options[indexOption].max -= quantity;
+          }
+
+          if (has2Variant) {
+            const prices = [...options[indexOption]?.prices];
+            const indexPrice = prices.findIndex(({ _id }) => _id === variant2);
+            if (isPerKilo) {
+              prices[indexPrice].max -= kilo + kiloGrams;
+            } else {
+              prices[indexPrice].max -= quantity;
+            }
+            options[indexOption] = { ...options[indexOption], prices };
+          }
+
+          _product.variations[0] = { ..._product.variations[0], options };
+        } else {
+          if (isPerKilo) {
+            _product.max -= kilo + kiloGrams;
+          } else {
+            _product.max -= quantity;
+          }
+        }
+
+        _collections[index] = { ..._product };
+      }
+
+      state.collections = handleRemoveNoStocks(_collections) || [];
     },
   },
   extraReducers: (builder) => {
@@ -252,6 +376,6 @@ export const reduxSlice = createSlice({
   },
 });
 
-export const { RESET, CUSTOMALERT } = reduxSlice.actions;
+export const { RESET, CUSTOMALERT, UPDATE_MAX } = reduxSlice.actions;
 
 export default reduxSlice.reducer;

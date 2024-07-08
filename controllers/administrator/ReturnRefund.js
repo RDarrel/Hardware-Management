@@ -2,8 +2,7 @@ const ReturnRefund = require("../../models/administrator/ReturnRefund");
 
 exports.browse = (_, res) => {
   ReturnRefund.find()
-    .populate("returnBy")
-    .populate("refundBy")
+    .populate("cashier")
     .populate("products.product")
     .sort({ createAt: -1 })
     .then((returnRefund) =>

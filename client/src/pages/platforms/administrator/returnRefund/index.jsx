@@ -66,7 +66,7 @@ export default function ReturnRefund() {
           onClick={() => setActiveTab("returnBy")}
           outline={"returnBy" !== activeTab}
         >
-          Return
+          Replacement
         </MDBBtn>
         <MDBBtn
           className="m-0 rounded-top"
@@ -90,7 +90,7 @@ export default function ReturnRefund() {
             <Content
               collections={returnRefund}
               isReturn={true}
-              baseKey={activeTab}
+              baseKey={"cashier"}
             />
           </MDBModalBody>
         </MDBTabPane>
@@ -99,7 +99,7 @@ export default function ReturnRefund() {
             <Content
               collections={returnRefund}
               isReturn={false}
-              baseKey={activeTab}
+              baseKey={"cashier"}
             />
           </MDBModalBody>
         </MDBTabPane>

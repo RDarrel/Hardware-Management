@@ -5,6 +5,7 @@ const name = "administrator/TransactionsReport";
 
 const initialState = {
   collections: [],
+  returnRefund: [],
   progress: 0,
   isSuccess: false,
   isLoading: false,
@@ -23,6 +24,24 @@ export const BROWSE = createAsyncThunk(`${name}`, ({ token }, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
+
+export const GET_RETURN_REFUND = createAsyncThunk(
+  `${name}/return_refund`,
+  ({ token, key }, thunkAPI) => {
+    try {
+      return axioKit.universal(`${name}/return_refund`, token, key);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 export const FIND = createAsyncThunk(`${name}/find`, (form, thunkAPI) => {
   try {
@@ -137,6 +156,22 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(BROWSE.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(GET_RETURN_REFUND.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(GET_RETURN_REFUND.fulfilled, (state, action) => {
+        const { payload } = action.payload;
+        state.returnRefund = payload;
+        state.isLoading = false;
+      })
+      .addCase(GET_RETURN_REFUND.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;

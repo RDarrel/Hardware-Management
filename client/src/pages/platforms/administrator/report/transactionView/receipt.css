@@ -1,0 +1,98 @@
+.invoice-header-row {
+  display: flex;
+}
+
+.invoice-header-col {
+  width: 100%;
+  overflow: hidden;
+}
+
+.invoice-transaction-header {
+  position: relative;
+  width: 90%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background: linear-gradient(45deg, transparent 20%, rgba(24, 25, 26, 1) 20%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.invoice-transaction-header::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: 9.4%;
+  width: 20px;
+  height: 132px;
+  border-radius: 5px;
+  background: linear-gradient(
+    45deg,
+    transparent 20%,
+    rgba(24, 25, 26, 0.7) 20%
+  );
+  transform: rotate(-45deg);
+  z-index: -1;
+}
+
+.invoice-transaction-header::after {
+  content: "";
+  position: absolute;
+  top: -35%;
+  left: 3.8%;
+  width: 17px;
+  height: 130px;
+  border-radius: 5px;
+  background-color: violet;
+  background: linear-gradient(
+    45deg,
+    transparent 20%,
+    rgba(24, 25, 26, 0.5) 20%
+  );
+  transform: rotate(-45deg);
+  z-index: -1;
+  /* border-bottom-right-radius: 200px; */
+}
+
+.invoice-header-content {
+  width: 45%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-weight: 400;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+/* Header Styles */
+.invoice-table th {
+  background-color: #f2f2f2;
+  border: 2px solid black;
+  text-align: left;
+  padding: 0.4rem;
+  font-size: 1rem;
+  text-transform: capitalize;
+  color: black;
+}
+
+/* Row Styles */
+.invoice-table tr {
+  border: 2px solid black;
+}
+
+/* Cell Styles */
+.invoice-table td {
+  border: 2px solid black;
+  text-align: left;
+  padding: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 450;
+}

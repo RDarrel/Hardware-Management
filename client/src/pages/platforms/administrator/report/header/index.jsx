@@ -103,7 +103,7 @@ export const Header = ({
         let filteredCollections = [];
         if (isTransaction || isEmployees) {
           filteredCollections = isTransaction
-            ? filteredSales
+            ? filteredSales.filter(({ isExist }) => isExist === true)
             : arrangeBy.employees(filteredSales);
         } else {
           filteredCollections = arrangeBy.sales(filteredSales);

@@ -2,12 +2,7 @@ const mongoose = require("mongoose");
 
 const modelSchema = new mongoose.Schema(
   {
-    returnBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
-    },
-
-    refundBy: {
+    cashier: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
     },

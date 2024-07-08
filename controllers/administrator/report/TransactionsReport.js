@@ -1,4 +1,6 @@
 const Entity = require("../../../models/administrator/report/Transactions"),
+  Transactions = require("../../../models/administrator/report/Transactions"),
+  Return_Refund = require("../../../models/administrator/ReturnRefund"),
   handleDuplicate = require("../../../config/duplicate");
 
 exports.browse = (_, res) =>
@@ -11,10 +13,35 @@ exports.browse = (_, res) =>
     .then((items) =>
       res.json({
         success: "Transactions Fetched Successfully",
-        payload: items.filter((item) => item.name !== "ADMINISTRATOR"),
+        payload: items,
       })
     )
     .catch((error) => res.status(400).json({ error: error.message }));
+
+exports.return_refund = (req, res) => {
+  const { cashier, status } = req.query || {};
+  const populate =
+    status === "transactions" ? "purchases.product" : "products.product";
+  const baseEntity = status === "transactions" ? Transactions : Return_Refund;
+  baseEntity
+    .find({ status, cashier })
+    .populate(populate)
+
+    .populate("cashier")
+    .select("-__v")
+    .sort({ createdAt: -1 })
+    .lean()
+    .then((items) =>
+      res.json({
+        success: "Return/Refund Fetched Successfully",
+        payload: items.map((item) => ({
+          ...item,
+          ...(status === "transactions" ? { products: item.purchases } : {}),
+        })),
+      })
+    )
+    .catch((error) => res.status(400).json({ error: error.message }));
+};
 
 exports.save = (req, res) =>
   Entity.create(req.body)

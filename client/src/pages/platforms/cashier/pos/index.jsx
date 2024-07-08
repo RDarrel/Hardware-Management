@@ -10,6 +10,7 @@ import { Products } from "./products";
 import Search from "./search";
 import Header from "./header";
 import { useToasts } from "react-toast-notifications";
+
 const POS = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ products }) => products),
@@ -67,6 +68,34 @@ const POS = () => {
     }
   };
 
+  const handleGetMax = (selected) => {
+    const { product, variant1, variant2 } = selected;
+    const { hasVariant, has2Variant, isPerKilo = false } = product;
+    var max = 0;
+    if (hasVariant) {
+      const options = [...product.variations[0].options];
+      const optionIndex = options.findIndex(({ _id }) => _id === variant1);
+      max = options[optionIndex].max;
+
+      if (has2Variant) {
+        max = options[optionIndex].prices.find(
+          ({ _id }) => _id === variant2
+        )?.max;
+      }
+    } else {
+      max = product.max;
+    }
+    return {
+      ...selected,
+      max,
+      ...(isPerKilo
+        ? max >= 1
+          ? { kilo: 1 }
+          : { kiloGrams: max, kilo: 0 }
+        : { quantity: 1 }),
+    };
+  };
+
   const handleAddOrder = (product) => {
     let index = orders.findIndex((item) => {
       if (item.product?._id !== product._id) {
@@ -101,20 +130,19 @@ const POS = () => {
       if (!invoice_no) {
         setInvoice_no(_invoice_no);
       }
+      const newOrder = {
+        product,
+        ...(product.isPerKilo ? { kilo: 1 } : { quantity: 1 }),
+        ...(product.hasVariant && product.has2Variant
+          ? { variant1: product.variant1, variant2: product.variant2 }
+          : { variant1: product.variant1 }),
+      };
 
-      setOrders((prev) => [
-        {
-          product,
-          ...(product.isPerKilo ? { kilo: 1 } : { quantity: 1 }),
-          ...(product.hasVariant && product.has2Variant
-            ? { variant1: product.variant1, variant2: product.variant2 }
-            : { variant1: product.variant1 }),
-        },
-        ...prev,
-      ]);
+      const newOrderWithMax = handleGetMax(newOrder);
+
+      setOrders((prev) => [{ ...newOrderWithMax }, ...prev]);
     }
   };
-
   return (
     <MDBContainer
       fluid

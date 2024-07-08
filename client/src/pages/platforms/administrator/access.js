@@ -76,7 +76,7 @@ const access = [
   },
 
   {
-    name: "Return/Refund",
+    name: "Replacement/Refund",
     path: "/ReturnRefund",
     icon: "exchange-alt",
     component: ReturnRefund,

@@ -96,6 +96,7 @@ const Orders = ({ orders, setOrders, invoice_no, setInvoice_no }) => {
           <hr className=" m-0 p-0" />
           <Body
             orderDetails={orderDetails}
+            setOrderDetails={setOrderDetails}
             handleChange={handleChange}
             handleChangeGrams={handleChangeGrams}
             handleUpdateVariant={handleUpdateVariant}

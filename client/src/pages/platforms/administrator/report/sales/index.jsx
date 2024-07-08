@@ -96,11 +96,11 @@ const Sales = () => {
                 <th>#</th>
                 <th>Product</th>
                 <th className=" text-center">Sold</th>
-                <th>Unit</th>
-                <th>Capital</th>
-                <th>SRP</th>
-                <th>Sales</th>
-                <th>INCOME</th>
+                <th className="text-center">Unit</th>
+                <th className="text-center">Capital</th>
+                <th className="text-center">SRP</th>
+                <th className="text-center">Sales</th>
+                <th className="text-center">INCOME</th>
               </tr>
             </thead>
             <tbody>
@@ -139,23 +139,25 @@ const Sales = () => {
                         </div>
                       </td>
                       <td className="text-center">{sale?.sold}</td>
-                      <td>{product.isPerKilo ? "Kg" : "Pcs"}</td>
-                      <td>
-                        <span className="font-weight-bold text-danger">
+                      <td className="text-center">
+                        {product.isPerKilo ? "Kg" : "Pcs"}
+                      </td>
+                      <td className="text-center">
+                        <span className="font-weight-bold text-danger ">
                           ₱{sale.capital}
                         </span>
                       </td>
-                      <td>
+                      <td className="text-center">
                         <span className="font-weight-bold text-danger">
                           ₱{sale.srp.toLocaleString()}
                         </span>
                       </td>
-                      <td>
+                      <td className="text-center">
                         <span className="font-weight-bold text-danger">
                           ₱{(sale.srp * sale.sold).toLocaleString()}
                         </span>
                       </td>
-                      <td>
+                      <td className="text-center">
                         <span className="font-weight-bold text-danger">
                           ₱{sale.income.toLocaleString()}
                         </span>

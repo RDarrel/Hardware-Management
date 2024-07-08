@@ -115,7 +115,7 @@ export default function Transactions({ show, toggle }) {
             RETURN_PRODUCTS({
               token,
               data: {
-                invoice_no,
+                invoice_no: transaction.invoice_no,
                 returnBy: auth._id,
                 customer: transaction.customer || "",
                 products: transaction.purchases,

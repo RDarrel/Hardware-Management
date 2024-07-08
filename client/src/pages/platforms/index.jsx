@@ -8,7 +8,7 @@ import profileProgress from "../../services/utilities/profileProgress";
 import { PROGRESS } from "../../services/redux/slices/auth";
 import { socket } from "../../services/utilities";
 
-const breakWidth = 1400;
+const breakWidth = 1450;
 export default function Platforms() {
   const [show, setShow] = useState(false),
     [windowWidth, setWindowWidth] = useState(window.innerWidth),
@@ -71,8 +71,9 @@ export default function Platforms() {
           onSideNavToggleClick={toggleSideNav}
           className="white-skin"
         />
+
         <main
-          style={{ paddingLeft: dynamicLeftPadding, margin: "8rem 6% 6rem" }}
+          style={{ paddingLeft: dynamicLeftPadding, margin: "7rem 4% 6rem" }}
         >
           <Login show={show} />
           <Routes />

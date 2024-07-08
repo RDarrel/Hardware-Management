@@ -29,7 +29,6 @@ export const Products = ({
   };
   const inputRef = useRef(null);
 
-  console.log(inputRef.current?.offsetHeight);
   return (
     <>
       <div className="product-container" ref={inputRef}>

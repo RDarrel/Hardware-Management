@@ -24,6 +24,7 @@ const Body = ({
   setVariant1,
   variant2,
   setVariant2,
+  setOrderDetails,
 }) => {
   useEffect(() => {
     setVariant1("");
@@ -144,8 +145,10 @@ const Body = ({
                   <h6>{null}</h6>
                   <OrderType
                     item={item}
+                    orders={orderDetails}
                     index={index}
                     handleChange={handleChange}
+                    setOrders={setOrderDetails}
                     handleChangeGrams={handleChangeGrams}
                   />
                 </td>

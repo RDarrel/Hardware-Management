@@ -205,6 +205,7 @@ exports.pos = async (req, res) => {
       cashier,
       invoice_no,
       total,
+      totalWithoutDeduc: total,
       purchases,
       customer,
     });
@@ -265,8 +266,7 @@ exports.returnProducts = async (req, res) => {
         totalReturnSales:
           (transaction?.totalReturnSales || 0) +
           getTotalReturnRefund(returnProducts),
-        returnItemCount:
-          (transaction?.returnItemCount || 0) + returnProducts.length,
+        returnItemCount: (transaction?.returnItemCount || 0) + 1,
       });
     } else {
       console.log("no have transaction for this invoice_no", invoice_no);
@@ -274,7 +274,7 @@ exports.returnProducts = async (req, res) => {
 
     await stocks(returnProducts, invoice_no);
     await ReturnRefund.create({
-      returnBy,
+      cashier: returnBy,
       reason,
       invoice_no,
       status: "return",
@@ -449,23 +449,37 @@ exports.refund = async (req, res) => {
           }
 
           if (newKilo === 0 && newKiloGrams === 0) {
-            purchases.splice(index, 1);
+            // purchases.splice(index, 1);
+            purchases[index] = {
+              ...purchase._doc,
+              isRefundAll: true,
+              kiloRefund: purchase.kilo || 0,
+              kiloGramsRefund: purchase.kiloGrams || 0,
+            };
           } else {
             purchases[index] = {
               ...purchase._doc,
               kilo: newKilo || 0,
               kiloGrams: gramsConverter(newKiloGrams),
+              kiloRefund: kilo,
+              kiloGramsRefund: kiloGrams,
             };
           }
         } else {
           // This is for quantity refund
           const newQuantity = purchase.quantity - quantity;
           if (newQuantity === 0) {
-            purchases.splice(index, 1);
+            // purchases.splice(index, 1);
+            purchases[index] = {
+              ...purchase._doc,
+              isRefundAll: true,
+              quantityRefund: purchase.quantity,
+            };
           } else {
             purchases[index] = {
               ...purchase._doc,
               quantity: newQuantity,
+              quantityRefund: quantity,
             };
           }
         }
@@ -488,21 +502,28 @@ exports.refund = async (req, res) => {
       reason,
       invoice_no,
       status: "refund",
-      refundBy,
+      cashier: refundBy,
       customer,
       products: refundProducts,
     });
 
     if (purchases.length === 0 || refundAll) {
-      await Transactions.findByIdAndDelete(transaction._id);
+      // await Transactions.findByIdAndDelete(transaction._id);
+      await Transactions.findByIdAndUpdate(transaction._id, {
+        isExist: false,
+        total: 0,
+        refundItemCount: (transaction.refundItemCount || 0) + 1,
+        totalRefundSales:
+          (transaction.totalRefundSales || 0) +
+          getTotalReturnRefund(refundProducts),
+      });
     } else {
       await Transactions.findByIdAndUpdate(transaction._id, {
         purchases,
         totalRefundSales:
           (transaction.totalRefundSales || 0) +
           getTotalReturnRefund(refundProducts),
-        refundItemCount:
-          (transaction.refundItemCount || 0) + refundProducts.length,
+        refundItemCount: (transaction.refundItemCount || 0) + 1,
         total: newTotal,
       });
     }

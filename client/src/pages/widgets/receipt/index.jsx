@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { POS } from "../../../services/redux/slices/cart";
+import { UPDATE_MAX } from "../../../services/redux/slices/administrator/productManagement/products";
 import { MDBBtn, MDBModal, MDBModalBody } from "mdbreact";
 import { variation } from "../../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,6 +44,8 @@ export default function Receipt({
         },
       })
     );
+
+    dispatch(UPDATE_MAX({ purchases: orderDetails }));
     Swal.fire({
       title: "Successfully Paid",
       icon: "success",

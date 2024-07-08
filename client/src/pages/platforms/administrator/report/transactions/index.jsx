@@ -20,6 +20,7 @@ import {
   transaction,
 } from "../../../../../services/utilities";
 import Receipt from "../../../../widgets/receipt";
+import getTotalSales from "../getTotalSales";
 
 export const Transactions = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
@@ -43,7 +44,11 @@ export const Transactions = () => {
   }, [token, dispatch]);
 
   const hanldeShowPurchases = (purchases, invoice, total, date, customer) => {
-    setOrderDetails(transaction.computeSubtotal(purchases));
+    setOrderDetails(
+      transaction.computeSubtotal(
+        purchases.filter(({ isRefundAll = false }) => isRefundAll === false)
+      )
+    );
     setCustomerView(customer);
     setCreatedAt(date);
     setInvoice_no(invoice);
@@ -68,9 +73,9 @@ export const Transactions = () => {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Cashier</th>
-                <th>Invoice No.</th>
-                <th>Date</th>
+                <th className="text-center">Cashier</th>
+                <th className="text-center">Invoice No.</th>
+                <th className="text-center">Date</th>
                 <th className="text-center">Total Amount</th>
                 <th className="text-center">Action</th>
               </tr>
@@ -80,9 +85,13 @@ export const Transactions = () => {
                 (transaction, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{fullName(transaction.cashier?.fullName)}</td>
-                    <td>{transaction.invoice_no}</td>
-                    <td>{formattedDate(transaction.createdAt)}</td>
+                    <td className="text-center">
+                      {fullName(transaction.cashier?.fullName)}
+                    </td>
+                    <td className="text-center">{transaction.invoice_no}</td>
+                    <td className="text-center">
+                      {formattedDate(transaction.createdAt)}
+                    </td>
                     <td className="text-danger text-center font-weight-bold">
                       ₱{transaction.total.toLocaleString()}
                     </td>
@@ -107,18 +116,13 @@ export const Transactions = () => {
                   </tr>
                 )
               )}
-              <tr>
-                <td className="total-amount" colSpan={5}>
-                  asdf
-                </td>
-              </tr>
             </tbody>
           </MDBTable>
           <MDBRow>
-            <MDBCol md="10" className="d-flex justify-content-end ">
-              <MDBBadge color="blue" className="">
-                <h6 className="font-weight-bolder text-white mx-5">
-                  Total: ₱2990
+            <MDBCol md="12" className="d-flex justify-content-end ">
+              <MDBBadge color="success" className="">
+                <h6 className="font-weight-bolder text-white mx-1 my-1 ">
+                  Total Sales: ₱{getTotalSales(transactions)}
                 </h6>
               </MDBBadge>
             </MDBCol>

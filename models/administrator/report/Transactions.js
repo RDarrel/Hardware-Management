@@ -18,6 +18,10 @@ const modelSchema = new mongoose.Schema(
       required: true,
     },
 
+    totalWithoutDeduc: {
+      type: Number,
+    },
+
     customer: {
       type: String,
     },
@@ -42,6 +46,11 @@ const modelSchema = new mongoose.Schema(
       default: 0,
     },
 
+    isExist: {
+      type: Boolean,
+      default: true,
+    },
+
     purchases: {
       type: [
         {
@@ -49,6 +58,26 @@ const modelSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Products",
             required: true,
+          },
+
+          isRefundAll: {
+            type: Boolean,
+            default: false,
+          },
+
+          kiloRefund: {
+            type: Number,
+            default: 0,
+          },
+
+          kiloGramsRefund: {
+            type: Number,
+            default: 0,
+          },
+
+          quantityRefund: {
+            type: Number,
+            default: 0,
           },
           srp: {
             type: Number,
