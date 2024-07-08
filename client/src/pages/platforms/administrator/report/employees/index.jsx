@@ -42,7 +42,7 @@ export const EmployeesReport = () => {
   const toggle = () => setShow(!show);
 
   return (
-    <React.Fragment className="bg-danger m-0 p-0">
+    <>
       <MDBCard className="card-employees">
         <div className="ml-4">
           <Header
@@ -130,6 +130,7 @@ export const EmployeesReport = () => {
                             setShowToast(true);
                             setWarningMsg("Refund");
                           } else {
+                            setIsTransaction(false);
                             setCashier(cashier);
                             setStatus("refund");
                             toggle();
@@ -152,6 +153,7 @@ export const EmployeesReport = () => {
                             setShowToast(true);
                             setWarningMsg("Return");
                           } else {
+                            setIsTransaction(false);
                             setCashier(cashier);
                             setStatus("return");
                             toggle();
@@ -168,13 +170,13 @@ export const EmployeesReport = () => {
                         </span>
                       </td>
                       <td className="text-center text-danger font-weight-bold">
-                        ₱{totalRefundSales.toLocaleString()}
+                        ₱{totalRefundSales.toLocaleString()}.00
                       </td>
                       <td className="text-center text-danger font-weight-bold">
-                        ₱{totalReturnSales.toLocaleString()}
+                        ₱{totalReturnSales.toLocaleString()}.00
                       </td>
                       <td className="text-center text-danger font-weight-bold">
-                        ₱{total.toLocaleString()}
+                        ₱{total.toLocaleString()}.00
                       </td>
                     </tr>
                   );
@@ -183,9 +185,9 @@ export const EmployeesReport = () => {
             </tbody>
           </MDBTable>
           <div className="d-flex justify-content-end mt-3">
-            <MDBBadge color="success">
+            <MDBBadge color="info">
               <h6 className="font-weight-bolder text-white  mx-1 my-1">
-                Total Sales: ₱{getTotalSales(transactions)}
+                Total: ₱{getTotalSales(transactions)}.00
               </h6>
             </MDBBadge>
           </div>
@@ -205,7 +207,7 @@ export const EmployeesReport = () => {
           />
         </MDBCardBody>
       </MDBCard>
-    </React.Fragment>
+    </>
   );
 };
 

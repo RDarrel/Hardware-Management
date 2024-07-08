@@ -9,8 +9,8 @@
 
 .invoice-transaction-header {
   position: relative;
-  width: 90%;
-  height: 90%;
+  width: 85%;
+  height: 92%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -47,7 +47,6 @@
   width: 17px;
   height: 130px;
   border-radius: 5px;
-  background-color: violet;
   background: linear-gradient(
     45deg,
     transparent 20%,
@@ -55,7 +54,6 @@
   );
   transform: rotate(-45deg);
   z-index: -1;
-  /* border-bottom-right-radius: 200px; */
 }
 
 .invoice-header-content {
@@ -66,14 +64,15 @@
   font-weight: 400;
 }
 
-.invoice-table {
+.invoice-report-table {
+  font-family: "Lato", sans-serif;
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
 /* Header Styles */
-.invoice-table th {
+.invoice-report-table th {
   background-color: #f2f2f2;
   border: 2px solid black;
   text-align: left;
@@ -81,18 +80,24 @@
   font-size: 1rem;
   text-transform: capitalize;
   color: black;
+  font-weight: 590; /* Bold font weight for headers */
 }
 
 /* Row Styles */
-.invoice-table tr {
+.invoice-report-table tr {
   border: 2px solid black;
 }
 
 /* Cell Styles */
-.invoice-table td {
+.invoice-report-table td {
   border: 2px solid black;
   text-align: left;
-  padding: 0.4rem;
+  padding: 0.2rem;
   font-size: 0.9rem;
-  font-weight: 450;
+  font-weight: 400; /* Normal font weight for regular cells */
+}
+
+.paragraph {
+  margin-top: -10px;
+  margin-bottom: -25px;
 }

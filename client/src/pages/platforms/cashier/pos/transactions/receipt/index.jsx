@@ -37,6 +37,10 @@ export default function Receipt({
     }
   };
 
+  const noHavePurchases = (_purchases) => {
+    return _purchases.every((purchase) => purchase.isRefundAll);
+  };
+
   const handleSwalMessage = (isReturn) => {
     return Swal.fire(
       "Successfully!",
@@ -161,7 +165,9 @@ export default function Receipt({
               })
             );
           } else {
-            const _purchases = [...orderDetails];
+            const _purchases = [
+              ...orderDetails.filter(({ isRefundAll }) => !isRefundAll),
+            ];
             const purchaseTotalKg =
               (_purchases[index].kilo || 0) +
               (_purchases[index]?.kiloGrams || 0);
@@ -170,7 +176,7 @@ export default function Receipt({
             const newTotalKg = purchaseTotalKg - refundKg;
 
             if (newTotalKg <= 0) {
-              _purchases.splice(index, 1);
+              _purchases[index] = { ..._purchases[index], isRefundAll: true };
             } else {
               if (newTotalKg >= 1) {
                 const totalKgInArray = String(newTotalKg).split(".");
@@ -188,14 +194,21 @@ export default function Receipt({
               }
             }
 
-            if (_purchases.length === 0) {
+            if (noHavePurchases(_purchases)) {
               toggle();
               transactionToggle();
             }
 
-            const newTotal = transaction.getTotal(_purchases) || 0;
+            const newTotal =
+              transaction.getTotal(
+                _purchases?.filter(({ isRefundAll }) => !isRefundAll) || []
+              ) || 0;
             setTotal(newTotal);
-            setPurchases(transaction.computeSubtotal(_purchases));
+            setPurchases(
+              transaction.computeSubtotal(
+                _purchases?.filter(({ isRefundAll }) => !isRefundAll) || []
+              )
+            );
             dispatch(
               REFUND_PRODUCTS({
                 token,
@@ -290,22 +303,32 @@ export default function Receipt({
               })
             );
           } else {
-            const _purchases = [...orderDetails];
+            const _purchases = [
+              ...orderDetails.filter(({ isRefundAll }) => !isRefundAll),
+            ];
             const _purchaseQty = _purchases[index].quantity;
             const totalQty = _purchaseQty - quantity;
 
             if (totalQty <= 0) {
-              _purchases.splice(index, 1);
+              _purchases[index] = { ..._purchases[index], isRefundAll: true };
             } else {
               _purchases[index].quantity -= quantity;
             }
-            if (_purchases.length === 0) {
+            if (noHavePurchases(_purchases)) {
               toggle();
               transactionToggle();
             }
-            const newTotal = transaction.getTotal(_purchases) || 0;
+            const newTotal =
+              transaction.getTotal(
+                _purchases.filter(({ isRefundAll }) => !isRefundAll)
+              ) || 0;
+
             setTotal(newTotal);
-            setPurchases(transaction.computeSubtotal(_purchases));
+            setPurchases(
+              transaction.computeSubtotal(
+                _purchases.filter(({ isRefundAll }) => !isRefundAll)
+              )
+            );
 
             dispatch(
               REFUND_PRODUCTS({

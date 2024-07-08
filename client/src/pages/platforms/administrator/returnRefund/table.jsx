@@ -37,7 +37,8 @@ const Table = ({ collections, isReturn, baseKey }) => {
     invoice,
     _customer,
     _createdAt,
-    _cashier
+    _cashier,
+    reason
   ) => {
     setProducts(transaction.computeSubtotal(_products));
     setInvoice_no(invoice);
@@ -45,6 +46,7 @@ const Table = ({ collections, isReturn, baseKey }) => {
     setTotal(transaction.getTotal(_products));
     setCreatedAt(_createdAt);
     setCashier(fullName(_cashier.fullName));
+    setReason(reason);
     toggle();
   };
   return (
@@ -82,7 +84,7 @@ const Table = ({ collections, isReturn, baseKey }) => {
                   </MDBBadge>
                 </td>
                 <td className="text-center font-weight-bolder text-danger">
-                  ₱ {transaction.getTotal(obj.products)}
+                  ₱{transaction.getTotal(obj.products)}.00
                 </td>
                 <td className="text-center ">
                   <MDBBtn
@@ -95,7 +97,8 @@ const Table = ({ collections, isReturn, baseKey }) => {
                         obj.invoice_no,
                         obj.customer || "--",
                         obj.createdAt,
-                        obj[baseKey]
+                        obj[baseKey],
+                        obj.reason
                       )
                     }
                   >
@@ -128,6 +131,7 @@ const Table = ({ collections, isReturn, baseKey }) => {
         isReturnRefund={true}
         isReturn={isReturn}
         show={show}
+        reason={reason}
         toggle={toggle}
         createdAt={createdAt}
         isAdmin={true}

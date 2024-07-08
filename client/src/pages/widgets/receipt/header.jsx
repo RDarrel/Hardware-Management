@@ -13,6 +13,7 @@ const Header = ({
   customer,
   customerView,
   setCustomer,
+  reason,
 }) => {
   return (
     <>
@@ -73,6 +74,10 @@ const Header = ({
           />
         )}
       </div>
+
+      {isReturnRefund && (
+        <h6 className="ml-2 font-weight-bold">Reason: {reason || "--"}</h6>
+      )}
     </>
   );
 };

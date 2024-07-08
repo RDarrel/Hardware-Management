@@ -2,14 +2,7 @@ import React from "react";
 import navbarLogo from "../../../../../assets/logo/navbar.jpg";
 import { formattedDate, fullName } from "../../../../../services/utilities";
 
-const Header = ({
-  invoice_no,
-  createdAt,
-  customer,
-  cashier,
-  reason,
-  title,
-}) => {
+const Header = ({ invoice_no, createdAt, customer, cashier }) => {
   return (
     <>
       <div className="invoice-header-row w-100">

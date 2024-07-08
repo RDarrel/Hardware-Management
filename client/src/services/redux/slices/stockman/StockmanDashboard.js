@@ -1,33 +1,29 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axioKit, bulkPayload } from "../../../utilities";
 
-const name = "stockman/Purchase";
+const name = "stockman/Dashboard";
 
 const initialState = {
-  collections: [],
+  outOfStocks: [],
+  nearlyExpired: [],
   progress: 0,
   isSuccess: false,
   isLoading: false,
   message: "",
 };
 
-export const BROWSE = createAsyncThunk(
-  `${name}`,
-  ({ token, key }, thunkAPI) => {
-    try {
-      return axioKit.universal(name, token, key);
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+export const BROWSE = createAsyncThunk(`${name}`, ({ token }, thunkAPI) => {
+  try {
+    return axioKit.universal(name, token);
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
 
-      return thunkAPI.rejectWithValue(message);
-    }
+    return thunkAPI.rejectWithValue(message);
   }
-);
+});
 
 export const FIND = createAsyncThunk(`${name}/find`, (form, thunkAPI) => {
   try {
@@ -125,7 +121,6 @@ export const reduxSlice = createSlice({
       state.message = data.payload;
     },
     RESET: (state, data) => {
-      state.collections = [];
       state.isSuccess = false;
       state.message = "";
     },
@@ -139,7 +134,9 @@ export const reduxSlice = createSlice({
       })
       .addCase(BROWSE.fulfilled, (state, action) => {
         const { payload } = action.payload;
-        state.collections = payload;
+        const { nearlyExpired = [], outOfStocks = [] } = payload;
+        state.nearlyExpired = nearlyExpired;
+        state.outOfStocks = outOfStocks;
         state.isLoading = false;
       })
       .addCase(BROWSE.rejected, (state, action) => {
@@ -171,14 +168,7 @@ export const reduxSlice = createSlice({
       })
       .addCase(UPDATE.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
-        const _collections = [...state.collections];
-        const index = _collections.findIndex(
-          ({ _id }) => _id === payload?.purchase?._id
-        );
-
-        console.log(index);
-        _collections.splice(index, 1);
-        state.collections = _collections;
+        bulkPayload(state, payload);
         state.message = success;
         state.isSuccess = true;
         state.isLoading = false;

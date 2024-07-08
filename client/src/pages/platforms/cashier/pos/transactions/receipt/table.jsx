@@ -2,7 +2,12 @@ import React from "react";
 import { MDBBtn, MDBBtnGroup, MDBIcon } from "mdbreact";
 import { variation } from "../../../../../../services/utilities";
 
-const Table = ({ handleAction, orderDetails, total }) => {
+const Table = ({ handleAction, orderDetails = [], total }) => {
+  console.log(orderDetails);
+  const purchases =
+    orderDetails.length > 0
+      ? orderDetails?.filter(({ isRefundAll }) => !isRefundAll)
+      : [];
   return (
     <table className="invoice-table">
       <thead>
@@ -16,8 +21,8 @@ const Table = ({ handleAction, orderDetails, total }) => {
         </tr>
       </thead>
       <tbody>
-        {orderDetails?.length > 0 &&
-          orderDetails.map((order, index) => (
+        {purchases?.length > 0 &&
+          purchases.map((order, index) => (
             <tr key={`${order._id}-${index}`}>
               <td>
                 <div className="d-flex flex-column">

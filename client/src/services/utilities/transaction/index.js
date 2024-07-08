@@ -1,6 +1,6 @@
 const transaction = {
   getTotal: (purchases = []) => {
-    if (purchases.length === 0) return "No have purchases";
+    if (purchases.length === 0) return 0;
 
     const purchaseWithSubtotal = purchases.map((purchase) => {
       const { product, kilo = 0, kiloGrams = 0, quantity = 0, srp } = purchase;
@@ -17,7 +17,7 @@ const transaction = {
   },
 
   computeSubtotal: (purchases = []) => {
-    if (purchases.length === 0) return "No have purchases";
+    if (purchases.length === 0) return [];
     return purchases.map((purchase) => {
       const { product, kilo = 0, kiloGrams = 0, quantity = 0, srp } = purchase;
 

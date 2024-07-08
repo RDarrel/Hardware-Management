@@ -20,6 +20,7 @@ export default function Receipt({
   isReturn = false,
   cashier = "",
   createdAt = "",
+  reason = "",
   isAdmin = false,
 }) {
   const { auth, token } = useSelector(({ auth }) => auth),
@@ -68,6 +69,7 @@ export default function Receipt({
           isAdmin={isAdmin}
           cashier={cashier}
           customerView={customerView}
+          reason={reason}
         />
         <form onSubmit={handleSubmit}>
           <div className="mx-2 mt-4">

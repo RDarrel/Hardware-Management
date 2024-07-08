@@ -50,10 +50,9 @@ const getTheTotalAmountOfDefective = (merchandises) => {
   }, 0);
 };
 
-const defectiveCheckpoint = async (purchase, merchandises) => {
+const defectiveCheckpoint = async (_purchase, merchandises) => {
   try {
-    delete purchase._id;
-
+    const { _id, ...purchase } = _purchase;
     const defectiveMerchandises = merchandises
       .map((merchandise) => {
         const { quantity, kilo, kiloGrams } = merchandise;

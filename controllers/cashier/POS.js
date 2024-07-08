@@ -377,6 +377,31 @@ const gramsConverter = (grams) => {
   }
 };
 
+const handleKiloGramsRefund = (currentRefund, newRefund) => {
+  const totalCurrentKgRefund =
+    (currentRefund.kiloRefund || 0) + (currentRefund.kiloGramsRefund || 0);
+
+  const totalNewKgRefund = newRefund.kilo + newRefund.kiloGrams;
+
+  const total = totalCurrentKgRefund + totalNewKgRefund;
+
+  const totalNewRefund = String(totalCurrentKgRefund + totalNewKgRefund).split(
+    "."
+  );
+
+  var newRefundKilo = 0;
+  var newRefundGrams = 0;
+  if (total >= 1) {
+    newRefundKilo = Number(totalNewRefund[0] || 0);
+    newRefundGrams = gramsConverter(Number(totalNewRefund[1] || 0));
+  } else {
+    newRefundGrams = gramsConverter(Number(totalNewRefund[1] || 0));
+  }
+  console.log(totalNewRefund);
+
+  return { kiloRefund: newRefundKilo, kiloGramsRefund: newRefundGrams };
+};
+
 exports.refund = async (req, res) => {
   try {
     const {
@@ -449,20 +474,19 @@ exports.refund = async (req, res) => {
           }
 
           if (newKilo === 0 && newKiloGrams === 0) {
-            // purchases.splice(index, 1);
             purchases[index] = {
               ...purchase._doc,
               isRefundAll: true,
-              kiloRefund: purchase.kilo || 0,
-              kiloGramsRefund: purchase.kiloGrams || 0,
+              kilo: 0,
+              kiloGrams: 0,
+              ...handleKiloGramsRefund(purchase, { kilo, kiloGrams }),
             };
           } else {
             purchases[index] = {
               ...purchase._doc,
               kilo: newKilo || 0,
               kiloGrams: gramsConverter(newKiloGrams),
-              kiloRefund: kilo,
-              kiloGramsRefund: kiloGrams,
+              ...handleKiloGramsRefund(purchase, { kilo, kiloGrams }),
             };
           }
         } else {
@@ -473,13 +497,14 @@ exports.refund = async (req, res) => {
             purchases[index] = {
               ...purchase._doc,
               isRefundAll: true,
-              quantityRefund: purchase.quantity,
+              quantity: 0,
+              quantityRefund: (purchase.quantityRefund || 0) + (quantity || 0),
             };
           } else {
             purchases[index] = {
               ...purchase._doc,
               quantity: newQuantity,
-              quantityRefund: quantity,
+              quantityRefund: (purchase.quantityRefund || 0) + quantity,
             };
           }
         }
@@ -524,7 +549,7 @@ exports.refund = async (req, res) => {
           (transaction.totalRefundSales || 0) +
           getTotalReturnRefund(refundProducts),
         refundItemCount: (transaction.refundItemCount || 0) + 1,
-        total: newTotal,
+        total: Number(newTotal || 0),
       });
     }
 

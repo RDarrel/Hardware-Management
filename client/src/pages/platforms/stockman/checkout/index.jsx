@@ -258,7 +258,7 @@ const Checkout = () => {
                 <Table cart={cart} setCart={setCart} />
               </div>
               <MDBBadge color="light">
-                <h6 className="font-weight-bold text-dark">
+                <h6 className=" text-dark">
                   Total of ({cart.length || 0}) Products Requesting
                 </h6>
               </MDBBadge>

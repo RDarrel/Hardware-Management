@@ -6,6 +6,7 @@ import {
   MDBModalHeader,
   MDBTable,
   MDBBtn,
+  MDBBadge,
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -17,6 +18,7 @@ import {
 } from "../../../../../../services/utilities";
 import Receipt from "./receipt";
 import TransactionView from "../../transactionView";
+import getTotalRefundAmount from "../../getTotalRefund";
 
 export default function Processed({
   show,
@@ -31,6 +33,8 @@ export default function Processed({
     ),
     [showReceipt, setShowReciept] = useState(false),
     [products, setProducts] = useState([]),
+    [selected, setSelected] = useState({}),
+    [isExist, setIsExist] = useState(false),
     [createdAt, setCreatedAt] = useState(""),
     [reason, setReason] = useState(""),
     [invoice_no, setInvoice_no] = useState(""),
@@ -51,7 +55,16 @@ export default function Processed({
     toggle();
   };
 
-  const handleShowReceipt = (_products, _invoice, _reason, _createdAt) => {
+  const handleShowReceipt = (
+    _products,
+    _invoice,
+    _reason,
+    _createdAt,
+    _isExist,
+    _transaction
+  ) => {
+    setSelected(_transaction);
+    setIsExist(_isExist);
     setReason(_reason);
     setProducts(transaction.computeSubtotal(_products));
     setInvoice_no(_invoice);
@@ -64,20 +77,21 @@ export default function Processed({
     status === "refund"
       ? "Refund"
       : status === "return"
-      ? "Return"
+      ? "Replacement"
       : "Transactions";
   return (
     <MDBModal
       isOpen={show}
       toggle={toggle}
       backdrop
-      size={isTransaction && showReceipt ? "xl" : "lg"}
+      size={isTransaction ? "xl" : "lg"}
       disableFocusTrap={false}
     >
       {!showReceipt && (
         <MDBModalHeader
           toggle={handleClose}
           className="light-blue darken-3 white-text"
+          tag="h5"
         >
           <MDBIcon icon="user" className="mr-2" />
           {title} processed by: {fullName(cashier.fullName)}
@@ -85,29 +99,56 @@ export default function Processed({
       )}
       <MDBModalBody className="mb-0 m-0 p-0">
         {!showReceipt ? (
-          <MDBTable>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th className="text-center">Invoice No.</th>
-                <th className="text-center">Date</th>
-                <th className="text-center">Total Amount</th>
-                <th className="text-center">Products</th>
-              </tr>
-            </thead>
-            <tbody>
-              {returnRefund.map(
-                ({ createdAt, products, invoice_no, reason }, index) => (
+          <div style={{ maxHeight: "580px", overflowY: "auto" }}>
+            <MDBTable>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th className="text-center">Invoice No.</th>
+                  <th className="text-center">Date</th>
+                  {isTransaction ? (
+                    <>
+                      <th className="text-center">Total Products Amount</th>
+                      <th className="text-center">Total Refund Amount</th>
+                      <th className="text-center">Total Sales</th>
+                    </>
+                  ) : (
+                    <th className="text-center">Total Amount</th>
+                  )}
+                  <th className="text-center">Products</th>
+                </tr>
+              </thead>
+              <tbody>
+                {returnRefund.map((_transaction, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td className="text-center font-weight-bolder">
-                      {invoice_no}
+                      {_transaction.invoice_no}
                     </td>
                     <td className="text-center font-weight-bolder">
-                      {formattedDate(createdAt)}
+                      {formattedDate(_transaction.createdAt)}
                     </td>
+                    {isTransaction && (
+                      <>
+                        <td className="text-center font-weight-bolder text-danger">
+                          ₱ {_transaction?.totalWithoutDeduc?.toLocaleString()}
+                          .00
+                        </td>
+                        <td className="text-center font-weight-bolder text-danger">
+                          ₱
+                          {getTotalRefundAmount(
+                            _transaction.products
+                          )?.toLocaleString() || 0}
+                          .00
+                        </td>
+                      </>
+                    )}
                     <td className="text-center font-weight-bolder text-danger">
-                      ₱ {transaction.getTotal(products)}
+                      ₱
+                      {transaction
+                        .getTotal(_transaction.products)
+                        ?.toLocaleString()}
+                      .00
                     </td>
                     <td className="text-center ">
                       <MDBBtn
@@ -116,32 +157,36 @@ export default function Processed({
                         color="success"
                         onClick={() => {
                           handleShowReceipt(
-                            products,
-                            invoice_no,
-                            reason,
-                            createdAt
+                            _transaction.products,
+                            _transaction.invoice_no,
+                            _transaction.reason,
+                            _transaction.createdAt,
+                            _transaction.isExist,
+                            _transaction
                           );
                         }}
                       >
                         <MDBIcon icon="shopping-cart" />
                       </MDBBtn>
                       <span className="counter mb-0">
-                        {products.length || "0"}
+                        {_transaction.products.length || "0"}
                       </span>
                     </td>
                   </tr>
-                )
-              )}
-            </tbody>
-          </MDBTable>
+                ))}
+              </tbody>
+            </MDBTable>
+          </div>
         ) : isTransaction ? (
           <TransactionView
             toggle={toggleReciept}
             orderDetails={products}
+            isExist={isExist}
             total={total}
             title={title}
             reason={reason}
             createdAt={createdAt}
+            transaction={selected}
             cashier={cashier}
             invoice_no={invoice_no}
           />
@@ -156,6 +201,13 @@ export default function Processed({
             cashier={cashier}
             invoice_no={invoice_no}
           />
+        )}
+        {!showReceipt && (
+          <MDBBadge color="ligh">
+            <h6 className="text-dark">
+              Total of ({returnRefund.length || 0}) {title} Processed
+            </h6>
+          </MDBBadge>
         )}
       </MDBModalBody>
     </MDBModal>
