@@ -67,7 +67,12 @@ const Table = ({
       dispatch(
         UPDATE({
           token,
-          data: { _id, newQty, action: "quantity", operator: "MINUS" },
+          data: {
+            _id,
+            newQty: newQty,
+            action: "quantity",
+            operator: "MINUS",
+          },
         })
       );
     } else {

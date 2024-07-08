@@ -121,7 +121,9 @@ exports.update = async (req, res) => {
               quantity:
                 operator === "ADD"
                   ? oldQuantity.quantity + 1
-                  : oldQuantity.quantity - 1,
+                  : oldQuantity.quantity > 1
+                  ? oldQuantity.quantity - 1
+                  : oldQuantity.quantity,
             },
             { new: true }
           ).populate("product");
