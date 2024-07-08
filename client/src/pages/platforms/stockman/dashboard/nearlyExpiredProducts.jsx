@@ -6,7 +6,7 @@ const NearlyExpiredProducts = ({ nearlyExpired }) => {
   return (
     <MDBCol lg="12" md="12">
       <MDBCard className="mb-4">
-        <MDBCardHeader color="primary-color">
+        <MDBCardHeader color="danger-color">
           <MDBIcon icon="exclamation-triangle" /> Nearly Products Expired
         </MDBCardHeader>
         <MDBCardBody>
