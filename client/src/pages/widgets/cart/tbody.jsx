@@ -155,74 +155,76 @@ export const Tbody = ({
                 </div>
               </td>
 
-              <td className="d-flex justify-content-center">
-                {product.isPerKilo ? (
-                  <MDBInputGroup
-                    style={{ width: "50%" }}
-                    type="number"
-                    value={String(obj.kilo)}
-                    onChange={({ target }) =>
-                      handleChangeKilo(obj._id, Number(target.value))
-                    }
-                    className="text-center border border-light"
-                    append={
-                      <select
-                        className="form-control"
-                        value={String(obj.kiloGrams)}
-                        onChange={({ target }) =>
-                          handleChangeKiloGrams(obj._id, Number(target.value))
-                        }
-                      >
-                        <option value={"0"}>kl</option>
-                        <option value={"0.25"}>1/4</option>
-                        <option value={"0.5"}>1/2</option>
-                        <option value={"0.75"}>3/4</option>
-                      </select>
-                    }
-                  />
-                ) : (
-                  <MDBInputGroup
-                    type="number"
-                    className="text-center border border-light"
-                    style={{ width: "50%" }}
-                    value={String(obj.quantity)}
-                    min="1"
-                    onChange={({ target }) => {
-                      var quantity = Number(target.value);
-                      if (quantity < 1) quantity = 1;
-                      handleChangeQty("", quantity, obj._id);
-                    }}
-                    size="sm"
-                    prepend={
-                      <MDBBtn
-                        className="m-0 px-2 py-0"
-                        size="sm"
-                        color="light"
-                        onClick={() =>
-                          handleChangeQty("MINUS", obj.quantity, obj._id)
-                        }
-                        style={{ boxShadow: "0px 0px 0px 0px" }}
-                        outline
-                      >
-                        <MDBIcon icon="minus" style={{ color: "black" }} />
-                      </MDBBtn>
-                    }
-                    append={
-                      <MDBBtn
-                        className="m-0 px-2  py-0"
-                        size="sm"
-                        color="light"
-                        style={{ boxShadow: "0px 0px 0px 0px" }}
-                        onClick={() =>
-                          handleChangeQty("ADD", obj.quantity, obj._id)
-                        }
-                        outline
-                      >
-                        <MDBIcon icon="plus" style={{ color: "black" }} />
-                      </MDBBtn>
-                    }
-                  />
-                )}
+              <td className="d-flex justify-content-center ">
+                <div className="mt-2 w-100 d-flex justify-content-center">
+                  {product.isPerKilo ? (
+                    <MDBInputGroup
+                      style={{ width: "50%" }}
+                      type="number"
+                      value={String(obj.kilo)}
+                      onChange={({ target }) =>
+                        handleChangeKilo(obj._id, Number(target.value))
+                      }
+                      className="text-center border border-light m-0 p-0"
+                      append={
+                        <select
+                          className="form-control"
+                          value={String(obj.kiloGrams)}
+                          onChange={({ target }) =>
+                            handleChangeKiloGrams(obj._id, Number(target.value))
+                          }
+                        >
+                          <option value={"0"}>kl</option>
+                          <option value={"0.25"}>1/4</option>
+                          <option value={"0.5"}>1/2</option>
+                          <option value={"0.75"}>3/4</option>
+                        </select>
+                      }
+                    />
+                  ) : (
+                    <MDBInputGroup
+                      type="number"
+                      className="text-center border border-light"
+                      style={{ width: "50%" }}
+                      value={String(obj.quantity)}
+                      min="1"
+                      onChange={({ target }) => {
+                        var quantity = Number(target.value);
+                        if (quantity < 1) quantity = 1;
+                        handleChangeQty("", quantity, obj._id);
+                      }}
+                      size="sm"
+                      prepend={
+                        <MDBBtn
+                          className="m-0 px-2 py-0"
+                          size="sm"
+                          color="light"
+                          onClick={() =>
+                            handleChangeQty("MINUS", obj.quantity, obj._id)
+                          }
+                          style={{ boxShadow: "0px 0px 0px 0px" }}
+                          outline
+                        >
+                          <MDBIcon icon="minus" style={{ color: "black" }} />
+                        </MDBBtn>
+                      }
+                      append={
+                        <MDBBtn
+                          className="m-0 px-2  py-0"
+                          size="sm"
+                          color="light"
+                          style={{ boxShadow: "0px 0px 0px 0px" }}
+                          onClick={() =>
+                            handleChangeQty("ADD", obj.quantity, obj._id)
+                          }
+                          outline
+                        >
+                          <MDBIcon icon="plus" style={{ color: "black" }} />
+                        </MDBBtn>
+                      }
+                    />
+                  )}
+                </div>
               </td>
               {isCashier && (
                 <td className="text-danger font-weight-bold">
