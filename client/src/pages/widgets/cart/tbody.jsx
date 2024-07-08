@@ -162,9 +162,10 @@ export const Tbody = ({
                       style={{ width: "50%" }}
                       type="number"
                       value={String(obj.kilo)}
-                      onChange={({ target }) =>
-                        handleChangeKilo(obj._id, Number(target.value))
-                      }
+                      onChange={({ target }) => {
+                        const newKilo = Number(target.value);
+                        handleChangeKilo(obj._id, newKilo <= 0 ? 0 : newKilo);
+                      }}
                       className="text-center border border-light m-0 p-0"
                       append={
                         <select
