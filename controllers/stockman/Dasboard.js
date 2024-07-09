@@ -19,37 +19,37 @@ exports.browse = async (req, res) => {
       },
     }).populate("product");
 
-    // const arrangeNearlyExpired =
-    //   nearlyExpired.length > 0
-    //     ? nearlyExpired.reduce((acc, curr) => {
-    //         const {
-    //           variant1 = "",
-    //           variant2 = "",
-    //           product,
-    //           quantityStock = 0,
-    //           kiloStock = 0,
-    //         } = curr;
-
-    //         const key = `${product._id}-${variant1}-${variant2}`;
-    //         const index = acc.findIndex(({ key: _key }) => _key == key);
-    //         if (index > -1) {
-    //           acc[index].stock += product.isPerKilo ? kiloStock : quantityStock;
-    //         } else {
-    //           acc.push({
-    //             ...curr._doc,
-    //             key,
-    //             stock: product.isPerKilo ? kiloStock : quantityStock,
-    //           });
-    //         }
-
-    //         return acc;
-    //       }, [])
-    //     : [];
     const outOfStocks = await Stocks.find({
       $or: [{ quantityStock: { $lte: 10 } }, { kiloStock: { $lte: 10 } }],
     }).populate("product");
 
-    res.json({ payload: { nearlyExpired, outOfStocks } });
+    const arrangeOutOfSTocks =
+      outOfStocks.length > 0
+        ? nearlyExpired.reduce((acc, curr) => {
+            const {
+              variant1 = "",
+              variant2 = "",
+              product,
+              quantityStock = 0,
+              kiloStock = 0,
+            } = curr;
+
+            const key = `${product._id}-${variant1}-${variant2}`;
+            const index = acc.findIndex(({ key: _key }) => _key == key);
+            if (index > -1) {
+              acc[index].stock += product.isPerKilo ? kiloStock : quantityStock;
+            } else {
+              acc.push({
+                ...curr._doc,
+                key,
+                stock: product.isPerKilo ? kiloStock : quantityStock,
+              });
+            }
+
+            return acc;
+          }, [])
+        : [];
+    res.json({ payload: { nearlyExpired, outOfStocks: arrangeOutOfSTocks } });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

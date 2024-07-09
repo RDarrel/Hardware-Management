@@ -68,26 +68,37 @@ export default function Received({
         <MDBIcon icon="shipping-fast" className="mr-2" />
         {label}
       </MDBModalHeader>
-      <MDBModalBody className="mb-0">
+      <MDBModalBody className="mb-0 m-0 p-0">
         <div style={{ maxHeight: "500px", overflowY: "auto" }}>
-          <MDBTable>
+          <MDBTable bordered>
             <thead>
               <tr>
-                <th>#</th>
-                <th className="th-lg">Product</th>
-                <th className="text-center">
-                  {!isDefective ? "Approved" : "Replacement"} Quantity/kilo
+                <th rowSpan={2}>#</th>
+                <th rowSpan={2}>Product</th>
+                <th colSpan={4} className="text-center">
+                  Quantity Kilo
                 </th>
-                <th className="text-center">Received Quantity/kilo</th>
-                <th className="text-center">Defective Quantity/kilo</th>
-                <th className="text-center">Non-Defective Quantity/kilo</th>
-                <th className="text-center">Expiration Date</th>
+                <th rowSpan={2} className="text-center">
+                  Expiration Date
+                </th>
                 {isAdmin && (
                   <>
-                    <th className="text-center">Capital</th>
-                    <th className="text-center">Subtotal</th>
+                    <th rowSpan={2} className="text-center">
+                      Capital
+                    </th>
+                    <th rowSpan={2} className="text-center">
+                      Subtotal
+                    </th>
                   </>
                 )}
+              </tr>
+              <tr>
+                <th className="text-center">
+                  {!isDefective ? "Approved" : "Replacement"}
+                </th>
+                <th className="text-center">Received</th>
+                <th className="text-center">Defective</th>
+                <th className="text-center">Non-Defective</th>
               </tr>
             </thead>
 

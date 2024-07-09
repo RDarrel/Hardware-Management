@@ -6,11 +6,11 @@ const OutOfStocksProducts = ({ outOfStocks = [] }) => {
   return (
     <MDBCol lg="12" md="12">
       <MDBCard className="mb-4">
-        <MDBCardHeader color="danger-color">
+        <MDBCardHeader color="primary-color">
           <MDBIcon icon="exclamation-triangle" /> Product Out of Stocks
         </MDBCardHeader>
         <MDBCardBody>
-          <Table products={outOfStocks} />
+          <Table products={outOfStocks} isStock={true} />
         </MDBCardBody>
       </MDBCard>
     </MDBCol>

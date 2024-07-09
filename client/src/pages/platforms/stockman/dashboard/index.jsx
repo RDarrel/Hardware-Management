@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MDBContainer, MDBRow } from "mdbreact";
 import { BROWSE } from "../../../../services/redux/slices/stockman/StockmanDashboard";
 import NearlyExpiredProducts from "./nearlyExpiredProducts";
-// import OutOfStocksProducts from "./outOfStocksProducts";
+import OutOfStocksProducts from "./outOfStocksProducts";
 
 export default function Dashboard() {
   const { token } = useSelector(({ auth }) => auth),
@@ -16,15 +16,14 @@ export default function Dashboard() {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
 
-  console.log(outOfStocks);
-
   return (
     <MDBContainer fluid id="v6" className="mb-5">
       <MDBRow>
         <NearlyExpiredProducts nearlyExpired={nearlyExpired} />
       </MDBRow>
-
-      {/* <OutOfStocksProducts outOfStocks={outOfStocks} /> */}
+      <MDBRow>
+        <OutOfStocksProducts outOfStocks={outOfStocks} />
+      </MDBRow>
     </MDBContainer>
   );
 }

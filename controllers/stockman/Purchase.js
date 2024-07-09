@@ -96,6 +96,76 @@ const defectiveCheckpoint = async (_purchase, merchandises) => {
   }
 };
 
+const discrepancyCheckPoint = async (_purchase, merchandises) => {
+  const { _id, ...purchase } = _purchase;
+  try {
+    const merchandisesDiscrepancy = merchandises.filter((merchandise) => {
+      const { quantity, kilo, kiloGrams, product } = merchandise;
+      const { isPerKilo = false } = product;
+      const totalKiloRecieved = kilo.received + kiloGrams.received;
+      const totalKiloApproved = kilo.approved + kiloGrams.approved;
+      const totalQtyRecieved = quantity.received;
+      const totalQtyApproved = quantity.approved;
+      if (isPerKilo) {
+        return totalKiloApproved !== totalKiloRecieved;
+      } else {
+        return totalQtyApproved !== totalQtyRecieved;
+      }
+    });
+
+    if (merchandisesDiscrepancy.length > 0) {
+      //it means the merchandises we have a discrepancy
+      const newPurchase = await Entity.create({
+        ...purchase,
+        type: "discrepancy",
+        status: "pending",
+      });
+      const newMerchandises = merchandisesDiscrepancy.map((_merchandise) => {
+        const { _id, ...merchandise } = _merchandise; // to remove the _id of old merchandise
+
+        const { quantity, kilo, kiloGrams, product } = merchandise;
+        const { isPerKilo = false } = product;
+        if (isPerKilo) {
+          const overAllDiscrepancyKilo = newKiloStocksInsert(
+            kiloGrams.approved,
+            kilo.approved,
+            kiloGrams.received,
+            kilo.received
+          );
+          const newKilo = overAllDiscrepancyKilo.kilo;
+          const newKiloGrams = overAllDiscrepancyKilo.kiloGrams;
+          const defective = 0;
+          return {
+            ...merchandise,
+            purchase: newPurchase._id,
+            kilo: { discrepancy: newKilo, received: newKilo, defective },
+            kiloGrams: {
+              discrepancy: newKiloGrams,
+              received: newKiloGrams,
+              defective,
+            },
+          };
+        } else {
+          const newQuantity = quantity.approved - quantity.received;
+          return {
+            ...merchandise,
+            purchase: newPurchase._id,
+            quantity: {
+              discrepancy: newQuantity,
+              received: newQuantity,
+              defective,
+            },
+          };
+        }
+      });
+
+      await Merchandises.insertMany(newMerchandises);
+    }
+  } catch (error) {
+    console.log("Error for discrepancy Checkpoint", error.message);
+  }
+};
+
 const gramsConverter = (grams) => {
   switch (grams) {
     case 5:
@@ -177,6 +247,7 @@ exports.update = async (req, res) => {
       );
     } else if (purchase.status === "received") {
       defectiveCheckpoint(purchase, merchandises);
+      discrepancyCheckPoint(purchase, merchandises);
       await Promise.all(
         merchandises.map(async (merchandise) => {
           const {

@@ -5,7 +5,7 @@ import Table from "./table";
 const NearlyExpiredProducts = ({ nearlyExpired }) => {
   return (
     <MDBCol lg="12" md="12">
-      <MDBCard className="mb-4">
+      <MDBCard className="mb-3">
         <MDBCardHeader color="danger-color">
           <MDBIcon icon="exclamation-triangle" /> Nearly Products Expired
         </MDBCardHeader>

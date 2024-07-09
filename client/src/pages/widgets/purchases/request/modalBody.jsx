@@ -28,13 +28,29 @@ const ModalBody = ({
 }) => {
   const baseKeyAction = isDefective ? "replacement" : "approved";
   return (
-    <MDBModalBody className="mb-0">
+    <MDBModalBody className="mb-0 m-0 p-0">
       <div style={{ maxHeight: "500px", overflowY: "auto" }}>
-        <MDBTable>
+        <MDBTable bordered>
           <thead>
             <tr>
-              <th>#</th>
-              <th>Product</th>
+              <th rowSpan={2}>#</th>
+              <th rowSpan={2}>Product</th>
+
+              <th className="text-center" colSpan={!isAdmin ? 5 : 2}>
+                Quantity/Kilo
+              </th>
+              {isAdmin && (
+                <>
+                  <th className="text-center" rowSpan={2}>
+                    Capital
+                  </th>
+                  <th className="text-center" rowSpan={2}>
+                    Subtotal
+                  </th>
+                </>
+              )}
+            </tr>
+            <tr>
               {!isAdmin && (
                 <>
                   <th className="text-center">
@@ -43,31 +59,28 @@ const ModalBody = ({
                       : isDefective
                       ? "Replacement "
                       : "Approved "}
-                    Quantity/Kilo
                   </th>
                 </>
               )}
-
               {isAdmin && (
                 <>
                   {isDefective ? (
-                    <th className="text-center">Replacement Quantity/kilo</th>
+                    <th className="text-center">Replacement</th>
                   ) : (
                     <>
-                      <th className="text-center">Request Quantity/kilo</th>
-                      <th className="text-center">Approved Quantity/kilo</th>
+                      <th className="text-center">Request </th>
+                      <th className="text-center">Approved</th>
                     </>
                   )}
-                  <th className="text-center">Capital</th>
-                  <th className="text-center">Subtotal</th>
                 </>
               )}
 
               {!isAdmin && isApproved && (
                 <>
-                  <th className="text-center">Received Quantity/kilo</th>
-                  <th className="text-center">Defective Quantity/kilo</th>
-                  <th className="text-center">Non-Defective Quantity/kilo</th>
+                  <th className="text-center">Received </th>
+                  <th className="text-center">Defective </th>
+                  <th className="text-center">Non-Defective </th>
+                  <th className="text-center">Discrepancy </th>
                   <th className="text-center">Expiration Date</th>
                 </>
               )}
@@ -177,7 +190,7 @@ const ModalBody = ({
                           </div>
                         </td>
                         <td>
-                          <div className="d-flex justify-content-center">
+                          <div className="d-flex justify-content-center ">
                             <CustomInput
                               kilo={kilo?.defective || 0}
                               kiloGrams={kiloGrams?.defective || 0}
@@ -211,17 +224,22 @@ const ModalBody = ({
                             product.isPerKilo
                           )}
                         </td>
+                        <td className="text-center">1</td>
                         <td
                           className={
                             !hasExpiration
                               ? "text-center font-weight-bolder"
-                              : "d-flex justify-content-center"
+                              : "d-flex justify-content-center "
                           }
+                          style={{
+                            borderBottom: "transparent",
+                            borderLeft: "transparent",
+                          }}
                         >
                           {hasExpiration ? (
                             <input
                               type="date"
-                              className="form-control w-75"
+                              className="form-control w-75 m-0 p-0 bg-warning"
                               value={new Date(expiration)
                                 .toISOString()
                                 .substr(0, 10)}
