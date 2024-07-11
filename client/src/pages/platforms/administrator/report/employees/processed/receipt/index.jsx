@@ -14,7 +14,10 @@ export default function Receipt({
   invoice_no = "",
   orderDetails = [],
   createdAt = "",
+  isTransaction = true,
+  cash = 0,
 }) {
+  const change = cash - total || 0;
   return (
     <div className="m-0 p-0">
       <Header
@@ -23,10 +26,17 @@ export default function Receipt({
         createdAt={createdAt}
         customer={customer}
         reason={reason}
+        isTransaction={isTransaction}
         cashier={cashier}
       />
       <div className="mx-2 p-1 mt-3">
-        <Table orderDetails={orderDetails} total={total} />
+        <Table
+          orderDetails={orderDetails}
+          total={total}
+          change={change}
+          isTransaction={isTransaction}
+          cash={cash}
+        />
       </div>
       <div className="text-center mb-1-half mt-2">
         <MDBBtn

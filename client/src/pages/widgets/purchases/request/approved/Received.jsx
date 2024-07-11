@@ -25,6 +25,7 @@ export default function Received({
   merchandises,
   isDefective = false,
   isAdmin,
+  theader = "Approved",
 }) {
   const handleClose = () => {
     toggle();
@@ -51,7 +52,7 @@ export default function Received({
 
   console.log("running");
 
-  const baseKeyInMerchandise = isDefective ? "replacement" : "approved";
+  const baseKeyInMerchandise = "approved";
   return (
     <MDBModal
       isOpen={show}
@@ -75,7 +76,7 @@ export default function Received({
               <tr>
                 <th rowSpan={2}>#</th>
                 <th rowSpan={2}>Product</th>
-                <th colSpan={4} className="text-center">
+                <th colSpan={5} className="text-center">
                   Quantity Kilo
                 </th>
                 <th rowSpan={2} className="text-center">
@@ -93,12 +94,11 @@ export default function Received({
                 )}
               </tr>
               <tr>
-                <th className="text-center">
-                  {!isDefective ? "Approved" : "Replacement"}
-                </th>
+                <th className="text-center">{theader}</th>
                 <th className="text-center">Received</th>
                 <th className="text-center">Defective</th>
                 <th className="text-center">Non-Defective</th>
+                <th className="text-center">Discrepancy</th>
               </tr>
             </thead>
 
@@ -206,6 +206,24 @@ export default function Received({
                           product.isPerKilo
                         )}
                       </td>
+                      <td className="text-center font-weight-bold">
+                        {variation.qtyOrKilo(
+                          product.isPerKilo
+                            ? {
+                                ...GET.newKiloAndGrams(
+                                  kiloGrams.approved,
+                                  kilo.approved,
+                                  kiloGrams.received,
+                                  kilo.received
+                                ),
+                              }
+                            : {
+                                quantity:
+                                  quantity.approved - quantity?.received || 0,
+                              },
+                          product.isPerKilo
+                        )}
+                      </td>
                       <td className="text-center font-weight-bolder">
                         {hasExpiration ? formattedDate(expiration) : "--"}
                       </td>
@@ -270,6 +288,16 @@ export default function Received({
                     {GET.totalAmount(
                       purchase?.merchandises,
                       "defective"
+                    )?.toLocaleString()}
+                  </h6>
+                </MDBBadge>
+
+                <MDBBadge color="warning" className="float-right mr-3 p-1">
+                  <h6 className="font-weight-bolder text-white">
+                    Total Discrepancy Amount: ₱
+                    {GET.totalAmount(
+                      purchase?.merchandises,
+                      "discrepancy"
                     )?.toLocaleString()}
                   </h6>
                 </MDBBadge>

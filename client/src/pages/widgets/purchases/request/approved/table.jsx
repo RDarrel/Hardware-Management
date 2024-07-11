@@ -42,45 +42,64 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
       toggle();
     }
   };
+
+  const hasBordered = isAdmin && isReceived;
   return (
     <>
-      <MDBTable responsive hover>
+      <MDBTable responsive hover bordered={hasBordered}>
         <thead>
           <tr>
-            <th className="cursor-pointer">#&nbsp;</th>
-            {isAdmin && <th className="th-lg">Stockman</th>}
+            <th rowSpan={hasBordered && 2} className="cursor-pointer">
+              #&nbsp;
+            </th>
+            <th className="th-lg text-center" rowSpan={2}>
+              {isReceived ? "Received" : "Request"} By
+            </th>
             {!isReceived && (
               <>
                 <th className="text-center">Approved Date</th>
                 <th className="text-center">Expected Delivered Date</th>
+                {isAdmin && <th className="text-center">Total Amount</th>}
               </>
             )}
             {isReceived && (
               <>
-                <th className="text-center">Received Date</th>
-              </>
-            )}
-            {isAdmin && (
-              <>
-                <th className="text-center">Total Payment</th>
-                {isReceived && (
-                  <>
-                    <th className="text-center"> Total Defective Amount</th>
-                    <th className="text-center"> Total Products Amount</th>
-                  </>
+                <th className="text-center" rowSpan={hasBordered && 2}>
+                  Received Date
+                </th>
+                {isAdmin && (
+                  <th className="text-center" colSpan={4}>
+                    Total Amount
+                  </th>
                 )}
               </>
             )}
 
-            <th className="th-lg text-center">Products</th>
+            <th className="th-lg text-center" rowSpan={hasBordered && 2}>
+              Products
+            </th>
           </tr>
+          {hasBordered && (
+            <tr>
+              <th className="text-center">Payment </th>
+              {isReceived && (
+                <>
+                  <th className="text-center"> Defective </th>
+                  <th className="text-center"> Replenishment </th>
+                  <th className="text-center"> Products </th>
+                </>
+              )}
+            </tr>
+          )}
         </thead>
         <tbody>
           {!!stockmans &&
             stockmans.map((stockman, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
-                {isAdmin && <td>{fullName(stockman?.requestBy?.fullName)}</td>}
+                <td className="text-center">
+                  {fullName(stockman?.requestBy?.fullName)}
+                </td>
                 {!isReceived && (
                   <>
                     <td className="text-center">
@@ -110,6 +129,13 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
                           {GET.totalAmount(
                             stockman.merchandises,
                             "defective"
+                          ).toLocaleString()}
+                        </td>
+                        <td className="font-weight-bolder text-danger text-center">
+                          ₱{" "}
+                          {GET.totalAmount(
+                            stockman.merchandises,
+                            "discrepancy"
                           ).toLocaleString()}
                         </td>
                         <td className="font-weight-bolder text-danger text-center">
@@ -147,6 +173,7 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
       />
       <Modal
         isApproved={true}
+        hasBorder={true}
         isAdmin={isAdmin}
         merchandises={merchandises}
         setMerchandises={setMerchandises}

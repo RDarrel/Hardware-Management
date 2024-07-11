@@ -72,15 +72,21 @@ const access = [
         component: PurchasesDefective,
         props: { isAdmin: true },
       },
+      {
+        path: "Discrepancy",
+        name: "Discrepancy",
+        component: PurchasesDefective,
+        props: { isAdmin: true, isDefective: false },
+      },
     ],
   },
 
-  {
-    name: "Replacement/Refund",
-    path: "/ReturnRefund",
-    icon: "exchange-alt",
-    component: ReturnRefund,
-  },
+  // {
+  //   name: "Replacement/Refund",
+  //   path: "/ReturnRefund",
+  //   icon: "exchange-alt",
+  //   component: ReturnRefund,
+  // },
 
   {
     path: "/report",

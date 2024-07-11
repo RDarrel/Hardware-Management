@@ -2,8 +2,8 @@ import React from "react";
 import { MDBBtn, MDBBtnGroup, MDBIcon } from "mdbreact";
 import { variation } from "../../../../../../services/utilities";
 
-const Table = ({ handleAction, orderDetails = [], total }) => {
-  console.log(orderDetails);
+const Table = ({ handleAction, orderDetails = [], total, cash }) => {
+  const change = cash - total || 0;
   const purchases =
     orderDetails.length > 0
       ? orderDetails?.filter(({ isRefundAll }) => !isRefundAll)
@@ -24,7 +24,7 @@ const Table = ({ handleAction, orderDetails = [], total }) => {
         {purchases?.length > 0 &&
           purchases.map((order, index) => (
             <tr key={`${order._id}-${index}`}>
-              <td>
+              <td width={"400px"}>
                 <div className="d-flex flex-column">
                   <span
                     style={{
@@ -63,25 +63,25 @@ const Table = ({ handleAction, orderDetails = [], total }) => {
                     onClick={() => handleAction(order, index, true)}
                     size="sm"
                     color="primary"
-                    title="Return Product"
+                    title="Replacement Product"
                   >
                     <MDBIcon icon="reply" size="1x" />
                   </MDBBtn>
-                  <MDBBtn
+                  {/* <MDBBtn
                     onClick={() => handleAction(order, index, false)}
                     size="sm"
                     color="danger"
                     title="Refund Product"
                   >
                     <MDBIcon icon="share" size="1x" />
-                  </MDBBtn>
+                  </MDBBtn> */}
                 </MDBBtnGroup>
               </td>
             </tr>
           ))}
-        <tr>
+        <tr className="p-2 ">
           <td
-            colSpan="3"
+            colSpan="2"
             style={{
               borderBottomColor: "transparent",
               borderLeftColor: "transparent",
@@ -89,10 +89,17 @@ const Table = ({ handleAction, orderDetails = [], total }) => {
           ></td>
           <td
             colSpan="1"
-            className="text-center"
+            className="pl-1 "
             style={{ borderRight: "none", fontSize: "1rem" }}
           >
-            <p>Total: ₱{total.toLocaleString()}</p>
+            <p className="ml-3 paragraph mt-1">Total Amount</p>
+            <p className="ml-3 paragraph"> Cash</p>
+            <p className="ml-3 paragraph  mb-2">Change</p>
+          </td>
+          <td style={{ borderLeft: "none", fontSize: "1rem" }}>
+            <p className="ml-4 paragraph  mt-1">₱{total.toLocaleString()}.00</p>
+            <p className="ml-4 paragraph">₱{cash.toLocaleString()}.00</p>
+            <p className="ml-4 paragraph mb-2">₱{change.toLocaleString()}.00</p>
           </td>
           <td
             style={{

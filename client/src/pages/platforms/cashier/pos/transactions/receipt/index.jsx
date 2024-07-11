@@ -20,6 +20,7 @@ export default function Receipt({
   invoice_no = "",
   orderDetails = [],
   createdAt = "",
+  cash = 0,
 }) {
   const { token, auth } = useSelector(({ auth }) => auth),
     dispatch = useDispatch();
@@ -53,12 +54,12 @@ export default function Receipt({
 
     if (product.isPerKilo) {
       Swal.fire({
-        title: `${isReturn ? "Return" : "Refund"} Kilo`,
+        title: `${isReturn ? "Replacement" : "Refund"} Kilo`,
         html: `
            <div>
 
             <p >Please enter the kilo you want to ${
-              isReturn ? "return" : "refound"
+              isReturn ? "replacement" : "refund"
             }:</p>
           <div style="display: flex; align-items: center;">
             <input class="form-control" id="kilo-input" type="number" min="1"  value=${
@@ -83,11 +84,15 @@ export default function Receipt({
           </div>
 
              <label for="return-reason">Reason for ${
-               isReturn ? "return" : "refund"
+               isReturn ? "replacement" : "refund"
              }:</label>
-      <textarea id="return-reason" class="swal2-textarea form-control m-0 p-0"  placeholder="Enter the reason for ${
-        isReturn ? "return" : "refund"
-      } ..."></textarea>
+       <select id="return-reason"  class="swal2-select text-center form-control m-0 p-0">
+            <option value="Defective or damaged product">Defective or damaged product</option>
+            <option value="Wrong item">Wrong item</option>
+            <option value="Quality issues">Quality issues</option>
+            <option value="Expired items">Expired items</option>
+            <option value="Fitment issues">Fitment issues</option>
+          </select>
            </div>
 
         `,
@@ -229,23 +234,27 @@ export default function Receipt({
       });
     } else {
       Swal.fire({
-        title: `${isReturn ? "Return" : "Refound"} Quantity`,
+        title: `${isReturn ? "Replacement" : "Refound"} Quantity`,
         html: `
-         <div class=" w-100 m-0 p-0">
-      <label for="quantity-input">Please enter the quantity you want to ${
-        isReturn ? "return" : "refund"
-      }:</label>
-      <input id="quantity-input" type="number" class="swal2-input form-control m-0 p-0 mb-2 text-center" value="${
-        order.quantity
-      }">
-      <label for="return-reason">Reason for ${
-        isReturn ? "return" : "refund"
-      }:</label>
-      <textarea id="return-reason" class="swal2-textarea form-control m-0 p-0"  placeholder="Enter the reason for ${
-        isReturn ? "return" : "refund"
-      } ..."></textarea>
-    </div>
-        `,
+        <div class="w-100 m-0 p-0">
+          <label for="quantity-input">Please enter the quantity you want to ${
+            isReturn ? "replacement" : "refund"
+          }:</label>
+          <input id="quantity-input" type="number" class="swal2-input form-control m-0 p-0 mb-2 text-center" value="${
+            order.quantity
+          }">
+          <label for="return-reason">Reason for ${
+            isReturn ? "replacement" : "refund"
+          }:</label>
+          <select id="return-reason"  class="swal2-select text-center form-control m-0 p-0">
+            <option value="Defective or damaged product">Defective or damaged product</option>
+            <option value="Wrong item">Wrong item</option>
+            <option value="Quality issues">Quality issues</option>
+            <option value="Expired items">Expired items</option>
+            <option value="Fitment issues">Fitment issues</option>
+          </select>
+        </div>
+      `,
         reverseButtons: true,
         showCancelButton: true,
         cancelButtonText: "Cancel",
@@ -362,6 +371,7 @@ export default function Receipt({
           handleAction={handleAction}
           orderDetails={orderDetails}
           total={total}
+          cash={cash}
         />
       </div>
       <div className="text-center mb-1-half mt-2">

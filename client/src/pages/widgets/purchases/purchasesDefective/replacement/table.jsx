@@ -5,7 +5,7 @@ import Modal from "../../request/modal";
 import Received from "../../request/approved/Received";
 import GET from "../../GET";
 
-const Table = ({ purchases, isAdmin, isReceived = false }) => {
+const Table = ({ purchases, isAdmin, isReceived = false, isDefective }) => {
   const [show, setShow] = useState(false),
     [showReceived, setShowReceived] = useState(false),
     [purchase, setPurchase] = useState({}),
@@ -15,28 +15,49 @@ const Table = ({ purchases, isAdmin, isReceived = false }) => {
   const toggleReceived = () => setShowReceived(!showReceived);
   return (
     <>
-      <MDBTable>
+      <MDBTable bordered={isReceived && isAdmin}>
         <thead>
           <tr>
-            <th>#</th>
+            <th rowSpan={isReceived && isAdmin && 2}>#</th>
             {!isReceived && (
-              <th className="text-center">Expected Delivered Date</th>
-            )}
-            {isReceived && <th className="text-center">Received By</th>}
-            {isReceived && <th className="text-center">Received Date</th>}
-            {isAdmin && (
               <>
-                <th className="text-center">Total Payment</th>
-                {isReceived && (
-                  <>
-                    <th className="text-center"> Total Defective Amount</th>
-                    <th className="text-center"> Total Products Amount</th>
-                  </>
+                <th className="text-center">Expected Delivered Date</th>
+                {isAdmin && (
+                  <th className="text-center">Total Products Amount</th>
                 )}
               </>
             )}
-            <th className="text-center">Products</th>
+
+            {isReceived && (
+              <>
+                <th className="text-center" rowSpan={2}>
+                  Received By
+                </th>
+                <th className="text-center" rowSpan={2}>
+                  Received Date
+                </th>
+                {isAdmin && (
+                  <th className="text-center" colSpan={4}>
+                    Total Amount
+                  </th>
+                )}
+              </>
+            )}
+
+            <th rowSpan={isReceived && isAdmin && 2} className="text-center">
+              Products
+            </th>
           </tr>
+          {isAdmin && isReceived && (
+            <tr>
+              <>
+                <th className="text-center"> Payment</th>
+                <th className="text-center"> Defective </th>
+                <th className="text-center"> Replenishment </th>
+                <th className="text-center"> Products </th>
+              </>
+            </tr>
+          )}
         </thead>
         <tbody>
           {!!purchases ? (
@@ -62,7 +83,7 @@ const Table = ({ purchases, isAdmin, isReceived = false }) => {
                 {isAdmin && (
                   <>
                     <td className="font-weight-bolder text-danger text-center">
-                      ₱ {purchase.total.toLocaleString()}
+                      ₱ {purchase.total?.toLocaleString()}
                     </td>
                     {isReceived && (
                       <>
@@ -71,7 +92,14 @@ const Table = ({ purchases, isAdmin, isReceived = false }) => {
                           {GET.totalAmount(purchase.merchandises, "defective")}
                         </td>
                         <td className="font-weight-bolder text-danger text-center">
-                          ₱ {purchase.totalReceived.toLocaleString()}
+                          ₱{" "}
+                          {GET.totalAmount(
+                            purchase.merchandises,
+                            "discrepancy"
+                          )}
+                        </td>
+                        <td className="font-weight-bolder text-danger text-center">
+                          ₱ {purchase.totalReceived?.toLocaleString()}
                         </td>
                       </>
                     )}
@@ -116,8 +144,11 @@ const Table = ({ purchases, isAdmin, isReceived = false }) => {
         merchandises={merchandises}
         setMerchandises={setMerchandises}
         isAdmin={isAdmin}
+        hasBorder={!isAdmin}
         isApproved={true}
         isDefective={true}
+        theader={isDefective ? "Replacement" : "Replenishment"}
+        modalLabel={isDefective ? "Replacement" : "Replenishment"}
       />
       <Received
         show={showReceived}
@@ -126,6 +157,7 @@ const Table = ({ purchases, isAdmin, isReceived = false }) => {
         merchandises={merchandises}
         isAdmin={isAdmin}
         isDefective={true}
+        theader={isDefective ? "Replacement" : "Replenishment"}
       />
     </>
   );

@@ -8,10 +8,10 @@ import {
 const Header = ({
   invoice_no,
   createdAt,
-  isAdmin = false,
   customer,
   cashier,
   reason,
+  isTransaction = true,
   title,
 }) => {
   return (
@@ -40,7 +40,9 @@ const Header = ({
                 <span className="text-nowrap">{invoice_no}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span className="mr-2 text-nowrap">{title} Date:</span>
+                <span className="mr-2 text-nowrap">
+                  {isTransaction ? "Transaction" : "Replacement"} Date:
+                </span>
                 <span className="text-nowrap">{formattedDate(createdAt)}</span>
               </div>
             </div>
@@ -51,7 +53,9 @@ const Header = ({
         Cashier: {fullName(cashier.fullName) || "--"}
       </h6>
       <h6 className="ml-3 font-weight-bold">Customer: {customer || "--"}</h6>
-      <h6 className="ml-3 font-weight-bold">Reason: {reason || "--"}</h6>
+      {!isTransaction && (
+        <h6 className="ml-3 font-weight-bold">Reason: {reason || "--"}</h6>
+      )}
     </>
   );
 };

@@ -20,6 +20,14 @@ const modelSchema = new mongoose.Schema(
         message: "{VALUE} is not supported",
       },
     },
+
+    type: {
+      type: String,
+      enum: {
+        values: ["request", "defective", "discrepancy", "reject", "received"],
+        message: "{VALUE} is not supported",
+      },
+    },
     expected: { type: String },
     approved: { type: String },
     received: { type: String },
@@ -29,6 +37,7 @@ const modelSchema = new mongoose.Schema(
     total: {
       type: Number,
     },
+
     totalReceived: {
       type: Number,
     },

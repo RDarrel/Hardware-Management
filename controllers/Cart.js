@@ -202,7 +202,11 @@ exports.buy = async (req, res) => {
     const purchases = req.body;
 
     for (const purchase of purchases) {
-      const createdPurchase = await Purchase.create(purchase);
+      const createdPurchase = await Purchase.create({
+        ...purchase,
+        type: "request",
+      });
+
       const merchandisesWithPurchase = purchase.merchandises.map((obj) => ({
         ...obj,
         product: obj?.product?._id,

@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fullName, variation } from "../../../../services/utilities";
 import { BROWSE } from "../../../../services/redux/slices/administrator/suppliers";
 import { UPDATE } from "../../../../services/redux/slices/stockman/purchases";
-import { UPDATE as DEFECTIVE_UPDATE } from "../../../../services/redux/slices/stockman/defectivePurchases";
 import Swal from "sweetalert2";
 import ModalBody from "./modalBody";
 
@@ -24,6 +23,10 @@ export default function Modal({
   isApproved = false,
   isReceived,
   isDefective = false,
+  isRejected = false,
+  hasBorder = false,
+  theader = "Approved",
+  modalLabel = "Replacement",
 }) {
   const { token, auth } = useSelector(({ auth }) => auth),
     { collections: _suppliers = [] } = useSelector(
@@ -36,26 +39,22 @@ export default function Modal({
     [total, setTotal] = useState([]),
     dispatch = useDispatch();
 
+  console.log(hasBorder);
+
   useEffect(() => {
     if (!!merchandises && show) {
       const productsWithSubtotal = merchandises.map((merchandise) => {
         const { quantity, kilo, kiloGrams } = merchandise;
         const quantitySubtotal = !isAdmin
           ? Number(quantity?.received) - Number(quantity?.defective || 0)
-          : isDefective
-          ? quantity.replacement
           : quantity?.approved;
 
         const kiloSubtotal = !isAdmin
           ? Number(kilo?.received) - Number(kilo?.defective || 0)
-          : isDefective
-          ? kilo.replacement
           : kilo?.approved;
 
         const kiloGramsSubtotal = !isAdmin
           ? Number(kiloGrams?.received) - Number(kiloGrams?.defective || 0)
-          : isDefective
-          ? kiloGrams.replacement
           : kiloGrams?.approved;
         return {
           ...merchandise,
@@ -210,9 +209,8 @@ export default function Modal({
       cancelButtonText: "No, cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        const baseFunc = isDefective ? DEFECTIVE_UPDATE : UPDATE;
         dispatch(
-          baseFunc({
+          UPDATE({
             token,
             data: {
               purchase: {
@@ -244,18 +242,13 @@ export default function Modal({
       return _merchandises;
     });
   };
-  const size = isAdmin
-    ? isDefective
-      ? "xl"
-      : "fluid"
-    : !isAdmin && isApproved
-    ? "fluid"
-    : "xl";
+  const size = isAdmin ? "xl" : !isAdmin && isApproved ? "fluid" : "xl";
+
   const label = !isDefective
     ? !isAdmin
-      ? "Products Request"
+      ? `Products ${!isRejected ? "Request" : "Rejected"}`
       : `Requested By: ${fullName(purchase?.requestBy?.fullName)}`
-    : `Replacement By: ${purchase?.supplier?.company}`;
+    : `${modalLabel} By: ${purchase?.supplier?.company}`;
 
   const icon = !isDefective ? (isAdmin ? "user" : "shopping-cart") : "building";
   return (
@@ -279,10 +272,12 @@ export default function Modal({
         handleChangeExpiration={handleChangeExpiration}
         expectedDelivered={expectedDelivered}
         total={total}
+        theader={theader}
         suppliers={suppliers}
         supplier={supplier}
         isReceived={isReceived}
         isDefective={isDefective}
+        hasBorder={hasBorder}
       />
       {!isApproved && isAdmin && (
         <MDBModalFooter>

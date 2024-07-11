@@ -53,6 +53,13 @@ const access = [
         component: PurchasesDefective,
         props: { isAdmin: false },
       },
+
+      {
+        path: "Discrepancy",
+        name: "Discrepancy",
+        component: PurchasesDefective,
+        props: { isAdmin: false, isDefective: false },
+      },
     ],
   },
 ];

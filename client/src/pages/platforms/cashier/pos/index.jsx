@@ -10,6 +10,9 @@ import { Products } from "./products";
 import Search from "./search";
 import Header from "./header";
 import { useToasts } from "react-toast-notifications";
+import Swal from "sweetalert2";
+import { variation } from "../../../../services/utilities";
+import seperateKiloAndGrams from "../../../../services/utilities/seperateKiloAndGrams";
 
 const POS = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
@@ -17,6 +20,7 @@ const POS = () => {
     [orders, setOrders] = useState([]),
     [selectedProduct, setSelectedProduct] = useState({}),
     [products, setProducts] = useState([]),
+    [isShowAddedToCart, setIsShowAddedToCart] = useState(true),
     [didSearch, setDidSearch] = useState(false),
     [invoice_no, setInvoice_no] = useState(""),
     [search, setSearch] = useState(""),
@@ -37,6 +41,21 @@ const POS = () => {
   useEffect(() => {
     setProducts(collections);
   }, [collections]);
+
+  const handleMaxSaleMessage = (max, isPerKilo = false) => {
+    const message = variation.qtyOrKilo(
+      {
+        ...(isPerKilo ? { ...seperateKiloAndGrams(max) } : { quantity: max }),
+      },
+      isPerKilo
+    );
+    Swal.fire({
+      icon: "warning",
+      title: "Oops...",
+      text: `The maximum kilo/quantity you can sell for this product is ${message}.`,
+    });
+    setIsShowAddedToCart(true);
+  };
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -66,6 +85,13 @@ const POS = () => {
     if (search) {
       setDidSearch(true);
     }
+  };
+
+  const handleSwalAddedToCart = () => {
+    Swal.fire({
+      title: "Successfully added to your order",
+      icon: "success",
+    });
   };
 
   const handleGetMax = (selected) => {
@@ -116,10 +142,22 @@ const POS = () => {
 
     const _orders = [...orders];
     if (index > -1) {
+      const max = _orders[index].max;
+
       if (product.isPerKilo) {
-        _orders[index].kilo += 1;
+        const kilo = _orders[index].kilo + 1;
+        if (kilo > max) {
+          setIsShowAddedToCart(false);
+          return handleMaxSaleMessage(max, true);
+        }
+        _orders[index].kilo = kilo;
       } else {
-        _orders[index].quantity += 1;
+        const quantity = _orders[index].quantity + 1;
+        if (quantity > max) {
+          setIsShowAddedToCart(false);
+          return handleMaxSaleMessage(max, false);
+        }
+        _orders[index].quantity = quantity;
       }
       setOrders(_orders);
     } else {
@@ -142,12 +180,16 @@ const POS = () => {
 
       setOrders((prev) => [{ ...newOrderWithMax }, ...prev]);
     }
+
+    if (showVariant && isShowAddedToCart) {
+      handleSwalAddedToCart();
+    }
   };
   return (
     <MDBContainer
       fluid
-      className="pt-3"
-      style={{ overflowY: "auto", height: "100vh" }}
+      className="pt-2"
+      style={{ overflowY: "hidden", height: "100vh" }}
     >
       <Header />
       <MDBRow>
@@ -170,6 +212,7 @@ const POS = () => {
         </MDBCol>
         <Orders
           orders={orders}
+          handleMaxSaleMessage={handleMaxSaleMessage}
           setOrders={setOrders}
           invoice_no={invoice_no}
           setInvoice_no={setInvoice_no}

@@ -77,3 +77,24 @@ th {
 .order-details {
   overflow-y: auto; /* Common property extracted to avoid repetition */
 }
+
+.striped-border-order {
+  height: 2px;
+  width: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #6fa7d7,
+    #6fa7d7 10px,
+    transparent 10px,
+    transparent 20px,
+    #f08d9a 20px,
+    #f08d9a 30px,
+    transparent 30px,
+    transparent 40px
+  );
+}
+
+.order {
+  /* border-top: dashed 2px red; */
+  /* border-bottom: dashed 2px red; */
+}

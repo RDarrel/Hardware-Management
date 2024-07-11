@@ -25,7 +25,12 @@ export default function Request({ isAdmin }) {
     dispatch(
       BROWSE({
         token,
-        key: { status: activeTab, isAdmin, requestBy: auth._id },
+        key: {
+          status: activeTab,
+          isAdmin,
+          requestBy: auth._id,
+          type: "request",
+        },
       })
     );
     return () => dispatch(RESET());

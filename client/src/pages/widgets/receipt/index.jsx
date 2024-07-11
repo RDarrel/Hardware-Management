@@ -22,6 +22,7 @@ export default function Receipt({
   createdAt = "",
   reason = "",
   isAdmin = false,
+  cash = 0,
 }) {
   const { auth, token } = useSelector(({ auth }) => auth),
     [customer, setCustomer] = useState(""),
@@ -30,6 +31,7 @@ export default function Receipt({
   useEffect(() => {
     setCustomer("");
   }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -41,6 +43,7 @@ export default function Receipt({
           invoice_no,
           cashier: auth._id,
           total,
+          cash,
           purchases: orderDetails,
         },
       })
@@ -55,6 +58,8 @@ export default function Receipt({
     setOrders([]);
     toggle();
   };
+
+  const change = cash - total || 0;
 
   return (
     <MDBModal isOpen={show} toggle={toggle} backdrop size="lg" centered>
@@ -72,7 +77,7 @@ export default function Receipt({
           reason={reason}
         />
         <form onSubmit={handleSubmit}>
-          <div className="mx-2 mt-4">
+          <div className={`mx-2 mt-${isAdmin ? "2" : "4"}`}>
             <table className="invoice-table">
               <thead>
                 <tr>
@@ -86,7 +91,7 @@ export default function Receipt({
               <tbody>
                 {orderDetails.map((order, index) => (
                   <tr key={`${order._id}-${index}`}>
-                    <td>
+                    <td style={{ width: "420px" }}>
                       <div className="d-flex flex-column">
                         <span
                           style={{
@@ -121,9 +126,9 @@ export default function Receipt({
                     </td>
                   </tr>
                 ))}
-                <tr>
+                <tr className="p-2 ">
                   <td
-                    colSpan="3"
+                    colSpan="2"
                     style={{
                       borderBottomColor: "transparent",
                       borderLeftColor: "transparent",
@@ -131,10 +136,25 @@ export default function Receipt({
                   ></td>
                   <td
                     colSpan="1"
-                    className="text-center"
+                    className="pl-1 "
                     style={{ borderRight: "none", fontSize: "1rem" }}
                   >
-                    <p>Total: ₱{total.toLocaleString()}</p>
+                    <p className="ml-3 paragraph mt-1 text-nowrap">
+                      Total Amount
+                    </p>
+                    <p className="ml-3 paragraph"> Cash</p>
+                    <p className="ml-3 paragraph  mb-2">Change</p>
+                  </td>
+                  <td style={{ borderLeft: "none", fontSize: "1rem" }}>
+                    <p className="ml-4 paragraph  mt-1">
+                      ₱{total.toLocaleString()}.00
+                    </p>
+                    <p className="ml-4 paragraph">
+                      ₱{cash.toLocaleString()}.00
+                    </p>
+                    <p className="ml-4 paragraph mb-2">
+                      ₱{change.toLocaleString()}.00
+                    </p>
                   </td>
                 </tr>
               </tbody>

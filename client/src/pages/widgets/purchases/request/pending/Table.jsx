@@ -19,15 +19,21 @@ const Table = ({ isAdmin, isRejected, purchases }) => {
         <thead>
           <tr>
             <th>#</th>
-            {isAdmin && <th>Stockman</th>}
-            <th>Request Date</th>
+            <th className="text-center">Request By</th>
+            <th className="text-center">Request Date</th>
             {isRejected ? (
-              <th>Rejected Date</th>
+              <th className="text-center">Rejected Date</th>
             ) : (
-              <th>Expected Approved Date</th>
+              <th className="text-center">Expected Approved Date</th>
             )}
-            {isRejected ? <th>Reason</th> : <th>Remarks</th>}
-            {isAdmin && !isRejected && <th>Total Amount</th>}
+            {isRejected ? (
+              <th className="text-center">Reason</th>
+            ) : (
+              <th className="text-center">Remarks</th>
+            )}
+            {isAdmin && !isRejected && (
+              <th className="text-center">Total Amount</th>
+            )}
             <th className="text-center"> Products</th>
           </tr>
         </thead>
@@ -36,14 +42,19 @@ const Table = ({ isAdmin, isRejected, purchases }) => {
             purchases.map((purchase, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
-                {isAdmin && <td>{fullName(purchase.requestBy.fullName)}</td>}
-                <td>{formattedDate(purchase.createdAt)}</td>
-                <td>
+                <td className="text-center">
+                  {fullName(purchase.requestBy.fullName)}
+                </td>
+
+                <td className="text-center">
+                  {formattedDate(purchase.createdAt)}
+                </td>
+                <td className="text-center">
                   {formattedDate(
                     isRejected ? purchase.rejectedDate : purchase.expected
                   )}
                 </td>
-                <td>
+                <td className="text-center">
                   <MDBBadge
                     className="cursor-pointer p-2"
                     color="info"
@@ -59,7 +70,7 @@ const Table = ({ isAdmin, isRejected, purchases }) => {
                   </MDBBadge>
                 </td>
                 {isAdmin && !isRejected && (
-                  <td className="text-danger font-weight-bolder">
+                  <td className="text-danger text-center font-weight-bolder">
                     ₱ {purchase.total.toLocaleString()}
                   </td>
                 )}
@@ -98,6 +109,9 @@ const Table = ({ isAdmin, isRejected, purchases }) => {
         show={show}
         merchandises={merchandises}
         purchase={purchase}
+        hasBorder={isAdmin && !isRejected}
+        isRejected={isRejected}
+        theader="Request"
         setMerchandises={setMerchandises}
       />
       <Remarks

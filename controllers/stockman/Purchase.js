@@ -3,19 +3,21 @@ const Entity = require("../../models/stockman/Purchases"),
   Cart = require("../../models/Cart"),
   Stocks = require("../../models/stockman/Stocks"),
   Merchandises = require("../../models/stockman/Merchandises"),
-  DefectiveMerchandises = require("../../models/stockman/DefectiveMerchandises"),
-  DefectivePurchases = require("../../models/stockman/DefectivePurchases"),
   handleDuplicate = require("../../config/duplicate");
 
 exports.browse = async (req, res) => {
   try {
     const status = req.query.status;
+    const type = req.query.type;
     const filter =
       req.query.isAdmin === "true"
         ? { status }
-        : { requestBy: req.query.requestBy, status };
+        : {
+            ...(status === "pending" && { requestBy: req.query.requestBy }),
+            status,
+          };
 
-    const purchases = await Entity.find(filter)
+    const purchases = await Entity.find({ ...filter, type })
       .populate("requestBy")
       .populate("supplier")
       .select("-__v")
@@ -37,12 +39,13 @@ exports.browse = async (req, res) => {
   }
 };
 
-const getTheTotalAmountOfDefective = (merchandises) => {
+const getTheTotalAmount = (merchandises, isDefective = false) => {
+  const baseKey = isDefective ? "defective" : "approved";
   const merchandisesWithSubtotal = merchandises.map(
     ({ quantity, capital, product, kilo, kiloGrams }) =>
       !product.isPerKilo
-        ? quantity.defective * capital
-        : ((kilo?.defective || 0) + (kiloGrams?.defective || 0)) * capital
+        ? quantity[baseKey] * capital
+        : ((kilo[baseKey] || 0) + (kiloGrams[baseKey] || 0)) * capital
   );
   return merchandisesWithSubtotal.reduce((acc, curr) => {
     acc += curr;
@@ -59,13 +62,23 @@ const defectiveCheckpoint = async (_purchase, merchandises) => {
         if (quantity.defective > 0) {
           return {
             ...merchandise,
-            quantity: { defective: quantity.defective },
+            quantity: {
+              received: quantity.defective,
+              approved: quantity.defective,
+              defective: quantity.defective,
+            },
           };
         } else if (kilo.defective > 0 || kiloGrams.defective > 0) {
+          const newKilo = kilo.defective || 0;
+          const newKiloGrams = kiloGrams.defective || 0;
           return {
             ...merchandise,
-            kilo: { defective: kilo.defective || 0 },
-            kiloGrams: { defective: kiloGrams.defective || 0 },
+            kilo: { approved: newKilo, received: newKilo, defective: newKilo },
+            kiloGrams: {
+              approved: newKiloGrams,
+              received: newKiloGrams,
+              defective: newKiloGrams,
+            },
           };
         } else {
           return false;
@@ -74,14 +87,15 @@ const defectiveCheckpoint = async (_purchase, merchandises) => {
       .filter(Boolean);
 
     if (defectiveMerchandises.length > 0) {
-      const total = getTheTotalAmountOfDefective(defectiveMerchandises);
-      const defectivePurchase = await DefectivePurchases.create({
+      const total = getTheTotalAmount(defectiveMerchandises, true);
+      const defectivePurchase = await Entity.create({
         ...purchase,
-        status: "defective",
+        type: "defective",
+        status: "pending",
         total,
       });
 
-      await DefectiveMerchandises.insertMany(
+      await Merchandises.insertMany(
         defectiveMerchandises.map((merchandise) => {
           delete merchandise._id;
           return {
@@ -96,8 +110,7 @@ const defectiveCheckpoint = async (_purchase, merchandises) => {
   }
 };
 
-const discrepancyCheckPoint = async (_purchase, merchandises) => {
-  const { _id, ...purchase } = _purchase;
+const getMerchandisesDisrepancy = (merchandises) => {
   try {
     const merchandisesDiscrepancy = merchandises.filter((merchandise) => {
       const { quantity, kilo, kiloGrams, product } = merchandise;
@@ -113,57 +126,124 @@ const discrepancyCheckPoint = async (_purchase, merchandises) => {
       }
     });
 
-    if (merchandisesDiscrepancy.length > 0) {
+    if (merchandisesDiscrepancy.length === 0) return [];
+
+    //it means the merchandises we have a discrepancy
+    return merchandisesDiscrepancy.map((merchandise) => {
+      const { quantity, kilo, kiloGrams, product } = merchandise;
+      const { isPerKilo = false } = product;
+
+      if (isPerKilo) {
+        const overAllDiscrepancyKilo = newKiloStocksInsert(
+          kiloGrams.approved,
+          kilo.approved,
+          kiloGrams.received,
+          kilo.received
+        );
+        const newKilo = overAllDiscrepancyKilo.kilo;
+        const newKiloGrams = overAllDiscrepancyKilo.kiloGrams;
+        return {
+          ...merchandise,
+          kilo: {
+            approved: newKilo,
+            received: newKilo,
+            replenishment: newKilo,
+          },
+          kiloGrams: {
+            approved: newKiloGrams,
+            received: newKiloGrams,
+            replenishment: newKiloGrams,
+          },
+        };
+      } else {
+        const newQuantity = quantity.approved - quantity.received;
+        return {
+          ...merchandise,
+          quantity: {
+            approved: newQuantity,
+            received: newQuantity,
+            replenishment: newQuantity,
+          },
+        };
+      }
+    });
+  } catch (error) {
+    console.log("Get discrepancy Error:", error.message);
+  }
+};
+
+const discrepancyCheckPoint = async (_purchase, merchandises) => {
+  const { _id, ...purchase } = _purchase;
+  const merchandisesWithDiscrepancy = getMerchandisesDisrepancy(merchandises);
+  try {
+    if (merchandisesWithDiscrepancy.length > 0) {
       //it means the merchandises we have a discrepancy
       const newPurchase = await Entity.create({
         ...purchase,
         type: "discrepancy",
         status: "pending",
       });
-      const newMerchandises = merchandisesDiscrepancy.map((_merchandise) => {
-        const { _id, ...merchandise } = _merchandise; // to remove the _id of old merchandise
 
-        const { quantity, kilo, kiloGrams, product } = merchandise;
-        const { isPerKilo = false } = product;
-        if (isPerKilo) {
-          const overAllDiscrepancyKilo = newKiloStocksInsert(
-            kiloGrams.approved,
-            kilo.approved,
-            kiloGrams.received,
-            kilo.received
-          );
-          const newKilo = overAllDiscrepancyKilo.kilo;
-          const newKiloGrams = overAllDiscrepancyKilo.kiloGrams;
-          const defective = 0;
+      const merchandisesWithPurchase = merchandisesWithDiscrepancy.map(
+        (merchandise) => {
+          const { _id, ...rest } = merchandise;
           return {
-            ...merchandise,
+            ...rest,
             purchase: newPurchase._id,
-            kilo: { discrepancy: newKilo, received: newKilo, defective },
-            kiloGrams: {
-              discrepancy: newKiloGrams,
-              received: newKiloGrams,
-              defective,
-            },
-          };
-        } else {
-          const newQuantity = quantity.approved - quantity.received;
-          return {
-            ...merchandise,
-            purchase: newPurchase._id,
-            quantity: {
-              discrepancy: newQuantity,
-              received: newQuantity,
-              defective,
-            },
           };
         }
+      );
+
+      await Entity.findByIdAndUpdate(newPurchase._id, {
+        total: getTheTotalAmount(merchandisesWithDiscrepancy),
       });
 
-      await Merchandises.insertMany(newMerchandises);
+      await Merchandises.insertMany(merchandisesWithPurchase);
     }
   } catch (error) {
     console.log("Error for discrepancy Checkpoint", error.message);
   }
+};
+
+const mergeDiscrepancyInOriginalPurchase = (merchandises) => {
+  const _merchandises = [...merchandises];
+  const merchandisesWithDiscrepancy = getMerchandisesDisrepancy(merchandises);
+  if (merchandises.length === 0) return merchandises;
+  for (const discrepancy of merchandisesWithDiscrepancy) {
+    const {
+      product,
+      _id: discrepancyID,
+      kilo: discrepancyKilo,
+      kiloGrams: discrepancyKiloGrams,
+      quantity: discrepancyQuantity,
+    } = discrepancy;
+    const index = merchandises.findIndex(({ _id }) => _id === discrepancyID);
+    if (index > -1) {
+      if (product.isPerKilo) {
+        const { kilo, kiloGrams } = merchandises[index];
+        _merchandises[index] = {
+          ...merchandises[index],
+          kilo: { ...kilo, discrepancy: discrepancyKilo.approved },
+          kiloGrams: {
+            ...kiloGrams,
+            discrepancy: discrepancyKiloGrams.approved,
+          },
+        };
+      } else {
+        const { quantity } = merchandises[index];
+        _merchandises[index] = {
+          ...merchandises[index],
+          quantity: {
+            ...quantity,
+            discrepancy: discrepancyQuantity?.approved,
+          },
+        };
+      }
+    } else {
+      console.log("No found index in discrepancy");
+    }
+  }
+  return _merchandises;
 };
 
 const gramsConverter = (grams) => {
@@ -209,7 +289,10 @@ exports.save = async (req, res) => {
   try {
     const { purchase, cart } = req.body;
 
-    const createdPurchase = await Entity.create(purchase);
+    const createdPurchase = await Entity.create({
+      ...purchase,
+      type: "request",
+    });
     const cartWithPurchaseID = cart.map((obj) => ({
       ...obj,
       product: obj?._id,
@@ -233,9 +316,9 @@ exports.save = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const { purchase, merchandises = [], isDefective = false } = req.body;
-    const basePurchase = isDefective ? DefectivePurchases : Entity;
-    const baseMerchandises = isDefective ? DefectiveMerchandises : Merchandises;
+    const { purchase, merchandises = [] } = req.body;
+    const basePurchase = Entity;
+    const baseMerchandises = Merchandises;
     await basePurchase.findByIdAndUpdate(purchase._id, purchase);
     if (purchase.status === "approved" || purchase.status === "replacement") {
       bulkWrite(
@@ -307,7 +390,7 @@ exports.update = async (req, res) => {
         req,
         res,
         baseMerchandises,
-        merchandises,
+        mergeDiscrepancyInOriginalPurchase(merchandises),
         "Successfully Approved"
       );
     } else {

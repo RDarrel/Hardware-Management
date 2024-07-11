@@ -31,6 +31,7 @@ export default function Transactions({ show, toggle }) {
     [purchases, setPurchases] = useState([]),
     [total, setTotal] = useState(0),
     [date, setDate] = useState(""),
+    [cash, setCash] = useState(""),
     [invoice_no, setInvoice_no] = useState(""),
     [showTransac, setShowTransac] = useState(false),
     dispatch = useDispatch();
@@ -80,23 +81,39 @@ export default function Transactions({ show, toggle }) {
     toggle();
   };
 
-  const handleViewTransaction = (orderDetails, invoice, _date, _total) => {
+  const handleViewTransaction = (
+    orderDetails,
+    invoice,
+    _date,
+    _total,
+    _cash
+  ) => {
     setPurchases(transactionAction.computeSubtotal(orderDetails));
     setInvoice_no(invoice);
     setDate(_date);
     setTotal(_total);
+    setCash(_cash);
     toggleTransac();
   };
 
   const handleAction = (isReturn) => {
     Swal.fire({
       title: `<h5 class='font-weight-bolder'>Kindly provide a reason for ${
-        isReturn ? "Returning" : "Refunding"
+        isReturn ? "Replacement" : "Refunding"
       } the product.</h5>`,
-      html: '<textarea id="swal-input1" class="swal2-textarea form-control m-0 p-0" required></textarea>',
+      html: `
+       <div>
+       <select id="return-reason" class=" text-center w-100 form-control">
+        <option value="Defective or damaged product">Defective or damaged product</option>
+        <option value="Wrong item">Wrong item</option>
+        <option value="Quality issues">Quality issues</option>
+        <option value="Expired items">Expired items</option>
+        <option value="Fitment issues">Fitment issues</option>
+      </select></div>
+    `,
       showCancelButton: true,
       cancelButtonText: "Cancel",
-      confirmButtonText: isReturn ? "Return" : "Refund",
+      confirmButtonText: isReturn ? "Replace" : "Refund",
       reverseButtons: true,
       focusConfirm: false,
       preConfirm: () => {
@@ -231,18 +248,18 @@ export default function Transactions({ show, toggle }) {
                             onClick={() => handleAction(true)}
                             size="sm"
                             color="info"
-                            title="Return All Product"
+                            title="Replacement All Product"
                           >
                             <MDBIcon icon="reply" size="1x" />
                           </MDBBtn>
-                          <MDBBtn
+                          {/* <MDBBtn
                             onClick={() => handleAction(false)}
                             size="sm"
                             color="danger"
                             title="Refund All Product"
                           >
                             <MDBIcon icon="share" size="1x" />
-                          </MDBBtn>
+                          </MDBBtn> */}
 
                           <MDBBtn
                             size="sm"
@@ -255,7 +272,8 @@ export default function Transactions({ show, toggle }) {
                                 foundTransaction.purchases,
                                 foundTransaction.invoice_no,
                                 foundTransaction.createdAt,
-                                foundTransaction.total
+                                foundTransaction.total,
+                                foundTransaction.cash
                               )
                             }
                           >
@@ -278,6 +296,7 @@ export default function Transactions({ show, toggle }) {
               setPurchases={setPurchases}
               orderDetails={purchases}
               createdAt={date}
+              cash={cash}
               transactionToggle={toggle}
             />
           )}

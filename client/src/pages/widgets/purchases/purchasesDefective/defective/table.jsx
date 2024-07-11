@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { formattedDate, fullName } from "../../../../../services/utilities";
 import Modal from "./modal";
 
-const Table = ({ purchases, isAdmin, isRefund = false }) => {
+const Table = ({ purchases, isAdmin, isRefund = false, isDefective }) => {
   const [show, setShow] = useState(""),
     [stockman, setStockman] = useState(""),
     [expectedDelivered, setExpectedDelivered] = useState(""),
@@ -79,6 +79,7 @@ const Table = ({ purchases, isAdmin, isRefund = false }) => {
       <Modal
         toggle={toggle}
         show={show}
+        hasBorder={!isRefund}
         stockman={stockman}
         merchandises={merchandises}
         total={total}
@@ -88,6 +89,7 @@ const Table = ({ purchases, isAdmin, isRefund = false }) => {
         isAdmin={isAdmin}
         expectedDelivered={expectedDelivered}
         setExpectedDelivered={setExpectedDelivered}
+        isDefective={isDefective}
       />
     </>
   );

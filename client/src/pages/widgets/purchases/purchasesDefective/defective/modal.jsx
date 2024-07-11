@@ -18,7 +18,7 @@ import {
   fullName,
   variation,
 } from "../../../../../services/utilities";
-import { UPDATE } from "../../../../../services/redux/slices/stockman/defectivePurchases";
+import { UPDATE } from "../../../../../services/redux/slices/stockman/purchases";
 import Swal from "sweetalert2";
 
 export default function Modal({
@@ -33,6 +33,7 @@ export default function Modal({
   total,
   isRefund,
   purchase,
+  isDefective,
 }) {
   const { token } = useSelector(({ auth }) => auth),
     dispatch = useDispatch();
@@ -44,7 +45,9 @@ export default function Modal({
   const handleReplacement = () => {
     Swal.fire({
       title: "Are you sure?",
-      text: "Do you really want to replace this products?",
+      text: `Do you really want to ${
+        isDefective ? "replace" : "replenishment"
+      } this products?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, replace it!",
@@ -58,7 +61,7 @@ export default function Modal({
             data: {
               purchase: {
                 ...purchase,
-                status: "replacement",
+                status: "approved",
                 expectedDelivered: new Date().toDateString(),
               },
               merchandises: merchandises.map((merchandise) => {
@@ -72,22 +75,25 @@ export default function Modal({
                         kilo: {
                           ...kilo,
                           defective: 0,
-                          replacement: kilo.defective || 0,
-                          received: kilo.defective || 0,
+                          replenishment: 0,
+                          approved: kilo.approved || 0,
+                          received: kilo.approved || 0,
                         },
                         kiloGrams: {
                           ...kiloGrams,
+                          replenishment: 0,
                           defective: 0,
-                          replacement: kiloGrams.defective || 0,
-                          received: kiloGrams.defective || 0,
+                          approved: kiloGrams.approved || 0,
+                          received: kiloGrams.approved || 0,
                         },
                       }
                     : {
                         quantity: {
                           ...quantity,
                           defective: 0,
-                          replacement: quantity.defective || 0,
-                          received: quantity.defective || 0,
+                          replenishment: 0,
+                          approved: quantity.approved || 0,
+                          received: quantity.approved || 0,
                         },
                       }),
                 };
@@ -104,7 +110,9 @@ export default function Modal({
   const handleRefund = () => {
     Swal.fire({
       title: "Are you sure?",
-      text: "Do you really want to refund this products?",
+      text: `Do you really want to ${
+        isDefective ? "refund" : "replenishment"
+      } this products?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, refund it!",
@@ -146,7 +154,9 @@ export default function Modal({
             <tr>
               <th>#</th>
               <th>Product</th>
-              <th className="text-center">Defective Quantity/Kilo</th>
+              <th className="text-center">
+                {isDefective ? "Defective" : "Discrepancy"} Quantity/Kilo
+              </th>
               {isAdmin && (
                 <>
                   <th className="text-center">Capital</th>
@@ -205,10 +215,10 @@ export default function Modal({
                       {variation.qtyOrKilo(
                         product.isPerKilo
                           ? {
-                              kilo: kilo.defective,
-                              kiloGrams: kiloGrams.defective,
+                              kilo: kilo.approved,
+                              kiloGrams: kiloGrams.approved,
                             }
-                          : { quantity: quantity.defective },
+                          : { quantity: quantity.approved },
                         product.isPerKilo
                       )}
                     </td>
@@ -220,10 +230,10 @@ export default function Modal({
                         <td className="text-danger text-center font-weight-bold">
                           ₱{" "}
                           {product.isPerKilo
-                            ? ((kilo.defective || 0) +
-                                (kiloGrams.defective || 0)) *
+                            ? ((kilo.approved || 0) +
+                                (kiloGrams.approved || 0)) *
                               capital
-                            : quantity.defective * capital}
+                            : quantity.approved * capital}
                         </td>
                       </>
                     )}
@@ -280,7 +290,7 @@ export default function Modal({
             Refund
           </MDBBtn>
           <MDBBtn color="primary" onClick={handleReplacement}>
-            Replace
+            {isDefective ? "Replace" : "Replenishment"}
           </MDBBtn>
         </MDBModalFooter>
       )}

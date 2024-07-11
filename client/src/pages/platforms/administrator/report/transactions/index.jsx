@@ -19,9 +19,8 @@ import {
   handlePagination,
   transaction,
 } from "../../../../../services/utilities";
-import getTotalRefund from "../getTotalRefund";
 import getTotalSales from "../getTotalSales";
-import Modal from "./modal";
+import Receipt from "../../../../widgets/receipt";
 
 export const Transactions = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
@@ -30,12 +29,8 @@ export const Transactions = () => {
     ),
     [transactions, setTransactions] = useState([]),
     [orderDetails, setOrderDetails] = useState([]),
-    [customerView, setCustomerView] = useState(""),
-    [invoce_no, setInvoice_no] = useState(""),
-    [cashier, setCashier] = useState({}),
     [selected, setSelected] = useState({}),
     [show, setShow] = useState(false),
-    [createdAt, setCreatedAt] = useState(""),
     [page, setPage] = useState(1),
     dispatch = useDispatch();
 
@@ -45,22 +40,12 @@ export const Transactions = () => {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
 
-  const hanldeShowPurchases = (
-    purchases,
-    invoice,
-    date,
-    customer,
-    _cashier,
-    _transaction
-  ) => {
+  const hanldeShowPurchases = (purchases, _transaction) => {
     setOrderDetails(transaction.computeSubtotal(purchases));
-    setCashier(_cashier);
     setSelected({ ..._transaction, products: _transaction.purchases });
-    setCustomerView(customer);
-    setCreatedAt(date);
-    setInvoice_no(invoice);
     toggle();
   };
+  console.log(selected);
 
   return (
     <>
@@ -82,9 +67,9 @@ export const Transactions = () => {
                 <th className="text-center">Cashier</th>
                 <th className="text-center">Invoice No.</th>
                 <th className="text-center">Date</th>
-                <th className="text-center">Total Products Amount</th>
-                <th className="text-center">Total Refund Amount</th>
-                <th className="text-center">Total Sales</th>
+                <th className="text-center">Total Amount</th>
+                <th className="text-center">Cash</th>
+                <th className="text-center">Change</th>
                 <th className="text-center">Action</th>
               </tr>
             </thead>
@@ -101,13 +86,14 @@ export const Transactions = () => {
                       {formattedDate(transaction.createdAt)}
                     </td>
                     <td className="text-danger text-center font-weight-bolder">
-                      ₱{transaction.totalWithoutDeduc.toLocaleString()}.00
-                    </td>
-                    <td className="text-danger text-center font-weight-bold">
-                      ₱{getTotalRefund(transaction.purchases)}.00
-                    </td>
-                    <td className="text-danger text-center font-weight-bold">
                       ₱{transaction.total.toLocaleString()}.00
+                    </td>
+                    <td className="text-danger text-center font-weight-bold">
+                      ₱{transaction.cash.toLocaleString()}.00
+                    </td>
+                    <td className="text-danger text-center font-weight-bold">
+                      ₱{(transaction.cash - transaction.total).toLocaleString()}
+                      .00
                     </td>
                     <td className="text-center">
                       <MDBBtn
@@ -117,10 +103,6 @@ export const Transactions = () => {
                         onClick={() =>
                           hanldeShowPurchases(
                             transaction.purchases,
-                            transaction.invoice_no,
-                            transaction.createdAt,
-                            transaction.customer || "--",
-                            transaction.cashier,
                             transaction
                           )
                         }
@@ -151,15 +133,17 @@ export const Transactions = () => {
           />
         </MDBCardBody>
       </MDBCard>
-      <Modal
+      <Receipt
         toggle={toggle}
-        createdAt={createdAt}
-        invoice_no={invoce_no}
+        isAdmin={true}
+        createdAt={selected?.createdAt}
+        invoice_no={selected?.invoice_no}
         orderDetails={orderDetails}
         show={show}
-        customer={customerView}
-        cashier={cashier}
-        transaction={selected}
+        customerView={selected?.customer || "--"}
+        cashier={fullName(selected?.cashier?.fullName)}
+        total={selected?.total}
+        cash={selected?.cash}
       />
     </>
   );

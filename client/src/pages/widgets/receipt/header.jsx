@@ -61,6 +61,12 @@ const Header = ({
         </div>
       )}
 
+      {isAdmin && !isReturnRefund && (
+        <div className="d-flex customer-name align-items-center m-0 p-0">
+          <h6 className="ml-2 mr-2 font-weight-bold">Cashier: {cashier}</h6>
+        </div>
+      )}
+
       <div className="d-flex customer-name align-items-center m-0 p-0">
         <h6 className="ml-2 mr-2 font-weight-bold">
           Customer: {isAdmin && customerView}

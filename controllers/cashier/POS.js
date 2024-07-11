@@ -198,13 +198,21 @@ const stocks = async (purchases, invoice_no) => {
 
 exports.pos = async (req, res) => {
   try {
-    const { purchases, invoice_no, cashier, total, customer = "" } = req.body;
+    const {
+      purchases,
+      invoice_no,
+      cashier,
+      total,
+      customer = "",
+      cash,
+    } = req.body;
     const purchasesWithCapital = await stocks(purchases, String(invoice_no));
     await Sales.insertMany(purchasesWithCapital);
     await Transactions.create({
       cashier,
       invoice_no,
       total,
+      cash,
       totalWithoutDeduc: total,
       purchases,
       customer,

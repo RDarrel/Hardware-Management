@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Swal from "sweetalert2";
 import { MDBBtn, MDBModal, MDBModalBody, MDBModalHeader } from "mdbreact";
 
 import Variations from "../../../widgets/variations";
@@ -7,14 +6,9 @@ import Variations from "../../../widgets/variations";
 export default function Modal({ show, toggle, selected, handleAddOrder }) {
   const [variant1, setVariant1] = useState(""),
     [variant2, setVariant2] = useState("");
-
   const handleSubmit = (e) => {
     e.preventDefault();
     handleAddOrder({ ...selected, variant1, variant2 });
-    Swal.fire({
-      title: "Successfully added to your order",
-      icon: "success",
-    });
   };
 
   const handleClose = () => {

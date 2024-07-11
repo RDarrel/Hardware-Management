@@ -18,6 +18,11 @@ const modelSchema = new mongoose.Schema(
       required: true,
     },
 
+    cash: {
+      type: Number,
+      required: true,
+    },
+
     totalWithoutDeduc: {
       type: Number,
     },

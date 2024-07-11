@@ -18,7 +18,7 @@ const Search = ({
     }
   }, []);
   return (
-    <MDBCard className="mb-3">
+    <MDBCard className="mb-1">
       <MDBCardBody className="m-0 p-1">
         <div className="m-2  search-container">
           <form id="search-form" onSubmit={handleSearch}>

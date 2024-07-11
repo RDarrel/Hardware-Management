@@ -8,8 +8,15 @@ import Body from "./body";
 import { variation } from "../../../../../services/utilities";
 import Receipt from "../../../../widgets/receipt";
 
-const Orders = ({ orders, setOrders, invoice_no, setInvoice_no }) => {
+const Orders = ({
+  orders,
+  setOrders,
+  invoice_no,
+  setInvoice_no,
+  handleMaxSaleMessage,
+}) => {
   const [total, setTotal] = useState(0),
+    [cash, setCash] = useState(0),
     [orderDetails, setOrderDetails] = useState([]),
     [checkout, setCheckout] = useState(false),
     [variant1, setVariant1] = useState(""),
@@ -34,10 +41,19 @@ const Orders = ({ orders, setOrders, invoice_no, setInvoice_no }) => {
   };
 
   const handleChange = (index, value, isPerkilo = false) => {
+    Number(value);
     const _orders = [...orders];
+    const max = _orders[index].max;
+
     if (isPerkilo) {
+      const kilo = _orders[index].kilo + 1;
+      if (value >= kilo - 1 && max <= kilo)
+        return handleMaxSaleMessage(max, true);
       _orders[index].kilo = Number(value);
     } else {
+      const quantity = _orders[index].quantity;
+      if (quantity === value && max === quantity)
+        return handleMaxSaleMessage(max, false);
       _orders[index].quantity = Number(value);
     }
     setOrders(_orders);
@@ -85,35 +101,51 @@ const Orders = ({ orders, setOrders, invoice_no, setInvoice_no }) => {
   return (
     <MDBCol md="6">
       <MDBCard
-        className="vh-100 d-flex flex-column order-details-card"
+        className="vh-100 d-flex flex-column "
         style={{ position: "relative" }}
       >
-        <MDBCardBody>
-          <h5 className="font-weight-bold ">
-            Order Details{" "}
-            {orderDetails.length > 0 ? `(${orderDetails.length})` : ""}
-          </h5>
-          <hr className=" m-0 p-0" />
-          <Body
-            orderDetails={orderDetails}
-            setOrderDetails={setOrderDetails}
-            handleChange={handleChange}
-            handleChangeGrams={handleChangeGrams}
-            handleUpdateVariant={handleUpdateVariant}
-            handleDelete={handleDelete}
-            handleClose={handleClose}
-            popoverKey={popoverKey}
-            variant1={variant1}
-            setVariant1={setVariant1}
-            variant2={variant2}
-            setVariant2={setVariant2}
-          />
-          <Footer
-            invoice_no={invoice_no}
-            total={total}
-            setCheckout={setCheckout}
-            orderDetails={orderDetails}
-          />
+        <MDBCardBody className="d-flex flex-column">
+          <div>
+            <h5 className="font-weight-bold">
+              Order Details{" "}
+              {orderDetails.length > 0 ? `(${orderDetails.length})` : ""}
+            </h5>
+            <hr className="m-0 p-0" />
+          </div>
+          <div className="flex-grow-1 overflow-auto">
+            <Body
+              orderDetails={orderDetails}
+              setOrderDetails={setOrderDetails}
+              handleChange={handleChange}
+              handleChangeGrams={handleChangeGrams}
+              handleUpdateVariant={handleUpdateVariant}
+              handleDelete={handleDelete}
+              handleClose={handleClose}
+              popoverKey={popoverKey}
+              variant1={variant1}
+              setVariant1={setVariant1}
+              variant2={variant2}
+              setVariant2={setVariant2}
+            />
+          </div>
+          <div
+            style={{
+              position: "sticky",
+              bottom: 10,
+              backgroundColor: "white",
+              zIndex: 1000,
+              marginBottom: "10px",
+            }}
+          >
+            <Footer
+              invoice_no={invoice_no}
+              cash={cash}
+              setCash={setCash}
+              total={total}
+              setCheckout={setCheckout}
+              orderDetails={orderDetails}
+            />
+          </div>
         </MDBCardBody>
       </MDBCard>
       <Receipt
@@ -123,6 +155,7 @@ const Orders = ({ orders, setOrders, invoice_no, setInvoice_no }) => {
         total={total}
         orderDetails={orderDetails}
         setInvoice_no={setInvoice_no}
+        cash={cash}
         setOrders={setOrders}
       />
     </MDBCol>

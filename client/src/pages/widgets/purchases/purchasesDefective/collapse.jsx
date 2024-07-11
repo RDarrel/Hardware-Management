@@ -12,7 +12,12 @@ import CustomSelect from "../../../../components/customSelect";
 import GET from "../GET";
 import DefectiveTable from "./defective/table";
 import ReplacementTable from "./replacement/table";
-const Collapse = ({ collections = [], isAdmin, status = "defective" }) => {
+const Collapse = ({
+  collections = [],
+  isAdmin,
+  status = "defective",
+  isDefective,
+}) => {
   const [purchases, setPurchases] = useState([]),
     [activeId, setActiveId] = useState(-1),
     [suppliers, setSuppliers] = useState([]),
@@ -44,7 +49,11 @@ const Collapse = ({ collections = [], isAdmin, status = "defective" }) => {
     switch (status) {
       case "defective":
         return (
-          <DefectiveTable isAdmin={isAdmin} purchases={purchase.stockmans} />
+          <DefectiveTable
+            isAdmin={isAdmin}
+            purchases={purchase.stockmans}
+            isDefective={isDefective}
+          />
         );
 
       case "replacement":
@@ -53,6 +62,7 @@ const Collapse = ({ collections = [], isAdmin, status = "defective" }) => {
             isAdmin={isAdmin}
             purchases={purchase.stockmans}
             isApproved={true}
+            isDefective={isDefective}
           />
         );
 

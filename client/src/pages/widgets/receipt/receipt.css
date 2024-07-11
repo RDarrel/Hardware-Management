@@ -72,9 +72,9 @@
 }
 
 .invoice-table {
+  font-family: "Lato", sans-serif;
   width: 100%;
   border-collapse: collapse;
-  margin-top: -8px;
   margin-bottom: 20px;
 }
 
@@ -87,6 +87,7 @@
   font-size: 1rem;
   text-transform: capitalize;
   color: black;
+  font-weight: 590; /* Bold font weight for headers */
 }
 
 /* Row Styles */
@@ -98,9 +99,14 @@
 .invoice-table td {
   border: 2px solid black;
   text-align: left;
-  padding: 0.4rem;
+  padding: 0.2rem;
   font-size: 0.9rem;
-  font-weight: 450;
+  font-weight: 400; /* Normal font weight for regular cells */
+}
+
+.paragraph {
+  margin-top: -10px;
+  margin-bottom: -25px;
 }
 
 .invoice-signature {

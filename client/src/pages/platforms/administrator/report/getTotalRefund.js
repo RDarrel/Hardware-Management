@@ -1,6 +1,5 @@
 const getTotalRefundAmount = (purchases) => {
   if (purchases?.length === 0) return 0;
-  console.log(purchases);
   const subtotal = purchases.map((purchase) => {
     const {
       kiloRefund = 0,
