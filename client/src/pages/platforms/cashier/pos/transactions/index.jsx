@@ -117,7 +117,7 @@ export default function Transactions({ show, toggle }) {
       reverseButtons: true,
       focusConfirm: false,
       preConfirm: () => {
-        const textAreaValue = document.getElementById("swal-input1").value;
+        const textAreaValue = document.getElementById("return-reason").value;
         if (!textAreaValue) {
           Swal.showValidationMessage("You need to write a reason!");
         } else {

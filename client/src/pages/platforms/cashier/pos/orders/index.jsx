@@ -7,12 +7,14 @@ import Footer from "./footer";
 import Body from "./body";
 import { variation } from "../../../../../services/utilities";
 import Receipt from "../../../../widgets/receipt";
+import seperateKiloAndGrams from "../../../../../services/utilities/seperateKiloAndGrams";
 
 const Orders = ({
   orders,
   setOrders,
   invoice_no,
   setInvoice_no,
+  collections,
   handleMaxSaleMessage,
 }) => {
   const [total, setTotal] = useState(0),
@@ -71,10 +73,43 @@ const Orders = ({
 
   const handleUpdateVariant = (index, variant1, variant2) => {
     const _orders = [...orders];
-    _orders[index].variant1 = variant1;
+    const {
+      product,
+      quantity,
+      kilo = 0,
+      kiloGrams = 0,
+      variant1: oldVr1 = "",
+    } = _orders[index];
+
+    const { options } = product.variations[0];
+    const variation = options;
+
+    var newMax = variation.find(({ _id }) => _id === variant1)?.max;
+
     if (variant2) {
+      const prices = variation.find(({ _id }) => _id === oldVr1)?.prices;
+      newMax = prices.find(({ _id }) => _id === variant2)?.max;
+      if (newMax === 0) {
+        const prices = variation.find(({ _id }) => _id === variant1)?.prices;
+        newMax = prices.find(({ _id }) => _id === variant2)?.max;
+      }
       _orders[index].variant2 = variant2;
     }
+    if (newMax) {
+      if (product.isPerKilo) {
+        const totalKiloOrder = kilo + kiloGrams;
+        if (newMax < totalKiloOrder) {
+          const newKilo = seperateKiloAndGrams(newMax);
+          _orders[index] = { ..._orders[index], ...newKilo };
+        }
+      } else {
+        if (newMax < quantity) {
+          _orders[index].quantity = newMax;
+        }
+      }
+      _orders[index].max = newMax;
+    }
+    _orders[index].variant1 = variant1;
 
     setOrders(_orders);
     handleClose();

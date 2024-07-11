@@ -57,7 +57,7 @@ const Footer = ({
                         ₱
                       </h5>
                     }
-                    value={String(cash || total)}
+                    value={String(cash)}
                     type="number"
                     onChange={({ target }) => setCash(Number(target.value))}
                   />

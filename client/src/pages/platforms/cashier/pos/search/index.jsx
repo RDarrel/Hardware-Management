@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import Categories from "../categories";
+import "./search.css";
 import { MDBCard, MDBCardBody, MDBBtn, MDBIcon } from "mdbreact";
+import SuggestedProducts from "./suggestedProducts";
 const Search = ({
   search,
   setSearch,
@@ -9,6 +11,8 @@ const Search = ({
   didSearch,
   setProducts,
   collections,
+  products,
+  handleAddOrder,
 }) => {
   const inputRef = useRef(null);
 
@@ -27,6 +31,7 @@ const Search = ({
               placeholder="Seach.."
               required
               value={search}
+              autoComplete="off"
               ref={inputRef}
               onChange={({ target }) => setSearch(target.value)}
               name="search"
@@ -47,6 +52,15 @@ const Search = ({
               <MDBIcon icon={didSearch ? "times" : "search"} />
             </MDBBtn>
           </form>
+          {search && (
+            <SuggestedProducts
+              products={products}
+              setDidSearch={setDidSearch}
+              search={search}
+              handleAddOrder={handleAddOrder}
+              setSearch={setSearch}
+            />
+          )}
           <Categories />
         </div>
       </MDBCardBody>

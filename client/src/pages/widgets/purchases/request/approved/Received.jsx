@@ -50,8 +50,6 @@ export default function Received({
       : "Products Received"
     : `Received By: ${fullName(purchase?.requestBy?.fullName)}`;
 
-  console.log("running");
-
   const baseKeyInMerchandise = "approved";
   return (
     <MDBModal

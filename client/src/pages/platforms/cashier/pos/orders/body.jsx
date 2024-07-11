@@ -70,7 +70,7 @@ const Body = ({
                           marginBottom: "-5px",
                         }}
                       >
-                        {item.product.name}
+                        {item.product.name.toUpperCase()}
                       </h6>
                       {item.product.hasVariant && (
                         <MDBPopover

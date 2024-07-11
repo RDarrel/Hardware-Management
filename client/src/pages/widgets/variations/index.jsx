@@ -35,11 +35,37 @@ const Variations = ({
         if (isChangeVariant && !option1ID) {
           handleDisableVr2(variations[0].options, variant1);
         }
+        if (variant2) {
+          handleDisableVr1(variations[0].options, variant2);
+        }
       }
     }
 
     //to reset the variant1 and variant2
-  }, [has2Variant, variations, isChangeVariant, variant1, option1ID]);
+  }, [has2Variant, variations, isChangeVariant, variant1, option1ID, variant2]);
+
+  const handleDisableVr1 = (_options, _variant2) => {
+    const disableOptionsID =
+      _options
+        ?.map((option) => {
+          const prices = option?.prices;
+          const isDisAble = prices?.find(
+            ({ _id: priceID }) => priceID === _variant2
+          )?.disable;
+
+          if (isDisAble) {
+            return option?._id;
+          }
+          return false;
+        })
+        .filter(Boolean) || [];
+
+    if (disableOptionsID?.length > 0) {
+      setDisableIDSVr1(disableOptionsID);
+    } else {
+      setDisableIDSVr1([]);
+    }
+  };
 
   const handleDisableVr2 = (options, variant) => {
     const vr1Prices = options.find(({ _id }) => variant === _id)?.prices || [];
@@ -57,7 +83,6 @@ const Variations = ({
     if (has2Variant) {
       //first is to check if have a disable in vr2
       handleDisableVr2(variation1.options, _id);
-
       if (option2ID) {
         const prices = variation1.options.find(
           (option) => option._id === _id
@@ -79,20 +104,7 @@ const Variations = ({
   };
 
   const handleClickVr2 = (_id) => {
-    const disableOptionsID = variation1?.options
-      .map((option) => {
-        const prices = option.prices;
-        const isDisAble = prices.find(
-          ({ _id: priceID }) => priceID === _id
-        ).disable;
-
-        if (isDisAble) {
-          return option._id;
-        }
-        return false;
-      })
-      .filter(Boolean);
-
+    handleDisableVr1(variation1?.options, _id);
     if (option1ID) {
       const prices = variation1.options.find(
         (option) => option._id === option1ID
@@ -102,14 +114,7 @@ const Variations = ({
 
       setPrice(srp);
     }
-
     setOption2ID(_id);
-
-    if (disableOptionsID.length > 0) {
-      setDisableIDSVr1(disableOptionsID);
-    } else {
-      setDisableIDSVr1([]);
-    }
     setVariant2(_id);
   };
 

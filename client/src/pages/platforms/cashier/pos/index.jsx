@@ -61,17 +61,22 @@ const POS = () => {
     event.preventDefault();
 
     const results = collections.filter((product) =>
-      product.name.toLowerCase().includes(search.toLocaleLowerCase())
+      product.name
+        .toLowerCase()
+        .replace(/\s/g, "")
+        .includes(search.toLocaleLowerCase().replace(/\s/g, ""))
     );
 
     if (results.length === 0) {
+      setDidSearch(false);
+
       addToast(`No results Found for ${search}`, {
         appearance: "error",
       });
       setProducts(collections);
-    } else if (results.length > 1) {
-      setProducts(results);
-    } else {
+      // } else if (results.length > 1) {
+      //   setProducts(results);
+    } else if (results.length === 1) {
       const product = results[0];
 
       if (product.hasVariant) {
@@ -123,6 +128,7 @@ const POS = () => {
   };
 
   const handleAddOrder = (product) => {
+    setDidSearch(false);
     let index = orders.findIndex((item) => {
       if (item.product?._id !== product._id) {
         return false;
@@ -198,10 +204,12 @@ const POS = () => {
             didSearch={didSearch}
             handleSearch={handleSearch}
             setDidSearch={setDidSearch}
+            handleAddOrder={handleAddOrder}
             search={search}
             setSearch={setSearch}
             setProducts={setProducts}
             collections={collections}
+            products={products}
           />
           <Products
             products={products}
@@ -212,6 +220,7 @@ const POS = () => {
         </MDBCol>
         <Orders
           orders={orders}
+          collections={collections}
           handleMaxSaleMessage={handleMaxSaleMessage}
           setOrders={setOrders}
           invoice_no={invoice_no}
