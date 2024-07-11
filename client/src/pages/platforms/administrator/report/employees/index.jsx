@@ -64,26 +64,17 @@ export const EmployeesReport = () => {
                   Cashier
                 </th>
 
-                <th className="text-center th-lg" colSpan="3">
-                  Details
+                <th className=" th-lg text-center text-nowrap">
+                  Transactions Processed
                 </th>
-                <th className="text-center th-lg text-nowrap" rowSpan="2">
-                  Total Refund Amount
+                <th className="text-center th-lg text-nowrap">
+                  Replacement Processed
                 </th>
                 <th className="th-lg text-center text-nowrap" rowSpan="2">
                   Total Replacement Amount
                 </th>
                 <th className="text-center th-lg text-nowrap" rowSpan="2">
                   Total Sales Amount
-                </th>
-              </tr>
-              <tr>
-                <th className=" th-lg text-center text-nowrap">
-                  Transactions Processed
-                </th>
-                <th className="text-center th-lg">Refund Processed</th>
-                <th className="text-center th-lg text-nowrap">
-                  Replacement Processed
                 </th>
               </tr>
             </thead>
@@ -94,8 +85,8 @@ export const EmployeesReport = () => {
                     cashier,
                     transactionsHandle,
                     total,
-                    refundItemCount = 0,
-                    totalRefundSales = 0,
+                    // refundItemCount = 0,
+                    // totalRefundSales = 0,
                     returnItemCount = 0,
                     totalReturnSales = 0,
                   } = transaction;
@@ -123,7 +114,7 @@ export const EmployeesReport = () => {
                           {transactionsHandle}
                         </span>
                       </td>
-                      <td
+                      {/* <td
                         className="text-center font-weight-bold cursor-pointer"
                         onClick={() => {
                           if (refundItemCount === 0) {
@@ -145,7 +136,7 @@ export const EmployeesReport = () => {
                         <span className="counter text-center">
                           {refundItemCount || 0}
                         </span>
-                      </td>
+                      </td> */}
                       <td
                         className="text-center font-weight-bold cursor-pointer"
                         onClick={() => {
@@ -163,15 +154,13 @@ export const EmployeesReport = () => {
                         <MDBIcon
                           icon="hand-holding"
                           size="2x"
-                          style={{ color: "#f4bf51" }}
+                          style={{ color: "red" }}
                         />
-                        <span className="counter text-center bg-warning">
+                        <span className="counter text-center bg-danger">
                           {returnItemCount || 0}
                         </span>
                       </td>
-                      <td className="text-center text-danger font-weight-bold">
-                        ₱{totalRefundSales.toLocaleString()}.00
-                      </td>
+
                       <td className="text-center text-danger font-weight-bold">
                         ₱{totalReturnSales.toLocaleString()}.00
                       </td>
