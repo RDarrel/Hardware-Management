@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { MDBCard, MDBCardBody } from "mdbreact";
 import { variation } from "../../../../../services/utilities";
 
@@ -9,6 +9,8 @@ function SuggestedProducts({
   setSearch,
 }) {
   const [suggested, setSuggested] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const selectedItemRef = useRef(null);
 
   useEffect(() => {
     if (search && collections.length > 0) {
@@ -35,6 +37,39 @@ function SuggestedProducts({
       }
     }
   }, [search, collections]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowDown") {
+        setSelectedIndex((prevIndex) =>
+          prevIndex < suggested.length - 1 ? prevIndex + 1 : prevIndex
+        );
+      } else if (e.key === "ArrowUp") {
+        setSelectedIndex((prevIndex) =>
+          prevIndex > 0 ? prevIndex - 1 : prevIndex
+        );
+      } else if (e.key === "Enter" && selectedIndex >= 0) {
+        handleAddOrder(suggested[selectedIndex]);
+        setSearch("");
+        return () => setSelectedIndex(-1);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedIndex, suggested, handleAddOrder, setSearch]);
+
+  useEffect(() => {
+    if (selectedItemRef.current) {
+      selectedItemRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "nearest",
+      });
+    }
+  }, [selectedIndex]);
 
   const mergeVariantInProduct = (_products) => {
     const container = [];
@@ -88,7 +123,8 @@ function SuggestedProducts({
             return (
               <div
                 key={index}
-                className="result"
+                className={`result ${index === selectedIndex ? "active" : ""}`}
+                ref={index === selectedIndex ? selectedItemRef : null}
                 onClick={() => {
                   handleAddOrder(product);
                   setSearch("");

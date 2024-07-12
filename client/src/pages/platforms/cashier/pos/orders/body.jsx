@@ -30,6 +30,7 @@ const Body = ({
     setVariant1("");
     setVariant2("");
   }, [setVariant1, setVariant2]);
+
   return (
     <div className="order-details m-0 p-0 ">
       {orderDetails.length === 0 ? (
@@ -51,7 +52,7 @@ const Body = ({
                 <td className="p-1">
                   <div className="d-flex align-items-center">
                     <img
-                      src={`${ENDPOINT}/assets/products/${item?.product?._id}/${item?.product?.media?.product[0].label}.jpg`}
+                      src={`${ENDPOINT}/assets/products/${item?.product?._id}/${item?.product?.media?.product[0]?.label}.jpg`}
                       height={"60px"}
                       width={"55px"}
                       alt={`${item.product.name}`}
@@ -70,7 +71,7 @@ const Body = ({
                           marginBottom: "-5px",
                         }}
                       >
-                        {item.product.name.toUpperCase()}
+                        {item.product?.name?.toUpperCase()}
                       </h6>
                       {item.product.hasVariant && (
                         <MDBPopover
@@ -101,11 +102,11 @@ const Body = ({
                             <Variations
                               isCart={true}
                               isChangeVariant={true}
-                              has2Variant={item.product.hasVariant}
-                              variations={item.product.variations}
-                              variant1={variant1 || item.variant1}
+                              has2Variant={item?.product?.hasVariant}
+                              variations={item?.product?.variations}
+                              variant1={variant1 || item?.variant1}
                               setVariant1={setVariant1}
-                              variant2={variant2 || item.variant2}
+                              variant2={variant2 || item?.variant2}
                               setVariant2={setVariant2}
                             />
                             <MDBRow className="mt-3">
@@ -126,8 +127,8 @@ const Body = ({
                                   onClick={() =>
                                     handleUpdateVariant(
                                       index,
-                                      variant1 || item.variant1,
-                                      variant2 || item.variant2
+                                      variant1 || item?.variant1,
+                                      variant2 || item?.variant2
                                     )
                                   }
                                 >

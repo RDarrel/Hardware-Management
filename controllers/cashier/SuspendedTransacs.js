@@ -4,6 +4,7 @@ const Entity = require("../../models/cashier/SuspendedTransacs"),
 exports.browse = (req, res) => {
   const cashier = req.query.cashier;
   Entity.find({ cashier })
+    .populate("orders.product")
     .select("-__v")
     .sort({ createdAt: -1 })
     .lean()
@@ -19,12 +20,12 @@ exports.browse = (req, res) => {
 exports.save = async (req, res) => {
   try {
     const { invoice_no = "", cashier = "", orders = [], total = 0 } = req.body;
-    const hasExist = Entity.findOne({ invoice_no, cashier });
-    if (hasExist.invoice) {
-      await Entity.findOneAndUpdate({ invoice_no }, { orders });
-    } else {
-      await Entity.create({ invoice_no, cashier, orders, total });
-    }
+    // const hasExist = Entity.findOne({ invoice_no, cashier });
+    // if (hasExist.invoice) {
+    //   await Entity.findOneAndUpdate({ invoice_no }, { orders });
+    // } else {
+    await Entity.create({ invoice_no, cashier, orders, total });
+    // }
     res.json({
       payload: { invoice_no, cashier, orders, total },
       success: "Successfully Suspended",

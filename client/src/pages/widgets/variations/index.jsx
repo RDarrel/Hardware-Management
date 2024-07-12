@@ -27,6 +27,19 @@ const Variations = ({
   }, [setVariant1, setVariant2]);
 
   useEffect(() => {
+    if (!variant1) {
+      setDisableIDSVr2([]);
+    }
+    if (!variant2) {
+      setDisableIDSVr1([]);
+    }
+    if (!variant1 && !variant2) {
+      setDisableIDSVr1([]);
+      setDisableIDSVr2([]);
+    }
+  }, [variant1, variant2]);
+
+  useEffect(() => {
     if (variations && variations.length > 0) {
       setVariation1(variations[0]);
       if (has2Variant && variations.length > 1) {
@@ -78,6 +91,11 @@ const Variations = ({
   };
 
   const handleClickVr1 = (_id) => {
+    console.log(variant1 === _id);
+    if (variant1 === _id) {
+      setOption1ID("");
+      return setVariant1("");
+    }
     const vr1Img = !isCart && images.find(({ label }) => label === _id);
 
     if (has2Variant) {
@@ -96,14 +114,15 @@ const Variations = ({
       const srp = variation1.options.find((option) => option._id === _id).srp;
       setPrice(srp);
     }
-
     setVariant1(_id);
+
     if (vr1Img && !isCart) {
       setSelectedImage(vr1Img);
     }
   };
 
   const handleClickVr2 = (_id) => {
+    if (variant2 === _id) return setVariant2("");
     handleDisableVr1(variation1?.options, _id);
     if (option1ID) {
       const prices = variation1.options.find(

@@ -21,6 +21,32 @@ const Search = ({
       inputRef.current.focus();
     }
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      switch (event.key.toUpperCase()) {
+        case "F":
+          event.preventDefault();
+          break;
+        default:
+          return; // Allow default behavior for other keys
+      }
+
+      switch (event.key.toUpperCase()) {
+        case "F":
+          inputRef.current.focus();
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
   return (
     <MDBCard className="mb-1">
       <MDBCardBody className="m-0 p-1">
@@ -31,6 +57,7 @@ const Search = ({
               placeholder="Seach.."
               required
               value={search}
+              id="search"
               autoComplete="off"
               ref={inputRef}
               onChange={({ target }) => setSearch(target.value)}
@@ -46,7 +73,7 @@ const Search = ({
                 setSearch("");
                 setProducts(collections);
               }}
-              type={didSearch ? "button" : "submit"}
+              type={!didSearch ? "button" : "submit"}
               className="search-btn"
             >
               <MDBIcon icon={didSearch ? "times" : "search"} />

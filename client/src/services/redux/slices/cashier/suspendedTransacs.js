@@ -225,18 +225,18 @@ export const reduxSlice = createSlice({
       .addCase(SAVE.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
         const _collections = [...state.collections];
-        const index = _collections.findIndex(
-          ({ invoice_no }) => invoice_no === payload.invoice_no
-        );
+        // const index = _collections.findIndex(
+        //   ({ invoice_no }) => invoice_no === payload.invoice_no
+        // );
 
-        if (index > -1) {
-          _collections[index] = {
-            ..._collections[index],
-            orders: payload.orders,
-          };
-        } else {
-          _collections.unshift(payload);
-        }
+        // if (index > -1) {
+        //   _collections[index] = {
+        //     ..._collections[index],
+        //     orders: payload.orders,
+        //   };
+        // } else {
+        _collections.unshift(payload);
+        // }
         state.collections = _collections;
         state.message = success;
         state.isSuccess = true;
@@ -250,7 +250,7 @@ export const reduxSlice = createSlice({
       .addCase(DESTROY.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
         const index = state.collections.findIndex(
-          ({ _id }) => _id === payload._id
+          ({ _id }) => _id === payload?._id
         );
         state.collections.splice(index, 1);
         state.showModal = false;

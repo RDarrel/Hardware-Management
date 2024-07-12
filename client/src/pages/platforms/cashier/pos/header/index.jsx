@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   MDBCard,
   MDBCardHeader,
@@ -13,18 +13,29 @@ import "./header.css";
 import Transactions from "../transactions";
 import { BROWSE } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
 import SuspendedTransacs from "../suspendedTransacs";
+import Guide from "../guide";
 
-const Header = () => {
+const Header = ({ setOrders, setInvoice_no, products }) => {
   const { auth, token } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ suspendedTransacs }) => suspendedTransacs),
     [suspendedTransacs, setSuspendedTransacs] = useState([]),
     [showSuspend, setShowSuspend] = useState(false),
+    [showGuide, setShowGuide] = useState(false),
     [id, setId] = useState(0),
     [show, setShow] = useState(false),
     dispatch = useDispatch();
 
-  const toggle = () => setShow(!show);
-  const toggleSuspended = () => setShowSuspend(!showSuspend);
+  const toggle = useCallback(() => {
+    setShow(!show);
+  }, [show]);
+
+  const toggleSuspended = useCallback(() => {
+    setShowSuspend(!showSuspend);
+  }, [showSuspend]);
+
+  const toggleGuide = useCallback(() => {
+    setShowGuide(!showGuide);
+  }, [showGuide]);
 
   useEffect(() => {
     if (auth._id) {
@@ -38,19 +49,36 @@ const Header = () => {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === "F3") {
-        event.preventDefault(); // Prevent the default browser action for F1
-        toggle();
+      switch (event.key.toUpperCase()) {
+        case "F4":
+        case "F3":
+        case "F5":
+          event.preventDefault();
+          break;
+        default:
+          return; // Allow default behavior for other keys
+      }
+
+      switch (event.key.toUpperCase()) {
+        case "F4":
+          toggle();
+          break;
+        case "F3":
+          toggleSuspended();
+          break;
+        case "F5":
+          toggleGuide();
+          break;
+        default:
+          break;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
-    // Cleanup event listener on component unmount
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [toggle, toggleSuspended, toggleGuide]);
   return (
     <MDBCard className="w-100 mb-2">
       <MDBCardHeader className="d-flex align-items-center justify-content-between ">
@@ -110,9 +138,13 @@ const Header = () => {
           </MDBPopover>
         </div>
       </MDBCardHeader>
+      <Guide show={showGuide} toggle={toggleGuide} />
       <SuspendedTransacs
         show={showSuspend}
+        products={products}
         toggle={toggleSuspended}
+        setOrders={setOrders}
+        setInvoice_no={setInvoice_no}
         collections={suspendedTransacs}
       />
       <Transactions show={show} toggle={toggle} />

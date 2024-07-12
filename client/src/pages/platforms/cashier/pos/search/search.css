@@ -27,6 +27,13 @@
   cursor: pointer;
   color: white;
 }
+
+.active {
+  background-color: #4285f4;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+}
 .product {
   margin-bottom: -5px;
   font-weight: 500;

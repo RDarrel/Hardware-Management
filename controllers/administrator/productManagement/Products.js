@@ -167,9 +167,28 @@ exports.sellingProducts = async (_, res) => {
         if (has2Variant) {
           //para kunin yung pinaka maraming choices na prices para yun yung isoshow na available sa variant2
           optionsInVariant2 = filteredOptions.reduce((maxObj, currentObj) => {
-            return currentObj.prices.length > (maxObj.prices?.length || 0)
-              ? currentObj
-              : maxObj;
+            if (
+              maxObj.prices &&
+              maxObj.prices.length === currentObj.prices.length &&
+              !maxObj.prices.every(
+                (price, index) => price._id === currentObj.prices[index]._id
+              )
+            ) {
+              // Merge the arrays if they have the same length but different values
+              const newPrices = [
+                ...new Set([...maxObj.prices, ...currentObj.prices]),
+              ];
+
+              return {
+                ...maxObj,
+                prices: newPrices,
+              };
+            } else {
+              // Default condition
+              return currentObj.prices.length > (maxObj.prices?.length || 0)
+                ? currentObj
+                : maxObj;
+            }
           }, {});
 
           filteredOptions = mergePricesToLowestOptions(

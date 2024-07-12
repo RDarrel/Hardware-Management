@@ -42,6 +42,12 @@ const modelSchema = new mongoose.Schema(
         max: {
           type: Number,
         },
+        srp: {
+          type: Number,
+        },
+        subtotal: {
+          type: Number,
+        },
       },
     ],
   },

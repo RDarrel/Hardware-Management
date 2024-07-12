@@ -129,7 +129,8 @@ const POS = () => {
 
   const handleAddOrder = (product) => {
     setDidSearch(false);
-    let index = orders.findIndex((item) => {
+    const _orders = [...orders];
+    let index = _orders.findIndex((item) => {
       if (item.product?._id !== product._id) {
         return false;
       }
@@ -145,8 +146,6 @@ const POS = () => {
       }
       return true; // No variants to compare
     });
-
-    const _orders = [...orders];
     if (index > -1) {
       const max = _orders[index].max;
 
@@ -198,7 +197,11 @@ const POS = () => {
       className="pt-2"
       style={{ overflowY: "hidden", height: "100vh" }}
     >
-      <Header />
+      <Header
+        setOrders={setOrders}
+        setInvoice_no={setInvoice_no}
+        products={collections}
+      />
       <MDBRow>
         <MDBCol md="6">
           <Search

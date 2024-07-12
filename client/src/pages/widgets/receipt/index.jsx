@@ -102,25 +102,25 @@ export default function Receipt({
                           }}
                           className="font-weight-bold "
                         >
-                          {order.product.name.toUpperCase()}
+                          {order?.product?.name?.toUpperCase()}
                         </span>
                         {order.product.hasVariant && (
                           <span style={{ marginTop: "-30px" }}>
                             Variation: &nbsp;
                             {variation.getTheVariant(
-                              order.variant1,
-                              order.variant2 || "",
-                              order.product.variations
+                              order?.variant1,
+                              order?.variant2 || "",
+                              order?.product?.variations
                             )}
                           </span>
                         )}
                       </div>
                     </td>
                     <td className="text-center">
-                      {variation.qtyOrKilo(order, order.product.isPerKilo)}
+                      {variation.qtyOrKilo(order, order?.product?.isPerKilo)}
                     </td>
 
-                    <td className="text-center">₱{order.srp}</td>
+                    <td className="text-center">₱{order?.srp}</td>
                     <td className="text-center">
                       ₱{order.subtotal.toLocaleString()}
                     </td>

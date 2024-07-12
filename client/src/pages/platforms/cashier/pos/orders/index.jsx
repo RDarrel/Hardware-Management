@@ -54,19 +54,19 @@ const Orders = ({
       const kilo = _orders[index].kilo + 1;
       if (value >= kilo - 1 && max <= kilo)
         return handleMaxSaleMessage(max, true);
-      _orders[index].kilo = Number(value);
+      _orders[index] = { ..._orders[index], kilo: Number(value) };
     } else {
       const quantity = _orders[index].quantity;
       if (quantity === value && max === quantity)
         return handleMaxSaleMessage(max, false);
-      _orders[index].quantity = Number(value);
+      _orders[index] = { ..._orders[index], quantity: Number(value) };
     }
     setOrders(_orders);
   };
 
   const handleChangeGrams = (index, value) => {
     const _orders = [...orders];
-    _orders[index].kiloGrams = Number(value);
+    _orders[index] = { ..._orders[index], kiloGrams: Number(value) };
     setOrders(_orders);
   };
 
@@ -96,7 +96,7 @@ const Orders = ({
         const prices = variation.find(({ _id }) => _id === variant1)?.prices;
         newMax = prices.find(({ _id }) => _id === variant2)?.max;
       }
-      _orders[index].variant2 = variant2;
+      _orders[index] = { ..._orders[index], variant2 };
     }
     if (newMax) {
       if (product.isPerKilo) {
@@ -107,12 +107,13 @@ const Orders = ({
         }
       } else {
         if (newMax < quantity) {
-          _orders[index].quantity = newMax;
+          _orders[index] = { ..._orders[index], quantity: newMax };
         }
       }
-      _orders[index].max = newMax;
+      _orders[index] = { ..._orders[index], max: newMax };
     }
-    _orders[index].variant1 = variant1;
+
+    _orders[index] = { ..._orders[index], variant1 };
 
     setOrders(_orders);
     handleClose();
@@ -140,6 +141,7 @@ const Orders = ({
           })
         );
         setInvoice_no("");
+        setOrders([]);
         setOrderDetails([]);
         Swal.fire({
           title: "Suspended!",
@@ -172,7 +174,10 @@ const Orders = ({
     const handleKeyDown = (event) => {
       if (event.key === "F2") {
         event.preventDefault(); // Prevent the default browser action for F1
-        document.getElementById("suspend").click();
+        const suspend = document.getElementById("suspend");
+        if (suspend) {
+          suspend.click();
+        }
         // Perform your suspend action here
       }
     };
