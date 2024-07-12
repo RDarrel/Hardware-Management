@@ -191,6 +191,7 @@ const POS = () => {
       handleSwalAddedToCart();
     }
   };
+
   return (
     <MDBContainer
       fluid

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MDBCard,
   MDBCardHeader,
@@ -8,33 +8,73 @@ import {
   MDBBtn,
 } from "mdbreact";
 import { fullName } from "../../../../../services/utilities";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "./header.css";
 import Transactions from "../transactions";
+import { BROWSE } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
+import SuspendedTransacs from "../suspendedTransacs";
 
 const Header = () => {
-  const { auth } = useSelector(({ auth }) => auth);
-  const [id, setId] = useState(0);
-  const [show, setShow] = useState(false);
+  const { auth, token } = useSelector(({ auth }) => auth),
+    { collections } = useSelector(({ suspendedTransacs }) => suspendedTransacs),
+    [suspendedTransacs, setSuspendedTransacs] = useState([]),
+    [showSuspend, setShowSuspend] = useState(false),
+    [id, setId] = useState(0),
+    [show, setShow] = useState(false),
+    dispatch = useDispatch();
 
   const toggle = () => setShow(!show);
+  const toggleSuspended = () => setShowSuspend(!showSuspend);
 
+  useEffect(() => {
+    if (auth._id) {
+      dispatch(BROWSE({ token, key: { cashier: auth._id } }));
+    }
+  }, [dispatch, token, auth]);
+
+  useEffect(() => {
+    setSuspendedTransacs(collections);
+  }, [collections]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "F3") {
+        event.preventDefault(); // Prevent the default browser action for F1
+        toggle();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
   return (
     <MDBCard className="w-100 mb-2">
       <MDBCardHeader className="d-flex align-items-center justify-content-between ">
         <h5 className="font-weight-bold">Liberty Hardware </h5>
-        <div
-          className="d-flex align-items-center cursor-pointer"
-          onClick={toggle}
-        >
-          <MDBIcon
-            icon="handshake"
-            far
-            size="2x"
-            className="mr-3"
-            style={{ color: "#4285F4" }}
-          />
-          <h5 className="mt-2">Transaction</h5>
+        <div className="d-flex align-items-center">
+          <div
+            className="d-flex align-items-center cursor-pointer mr-2 m-0 p-0"
+            onClick={toggle}
+          >
+            <MDBBtn color="warning" size="sm" className="font-weight-bold">
+              <MDBIcon icon="handshake" far size="1x" className="mr-1" />
+              Transaction
+            </MDBBtn>
+          </div>
+
+          <div
+            className="d-flex align-items-center cursor-pointer m-0 p-0"
+            onClick={toggleSuspended}
+          >
+            <MDBBtn size="sm" color="info" className="font-weight-bold">
+              <MDBIcon far icon="pause-circle" className="mr-1" />
+              Suspended Transactions
+            </MDBBtn>
+          </div>
         </div>
         <div onMouseLeave={() => setId((prev) => prev + 1)} className="p-1">
           <MDBPopover placement="bottom" popover id={`popover-${id}`} key={id}>
@@ -70,6 +110,11 @@ const Header = () => {
           </MDBPopover>
         </div>
       </MDBCardHeader>
+      <SuspendedTransacs
+        show={showSuspend}
+        toggle={toggleSuspended}
+        collections={suspendedTransacs}
+      />
       <Transactions show={show} toggle={toggle} />
     </MDBCard>
   );
