@@ -50,7 +50,9 @@ exports.browse = async (req, res) => {
 
     const productOutOfStocks =
       arrangeStocks.length > 0
-        ? arrangeStocks.filter(({ stock }) => stock <= 20)
+        ? arrangeStocks
+            .filter(({ stock }) => stock <= 20)
+            .sort((a, b) => a.stock - b.stock)
         : [];
 
     res.json({ payload: { nearlyExpired, outOfStocks: productOutOfStocks } });
