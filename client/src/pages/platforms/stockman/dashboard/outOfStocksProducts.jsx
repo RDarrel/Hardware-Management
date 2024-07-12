@@ -7,10 +7,15 @@ const OutOfStocksProducts = ({ outOfStocks = [] }) => {
     <MDBCol lg="12" md="12">
       <MDBCard className="mb-4">
         <MDBCardHeader color="primary-color">
-          <MDBIcon icon="exclamation-triangle" /> Product Out of Stocks
+          <MDBIcon icon="exclamation-triangle" className="mr-1" />
+          Nearly Product Out of Stocks
         </MDBCardHeader>
         <MDBCardBody>
-          <Table products={outOfStocks} isStock={true} />
+          <Table
+            products={outOfStocks}
+            isStock={true}
+            title={"Nearly out of stock"}
+          />
         </MDBCardBody>
       </MDBCard>
     </MDBCol>

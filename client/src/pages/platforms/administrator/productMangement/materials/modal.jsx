@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   SAVE,
   UPDATE,
-} from "../../../../../services/redux/slices/administrator/productManagement/category";
+} from "../../../../../services/redux/slices/administrator/productManagement/materials";
 import { isEqual } from "lodash";
 import { isValid } from "../../../../../services/utilities";
 
@@ -31,7 +31,7 @@ export default function Modal({
   collections = [],
 }) {
   const { token } = useSelector(({ auth }) => auth),
-    { isLoading } = useSelector(({ category }) => category),
+    { isLoading } = useSelector(({ materials }) => materials),
     [isDuplicate, setIsDuplicate] = useState(false),
     [form, setForm] = useState(_form),
     dispatch = useDispatch(),
@@ -46,7 +46,6 @@ export default function Modal({
       setIsDuplicate(isValid(collections, form.name, "name", selected?.name));
     }
   }, [form, collections, selected]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!willCreate) {
@@ -89,8 +88,8 @@ export default function Modal({
         toggle={handleClose}
         className="light-blue darken-3 white-text"
       >
-        <MDBIcon icon="tags" className="mr-2" />
-        {!willCreate ? "Update" : "Create"} a Category
+        <MDBIcon icon="toolbox" className="mr-2" />
+        {!willCreate ? "Update" : "Create"} a Material
       </MDBModalHeader>
       <MDBModalBody className="mb-0">
         <form onSubmit={handleSubmit}>
@@ -121,7 +120,7 @@ export default function Modal({
                 note
                 noteTitle="Warning: "
               >
-                Sorry But this category is Already Exist
+                Sorry But this material is Already Exist
               </MDBTypography>
             )}
             <MDBBtn

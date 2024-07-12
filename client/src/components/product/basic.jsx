@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MDBRow, MDBCol, MDBCardBody, MDBCard, MDBInput } from "mdbreact";
-import { categories } from "../../services/fakeDb";
-import materials from "../../services/fakeDb/materials";
 import CustomSelect from "../../components/customSelect";
+import { useDispatch, useSelector } from "react-redux";
+import { BROWSE as BROWSE_CATEGORIES } from "../../services/redux/slices/administrator/productManagement/category";
+import { BROWSE as BROWSE_MATERIALS } from "../../services/redux/slices/administrator/productManagement/materials";
 
 function Basic({ form, setForm, selected }) {
+  const { token } = useSelector(({ auth }) => auth),
+    { collections: Categories } = useSelector(({ category }) => category),
+    { collections: Materials } = useSelector(({ materials }) => materials),
+    dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(BROWSE_CATEGORIES({ token }));
+    dispatch(BROWSE_MATERIALS({ token }));
+  }, [dispatch, token]);
   return (
     <MDBRow>
       <MDBCol md="12">
@@ -58,8 +68,10 @@ function Basic({ form, setForm, selected }) {
               </MDBCol>
               <MDBCol md="10">
                 <CustomSelect
-                  choices={categories}
+                  choices={Categories}
                   label={"Category"}
+                  texts="name"
+                  values="_id"
                   preValue={form?.category || selected.category}
                   onChange={(value) => setForm({ ...form, category: value })}
                 />
@@ -153,7 +165,9 @@ function Basic({ form, setForm, selected }) {
               </MDBCol>
               <MDBCol md="10">
                 <CustomSelect
-                  choices={materials}
+                  choices={Materials}
+                  values="_id"
+                  texts="name"
                   label={"Material"}
                   preValue={form.material || selected.material}
                   onChange={(value) => setForm({ ...form, material: value })}

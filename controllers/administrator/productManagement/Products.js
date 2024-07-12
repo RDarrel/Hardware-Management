@@ -1,4 +1,5 @@
 const Entity = require("../../../models/administrator/productManagement/Products"),
+  RemoveProductsExpired = require("../../../config/removeExpiredProducts"),
   Stocks = require("../../../models/stockman/Stocks"),
   fs = require("fs");
 
@@ -145,6 +146,7 @@ const mergePricesToLowestOptions = (options, optionsInVr2) => {
 
 exports.sellingProducts = async (_, res) => {
   try {
+    await RemoveProductsExpired();
     const products = await Entity.find();
     const container = [];
 

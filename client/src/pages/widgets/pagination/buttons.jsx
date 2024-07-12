@@ -15,6 +15,7 @@ const PaginationButtons = ({
   max, // max of page
   array = [],
   displayedButtons = 5,
+  hasPlural = true,
 }) => {
   const maxCount = Math.ceil(array.length / max);
   const countButtons =
@@ -109,7 +110,7 @@ const PaginationButtons = ({
           <MDBCol>
             <h6>
               Total of ({array.length}) {title}
-              {array.length > 1 ? "s" : ""}
+              {array.length > 1 ? hasPlural && "s" : ""}
             </h6>
           </MDBCol>
           <MDBCol className="d-flex justify-content-end" md="6">

@@ -19,6 +19,7 @@ import returnRefund from "./slices/administrator/returnRefund";
 import expiredProducts from "./slices/stockman/expiredProducts";
 import defectivePurchases from "./slices/stockman/defectivePurchases";
 import StockmanDashboard from "./slices/stockman/StockmanDashboard";
+import materials from "./slices/administrator/productManagement/materials";
 const store = configureStore({
   reducer: {
     auth,
@@ -31,6 +32,7 @@ const store = configureStore({
     products,
     suppliers,
     cart,
+    materials,
     purchases,
     stocks,
     pos,

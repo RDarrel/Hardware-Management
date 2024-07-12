@@ -8,6 +8,8 @@ import Suppliers from "./suppliers";
 import Request from "../../widgets/purchases/request";
 // import ReturnRefund from "./returnRefund";
 import PurchasesDefective from "../../widgets/purchases/purchasesDefective";
+import Categories from "./productMangement/category";
+import Materials from "./productMangement/materials";
 // import Category from "./productMangement/category";
 
 const access = [
@@ -26,26 +28,27 @@ const access = [
 
   {
     path: "/products",
-    name: "Products",
+    name: "Products Management",
     icon: "award",
-    component: Products,
+    // component: Products,
 
-    // children: [
-    //   {
-    //     name: "Products",
-    //     path: "/products",
-    //     component: Products,
-    //   },
-    //   {
-    //     name: "Category",
-    //     path: "/category",
-    //     component: Category,
-    //   },
-    //   {
-    //     name: "Materials",
-    //     path: "/material",
-    //   },
-    // ],
+    children: [
+      {
+        name: "Products",
+        path: "/products",
+        component: Products,
+      },
+      {
+        name: "Category",
+        path: "/category",
+        component: Categories,
+      },
+      {
+        name: "Materials",
+        path: "/material",
+        component: Materials,
+      },
+    ],
   },
 
   {

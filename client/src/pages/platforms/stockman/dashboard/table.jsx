@@ -7,7 +7,12 @@ import {
   variation,
 } from "../../../../services/utilities";
 import PaginationButtons from "../../../widgets/pagination/buttons";
-const Table = ({ products = [], isStock = false }) => {
+const Table = ({
+  products = [],
+  isStock = false,
+  title = "",
+  hasPlural = true,
+}) => {
   const [page, setPage] = useState(1);
   const maxPage = 5;
   return (
@@ -101,9 +106,10 @@ const Table = ({ products = [], isStock = false }) => {
         </tbody>
       </MDBTable>
       <PaginationButtons
+        hasPlural={hasPlural}
         page={page}
         setPage={setPage}
-        title={"Nearly"}
+        title={title}
         max={maxPage}
         array={products}
       />

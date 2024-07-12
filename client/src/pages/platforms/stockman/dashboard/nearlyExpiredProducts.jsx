@@ -10,7 +10,11 @@ const NearlyExpiredProducts = ({ nearlyExpired }) => {
           <MDBIcon icon="exclamation-triangle" /> Nearly Products Expired
         </MDBCardHeader>
         <MDBCardBody>
-          <Table products={nearlyExpired} />
+          <Table
+            products={nearlyExpired}
+            title={"Nearly Products Expired"}
+            hasPlural={false}
+          />
         </MDBCardBody>
       </MDBCard>
     </MDBCol>

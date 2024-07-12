@@ -48,7 +48,7 @@ const ExpiredProducts = () => {
             </tr>
           </thead>
           <tbody>
-            {!!expiredProducts ? (
+            {expiredProducts.length > 0 ? (
               handlePagination(expiredProducts, page, maxPage).map(
                 (expiredProduct, index) => {
                   const { product } = expiredProduct;
@@ -118,7 +118,9 @@ const ExpiredProducts = () => {
               )
             ) : (
               <tr>
-                <td>No records.</td>
+                <td colSpan={5} className="text-center">
+                  No records.
+                </td>
               </tr>
             )}
           </tbody>

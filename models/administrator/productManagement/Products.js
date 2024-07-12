@@ -25,13 +25,13 @@ const modelSchema = new mongoose.Schema(
     },
 
     category: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
     },
 
     material: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Materials",
     },
 
     variations: {

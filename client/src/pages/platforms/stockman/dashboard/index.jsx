@@ -16,6 +16,8 @@ export default function Dashboard() {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
 
+  console.log(nearlyExpired);
+
   return (
     <MDBContainer fluid id="v6" className="mb-5">
       <MDBRow>

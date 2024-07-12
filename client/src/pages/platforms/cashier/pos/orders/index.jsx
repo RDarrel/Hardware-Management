@@ -14,7 +14,6 @@ const Orders = ({
   setOrders,
   invoice_no,
   setInvoice_no,
-  collections,
   handleMaxSaleMessage,
 }) => {
   const [total, setTotal] = useState(0),

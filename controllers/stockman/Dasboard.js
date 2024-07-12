@@ -19,13 +19,11 @@ exports.browse = async (req, res) => {
       },
     }).populate("product");
 
-    const outOfStocks = await Stocks.find({
-      $or: [{ quantityStock: { $lte: 10 } }, { kiloStock: { $lte: 10 } }],
-    }).populate("product");
+    const outOfStocks = await Stocks.find().populate("product");
 
-    const arrangeOutOfSTocks =
+    const arrangeStocks =
       outOfStocks.length > 0
-        ? nearlyExpired.reduce((acc, curr) => {
+        ? outOfStocks.reduce((acc, curr) => {
             const {
               variant1 = "",
               variant2 = "",
@@ -49,7 +47,13 @@ exports.browse = async (req, res) => {
             return acc;
           }, [])
         : [];
-    res.json({ payload: { nearlyExpired, outOfStocks: arrangeOutOfSTocks } });
+
+    const productOutOfStocks =
+      arrangeStocks.length > 0
+        ? arrangeStocks.filter(({ stock }) => stock <= 20)
+        : [];
+
+    res.json({ payload: { nearlyExpired, outOfStocks: productOutOfStocks } });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
