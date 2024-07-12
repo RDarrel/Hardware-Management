@@ -20,6 +20,7 @@ import expiredProducts from "./slices/stockman/expiredProducts";
 import defectivePurchases from "./slices/stockman/defectivePurchases";
 import StockmanDashboard from "./slices/stockman/StockmanDashboard";
 import materials from "./slices/administrator/productManagement/materials";
+import suspendedTransacs from "./slices/cashier/suspendedTransacs";
 const store = configureStore({
   reducer: {
     auth,
@@ -43,6 +44,7 @@ const store = configureStore({
     expiredProducts,
     defectivePurchases,
     StockmanDashboard,
+    suspendedTransacs,
   },
 });
 

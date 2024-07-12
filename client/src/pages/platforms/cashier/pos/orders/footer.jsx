@@ -26,6 +26,22 @@ const Footer = ({
     setCheckout(true);
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "F1") {
+        event.preventDefault(); // Prevent the default browser action for F1
+        document.getElementById("paid").click();
+        // Perform your suspend action here
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
   return (
     <>
       <MDBCard className="m-0 p-0 mb-2 bg-light mt-3 dotted-order order">
@@ -83,6 +99,7 @@ const Footer = ({
       <MDBBtn
         color="primary"
         size="sm"
+        id="paid"
         block
         onClick={handlePaid}
         disabled={orderDetails.length === 0}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { MDBCard, MDBCardBody, MDBCol } from "mdbreact";
+import { MDBBtn, MDBCard, MDBCardBody, MDBCol, MDBIcon } from "mdbreact";
 import "./order.css";
 import Swal from "sweetalert2";
 import Footer from "./footer";
@@ -8,6 +8,8 @@ import Body from "./body";
 import { variation } from "../../../../../services/utilities";
 import Receipt from "../../../../widgets/receipt";
 import seperateKiloAndGrams from "../../../../../services/utilities/seperateKiloAndGrams";
+import { useDispatch, useSelector } from "react-redux";
+import { SAVE } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
 
 const Orders = ({
   orders,
@@ -16,13 +18,15 @@ const Orders = ({
   setInvoice_no,
   handleMaxSaleMessage,
 }) => {
-  const [total, setTotal] = useState(0),
+  const { auth, token } = useSelector(({ auth }) => auth),
+    [total, setTotal] = useState(0),
     [cash, setCash] = useState(0),
     [orderDetails, setOrderDetails] = useState([]),
     [checkout, setCheckout] = useState(false),
     [variant1, setVariant1] = useState(""),
     [variant2, setVariant2] = useState(""),
-    [popoverKey, setPopOverKey] = useState(1);
+    [popoverKey, setPopOverKey] = useState(1),
+    dispatch = useDispatch();
 
   useEffect(() => {
     handleComputeTotal(orders);
@@ -113,6 +117,38 @@ const Orders = ({
     setOrders(_orders);
     handleClose();
   };
+  const handleSuspend = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This transaction will be suspended and can be resumed later.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, suspend it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(
+          SAVE({
+            token,
+            data: {
+              cashier: auth._id,
+              total,
+              orders: orderDetails,
+              invoice_no,
+            },
+          })
+        );
+        setInvoice_no("");
+        setOrderDetails([]);
+        Swal.fire({
+          title: "Suspended!",
+          text: "The transaction has been successfully suspended.",
+          icon: "success",
+        });
+      }
+    });
+  };
 
   const handleDelete = (index) => {
     Swal.fire({
@@ -132,6 +168,23 @@ const Orders = ({
     });
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "F2") {
+        event.preventDefault(); // Prevent the default browser action for F1
+        document.getElementById("suspend").click();
+        // Perform your suspend action here
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <MDBCol md="6">
       <MDBCard
@@ -140,10 +193,23 @@ const Orders = ({
       >
         <MDBCardBody className="d-flex flex-column">
           <div>
-            <h5 className="font-weight-bold">
-              Order Details{" "}
-              {orderDetails.length > 0 ? `(${orderDetails.length})` : ""}
-            </h5>
+            <div className="d-flex align-items-center justify-content-between">
+              <h5 className="font-weight-bold">
+                Order Details
+                {orderDetails.length > 0 ? `(${orderDetails.length})` : ""}
+              </h5>
+              {invoice_no && (
+                <MDBBtn
+                  size="sm"
+                  color="info"
+                  id="suspend"
+                  disabled={!invoice_no}
+                  onClick={handleSuspend}
+                >
+                  <MDBIcon far icon="pause-circle" className="mr-1" /> Suspend
+                </MDBBtn>
+              )}
+            </div>
             <hr className="m-0 p-0" />
           </div>
           <div className="flex-grow-1 overflow-auto">
