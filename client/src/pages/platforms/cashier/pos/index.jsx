@@ -72,12 +72,13 @@ const POS = () => {
         case "F4":
           event.preventDefault();
           break;
-        case "F6":
+        case "9":
           event.preventDefault();
           break;
         default:
           return; // Allow default behavior for other keys
       }
+      console.log(event.key);
 
       switch (event.key.toUpperCase()) {
         case "F5":
@@ -92,7 +93,7 @@ const POS = () => {
             toggleSuspended();
           }
           break;
-        case "F6":
+        case "9":
           if (!showFindTransac && !isCheckOut && !showSuspend) {
             toggleGuide();
           }

@@ -15,6 +15,10 @@ export const Header = ({
   setSoldKilo = () => {},
   setTotalIncome = () => {},
   setTotalSales = () => {},
+  setUsingDateRange = () => {},
+  isDashBoard = false,
+  usingDateRange = false,
+  dateRange = "",
 }) => {
   const [soldKiloState, setSoldKiloState] = useState(0);
   const [soldQtyState, setSoldQtyState] = useState(0);
@@ -25,6 +29,13 @@ export const Header = ({
     [to, setTo] = useState(new Date()),
     [minDate, setMinDate] = useState(new Date()),
     [maxDate, setMaxDate] = useState(new Date());
+
+  useEffect(() => {
+    if (usingDateRange) {
+      setFrom(new Date(dateRange));
+      setUsingDateRange(false);
+    }
+  }, [usingDateRange, setUsingDateRange, setFrom, dateRange]);
 
   useEffect(() => {
     setSoldKilo(soldKiloState);
@@ -136,24 +147,40 @@ export const Header = ({
   return (
     <MDBRow className={`d-flex align-items-center mb-${mb}`}>
       <MDBCol md="12" className="d-flex align-items-center">
-        <MDBIcon
-          icon="newspaper"
-          size="2x"
-          className="mt-2 mr-2"
-          style={{ color: "blue" }}
-        />
-        <h4 className={`mt-3  ${isSales ? "font-weight-bolder" : ""}`}>
-          {title} Report
-        </h4>
-        <div className="d-flex align-items-center mt-2 ml-5">
-          <h6 className="font-weight-bold mt-2 mr-3">From</h6>
+        {!isDashBoard && (
+          <>
+            <MDBIcon
+              icon="newspaper"
+              size="2x"
+              className="mt-2 mr-2"
+              style={{ color: "blue" }}
+            />
+            <h4 className={`mt-3  ${isSales ? "font-weight-bolder" : ""}`}>
+              {title} Report
+            </h4>
+          </>
+        )}
+        <div
+          className={`d-flex align-items-center ${
+            !isDashBoard ? "mt-2 ml-5" : ""
+          }`}
+        >
+          <h6 className={`font-weight-bold ${isDashBoard && "grey-text"} mr-3`}>
+            From
+          </h6>
           <MDBDatePicker
             value={new Date(from).toDateString()}
             getValue={(value) => setFrom(new Date(value))}
             minDate={new Date(minDate).toDateString()}
             maxDate={new Date(maxDate).toDateString()}
           />
-          <h6 className="font-weight-bold ml-3 mr-4 mt-2">To</h6>
+          <h6
+            className={`font-weight-bold ${
+              isDashBoard && "grey-text"
+            } ml-3 mr-4 `}
+          >
+            To
+          </h6>
           <MDBDatePicker
             value={new Date(to).toDateString()}
             maxDate={new Date(maxDate).toDateString()}
