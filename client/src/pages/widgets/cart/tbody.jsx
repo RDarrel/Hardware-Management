@@ -89,8 +89,9 @@ export const Tbody = ({
                           className="pop-over-btn"
                           id={`btn-pop-over-${index}`}
                         >
-                          <span>Variations:</span>
-                          <div className="d-flex">
+                          <div className="variant">
+                            <span>Variations:</span>
+                            <br />
                             <span style={{ marginTop: "-1px" }}>
                               {getTheVariant(
                                 obj.variant1,

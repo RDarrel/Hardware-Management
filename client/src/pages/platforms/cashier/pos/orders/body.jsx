@@ -82,18 +82,20 @@ const Body = ({
                           key={popoverKey}
                         >
                           <MDBBtn
-                            className="pop-over-btn-order ml-2"
+                            className="pop-over-btn-order ml-2 text-start"
                             id={`btn-pop-over-${index}`}
                           >
-                            <span>Variations:</span>
-                            <br />
-                            <span>
-                              {variation.getTheVariant(
-                                item.variant1,
-                                item.variant2 || "",
-                                item.product.variations
-                              )}
-                            </span>
+                            <div className="variant">
+                              <span className="  ">Variations:</span>
+                              <br />
+                              <span>
+                                {variation.getTheVariant(
+                                  item.variant1,
+                                  item.variant2 || "",
+                                  item.product.variations
+                                )}
+                              </span>
+                            </div>
                           </MDBBtn>
                           <MDBPopoverBody
                             className="popover-body-order"
