@@ -139,7 +139,7 @@ export const InformationView = ({
             <h6>Material:</h6>
           </MDBCol>
           <MDBCol>
-            <h5 style={{ fontWeight: "400" }}>{selected.material}</h5>
+            <h5 style={{ fontWeight: "400" }}>{selected.material?.name}</h5>
           </MDBCol>
         </MDBRow>
 
@@ -148,7 +148,7 @@ export const InformationView = ({
             <h6>Category:</h6>
           </MDBCol>
           <MDBCol>
-            <h5 style={{ fontWeight: "400" }}>{selected.category}</h5>
+            <h5 style={{ fontWeight: "400" }}>{selected.category?.name}</h5>
           </MDBCol>
         </MDBRow>
 

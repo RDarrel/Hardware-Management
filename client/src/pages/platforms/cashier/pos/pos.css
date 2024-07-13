@@ -73,32 +73,3 @@
   background-color: #007bff; /* Change this to your desired active color */
   box-shadow: 0 0 2px 0 #007bff;
 }
-
-/* styles.css */
-.autosuggest__container {
-  position: relative;
-}
-
-.autosuggest__input {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-}
-
-.autosuggest__suggestions-container {
-  position: absolute;
-  top: 40px;
-  width: 100%;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  z-index: 2;
-}
-
-.autosuggest__suggestion {
-  padding: 10px;
-  cursor: pointer;
-}
-
-.autosuggest__suggestion--highlighted {
-  background-color: #ddd;
-}

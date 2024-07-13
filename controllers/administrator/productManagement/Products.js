@@ -42,6 +42,8 @@ const handleUploadProduct = (_id, images) => {
 
 exports.browse = (req, res) =>
   Entity.find()
+    .populate("category")
+    .populate("material")
     .select("-__v")
     .sort({ createdAt: -1 })
     .lean()

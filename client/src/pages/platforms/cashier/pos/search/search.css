@@ -28,7 +28,7 @@
   color: white;
 }
 
-.active {
+.result-active {
   background-color: #4285f4;
   border-radius: 10px;
   cursor: pointer;

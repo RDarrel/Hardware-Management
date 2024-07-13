@@ -123,7 +123,7 @@ function SuggestedProducts({
             return (
               <div
                 key={index}
-                className={`result ${index === selectedIndex ? "active" : ""}`}
+                className={`result-${index === selectedIndex ? "active" : ""}`}
                 ref={index === selectedIndex ? selectedItemRef : null}
                 onClick={() => {
                   handleAddOrder(product);
