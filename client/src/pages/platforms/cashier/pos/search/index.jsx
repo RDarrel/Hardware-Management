@@ -55,7 +55,6 @@ const Search = ({
             <input
               className="form-control search-input"
               placeholder="Seach.."
-              required
               value={search}
               id="search"
               autoComplete="off"

@@ -28,13 +28,13 @@
   color: white;
 }
 
-.result-active {
+.selected-active {
   background-color: #4285f4;
   border-radius: 10px;
   cursor: pointer;
   color: white;
 }
-.product {
+.product-name {
   margin-bottom: -5px;
   font-weight: 500;
   max-width: 700px;

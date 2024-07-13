@@ -1,5 +1,6 @@
+const RemoveExpiredProducts = require("../../../config/removeExpiredProducts");
+const sortByTopSellingProducts = require("../../../config/sortByTopSellingProducts");
 const Entity = require("../../../models/administrator/productManagement/Products"),
-  RemoveProductsExpired = require("../../../config/removeExpiredProducts"),
   Stocks = require("../../../models/stockman/Stocks"),
   fs = require("fs");
 
@@ -40,20 +41,25 @@ const handleUploadProduct = (_id, images) => {
   }
 };
 
-exports.browse = (req, res) =>
-  Entity.find()
-    .populate("category")
-    .populate("material")
-    .select("-__v")
-    .sort({ createdAt: -1 })
-    .lean()
-    .then((items) =>
-      res.json({
-        success: "Roles Fetched Successfully",
-        payload: items,
-      })
-    )
-    .catch((error) => res.status(400).json({ error: error.message }));
+exports.browse = async (req, res) => {
+  try {
+    const items = await Entity.find()
+      .populate("category")
+      .populate("material")
+      .select("-__v")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const sortedItems = await sortByTopSellingProducts(items);
+
+    res.json({
+      success: "Roles Fetched Successfully",
+      payload: sortedItems,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 const getTheTotalMax = (product, stocks) => {
   return (
@@ -148,7 +154,7 @@ const mergePricesToLowestOptions = (options, optionsInVr2) => {
 
 exports.sellingProducts = async (_, res) => {
   try {
-    await RemoveProductsExpired();
+    await RemoveExpiredProducts();
     const products = await Entity.find();
     const container = [];
 
@@ -221,11 +227,14 @@ exports.sellingProducts = async (_, res) => {
       }
     }
 
+    // Step 5: Sort the container based on the sold property in descending order
+    const sortedContainer = await sortByTopSellingProducts(container);
     res.status(200).json({
-      payload: container,
+      payload: sortedContainer,
       success: "Successfully Fetch Selling Products",
     });
   } catch (error) {
+    console.log("Error in selling products", error.message);
     res.status(400).json({ error: error.message });
   }
 };

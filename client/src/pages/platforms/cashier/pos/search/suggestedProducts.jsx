@@ -7,6 +7,7 @@ function SuggestedProducts({
   search,
   handleAddOrder,
   setSearch,
+  setDidSearch,
 }) {
   const [suggested, setSuggested] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -49,6 +50,7 @@ function SuggestedProducts({
           prevIndex > 0 ? prevIndex - 1 : prevIndex
         );
       } else if (e.key === "Enter" && selectedIndex >= 0) {
+        setDidSearch(true);
         handleAddOrder(suggested[selectedIndex]);
         setSearch("");
         return () => setSelectedIndex(-1);
@@ -123,14 +125,16 @@ function SuggestedProducts({
             return (
               <div
                 key={index}
-                className={`result-${index === selectedIndex ? "active" : ""}`}
+                className={`suggested-container result ${
+                  index === selectedIndex ? "selected-active" : ""
+                }`}
                 ref={index === selectedIndex ? selectedItemRef : null}
                 onClick={() => {
                   handleAddOrder(product);
                   setSearch("");
                 }}
               >
-                <p className="product text-">{name}</p>
+                <p className="product-name">{name}</p>
                 {hasVariant && (
                   <p className="variant-name">
                     Variatiant:{" "}

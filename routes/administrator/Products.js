@@ -11,7 +11,7 @@ const router = require("express").Router(),
 
 router
   .get("/", validate, browse)
-  .get("/sellingProducts", validate, sellingProducts)
+  .get("/sellingProducts", sellingProducts)
   .post("/save", validate, save)
   .put("/update", validate, update)
   .put("/variation", validate, variation_update)

@@ -105,8 +105,8 @@ export default function Receipt({
                           {order?.product?.name?.toUpperCase()}
                         </span>
                         {order.product.hasVariant && (
-                          <span style={{ marginTop: "-30px" }}>
-                            Variation: &nbsp;
+                          <span style={{ marginTop: "-30px" }} className="mr-1">
+                            Variant:
                             {variation.getTheVariant(
                               order?.variant1,
                               order?.variant2 || "",
