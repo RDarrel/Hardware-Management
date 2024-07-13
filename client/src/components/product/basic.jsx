@@ -15,6 +15,8 @@ function Basic({ form, setForm, selected }) {
     dispatch(BROWSE_CATEGORIES({ token }));
     dispatch(BROWSE_MATERIALS({ token }));
   }, [dispatch, token]);
+
+  console.log(selected);
   return (
     <MDBRow>
       <MDBCol md="12">

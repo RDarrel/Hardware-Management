@@ -1,15 +1,105 @@
-import React, { useEffect, useRef, useState } from "react";
-import { categories } from "../../../../../services/fakeDb";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+// import { categories } from "../../../../../services/fakeDb";
 import { MDBBtn } from "mdbreact";
+import { useDispatch, useSelector } from "react-redux";
+import { BROWSE } from "../../../../../services/redux/slices/administrator/productManagement/category";
 
-const Categories = () => {
-  const carouselRef = useRef(null);
-  const [grabbed, setGrabbed] = useState(false);
-  const [startX, setStartX] = useState(null);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [activeIndex, setActiveIndex] = useState(0);
+const Categories = ({
+  setProducts,
+  collections: collectionsProducts = [],
+  setPage,
+}) => {
+  const { token } = useSelector(({ auth }) => auth),
+    { collections } = useSelector(({ category }) => category),
+    [categories, setCategories] = useState([]),
+    [grabbed, setGrabbed] = useState(false),
+    [activeCategory, setActiveCategory] = useState("all"),
+    [startX, setStartX] = useState(null),
+    [scrollLeft, setScrollLeft] = useState(0),
+    [activeIndex, setActiveIndex] = useState(0),
+    carouselRef = useRef(null),
+    dispatch = useDispatch();
 
   const totalItems = 5;
+
+  useEffect(() => {
+    dispatch(BROWSE({ token }));
+  }, [token, dispatch]);
+
+  useEffect(() => {
+    const _products = [...collectionsProducts];
+    if (collections.length > 0 && _products.length > 0) {
+      const categoryWithProducts = collections.map((c) => {
+        const filteredProducts = _products.filter(
+          ({ category }) => category === c._id
+        );
+        return { ...c, products: filteredProducts };
+      });
+
+      const categoryWithSoldProduct = categoryWithProducts.map((c) => {
+        const { products } = c;
+        const totalSoldInProducts = products.reduce(
+          (acc, curr) => (acc += curr?.sold || 0),
+          0
+        );
+        return { ...c, sold: totalSoldInProducts };
+      });
+
+      const sortedCategory = categoryWithSoldProduct.sort(
+        (a, b) => b.sold - a.sold
+      );
+
+      var newActiveIndexCategory = sortedCategory.find(
+        ({ _id }) => _id === activeCategory
+      )?._id;
+
+      if (
+        newActiveIndexCategory !== activeCategory &&
+        activeCategory !== "all"
+      ) {
+        setActiveCategory(newActiveIndexCategory);
+      }
+      setCategories(sortedCategory);
+    }
+  }, [collections, collectionsProducts, activeCategory]);
+
+  const handleSortedProducts = useCallback(
+    (_products) => {
+      const sortedBySold = _products?.slice().sort((a, b) => b.sold - a.sold);
+      setProducts(sortedBySold || []);
+    },
+    [setProducts]
+  );
+
+  useEffect(() => {
+    if (activeCategory !== "all") {
+      const _products = [...collectionsProducts];
+      const fiteredProductByCategory = _products.filter(
+        ({ category: pc }) => pc === activeCategory
+      );
+      handleSortedProducts(fiteredProductByCategory);
+    } else {
+      handleSortedProducts(collectionsProducts);
+    }
+    setPage(1);
+  }, [
+    activeCategory,
+    categories,
+    collectionsProducts,
+    setProducts,
+    setPage,
+    handleSortedProducts,
+  ]);
+
+  useEffect(() => {
+    if (carouselRef.current) {
+      const categoryIndex = categories.findIndex(
+        ({ _id }) => _id === activeCategory
+      );
+      const indexToScroll = activeCategory === "all" ? 0 : categoryIndex + 1; // Compute the index to scroll to (+1 because of the "All" button)
+      carouselRef.current.scrollLeft = indexToScroll * 100; // Adjust this value based on your button width or desired scroll position
+    }
+  }, [activeCategory, categories]);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -97,18 +187,24 @@ const Categories = () => {
         ref={carouselRef}
         onMouseDown={handleMouseDown}
       >
-        <MDBBtn size="sm" color="primary">
+        <MDBBtn
+          size="sm"
+          color="primary"
+          onClick={() => setActiveCategory("all")}
+          outline={activeCategory !== "all"}
+        >
           All
         </MDBBtn>
         {categories.map((category, index) => (
           <MDBBtn
             key={index}
             size="sm"
-            outline
+            onClick={() => setActiveCategory(category._id)}
+            outline={category._id !== activeCategory}
             color="primary"
             className="category-btn"
           >
-            {category}
+            {category.name}
           </MDBBtn>
         ))}
       </div>

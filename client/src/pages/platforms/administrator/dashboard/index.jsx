@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   MDBContainer,
   MDBRow,
@@ -19,26 +19,49 @@ import {
   MDBDatePicker,
 } from "mdbreact";
 import { Bar } from "react-chartjs-2";
+import Total from "./total";
+import { useDispatch, useSelector } from "react-redux";
+import { BROWSE } from "../../../../services/redux/slices/administrator/adminDashboard";
+import TopSellingProducts from "./topSellingProducts";
 
 const barChartData = {
   labels: ["January", "February", "March", "April", "May"],
   datasets: [
     {
-      label: "# of Votes",
-      data: [12, 19, 3, 5, 2],
+      label: "Sales",
+      data: [100, 19, 3, 5, 2],
       backgroundColor: [
-        "rgba(255, 99, 132, 0.2)",
-        "rgba(54, 162, 235, 0.2)",
-        "rgba(255, 206, 86, 0.2)",
+        "rgba(75, 192, 192, 0.2)", // Light Green
         "rgba(75, 192, 192, 0.2)",
-        "rgba(153, 102, 255, 0.2)",
+        "rgba(75, 192, 192, 0.2)",
+        "rgba(75, 192, 192, 0.2)",
+        "rgba(75, 192, 192, 0.2)",
       ],
       borderColor: [
-        "rgba(255,99,132,1)",
-        "rgba(54, 162, 235, 1)",
-        "rgba(255, 206, 86, 1)",
+        "rgba(75, 192, 192, 1)", // Dark Green
         "rgba(75, 192, 192, 1)",
-        "rgba(153, 102, 255, 1)",
+        "rgba(75, 192, 192, 1)",
+        "rgba(75, 192, 192, 1)",
+        "rgba(75, 192, 192, 1)",
+      ],
+      borderWidth: 1,
+    },
+    {
+      label: "Income",
+      data: [12, 19, 3, 5, 2],
+      backgroundColor: [
+        "rgba(255, 159, 64, 0.2)", // Light Orange
+        "rgba(255, 159, 64, 0.2)",
+        "rgba(255, 159, 64, 0.2)",
+        "rgba(255, 159, 64, 0.2)",
+        "rgba(255, 159, 64, 0.2)",
+      ],
+      borderColor: [
+        "rgba(255, 159, 64, 1)", // Dark Orange
+        "rgba(255, 159, 64, 1)",
+        "rgba(255, 159, 64, 1)",
+        "rgba(255, 159, 64, 1)",
+        "rgba(255, 159, 64, 1)",
       ],
       borderWidth: 1,
     },
@@ -84,143 +107,19 @@ const barChartOptions = {
 };
 
 const Dashboard = () => {
+  const { token } = useSelector(({ auth }) => auth),
+    { sales, topSellingProducts } = useSelector(
+      ({ adminDashboard }) => adminDashboard
+    ),
+    dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(BROWSE({ token }));
+  }, [dispatch, token]);
+
   return (
     <MDBContainer fluid id="v6" className="mb-5">
-      <section className="mb-4">
-        <MDBRow>
-          <MDBCol xl="3" md="6" className="mb-4 mb-r">
-            <MDBCard>
-              <MDBRow className="mt-3">
-                <MDBCol md="5" size="5" className="text-left pl-4">
-                  <MDBBtn
-                    tag="a"
-                    floating
-                    size="lg"
-                    color="primary"
-                    className="ml-4"
-                    style={{ padding: 0 }}
-                  >
-                    <MDBIcon icon="eye" size="2x" />
-                  </MDBBtn>
-                </MDBCol>
-                <MDBCol md="7" col="7" className="text-right pr-5">
-                  <h5 className="ml-4 mt-4 mb-2 font-weight-bold">4,567 </h5>
-                  <p className="font-small grey-text">Unique Visitors</p>
-                </MDBCol>
-              </MDBRow>
-              <MDBRow className="my-3">
-                <MDBCol md="7" col="7" className="text-left pl-4">
-                  <p className="font-small dark-grey-text font-up ml-4 font-weight-bold">
-                    Last month
-                  </p>
-                </MDBCol>
-                <MDBCol md="5" col="5" className="text-right pr-5">
-                  <p className="font-small grey-text">145,567</p>
-                </MDBCol>
-              </MDBRow>
-            </MDBCard>
-          </MDBCol>
-
-          <MDBCol xl="3" md="6" className="mb-4 mb-r">
-            <MDBCard>
-              <MDBRow className="mt-3">
-                <MDBCol md="5" col="5" className="text-left pl-4">
-                  <MDBBtn
-                    tag="a"
-                    floating
-                    size="lg"
-                    color="warning"
-                    className="ml-4"
-                    style={{ padding: 0 }}
-                  >
-                    <MDBIcon icon="user" size="2x" />
-                  </MDBBtn>
-                </MDBCol>
-                <MDBCol md="7" col="7" className="text-right pr-5">
-                  <h5 className="ml-4 mt-4 mb-2 font-weight-bold">2,976</h5>
-                  <p className="font-small grey-text">New Users</p>
-                </MDBCol>
-              </MDBRow>
-              <MDBRow className="my-3">
-                <MDBCol md="7" col="7" className="text-left pl-4">
-                  <p className="font-small dark-grey-text font-up ml-4 font-weight-bold">
-                    Last month
-                  </p>
-                </MDBCol>
-                <MDBCol md="5" col="5" className="text-right pr-5">
-                  <p className="font-small grey-text">145,567</p>
-                </MDBCol>
-              </MDBRow>
-            </MDBCard>
-          </MDBCol>
-
-          <MDBCol xl="3" md="6" className="mb-4 mb-r">
-            <MDBCard>
-              <MDBRow className="mt-3">
-                <MDBCol md="5" col="5" className="text-left pl-4">
-                  <MDBBtn
-                    tag="a"
-                    floating
-                    size="lg"
-                    color="info"
-                    className="ml-4"
-                    style={{ padding: 0 }}
-                  >
-                    <MDBIcon icon="dollar-sign" size="2x" />
-                  </MDBBtn>
-                </MDBCol>
-                <MDBCol md="7" col="7" className="text-right pr-5">
-                  <h5 className="ml-4 mt-4 mb-2 font-weight-bold">6,512 </h5>
-                  <p className="font-small grey-text">Total Sales</p>
-                </MDBCol>
-              </MDBRow>
-              <MDBRow className="my-3">
-                <MDBCol md="7" col="7" className="text-left pl-4">
-                  <p className="font-small dark-grey-text font-up ml-4 font-weight-bold">
-                    Last month
-                  </p>
-                </MDBCol>
-                <MDBCol md="5" col="5" className="text-right pr-5">
-                  <p className="font-small grey-text">145,567</p>
-                </MDBCol>
-              </MDBRow>
-            </MDBCard>
-          </MDBCol>
-
-          <MDBCol xl="3" md="6" className="mb-4 mb-r">
-            <MDBCard>
-              <MDBRow className="mt-3">
-                <MDBCol md="5" col="5" className="text-left pl-4">
-                  <MDBBtn
-                    tag="a"
-                    floating
-                    size="lg"
-                    color="danger"
-                    className="ml-4"
-                    style={{ padding: 0 }}
-                  >
-                    <MDBIcon icon="database" size="2x" />
-                  </MDBBtn>
-                </MDBCol>
-                <MDBCol md="7" col="7" className="text-right pr-5">
-                  <h5 className="ml-4 mt-4 mb-2 font-weight-bold">3,955 </h5>
-                  <p className="font-small grey-text">Order Ammount</p>
-                </MDBCol>
-              </MDBRow>
-              <MDBRow className="my-3">
-                <MDBCol md="7" col="7" className="text-left pl-4">
-                  <p className="font-small dark-grey-text font-up ml-4 font-weight-bold">
-                    Last month
-                  </p>
-                </MDBCol>
-                <MDBCol md="5" col="5" className="text-right pr-5">
-                  <p className="font-small grey-text">145,567</p>
-                </MDBCol>
-              </MDBRow>
-            </MDBCard>
-          </MDBCol>
-        </MDBRow>
-      </section>
+      <Total sales={sales} />
       <section className="mb-5">
         <MDBCard cascade narrow>
           <MDBRow>
@@ -289,110 +188,7 @@ const Dashboard = () => {
           </MDBRow>
         </MDBCard>
       </section>
-      <section>
-        <MDBRow>
-          <MDBCol lg="4" md="12">
-            <MDBCard className="mb-4">
-              <MDBCardBody>
-                <MDBTable responsive>
-                  <thead>
-                    <tr>
-                      <th className="font-weight-bold dark-grey-text">
-                        <strong>Keywords</strong>
-                      </th>
-                      <th className="font-weight-bold dark-grey-text">
-                        <strong>Visits</strong>
-                      </th>
-                      <th className="font-weight-bold dark-grey-text">
-                        <strong>Pages</strong>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Design</td>
-                      <td>15</td>
-                      <td>307</td>
-                    </tr>
-                    <tr>
-                      <td>Bootstrap</td>
-                      <td>32</td>
-                      <td>504</td>
-                    </tr>
-                    <tr>
-                      <td>MDBootstrap</td>
-                      <td>41</td>
-                      <td>613</td>
-                    </tr>
-                    <tr>
-                      <td>Frontend</td>
-                      <td>14</td>
-                      <td>208</td>
-                    </tr>
-                  </tbody>
-                </MDBTable>
-                <MDBBtn
-                  flat
-                  rounded
-                  className="grey lighten-3 float-right font-weight-bold dark-grey-text"
-                >
-                  View full report
-                </MDBBtn>
-              </MDBCardBody>
-            </MDBCard>
-          </MDBCol>
-          <MDBCol lg="8" md="12">
-            <MDBCard className="mb-4">
-              <MDBCardBody>
-                <MDBTable>
-                  <thead>
-                    <tr>
-                      <th className="font-weight-bold dark-grey-text">
-                        <strong>Browser</strong>
-                      </th>
-                      <th className="font-weight-bold dark-grey-text">
-                        <strong>Visits</strong>
-                      </th>
-                      <th className="font-weight-bold dark-grey-text">
-                        <strong>Pages</strong>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Google Chrome</td>
-                      <td>15</td>
-                      <td>307</td>
-                    </tr>
-                    <tr>
-                      <td>Mozilla Firefox</td>
-                      <td>32</td>
-                      <td>504</td>
-                    </tr>
-                    <tr>
-                      <td>Safari</td>
-                      <td>41</td>
-                      <td>613</td>
-                    </tr>
-                    <tr>
-                      <td>Opera</td>
-                      <td>14</td>
-                      <td>208</td>
-                    </tr>
-                  </tbody>
-                </MDBTable>
-                <MDBBtn
-                  flat
-                  rounded
-                  className="grey lighten-3 float-right font-weight-bold dark-grey-text"
-                >
-                  View full report
-                </MDBBtn>
-              </MDBCardBody>
-            </MDBCard>
-          </MDBCol>
-        </MDBRow>
-      </section>
+      <TopSellingProducts products={topSellingProducts} />
       <section className="mt-2">
         <MDBRow>
           <MDBCol xl="3" md="6" className="mb-4">

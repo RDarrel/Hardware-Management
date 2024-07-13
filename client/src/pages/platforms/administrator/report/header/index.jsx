@@ -83,7 +83,6 @@ export const Header = ({
   };
 
   const isSales = !isEmployees && !isTransaction;
-
   useEffect(() => {
     if (from && to) {
       const fromDate = new Date(from);
@@ -99,7 +98,6 @@ export const Header = ({
 
           return _createdAt >= _from && _createdAt <= _to;
         });
-
         let filteredCollections = [];
         if (isTransaction || isEmployees) {
           filteredCollections = isTransaction

@@ -11,8 +11,8 @@ const Search = ({
   didSearch,
   setProducts,
   collections,
-  products,
   handleAddOrder,
+  setPage,
 }) => {
   const inputRef = useRef(null);
 
@@ -24,21 +24,14 @@ const Search = ({
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      switch (event.key.toUpperCase()) {
-        case "F":
-          event.preventDefault();
-          break;
-        default:
-          return; // Allow default behavior for other keys
-      }
-
-      switch (event.key.toUpperCase()) {
-        case "F":
-          inputRef.current.focus();
-          break;
-
-        default:
-          break;
+      if (
+        event.key.toUpperCase() === "F" &&
+        document.activeElement !== inputRef.current
+      ) {
+        event.preventDefault(); // Prevent the default action of the "F" key
+        setSearch(""); // Clear the search state
+        inputRef.current.value = ""; // Clear the input field value directly
+        inputRef.current.focus(); // Focus the input field
       }
     };
 
@@ -46,7 +39,7 @@ const Search = ({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [search, inputRef, setSearch]);
   return (
     <MDBCard className="mb-1">
       <MDBCardBody className="m-0 p-1">
@@ -80,14 +73,18 @@ const Search = ({
           </form>
           {search && (
             <SuggestedProducts
-              products={products}
+              products={collections}
               setDidSearch={setDidSearch}
               search={search}
               handleAddOrder={handleAddOrder}
               setSearch={setSearch}
             />
           )}
-          <Categories />
+          <Categories
+            setProducts={setProducts}
+            collections={collections}
+            setPage={setPage}
+          />
         </div>
       </MDBCardBody>
     </MDBCard>

@@ -8,11 +8,12 @@ export const Products = ({
   setShowVariant,
   setSelectedProduct,
   handleAddOrder,
+  page,
+  setPage,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1),
-    [itemsPerPage] = useState(12); // Adjust the number of items per page as needed
+  const [itemsPerPage] = useState(12); // Adjust the number of items per page as needed
 
-  const indexOfLastProduct = currentPage * itemsPerPage;
+  const indexOfLastProduct = page * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
   const currentProducts = products.slice(
     indexOfFirstProduct,
@@ -25,7 +26,7 @@ export const Products = ({
   }
 
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+    setPage(pageNumber);
   };
 
   return (
@@ -73,7 +74,7 @@ export const Products = ({
         })}
       </MDBRow>
       <Pagination
-        currentPage={currentPage}
+        currentPage={page}
         pageNumbers={pageNumbers}
         handlePageChange={handlePageChange}
       />

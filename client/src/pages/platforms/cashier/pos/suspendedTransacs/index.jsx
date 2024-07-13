@@ -206,7 +206,9 @@ export default function SuspendedTransacs({
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={3} className="text-center"></td>No records.
+                      <td colSpan={5} className="text-center">
+                        No records.
+                      </td>
                     </tr>
                   )}
                 </tbody>

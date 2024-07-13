@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MDBCard,
   MDBCardHeader,
@@ -15,27 +15,22 @@ import { BROWSE } from "../../../../../services/redux/slices/cashier/suspendedTr
 import SuspendedTransacs from "../suspendedTransacs";
 import Guide from "../guide";
 
-const Header = ({ setOrders, setInvoice_no, products }) => {
+const Header = ({
+  setOrders,
+  setInvoice_no,
+  products,
+  showSuspend,
+  toggleSuspended,
+  showGuide,
+  toggleGuide,
+  showFindTransac,
+  toggleFindTransac,
+}) => {
   const { auth, token } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ suspendedTransacs }) => suspendedTransacs),
     [suspendedTransacs, setSuspendedTransacs] = useState([]),
-    [showSuspend, setShowSuspend] = useState(false),
-    [showGuide, setShowGuide] = useState(false),
     [id, setId] = useState(0),
-    [show, setShow] = useState(false),
     dispatch = useDispatch();
-
-  const toggle = useCallback(() => {
-    setShow(!show);
-  }, [show]);
-
-  const toggleSuspended = useCallback(() => {
-    setShowSuspend(!showSuspend);
-  }, [showSuspend]);
-
-  const toggleGuide = useCallback(() => {
-    setShowGuide(!showGuide);
-  }, [showGuide]);
 
   useEffect(() => {
     if (auth._id) {
@@ -47,38 +42,6 @@ const Header = ({ setOrders, setInvoice_no, products }) => {
     setSuspendedTransacs(collections);
   }, [collections]);
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      switch (event.key.toUpperCase()) {
-        case "F4":
-        case "F3":
-        case "F5":
-          event.preventDefault();
-          break;
-        default:
-          return; // Allow default behavior for other keys
-      }
-
-      switch (event.key.toUpperCase()) {
-        case "F4":
-          toggle();
-          break;
-        case "F3":
-          toggleSuspended();
-          break;
-        case "F5":
-          toggleGuide();
-          break;
-        default:
-          break;
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [toggle, toggleSuspended, toggleGuide]);
   return (
     <MDBCard className="w-100 mb-2">
       <MDBCardHeader className="d-flex align-items-center justify-content-between ">
@@ -86,7 +49,7 @@ const Header = ({ setOrders, setInvoice_no, products }) => {
         <div className="d-flex align-items-center">
           <div
             className="d-flex align-items-center cursor-pointer mr-2 m-0 p-0"
-            onClick={toggle}
+            onClick={toggleFindTransac}
           >
             <MDBBtn color="warning" size="sm" className="font-weight-bold">
               <MDBIcon icon="handshake" far size="1x" className="mr-1" />
@@ -147,7 +110,7 @@ const Header = ({ setOrders, setInvoice_no, products }) => {
         setInvoice_no={setInvoice_no}
         collections={suspendedTransacs}
       />
-      <Transactions show={show} toggle={toggle} />
+      <Transactions show={showFindTransac} toggle={toggleFindTransac} />
     </MDBCard>
   );
 };

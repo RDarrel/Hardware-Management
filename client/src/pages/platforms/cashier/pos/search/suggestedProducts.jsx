@@ -17,22 +17,21 @@ function SuggestedProducts({
     if (search && collections.length > 0) {
       const productsWithVariant = mergeVariantInProduct(collections);
       const filteredProducts = productsWithVariant.filter((collection) => {
-        const {
-          name,
-          variant1 = "",
-          variant2 = "",
-          variations = [],
-        } = collection;
-        const productWithVariant = `${name}-${
-          variation.getTheVariant(variant1, variant2, variations) || "--"
-        }`;
-        console.log(productWithVariant);
-
+        const { name } = collection;
         return name
           .toLocaleLowerCase()
           .replace(/\s/g, "")
           .includes(search.toLocaleLowerCase().replace(/\s/g, ""));
       });
+      // Sort filteredProducts by how close the match is to the beginning
+      filteredProducts.sort((a, b) => {
+        const nameA = a.name.toLowerCase().replace(/\s/g, "");
+        const nameB = b.name.toLowerCase().replace(/\s/g, "");
+        const indexA = nameA.indexOf(search.toLowerCase().replace(/\s/g, ""));
+        const indexB = nameB.indexOf(search.toLowerCase().replace(/\s/g, ""));
+        return indexA - indexB; // Sort by index position (asce
+      });
+
       if (filteredProducts.length > 1) {
         setSuggested(filteredProducts);
       }
@@ -61,7 +60,7 @@ function SuggestedProducts({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedIndex, suggested, handleAddOrder, setSearch]);
+  }, [selectedIndex, suggested, handleAddOrder, setSearch, setDidSearch]);
 
   useEffect(() => {
     if (selectedItemRef.current) {
@@ -134,13 +133,33 @@ function SuggestedProducts({
                   setSearch("");
                 }}
               >
-                <p className="product-name">{name}</p>
-                {hasVariant && (
-                  <p className="variant-name">
-                    Variatiant:{" "}
-                    {variation.getTheVariant(variant1, variant2, variations)}
-                  </p>
-                )}
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="m-0 p-0">
+                    <p className="product-name">{name}</p>
+                    {hasVariant && (
+                      <p className="variant-name">
+                        Variatiant:{" "}
+                        {variation.getTheVariant(
+                          variant1,
+                          variant2,
+                          variations
+                        )}
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-end">
+                    <p
+                      className={`m-0 p-0 ${
+                        index === selectedIndex ? "text-white" : "text-danger"
+                      }`}
+                    >
+                      ₱
+                      {variation
+                        .getTheCapitalOrSrp("srp", product, product)
+                        .toLocaleString()}
+                    </p>
+                  </div>
+                </div>
               </div>
             );
           })}

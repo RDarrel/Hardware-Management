@@ -14,7 +14,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
+.variant-name {
+  font-weight: 400 !important;
+}
 .total-text {
   font-style: italic; /* Add italic style to total texts */
   font-size: 22px;

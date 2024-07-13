@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SELLING_PRODUCTS } from "../../../../services/redux/slices/administrator/productManagement/products";
 import { BROWSE as BROWSECART } from "../../../../services/redux/slices/cart";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,7 +21,12 @@ const POS = () => {
     [selectedProduct, setSelectedProduct] = useState({}),
     [products, setProducts] = useState([]),
     [isShowAddedToCart, setIsShowAddedToCart] = useState(true),
+    [isCheckOut, setIsCheckOut] = useState(false),
+    [isSuspend, setIsSuspend] = useState(false),
     [didSearch, setDidSearch] = useState(false),
+    [showSuspend, setShowSuspend] = useState(false),
+    [showGuide, setShowGuide] = useState(false),
+    [showFindTransac, setShowFindTransac] = useState(false),
     [invoice_no, setInvoice_no] = useState(""),
     [search, setSearch] = useState(""),
     [showVariant, setShowVariant] = useState(false),
@@ -39,8 +44,76 @@ const POS = () => {
   }, [dispatch, token, auth]);
 
   useEffect(() => {
-    setProducts(collections);
+    if (collections.length > 0) {
+      const sortedBySold = collections?.slice().sort((a, b) => b.sold - a.sold);
+
+      setProducts(sortedBySold || []);
+    }
   }, [collections]);
+
+  const toggleFindTransac = useCallback(() => {
+    setShowFindTransac(!showFindTransac);
+  }, [showFindTransac]);
+
+  const toggleSuspended = useCallback(() => {
+    setShowSuspend(!showSuspend);
+  }, [showSuspend]);
+
+  const toggleGuide = useCallback(() => {
+    setShowGuide(!showGuide);
+  }, [showGuide]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      switch (event.key.toUpperCase()) {
+        case "F5":
+          event.preventDefault();
+          break;
+        case "F4":
+          event.preventDefault();
+          break;
+        case "F6":
+          event.preventDefault();
+          break;
+        default:
+          return; // Allow default behavior for other keys
+      }
+
+      switch (event.key.toUpperCase()) {
+        case "F5":
+          if (!showSuspend && !isCheckOut) {
+            toggleFindTransac();
+          } else {
+            console.log("closing");
+          }
+          break;
+        case "F4":
+          if (!showFindTransac && !isCheckOut) {
+            toggleSuspended();
+          }
+          break;
+        case "F6":
+          if (!showFindTransac && !isCheckOut && !showSuspend) {
+            toggleGuide();
+          }
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [
+    toggleFindTransac,
+    toggleSuspended,
+    toggleGuide,
+    showSuspend,
+    showFindTransac,
+    isCheckOut,
+  ]);
 
   const handleMaxSaleMessage = (max, isPerKilo = false) => {
     const message = variation.qtyOrKilo(
@@ -191,6 +264,8 @@ const POS = () => {
     }
   };
 
+  const [page, setPage] = useState(1);
+
   return (
     <MDBContainer
       fluid
@@ -201,6 +276,12 @@ const POS = () => {
         setOrders={setOrders}
         setInvoice_no={setInvoice_no}
         products={collections}
+        showSuspend={showSuspend}
+        showGuide={showGuide}
+        showFindTransac={showFindTransac}
+        toggleFindTransac={toggleFindTransac}
+        toggleSuspended={toggleSuspended}
+        toggleGuide={toggleGuide}
       />
       <MDBRow>
         <MDBCol md="6">
@@ -213,13 +294,15 @@ const POS = () => {
             setSearch={setSearch}
             setProducts={setProducts}
             collections={collections}
-            products={products}
+            setPage={setPage}
           />
           <Products
             products={products}
             handleAddOrder={handleAddOrder}
             setShowVariant={setShowVariant}
             setSelectedProduct={setSelectedProduct}
+            page={page}
+            setPage={setPage}
           />
         </MDBCol>
         <Orders
@@ -227,7 +310,11 @@ const POS = () => {
           collections={collections}
           handleMaxSaleMessage={handleMaxSaleMessage}
           setOrders={setOrders}
+          isCheckOut={isCheckOut}
+          setIsCheckOut={setIsCheckOut}
           invoice_no={invoice_no}
+          isSuspend={isSuspend}
+          setIsSuspend={setIsSuspend}
           setInvoice_no={setInvoice_no}
         />
       </MDBRow>

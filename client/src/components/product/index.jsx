@@ -212,24 +212,19 @@ const ProductInformation = ({
     }
   }, [form, selected, collections]);
 
+  const handleSweetAlert = (message, hasCustom = false) => {
+    Swal.fire({
+      title: "Oops...",
+      text: `${message} ${hasCustom ? "" : "is Required!"} `,
+      icon: "warning",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "OK",
+    });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const coverPhoto = media.product.find(
-      ({ label }) => label === "Cover Photo"
-    );
 
-    if (!coverPhoto.img)
-      return Swal.fire({
-        title: "Cover Photo is Required",
-        text: "Please Upload a Cover Photo!",
-        icon: "warning",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Add any actions you want to take when the user confirms
-        }
-      });
     const productsImages = media?.product
       .map((product) => (product.img ? product : ""))
       .filter(Boolean);
@@ -253,7 +248,59 @@ const ProductInformation = ({
         variant: { ...media.variant, options: variantImages },
       },
     };
+    const coverPhoto = media.product.find(
+      ({ label }) => label === "Cover Photo"
+    );
+
+    if (!newForm.category) {
+      return handleSweetAlert("Category");
+    }
+
+    if (!newForm.material) {
+      return handleSweetAlert("Material");
+    }
+
+    if (
+      (!newForm.hasVariant && !newForm.capital) ||
+      (!newForm.hasVariant && !newForm.srp)
+    ) {
+      return handleSweetAlert("Capital and SRP ");
+    }
+
+    if (newForm.hasVariant) {
+      const { variations = [], has2Variant = false } = newForm;
+      const options = variations[0].options;
+
+      const hasNoSrpAndCapital = options.some(
+        ({ capital = 0, srp = 0 }) => !capital || !srp
+      );
+      if (hasNoSrpAndCapital) {
+        return handleSweetAlert(
+          "Capital and SRP are required for each variant.",
+          true
+        );
+      }
+
+      if (has2Variant) {
+        const hasNoSrpAndCapitalIn2Variant = options.some(({ prices }) =>
+          prices.some(({ srp = 0, capital = 0 }) => !srp || !capital)
+        );
+
+        if (hasNoSrpAndCapitalIn2Variant) {
+          return handleSweetAlert(
+            "Capital and SRP are required for each variant.",
+            true
+          );
+        }
+      }
+    }
+
+    if (!coverPhoto.img) {
+      return handleSweetAlert("Cover Photo");
+    }
+
     const title = willCreate ? "publish" : "Update";
+
     Swal.fire({
       title: "Are you sure?",
       text: `You want to ${title} this product!`,

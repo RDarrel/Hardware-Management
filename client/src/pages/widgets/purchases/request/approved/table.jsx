@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { MDBBtn, MDBIcon, MDBTable } from "mdbreact";
-import { formattedDate, fullName } from "../../../../../services/utilities";
+import {
+  formattedDate,
+  fullName,
+  handlePagination,
+} from "../../../../../services/utilities";
+import PaginationButtons from "../../../../widgets/pagination/buttons";
 import Modal from "../modal";
 import Received from "./Received";
 import GET from "../../GET";
@@ -9,7 +14,9 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
   const [show, setShow] = useState(false),
     [viewReceived, setViewRecieved] = useState(false),
     [merchandises, setMerchandises] = useState([]),
-    [purchase, setPurchase] = useState({});
+    [purchase, setPurchase] = useState({}),
+    [page, setPage] = useState(1),
+    maxPage = 5;
 
   stockmans =
     !!stockmans &&
@@ -94,76 +101,86 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
         </thead>
         <tbody>
           {!!stockmans &&
-            stockmans.map((stockman, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td className="text-center">
-                  {fullName(stockman?.requestBy?.fullName)}
-                </td>
-                {!isReceived && (
-                  <>
-                    <td className="text-center">
-                      {formattedDate(stockman?.approved)}
-                    </td>
-                    <td className="text-center">
-                      {formattedDate(stockman?.expectedDelivered)}
-                    </td>
-                  </>
-                )}
-                {isReceived && (
-                  <>
-                    <td className="text-center">
-                      {formattedDate(stockman?.received)}
-                    </td>
-                  </>
-                )}
-                {isAdmin && (
-                  <>
-                    <td className="font-weight-bolder text-danger text-center">
-                      ₱ {stockman.total.toLocaleString()}
-                    </td>
-                    {isReceived && (
-                      <>
-                        <td className="font-weight-bolder text-danger text-center">
-                          ₱{" "}
-                          {GET.totalAmount(
-                            stockman.merchandises,
-                            "defective"
-                          ).toLocaleString()}
-                        </td>
-                        <td className="font-weight-bolder text-danger text-center">
-                          ₱{" "}
-                          {GET.totalAmount(
-                            stockman.merchandises,
-                            "discrepancy"
-                          ).toLocaleString()}
-                        </td>
-                        <td className="font-weight-bolder text-danger text-center">
-                          ₱ {stockman.totalReceived?.toLocaleString()}
-                        </td>
-                      </>
-                    )}
-                  </>
-                )}
-                <td className="text-center">
-                  <MDBBtn
-                    color="success"
-                    size="sm"
-                    floating
-                    onClick={() =>
-                      handleViewProducts(stockman, stockman.merchandises)
-                    }
-                  >
-                    <MDBIcon icon="shopping-cart" />
-                  </MDBBtn>
-                  <span className="counter mb-0">
-                    {stockman?.merchandises?.length}
-                  </span>
-                </td>
-              </tr>
-            ))}
+            handlePagination(stockmans, page, maxPage).map(
+              (stockman, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td className="text-center">
+                    {fullName(stockman?.requestBy?.fullName)}
+                  </td>
+                  {!isReceived && (
+                    <>
+                      <td className="text-center">
+                        {formattedDate(stockman?.approved)}
+                      </td>
+                      <td className="text-center">
+                        {formattedDate(stockman?.expectedDelivered)}
+                      </td>
+                    </>
+                  )}
+                  {isReceived && (
+                    <>
+                      <td className="text-center">
+                        {formattedDate(stockman?.received)}
+                      </td>
+                    </>
+                  )}
+                  {isAdmin && (
+                    <>
+                      <td className="font-weight-bolder text-danger text-center">
+                        ₱ {stockman.total.toLocaleString()}
+                      </td>
+                      {isReceived && (
+                        <>
+                          <td className="font-weight-bolder text-danger text-center">
+                            ₱{" "}
+                            {GET.totalAmount(
+                              stockman.merchandises,
+                              "defective"
+                            ).toLocaleString()}
+                          </td>
+                          <td className="font-weight-bolder text-danger text-center">
+                            ₱{" "}
+                            {GET.totalAmount(
+                              stockman.merchandises,
+                              "discrepancy"
+                            ).toLocaleString()}
+                          </td>
+                          <td className="font-weight-bolder text-danger text-center">
+                            ₱ {stockman.totalReceived?.toLocaleString()}
+                          </td>
+                        </>
+                      )}
+                    </>
+                  )}
+                  <td className="text-center">
+                    <MDBBtn
+                      color="success"
+                      size="sm"
+                      floating
+                      onClick={() =>
+                        handleViewProducts(stockman, stockman.merchandises)
+                      }
+                    >
+                      <MDBIcon icon="shopping-cart" />
+                    </MDBBtn>
+                    <span className="counter mb-0">
+                      {stockman?.merchandises?.length}
+                    </span>
+                  </td>
+                </tr>
+              )
+            )}
         </tbody>
       </MDBTable>
+      <PaginationButtons
+        title={"Receive"}
+        mt={"0"}
+        array={stockmans}
+        page={page}
+        setPage={setPage}
+        max={maxPage}
+      />
       <Received
         show={viewReceived}
         toggle={toggleReceived}

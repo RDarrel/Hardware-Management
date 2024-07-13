@@ -122,8 +122,6 @@ function Variations({
             },
           ],
         };
-
-        console.log(updatedVariations);
       } else {
         const priceID = uuidv4();
         const vr1Options = [...updatedVariations[0].options];
@@ -367,6 +365,7 @@ function Variations({
                     <MDBCol md="8">
                       <input
                         className="form-control"
+                        required
                         value={variation.name || ""}
                         onChange={({ target }) =>
                           handleChangeVrName(target.value, index)

@@ -43,14 +43,16 @@ const handleUploadProduct = (_id, images) => {
 
 exports.browse = async (req, res) => {
   try {
-    const items = await Entity.find()
-      .populate("category")
-      .populate("material")
-      .select("-__v")
-      .sort({ createdAt: -1 })
-      .lean();
+    const status = req.query.sorted;
+    let query = Entity.find().sort({ createdAt: -1 });
 
-    const sortedItems = await sortByTopSellingProducts(items);
+    if (status === "true") {
+      query = query.populate("category").populate("material");
+    }
+
+    const items = await query.select("-__v").lean();
+    const sortedItems =
+      status === "true" ? await sortByTopSellingProducts(items) : items;
 
     res.json({
       success: "Roles Fetched Successfully",
@@ -60,7 +62,6 @@ exports.browse = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 const getTheTotalMax = (product, stocks) => {
   return (
     stocks.reduce((acc, curr) => {

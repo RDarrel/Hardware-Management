@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { SAVE } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
 
 const Orders = ({
+  isCheckOut,
+  setIsCheckOut,
   orders,
   setOrders,
   invoice_no,
@@ -22,7 +24,6 @@ const Orders = ({
     [total, setTotal] = useState(0),
     [cash, setCash] = useState(0),
     [orderDetails, setOrderDetails] = useState([]),
-    [checkout, setCheckout] = useState(false),
     [variant1, setVariant1] = useState(""),
     [variant2, setVariant2] = useState(""),
     [popoverKey, setPopOverKey] = useState(1),
@@ -172,10 +173,10 @@ const Orders = ({
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === "F2") {
+      if (event.key === "F3") {
         event.preventDefault(); // Prevent the default browser action for F1
         const suspend = document.getElementById("suspend");
-        if (suspend) {
+        if (suspend && !isCheckOut) {
           suspend.click();
         }
         // Perform your suspend action here
@@ -188,7 +189,7 @@ const Orders = ({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [isCheckOut]);
 
   return (
     <MDBCol md="6">
@@ -231,6 +232,7 @@ const Orders = ({
               setVariant1={setVariant1}
               variant2={variant2}
               setVariant2={setVariant2}
+              setIsCheckOut={setIsCheckOut}
             />
           </div>
           <div
@@ -247,15 +249,15 @@ const Orders = ({
               cash={cash}
               setCash={setCash}
               total={total}
-              setCheckout={setCheckout}
+              toggle={() => setIsCheckOut(!isCheckOut)}
               orderDetails={orderDetails}
             />
           </div>
         </MDBCardBody>
       </MDBCard>
       <Receipt
-        show={checkout}
-        toggle={() => setCheckout(!checkout)}
+        show={isCheckOut}
+        toggle={() => setIsCheckOut(!isCheckOut)}
         invoice_no={invoice_no}
         total={total}
         orderDetails={orderDetails}

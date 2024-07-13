@@ -176,7 +176,7 @@ export const EmployeesReport = () => {
           <div className="d-flex justify-content-end mt-3">
             <MDBBadge color="info">
               <h6 className="font-weight-bolder text-white  mx-1 my-1">
-                Total: ₱{getTotalSales(transactions)}.00
+                Grand Total Sales: ₱{getTotalSales(transactions)}.00
               </h6>
             </MDBBadge>
           </div>

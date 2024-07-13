@@ -8,6 +8,7 @@ const Footer = ({
   setCheckout,
   orderDetails,
   cash,
+  toggle,
   setCash,
 }) => {
   const change = Number(cash) - Number(total);
@@ -26,17 +27,20 @@ const Footer = ({
         text: "Cash is not sufficient.",
       });
 
-    setCheckout(true);
+    toggle();
   };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === "F1") {
+      if (event.key === "F2") {
         event.preventDefault(); // Prevent the default browser action for F1
+        // setCheckout(false);
         document.getElementById("paid").click();
         // Perform your suspend action here
-      } else if (event.key.toUpperCase() === "C") {
-        const inputElement = cashDivRef.current.querySelector("input");
+      } else if (event.key.toUpperCase() === "F1") {
+        event.preventDefault(); // Prevent the default browser action for F1
+
+        const inputElement = cashDivRef?.current?.querySelector("input");
         if (inputElement) {
           inputElement.focus();
         }

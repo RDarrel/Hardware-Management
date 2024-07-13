@@ -109,7 +109,7 @@ function Media({
                   isDisAble ? "between" : "end"
                 } align-items-center mt-3 mr-5`}
               >
-                {isDuplicateName && (
+                {isDuplicateName ? (
                   <MDBTypography
                     variant="h2"
                     bqColor="primary"
@@ -120,32 +120,20 @@ function Media({
                   >
                     Sorry But this product is Already Exist
                   </MDBTypography>
-                )}
-
-                {hasDuplicateVariant && (
-                  <MDBTypography
-                    variant="h2"
-                    bqColor="primary"
-                    className="mb-0 text-black-50"
-                    noteColor="danger"
-                    note
-                    noteTitle="Warning: "
-                  >
-                    Sorry but you have a duplicate variant
-                  </MDBTypography>
-                )}
-
-                {hasDuplicateOption && (
-                  <MDBTypography
-                    variant="h2"
-                    bqColor="primary"
-                    className="mb-0 text-black-50"
-                    noteColor="danger"
-                    note
-                    noteTitle="Warning: "
-                  >
-                    Sorry but you have a duplicate option
-                  </MDBTypography>
+                ) : (
+                  (hasDuplicateVariant || hasDuplicateOption) && (
+                    <MDBTypography
+                      variant="h2"
+                      bqColor="primary"
+                      className="mb-0 text-black-50"
+                      noteColor="danger"
+                      note
+                      noteTitle="Warning: "
+                    >
+                      Sorry but you have a duplicate{" "}
+                      {hasDuplicateVariant ? "variant" : "option"}
+                    </MDBTypography>
+                  )
                 )}
                 <div>
                   <MDBBtn color="white" onClick={handleClearForm}>

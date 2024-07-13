@@ -36,7 +36,7 @@ const Store = () => {
   const toggleView = () => setIsView(!isView);
 
   useEffect(() => {
-    dispatch(BROWSE({ token }));
+    dispatch(BROWSE({ token, key: { sorted: "true" } }));
   }, [token, dispatch]);
 
   useEffect(() => {

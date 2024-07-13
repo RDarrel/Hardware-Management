@@ -60,13 +60,13 @@ export const Table = ({
               )
             ) : (
               <tr key={product._id} className="border-top">
-                <td>
-                  <div className="d-flex align-items-center text-truncate">
+                <td className="m-2">
+                  <div className="d-flex align-items-center text-truncate mt-3 mb-3">
                     {getProductImg(product)}
                     <h6
                       className="text-truncate"
                       style={{
-                        maxWidth: "250px",
+                        maxWidth: "400px",
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -76,7 +76,7 @@ export const Table = ({
                     </h6>
                   </div>
                 </td>
-                <td> </td>
+                <td>{null} </td>
                 <td>
                   <h6 className="text-danger font-weight-bold">
                     ₱{product?.capital?.toLocaleString()}

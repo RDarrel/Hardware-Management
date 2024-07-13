@@ -11,18 +11,23 @@ const initialState = {
   message: "",
 };
 
-export const BROWSE = createAsyncThunk(`${name}`, ({ token }, thunkAPI) => {
-  try {
-    return axioKit.universal(name, token);
-  } catch (error) {
-    const message =
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString();
+export const BROWSE = createAsyncThunk(
+  `${name}`,
+  ({ token, key }, thunkAPI) => {
+    try {
+      return axioKit.universal(name, token, key);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
 
-    return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
 export const SELLING_PRODUCTS = createAsyncThunk(
   `${name}/SELLING_PRODUCTS`,
@@ -246,8 +251,11 @@ export const reduxSlice = createSlice({
             _product.max -= quantity;
           }
         }
-
-        _collections[index] = { ..._product };
+        const oldSold = _product.sold || 0;
+        _collections[index] = {
+          ..._product,
+          sold: isPerKilo ? oldSold + (kilo + kiloGrams) : oldSold + quantity,
+        };
       }
 
       state.collections = handleRemoveNoStocks(_collections) || [];

@@ -152,7 +152,7 @@ const Products = () => {
                 <h6
                   className="text-truncate"
                   style={{
-                    maxWidth: "250px",
+                    maxWidth: "400px",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",

@@ -34,6 +34,7 @@ export default function Receipt({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("true");
 
     dispatch(
       POS({
@@ -64,19 +65,19 @@ export default function Receipt({
   return (
     <MDBModal isOpen={show} toggle={toggle} backdrop size="lg" centered>
       <MDBModalBody className="mb-0 m-0 p-0">
-        <Header
-          invoice_no={invoice_no}
-          createdAt={createdAt}
-          customer={customer}
-          setCustomer={setCustomer}
-          isReturn={isReturn}
-          isReturnRefund={isReturnRefund}
-          isAdmin={isAdmin}
-          cashier={cashier}
-          customerView={customerView}
-          reason={reason}
-        />
         <form onSubmit={handleSubmit}>
+          <Header
+            invoice_no={invoice_no}
+            createdAt={createdAt}
+            customer={customer}
+            setCustomer={setCustomer}
+            isReturn={isReturn}
+            isReturnRefund={isReturnRefund}
+            isAdmin={isAdmin}
+            cashier={cashier}
+            customerView={customerView}
+            reason={reason}
+          />
           <div className={`mx-2 mt-${isAdmin ? "2" : "4"}`}>
             <table className="invoice-table">
               <thead>
