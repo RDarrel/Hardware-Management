@@ -20,14 +20,18 @@ exports.browse = (req, res) => {
 exports.save = async (req, res) => {
   try {
     const { invoice_no = "", cashier = "", orders = [], total = 0 } = req.body;
-    // const hasExist = Entity.findOne({ invoice_no, cashier });
-    // if (hasExist.invoice) {
-    //   await Entity.findOneAndUpdate({ invoice_no }, { orders });
-    // } else {
-    await Entity.create({ invoice_no, cashier, orders, total });
-    // }
+    const newSuspendTransac = await Entity.create({
+      invoice_no,
+      cashier,
+      orders,
+      total,
+    });
+    const populateProduct = await Entity.findOne({
+      _id: newSuspendTransac._id,
+    }).populate("orders.product");
+
     res.json({
-      payload: { invoice_no, cashier, orders, total },
+      payload: populateProduct,
       success: "Successfully Suspended",
     });
   } catch (error) {

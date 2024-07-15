@@ -145,6 +145,7 @@ const Store = () => {
       />
 
       <Cart
+        suppliers={suppliersCollections}
         show={isShowCart}
         toggle={() => setIsShowCart(false)}
         collections={cart}

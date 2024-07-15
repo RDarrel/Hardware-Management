@@ -96,8 +96,17 @@ const Categories = ({
       const categoryIndex = categories.findIndex(
         ({ _id }) => _id === activeCategory
       );
-      const indexToScroll = activeCategory === "all" ? 0 : categoryIndex + 1; // Compute the index to scroll to (+1 because of the "All" button)
-      carouselRef.current.scrollLeft = indexToScroll * 100; // Adjust this value based on your button width or desired scroll position
+
+      const indexToScroll = activeCategory === "all" ? 0 : categoryIndex + 1;
+      const scrollAmount = 50;
+
+      const currentScroll = carouselRef.current.scrollLeft;
+      const targetScroll = indexToScroll * scrollAmount;
+
+      carouselRef.current.scrollLeft =
+        targetScroll > currentScroll
+          ? targetScroll
+          : targetScroll - scrollAmount;
     }
   }, [activeCategory, categories]);
 

@@ -15,7 +15,7 @@ const OptionImg = ({ label, setMedia, index, img, media }) => {
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-
+    if (!file) return false;
     const reader = new FileReader();
 
     reader.onload = ({ target }) => {
@@ -41,14 +41,14 @@ const OptionImg = ({ label, setMedia, index, img, media }) => {
   };
 
   return (
-    <>
-      <div className="image-placeholder">
+    <div>
+      <div className={`image-placeholder ${img ? "" : "hasImage"}`}>
         {img ? (
           <>
             <img src={img} alt={label} className="uploaded-image" />
             <MDBIcon
               icon="times"
-              className="remove-icon"
+              className="remove-icon "
               onClick={handleRemoveImg}
             />
           </>
@@ -64,12 +64,9 @@ const OptionImg = ({ label, setMedia, index, img, media }) => {
           onChange={handleImageChange}
         />
       </div>
-      <MDBRow className="ml-4 ">
-        <MDBCol md="12">
-          <h6 className="text-center text-nowrap">{label || "Option"}</h6>
-        </MDBCol>
-      </MDBRow>
-    </>
+
+      <h6 className="text-center w-75">{label || "Option"}</h6>
+    </div>
   );
 };
 

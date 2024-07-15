@@ -4,13 +4,14 @@ import {
   MDBTable,
   MDBRow,
   MDBCol,
-  MDBDatePicker,
+  // MDBDatePicker,
   MDBBadge,
 } from "mdbreact";
 import { ENDPOINT, variation } from "../../../../services/utilities";
 import CustomInput from "../../CustomInput";
 import CustomSelect from "../../../../components/customSelect";
 import GET from "../GET";
+import Swal from "sweetalert2";
 
 const ModalBody = ({
   isAdmin,
@@ -18,9 +19,9 @@ const ModalBody = ({
   products,
   setMerchandises,
   setSupplier,
-  setExpectedDelivered,
+  // setExpectedDelivered,
   handleChangeExpiration,
-  expectedDelivered,
+  // expectedDelivered,
   total,
   suppliers,
   supplier,
@@ -29,6 +30,43 @@ const ModalBody = ({
   theader,
 }) => {
   const baseKeyAction = "approved";
+  const handleChangeGlobalSupplier = (newSupplier = "") => {
+    if (newSupplier === supplier) return false;
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Changing the global supplier will update the supplier for all products.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, change it!",
+      cancelButtonText: "No, keep it",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // If user confirms, change the global supplier and update all products
+        const _merchandises = [...products];
+        const newMerchandises = _merchandises.map((merchandise) => {
+          if (merchandise.supplier === supplier) {
+            return { ...merchandise, supplier: newSupplier };
+          } else {
+            return merchandise;
+          }
+        });
+
+        setSupplier(newSupplier);
+        setMerchandises(newMerchandises);
+        Swal.fire(
+          "Changed!",
+          "All product suppliers have been updated.",
+          "success"
+        );
+      }
+    });
+  };
+
+  const handleChangeSupplier = (newSupplier, index) => {
+    const _merchandises = [...products];
+    _merchandises[index].supplier = newSupplier;
+    setMerchandises(_merchandises);
+  };
   return (
     <MDBModalBody className={hasBorder ? `mb-0 m-0 p-0` : ""}>
       <div style={{ maxHeight: "500px", overflowY: "auto" }}>
@@ -53,6 +91,11 @@ const ModalBody = ({
                   <th className="text-center" rowSpan={2}>
                     Subtotal
                   </th>
+                  {!isApproved && (
+                    <th className="text-center" rowSpan={2}>
+                      Supplier
+                    </th>
+                  )}
                 </>
               )}
             </tr>
@@ -326,6 +369,23 @@ const ModalBody = ({
                         <td className="text-center font-weight-bolder text-danger">
                           ₱ {subtotal.toLocaleString()}
                         </td>
+                        {!isApproved && (
+                          <td>
+                            <select
+                              value={merchandise.supplier}
+                              className="form-control text-center"
+                              onChange={({ target }) =>
+                                handleChangeSupplier(target.value, index)
+                              }
+                            >
+                              {suppliers.map((supp, index) => (
+                                <option key={index} value={supp._id}>
+                                  {supp.company}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                        )}
                       </>
                     )}
                   </tr>
@@ -352,11 +412,11 @@ const ModalBody = ({
                 values="_id"
                 disabledAllExceptSelected={isApproved}
                 preValue={supplier}
-                onChange={(value) => setSupplier(value)}
+                onChange={(value) => handleChangeGlobalSupplier(value)}
                 label={"Supplier"}
               />
             </div>
-            {!isApproved && (
+            {/* {!isApproved && (
               <div className="d-flex align-items-center">
                 Expected Delivered:
                 <MDBDatePicker
@@ -368,10 +428,11 @@ const ModalBody = ({
                   minDate={new Date().toLocaleString()}
                 />
               </div>
-            )}
+            )} */}
             <MDBBadge color="light" className="float-right">
               <h6 className="font-weight-bolder text-danger">
-                Total Amount: ₱{total.toLocaleString()}
+                {!isApproved ? "Grand" : ""} Total Amount: ₱
+                {total.toLocaleString()}
               </h6>
             </MDBBadge>
           </MDBCol>

@@ -22,8 +22,8 @@ const Variations = ({
     [disableIDSVr1, setDisableIDSVr1] = useState([]);
 
   useEffect(() => {
-    setVariant1("");
-    setVariant2("");
+    setVariant1(null);
+    setVariant2(null);
   }, [setVariant1, setVariant2]);
 
   useEffect(() => {
@@ -38,6 +38,8 @@ const Variations = ({
       setDisableIDSVr2([]);
     }
   }, [variant1, variant2]);
+
+  console.log(variant1);
 
   useEffect(() => {
     if (variations && variations.length > 0) {

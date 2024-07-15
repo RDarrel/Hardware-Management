@@ -12,6 +12,7 @@ import { BROWSE } from "../../../../services/redux/slices/administrator/supplier
 import { UPDATE } from "../../../../services/redux/slices/stockman/purchases";
 import Swal from "sweetalert2";
 import ModalBody from "./modalBody";
+import Checking from "./cheking";
 
 export default function Modal({
   show,
@@ -34,12 +35,11 @@ export default function Modal({
     ),
     [suppliers, setSuppliers] = useState([]),
     [expectedDelivered, setExpectedDelivered] = useState(""),
+    [showChecking, setShowChecking] = useState(false),
     [supplier, setSupplier] = useState(""),
     [products, setProducts] = useState([]),
     [total, setTotal] = useState([]),
     dispatch = useDispatch();
-
-  console.log(hasBorder);
 
   useEffect(() => {
     if (!!merchandises && show) {
@@ -63,6 +63,7 @@ export default function Modal({
             merchandise,
             merchandise.product
           ),
+          supplier: merchandise?.supplier || purchase?.supplier?._id,
           subtotal: variation.getTheSubTotal(
             "capital",
             {
@@ -79,7 +80,7 @@ export default function Modal({
       const _total = productsWithSubtotal.reduce((acc, curr) => {
         return (acc += curr.subtotal);
       }, 0);
-      setSupplier(purchase?.supplier?._id);
+      // setSupplier(purchase?.supplier?._id);
       setTotal(_total);
       setProducts(productsWithSubtotal);
     }
@@ -90,72 +91,97 @@ export default function Modal({
   }, [token, dispatch]);
 
   useEffect(() => {
-    if (!!_suppliers) {
+    if (!!_suppliers && show) {
+      setSupplier(purchase?.supplier?._id);
       setSuppliers(_suppliers);
-      setSupplier(_suppliers[0]?._id);
     }
-  }, [_suppliers]);
+  }, [_suppliers, show, purchase]);
 
   const handleSubmit = () => {
-    const supplierName = suppliers.find(({ _id }) => _id === supplier).company;
-    Swal.fire({
-      title: "Are you sure?",
-      text: `Before proceeding with your approval, please double-check that the supplier ${supplierName} is correct.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, proceed",
-      cancelButtonText: "No, cancel",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        dispatch(
-          UPDATE({
-            token,
-            data: {
-              purchase: {
-                ...purchase,
-                expectedDelivered,
-                supplier,
-                total,
-                status: "approved",
-                approved: new Date().toDateString(),
-              },
-              merchandises: products.map((product) => ({
-                ...product,
-                quantity: {
-                  ...product?.quantity,
-                  received: product?.quantity?.approved,
-                  defective: 0,
-                },
-                kilo: {
-                  ...product?.kilo,
-                  received: product?.kilo?.approved,
-                  defective: 0,
-                },
-                kiloGrams: {
-                  ...product?.kiloGrams,
-                  received: product?.kiloGrams?.approved,
-                  defective: 0,
-                },
-              })),
-            },
-          })
-        );
-        toggle();
+    const _merchandises = [...products];
+    const updatedMerchandises = _merchandises.map((product) => ({
+      ...product,
+      quantity: {
+        ...product?.quantity,
+        received: product?.quantity?.approved,
+        defective: 0,
+      },
+      kilo: {
+        ...product?.kilo,
+        received: product?.kilo?.approved,
+        defective: 0,
+      },
+      kiloGrams: {
+        ...product?.kiloGrams,
+        received: product?.kiloGrams?.approved,
+        defective: 0,
+      },
+    }));
 
-        Swal.fire({
-          title: "Approval Confirmed",
-          text: `Your Approval has been confirmed with supplier: ${supplierName}.`,
-          icon: "success",
-        });
-      }
-    });
+    setMerchandises(updatedMerchandises);
+
+    toggleChecking();
+    // const supplierName = suppliers.find(({ _id }) => _id === supplier).company;
+    // Swal.fire({
+    //   title: "Are you sure?",
+    //   text: `Before proceeding with your approval, please double-check that the supplier ${supplierName} is correct.`,
+    //   icon: "warning",
+    //   showCancelButton: true,
+    //   confirmButtonColor: "#3085d6",
+    //   cancelButtonColor: "#d33",
+    //   confirmButtonText: "Yes, proceed",
+    //   cancelButtonText: "No, cancel",
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     dispatch(
+    //       UPDATE({
+    //         token,
+    //         data: {
+    //           purchase: {
+    //             ...purchase,
+    //             expectedDelivered,
+    //             supplier,
+    //             total,
+    //             status: "approved",
+    //             approved: new Date().toDateString(),
+    //           },
+    // merchandises: products.map((product) => ({
+    //   ...product,
+    //   quantity: {
+    //     ...product?.quantity,
+    //     received: product?.quantity?.approved,
+    //     defective: 0,
+    //   },
+    //   kilo: {
+    //     ...product?.kilo,
+    //     received: product?.kilo?.approved,
+    //     defective: 0,
+    //   },
+    //   kiloGrams: {
+    //     ...product?.kiloGrams,
+    //     received: product?.kiloGrams?.approved,
+    //     defective: 0,
+    //   },
+    // })),
+    //         },
+    //       })
+    //     );
+    //     toggle();
+
+    //     Swal.fire({
+    //       title: "Approval Confirmed",
+    //       text: `Your Approval has been confirmed with supplier: ${supplierName}.`,
+    //       icon: "success",
+    //     });
+    //   }
+    // });
   };
 
   const handleClose = () => {
     toggle();
   };
+
+  const toggleChecking = () => setShowChecking(!showChecking);
 
   const handleReject = () => {
     Swal.fire({
@@ -242,7 +268,13 @@ export default function Modal({
       return _merchandises;
     });
   };
-  const size = isAdmin ? "xl" : !isAdmin && isApproved ? "fluid" : "xl";
+  const size = isAdmin
+    ? !isApproved
+      ? "fluid"
+      : "xl"
+    : !isAdmin && isApproved
+    ? "fluid"
+    : "xl";
 
   const label = !isDefective
     ? !isAdmin
@@ -285,7 +317,7 @@ export default function Modal({
             <MDBBtn
               color="success"
               className="float-right"
-              onClick={() => handleSubmit("approved")}
+              onClick={handleSubmit}
             >
               Approved
             </MDBBtn>
@@ -313,6 +345,15 @@ export default function Modal({
           </div>
         </MDBModalFooter>
       )}
+      <Checking
+        toggle={toggleChecking}
+        parentToggle={toggle}
+        show={showChecking}
+        merchandises={merchandises}
+        purchase={purchase}
+        suppliersCollections={suppliers}
+        grandTotal={total}
+      />
     </MDBModal>
   );
 }

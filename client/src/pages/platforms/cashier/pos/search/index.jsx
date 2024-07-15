@@ -13,6 +13,7 @@ const Search = ({
   collections,
   handleAddOrder,
   setPage,
+  isLoading = false,
 }) => {
   const inputRef = useRef(null);
 
@@ -52,6 +53,7 @@ const Search = ({
               id="search"
               autoComplete="off"
               ref={inputRef}
+              readOnly={isLoading}
               onChange={({ target }) => setSearch(target.value)}
               name="search"
             />

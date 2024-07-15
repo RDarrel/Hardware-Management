@@ -24,7 +24,7 @@ const Orders = ({
     [total, setTotal] = useState(0),
     [cash, setCash] = useState(0),
     [orderDetails, setOrderDetails] = useState([]),
-    [variant1, setVariant1] = useState(""),
+    [variant1, setVariant1] = useState(null),
     [variant2, setVariant2] = useState(""),
     [popoverKey, setPopOverKey] = useState(1),
     dispatch = useDispatch();
@@ -114,7 +114,9 @@ const Orders = ({
       _orders[index] = { ..._orders[index], max: newMax };
     }
 
-    _orders[index] = { ..._orders[index], variant1 };
+    if (variant1) {
+      _orders[index] = { ..._orders[index], variant1 };
+    }
 
     setOrders(_orders);
     handleClose();

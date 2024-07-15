@@ -10,6 +10,7 @@ import {
   MDBInputGroup,
 } from "mdbreact";
 import Variations from "../variations";
+import CustomSelect from "../../../components/customSelect";
 
 export const Tbody = ({
   isCashier,
@@ -29,6 +30,8 @@ export const Tbody = ({
   checkOutProducts,
   handleActionInCheckOut,
   isCheckAll = true,
+  suppliers,
+  handleChangeSupplier,
 }) => {
   return (
     <tbody>
@@ -66,7 +69,7 @@ export const Tbody = ({
                   <div className="ml-3">
                     <h6
                       style={{
-                        maxWidth: "300px",
+                        maxWidth: "210px",
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -227,6 +230,17 @@ export const Tbody = ({
                     />
                   )}
                 </div>
+              </td>
+              <td>
+                <CustomSelect
+                  className="m-0 p-0 mt-2"
+                  choices={suppliers}
+                  preValue={obj.supplier}
+                  inputClassName="text-center"
+                  onChange={(value) => handleChangeSupplier(obj, value)}
+                  texts="company"
+                  values="_id"
+                />
               </td>
               {isCashier && (
                 <td className="text-danger font-weight-bold">

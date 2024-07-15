@@ -50,11 +50,12 @@ function CurrentSales({ sales }) {
   lastWeekEnd.setDate(lastWeekEnd.getDate() - 1);
   lastWeekEnd.setHours(23, 59, 59, 999);
 
-  let lastWeekYesterday = new Date(currentWeekStart);
-  if (currentWeekDay === 0) {
-    lastWeekYesterday.setDate(currentWeekStart.getDate() - 1);
-    lastWeekYesterday.setHours(0, 0, 0, 0);
-  }
+  let lastWeekYesterday = new Date(currentDate);
+  lastWeekYesterday.setDate(lastWeekYesterday.getDate() - 1);
+  // if (currentWeekDay === 0) {
+  //   lastWeekYesterday.setDate(currentWeekStart.getDate() - 1);
+  //   lastWeekYesterday.setHours(0, 0, 0, 0);
+  // }
 
   const filterdYearlySales = useCallback(
     (_sales, isCurrent = true) => {
@@ -209,7 +210,6 @@ function CurrentSales({ sales }) {
   const currentMonthIsBetter = totalMonthlySales > totalLastMonthlySales;
   const currentWeekIsBetter = totalWeeklySales > totalLastWeeklySales;
   const currentDayISBetter = totalDailySales > totalLastDailySales;
-
   return (
     <section className="mt-2">
       <MDBRow>
@@ -290,7 +290,7 @@ function CurrentSales({ sales }) {
                 icon={`long-arrow-alt-${currentDayISBetter ? "up" : "down"}`}
                 className="red-text mr-3"
               />{" "}
-              {totalDailySales?.toLocaleString()}
+              ₱{totalDailySales?.toLocaleString()}
             </h6>
             <MDBCardBody>
               <MDBProgress

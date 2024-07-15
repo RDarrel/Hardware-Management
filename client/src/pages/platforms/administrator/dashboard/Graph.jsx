@@ -27,6 +27,7 @@ const Graph = ({ products }) => {
       const currentDate = new Date();
       const from = new Date(currentDate);
       const to = new Date(currentDate);
+
       switch (range) {
         case "yesterday":
           console.log("true");
@@ -53,8 +54,11 @@ const Graph = ({ products }) => {
         default:
           break;
       }
+      from.setHours(0, 0, 0, 0);
+      to.setHours(0, 0, 0, 0);
       const filteredProducts = products.filter(({ createdAt }) => {
         const productDate = new Date(createdAt);
+        productDate.setHours(0, 0, 0, 0);
         return productDate >= from && productDate <= to;
       });
 

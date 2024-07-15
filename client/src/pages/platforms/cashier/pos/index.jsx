@@ -283,6 +283,7 @@ const POS = () => {
         toggleFindTransac={toggleFindTransac}
         toggleSuspended={toggleSuspended}
         toggleGuide={toggleGuide}
+        isLoading={isLoading}
       />
       <MDBRow>
         <MDBCol md="6">
@@ -296,6 +297,7 @@ const POS = () => {
             setProducts={setProducts}
             collections={collections}
             setPage={setPage}
+            isLoading={isLoading}
           />
           <Products
             products={products}

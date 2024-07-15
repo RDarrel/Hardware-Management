@@ -27,9 +27,11 @@ const Body = ({
   setOrderDetails,
 }) => {
   useEffect(() => {
-    setVariant1("");
-    setVariant2("");
+    setVariant1(null);
+    setVariant2(null);
   }, [setVariant1, setVariant2]);
+
+  console.log(variant1);
 
   return (
     <div className="order-details m-0 p-0 ">
@@ -106,9 +108,13 @@ const Body = ({
                               isChangeVariant={true}
                               has2Variant={item?.product?.hasVariant}
                               variations={item?.product?.variations}
-                              variant1={variant1 || item?.variant1}
+                              variant1={
+                                variant1 === null ? item?.variant1 : variant1
+                              }
                               setVariant1={setVariant1}
-                              variant2={variant2 || item?.variant2}
+                              variant2={
+                                variant2 === null ? item?.variant2 : variant2
+                              }
                               setVariant2={setVariant2}
                             />
                             <MDBRow className="mt-3">

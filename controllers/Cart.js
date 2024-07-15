@@ -101,6 +101,7 @@ exports.update = async (req, res) => {
       _id,
       newKilo = 1,
       operator = "MINUS",
+      supplier,
       newKiloGrams = 0,
     } = req.body;
     var updatedCart = {};
@@ -136,6 +137,13 @@ exports.update = async (req, res) => {
           { new: true }
         ).populate("product");
         break;
+
+      case "supplier":
+        updatedCart = await Entity.findByIdAndUpdate(
+          _id,
+          { supplier },
+          { new: true }
+        );
 
       default:
         updatedCart = await Entity.findByIdAndUpdate(

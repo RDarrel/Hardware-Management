@@ -68,6 +68,24 @@ export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   }
 });
 
+export const APPROVED = createAsyncThunk(
+  `${name}/approved`,
+  (form, thunkAPI) => {
+    try {
+      return axioKit.update(name, form.data, form.token, "approved");
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const STATUS = createAsyncThunk(`${name}/status`, (form, thunkAPI) => {
   try {
     return axioKit.update(name, form.data, form.token, "status");
@@ -184,6 +202,30 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(UPDATE.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(APPROVED.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(APPROVED.fulfilled, (state, action) => {
+        const { success, payload } = action.payload;
+        const _collections = [...state.collections];
+        const index = _collections.findIndex(
+          ({ _id }) => _id === payload?.purchase?._id
+        );
+
+        _collections.splice(index, 1);
+        state.collections = _collections;
+        state.message = success;
+        state.isSuccess = true;
+        state.isLoading = false;
+      })
+      .addCase(APPROVED.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;

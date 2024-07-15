@@ -17,6 +17,7 @@ const Table = ({
   handleChangeSelectAll,
   isCheckAll,
   isCashier,
+  suppliers,
 }) => {
   const { token } = useSelector(({ auth }) => auth),
     [popoverKey, setPopoverKey] = useState(0),
@@ -103,6 +104,16 @@ const Table = ({
     );
   };
 
+  const handleChangeSupplier = (cart, newSupplier) => {
+    if (cart.supplier === newSupplier) return false;
+    dispatch(
+      UPDATE({
+        token,
+        data: { _id: cart._id, supplier: newSupplier, action: "supplier" },
+      })
+    );
+  };
+
   const handleRemoveCart = (_id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -151,6 +162,7 @@ const Table = ({
               </div>
             </th>
             <th className="text-center">Quantity/Kilo</th>
+            <th className="text-center">Supplier</th>
             {isCashier && <th>Subtotal</th>}
             <th>Action</th>
           </tr>
@@ -173,6 +185,8 @@ const Table = ({
           isCheckAll={isCheckAll}
           handleActionInCheckOut={handleActionInCheckOut}
           isCashier={isCashier}
+          suppliers={suppliers}
+          handleChangeSupplier={handleChangeSupplier}
         />
       </MDBTable>
     </>

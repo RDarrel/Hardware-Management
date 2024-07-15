@@ -6,13 +6,16 @@
   justify-content: center;
   width: 120px;
   height: 120px;
-  border: 2px dashed #007bff;
   border-radius: 4px;
   margin: 10px;
   background-color: white;
   transition: background-color 0.3s, border-color 0.3s;
   cursor: pointer;
   overflow: visible; /* Allow overflow to show the remove icon */
+}
+
+.hasImage {
+  border: 2px dashed #007bff;
 }
 
 .border {
@@ -52,4 +55,5 @@
   cursor: pointer !important;
   border: 2px solid red !important; /* Temporary debugging border */
   color: red;
+  z-index: 2;
 }

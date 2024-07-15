@@ -314,6 +314,71 @@ exports.save = async (req, res) => {
   }
 };
 
+const findSupplierWithMostMerchandises = (suppliers) => {
+  return suppliers.reduce((maxSupplier, currentSupplier) => {
+    return currentSupplier.merchandises.length > maxSupplier.merchandises.length
+      ? currentSupplier
+      : maxSupplier;
+  }, suppliers[0]);
+};
+
+exports.approved = async (req, res) => {
+  try {
+    const { suppliers, purchase } = req.body;
+    const _suppliers = [...suppliers];
+
+    const supplierWithMostProducts =
+      findSupplierWithMostMerchandises(_suppliers);
+    const index = _suppliers.findIndex(
+      ({ _id }) => _id === supplierWithMostProducts._id
+    );
+
+    _suppliers.splice(index, 1);
+
+    await Entity.findByIdAndUpdate(purchase._id, {
+      approved: new Date().toDateString(),
+      status: "approved",
+      supplier: supplierWithMostProducts._id,
+      total: supplierWithMostProducts.totalAmount,
+      expectedDelivered: supplierWithMostProducts.expectedDelivered,
+    });
+
+    if (_suppliers.length > 0) {
+      for (const supplier of _suppliers) {
+        const newPurchase = await Entity.create({
+          supplier: supplier._id,
+          expectedDelivered: supplier.expectedDelivered,
+          expected: purchase.expected,
+          requestBy: purchase.requestBy,
+          approved: new Date().toDateString(),
+          status: "approved",
+          type: "request",
+          total: supplier.totalAmount,
+        });
+
+        const updatePromises = supplier.merchandises.map((merchandise) => {
+          return Merchandises.findByIdAndUpdate(merchandise._id, {
+            ...merchandise,
+            purchase: newPurchase._id,
+          });
+        });
+
+        await Promise.all(updatePromises);
+      }
+    }
+
+    bulkWrite(
+      req,
+      res,
+      Merchandises,
+      supplierWithMostProducts.merchandises,
+      "Successfully Approved"
+    );
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 exports.update = async (req, res) => {
   try {
     const { purchase, merchandises = [] } = req.body;

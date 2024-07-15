@@ -130,15 +130,34 @@ const filteredVariations = async (product, options, has2Variant) => {
   return container;
 };
 
-const mergePricesToLowestOptions = (options, optionsInVr2) => {
+const mergePricesToLowestOptions = (options, highestVrOptions) => {
   try {
+    const highestOptions = highestVrOptions.prices.filter(
+      ({ disable }) => !disable
+    );
     const _options = [...options];
     for (const option of _options) {
       const { prices = [] } = option;
-      const newPrices = [...prices];
-      for (const optionInVr2 of optionsInVr2) {
+      const newPrices = prices.filter(({ disable }) => !disable);
+      for (const optionInVr2 of highestOptions) {
+        //chinecheck ko kung yung option ba niya eh nandun sa highest vr2 kung wala mag pupush ako sa kaniya pero naka disable
         if (!newPrices.some(({ _id }) => _id === optionInVr2._id)) {
           newPrices.push({ ...optionInVr2, disable: true, max: 0 });
+        }
+      }
+      for (const newPrice of newPrices) {
+        //chinecheck ko kung yung option ba neto ay andun sa choices
+        //kung wala ipupush ko yung option niya sa choices
+        const hasExistInChoices = highestOptions.some(
+          ({ _id }) => newPrice._id === _id
+        );
+
+        if (!hasExistInChoices) {
+          highestOptions.push(newPrice);
+          const index = _options.findIndex(
+            ({ _id }) => highestVrOptions._id === _id
+          );
+          _options[index].prices.push({ ...newPrice, disable: true, max: 0 });
         }
       }
       const index = _options.findIndex(({ _id }) => option._id === _id);
@@ -147,7 +166,8 @@ const mergePricesToLowestOptions = (options, optionsInVr2) => {
         prices: newPrices,
       };
     }
-    return _options;
+
+    return { optionsInProducts: _options, choicesVariant: highestOptions };
   } catch (error) {
     console.log("Error in Merge Prices", error.message);
   }
@@ -172,39 +192,22 @@ exports.sellingProducts = async (_, res) => {
           has2Variant
         );
 
-        var optionsInVariant2 = {};
+        var choices = [];
         if (has2Variant) {
           //para kunin yung pinaka maraming choices na prices para yun yung isoshow na available sa variant2
           optionsInVariant2 = filteredOptions.reduce((maxObj, currentObj) => {
-            if (
-              maxObj.prices &&
-              maxObj.prices.length === currentObj.prices.length &&
-              !maxObj.prices.every(
-                (price, index) => price._id === currentObj.prices[index]._id
-              )
-            ) {
-              // Merge the arrays if they have the same length but different values
-              const newPrices = [
-                ...new Set([...maxObj.prices, ...currentObj.prices]),
-              ];
-
-              return {
-                ...maxObj,
-                prices: newPrices,
-              };
-            } else {
-              // Default condition
-              return currentObj.prices.length > (maxObj.prices?.length || 0)
-                ? currentObj
-                : maxObj;
-            }
+            // Default condition
+            return currentObj.prices.length > (maxObj.prices?.length || 0)
+              ? currentObj
+              : maxObj;
           }, {});
+          const { optionsInProducts = [], choicesVariant = [] } =
+            mergePricesToLowestOptions(filteredOptions, optionsInVariant2);
 
-          filteredOptions = mergePricesToLowestOptions(
-            filteredOptions,
-            optionsInVariant2.prices
-          );
+          filteredOptions = optionsInProducts;
+          choices = choicesVariant;
         }
+
         if (filteredOptions.length > 0) {
           container.push({
             ...product._doc,
@@ -212,7 +215,7 @@ exports.sellingProducts = async (_, res) => {
               { ...variations[0], options: filteredOptions },
               has2Variant && {
                 ...variations[1],
-                options: optionsInVariant2.prices,
+                options: choices,
               },
             ],
           });

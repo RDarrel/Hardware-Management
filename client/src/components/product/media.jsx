@@ -34,13 +34,12 @@ function Media({
               <MDBCol md="2" className="d-flex justify-content-end ">
                 <h6 className="mt-4">Product Images</h6>
               </MDBCol>
-              <MDBCol>
+              <MDBCol md="10" className=" d-flex justify-content-between">
                 <MDBRow>
                   {media?.product?.map(({ preview: img, label }, index) => (
                     <MDBCol
                       key={index}
-                      md="1"
-                      className="mr-5"
+                      md="2"
                       draggable="true"
                       onDragStart={(e) => {
                         e.dataTransfer.setData(
@@ -65,18 +64,18 @@ function Media({
             </MDBRow>
 
             {variations.length > 0 && (
-              <MDBRow>
+              <MDBRow className="mt-2">
                 <MDBCol md="2" className="d-flex justify-content-end ">
                   <h6 className="mt-4">{variations[0].name || "Name"}</h6>
                 </MDBCol>
-                <MDBCol>
+                <MDBCol md="10">
                   <MDBRow>
                     {media.variant?.options?.map(
                       ({ preview: img, label }, index) => (
                         <MDBCol
                           key={index}
-                          md="1"
-                          className="mr-5"
+                          md="2"
+                          className="text-center"
                           draggable="true"
                           onDragStart={(e) => {
                             e.dataTransfer.setData(

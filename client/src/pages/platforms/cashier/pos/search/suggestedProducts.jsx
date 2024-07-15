@@ -84,14 +84,14 @@ function SuggestedProducts({
       if (hasVariant) {
         const { options = [] } = variations[0];
         for (const option of options) {
-          if (option.max > 0) {
+          if (option.max > 0 && !option.disable) {
             container.push({ ...product, variant1: option._id });
           }
           if (has2Variant) {
             const { prices } = option;
 
             for (const variant2 of prices) {
-              if (variant2.max > 0) {
+              if (variant2.max > 0 && !variant2.disable) {
                 container.push({
                   ...product,
                   variant1: option._id,

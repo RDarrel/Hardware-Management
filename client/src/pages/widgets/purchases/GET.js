@@ -88,8 +88,9 @@ const GET = {
     const arrangeData = merchandises.map((merchandise) => {
       const { quantity, kilo, kiloGrams, product, capital } = merchandise;
       return {
-        quantity: quantity[key] || 0,
-        kilo: (kilo[key] || 0) + (kiloGrams[key] || 0),
+        ...(product.isPerKilo
+          ? { kilo: (kilo[key] || 0) + (kiloGrams[key] || 0) }
+          : { quantity: quantity[key] || 0 }),
         isPerKilo: product.isPerKilo,
         capital,
       };

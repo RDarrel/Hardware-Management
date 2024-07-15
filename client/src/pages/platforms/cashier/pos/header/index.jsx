@@ -25,6 +25,7 @@ const Header = ({
   toggleGuide,
   showFindTransac,
   toggleFindTransac,
+  isLoading = false,
 }) => {
   const { auth, token } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ suspendedTransacs }) => suspendedTransacs),
@@ -47,21 +48,27 @@ const Header = ({
       <MDBCardHeader className="d-flex align-items-center justify-content-between ">
         <h5 className="font-weight-bold">Liberty Hardware </h5>
         <div className="d-flex align-items-center">
-          <div
-            className="d-flex align-items-center cursor-pointer mr-2 m-0 p-0"
-            onClick={toggleFindTransac}
-          >
-            <MDBBtn color="warning" size="sm" className="font-weight-bold">
+          <div className="d-flex align-items-center mr-2 m-0 p-0">
+            <MDBBtn
+              color="warning"
+              size="sm"
+              className="font-weight-bold"
+              onClick={toggleFindTransac}
+              disabled={isLoading}
+            >
               <MDBIcon icon="handshake" far size="1x" className="mr-1" />
               Transaction
             </MDBBtn>
           </div>
 
-          <div
-            className="d-flex align-items-center cursor-pointer m-0 p-0"
-            onClick={toggleSuspended}
-          >
-            <MDBBtn size="sm" color="info" className="font-weight-bold">
+          <div className="d-flex align-items-center  m-0 p-0">
+            <MDBBtn
+              size="sm"
+              color="info"
+              className="font-weight-bold"
+              disabled={isLoading}
+              onClick={toggleSuspended}
+            >
               <MDBIcon far icon="pause-circle" className="mr-1" />
               Suspended Transactions
             </MDBBtn>

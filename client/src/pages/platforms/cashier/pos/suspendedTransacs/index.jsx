@@ -70,6 +70,7 @@ export default function SuspendedTransacs({
 
     return {
       ...selected,
+      product,
       max,
       ...(isPerKilo
         ? { ...totalKilo }
@@ -78,6 +79,7 @@ export default function SuspendedTransacs({
   };
 
   const handleResume = (_selected) => {
+    console.log(_selected);
     Swal.fire({
       title: "Are you sure ?",
       text: "you want to resume this suspended transaction?",
@@ -98,6 +100,7 @@ export default function SuspendedTransacs({
 
         dispatch(DESTROY({ token, data: { _id: _selected._id } }));
         toggle();
+        setShowInvoice(false);
 
         if (productsWithNewMax.length === 0) {
           setOrders([]);

@@ -266,15 +266,15 @@ const ProductInformation = ({
     ) {
       return handleSweetAlert("Capital and SRP ");
     }
-
+    console.log(newForm.variations);
     if (newForm.hasVariant) {
       const { variations = [], has2Variant = false } = newForm;
       const options = variations[0].options;
 
       const hasNoSrpAndCapital = options.some(
-        ({ capital = 0, srp = 0 }) => !capital || !srp
+        ({ capital = 0, srp = 0 }) => capital <= 0 || srp <= 0
       );
-      if (hasNoSrpAndCapital) {
+      if (hasNoSrpAndCapital && !has2Variant) {
         return handleSweetAlert(
           "Capital and SRP are required for each variant.",
           true
@@ -283,7 +283,7 @@ const ProductInformation = ({
 
       if (has2Variant) {
         const hasNoSrpAndCapitalIn2Variant = options.some(({ prices }) =>
-          prices.some(({ srp = 0, capital = 0 }) => !srp || !capital)
+          prices.some(({ srp = 0, capital = 0 }) => srp <= 0 || capital <= 0)
         );
 
         if (hasNoSrpAndCapitalIn2Variant) {

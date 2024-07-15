@@ -13,7 +13,7 @@ import {
 import Table from "./table";
 import { useDispatch } from "react-redux";
 
-const Cart = ({ show, toggle, collections, isCashier = false }) => {
+const Cart = ({ show, toggle, collections, isCashier = false, suppliers }) => {
   const [isCheckAll, setIsCheckAll] = useState(true),
     [checkOutProducts, setCheckOutProducts] = useState([]),
     [cart, setCart] = useState([]),
@@ -78,6 +78,7 @@ const Cart = ({ show, toggle, collections, isCashier = false }) => {
         {cart.length > 0 ? (
           <Table
             cart={cart}
+            suppliers={suppliers}
             handleChangeSelectAll={handleChangeSelectAll}
             isCheckAll={isCheckAll}
             isCashier={isCashier}
