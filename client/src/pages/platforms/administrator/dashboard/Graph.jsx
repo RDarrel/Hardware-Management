@@ -18,19 +18,44 @@ const Graph = ({ products }) => {
   const [filteredData, setFilteredData] = useState([]),
     [monthlyData, setMonthlyData] = useState([]),
     [usingDateRange, setUsingDateRange] = useState(false),
-    [dateRange, setDateRange] = useState(new Date()),
-    [range, setRange] = useState(0);
+    [fromRange, setFromRange] = useState(new Date()),
+    [toRange, setToRange] = useState(new Date()),
+    [range, setRange] = useState("");
 
   useEffect(() => {
     if (range) {
       const currentDate = new Date();
-
       const from = new Date(currentDate);
-      from.setDate(from.getDate() - (range === 1 ? 0 : range - 1));
+      const to = new Date(currentDate);
+      switch (range) {
+        case "yesterday":
+          console.log("true");
+          from.setDate(from.getDate() - 1);
+          to.setDate(to.getDate() - 1);
+          break;
+        case "last 7 days":
+          from.setDate(from.getDate() - 6);
+          break;
+        case "last 30 days":
+          from.setDate(from.getDate() - 29);
+          break;
+        case "last week":
+          from.setDate(from.getDate() - 7);
+          to.setDate(to.getDate() - 1);
 
+          break;
+
+        case "last month":
+          from.setMonth(from.getMonth() - 1);
+          to.setDate(to.getDate() - 1);
+
+          break;
+        default:
+          break;
+      }
       const filteredProducts = products.filter(({ createdAt }) => {
         const productDate = new Date(createdAt);
-        return productDate >= from && productDate <= currentDate;
+        return productDate >= from && productDate <= to;
       });
 
       let oldestProduct = null;
@@ -40,7 +65,9 @@ const Graph = ({ products }) => {
           oldestProduct = { ...product, createdAt: productDate };
         }
       });
-      setDateRange(range === 1 ? new Date() : oldestProduct?.createdAt);
+
+      setFromRange(oldestProduct?.createdAt || from);
+      setToRange(to || new Date());
       setUsingDateRange(true);
     }
   }, [range, products]);
@@ -158,18 +185,28 @@ const Graph = ({ products }) => {
                       Data range
                     </MDBBadge>
                   </h4>
-                  <MDBSelect getValue={(value) => setRange(Number(value[0]))}>
+                  <MDBSelect getValue={(value) => setRange(value[0])}>
                     <MDBSelectInput selected="Choose time period" />
                     <MDBSelectOptions>
                       <MDBSelectOption disabled>
                         Choose time period
                       </MDBSelectOption>
-                      <MDBSelectOption value="1">Today</MDBSelectOption>
-                      <MDBSelectOption value="2">Yesterday</MDBSelectOption>
-                      <MDBSelectOption value="8">Last 7 days</MDBSelectOption>
-                      <MDBSelectOption value="31">Last 30 days</MDBSelectOption>
-                      <MDBSelectOption value="8">Last week</MDBSelectOption>
-                      <MDBSelectOption value="31">Last month</MDBSelectOption>
+                      <MDBSelectOption value="today">Today</MDBSelectOption>
+                      <MDBSelectOption value="yesterday">
+                        Yesterday
+                      </MDBSelectOption>
+                      <MDBSelectOption value="last 7 days">
+                        Last 7 days
+                      </MDBSelectOption>
+                      <MDBSelectOption value="last 30 days">
+                        Last 30 days
+                      </MDBSelectOption>
+                      <MDBSelectOption value="last week">
+                        Last week
+                      </MDBSelectOption>
+                      <MDBSelectOption value="last month">
+                        Last month
+                      </MDBSelectOption>
                     </MDBSelectOptions>
                   </MDBSelect>
                   <h5>
@@ -182,7 +219,8 @@ const Graph = ({ products }) => {
                     <Header
                       usingDateRange={usingDateRange}
                       setUsingDateRange={setUsingDateRange}
-                      dateRange={dateRange}
+                      fromRange={fromRange}
+                      toRange={toRange}
                       collections={products}
                       setFilteredData={setFilteredData}
                       isDashBoard={true}

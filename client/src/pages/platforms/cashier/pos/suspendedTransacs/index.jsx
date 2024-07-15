@@ -49,18 +49,18 @@ export default function SuspendedTransacs({
     if (hasVariant) {
       const options = [...product.variations[0].options];
       const optionIndex = options.findIndex(({ _id }) => _id === variant1);
-      max = options[optionIndex].max;
+      max = options[optionIndex]?.max || 0;
 
       if (has2Variant) {
-        max = options[optionIndex].prices.find(
-          ({ _id }) => _id === variant2
-        )?.max;
+        max =
+          options[optionIndex].prices.find(({ _id }) => _id === variant2)
+            ?.max || 0;
       }
     } else {
-      max = product.max;
+      max = product?.max || 0;
     }
     var totalKilo = kilo + kiloGrams;
-    if (product.isPerKilo) {
+    if (product?.isPerKilo) {
       if (totalKilo > max) {
         totalKilo = seperateKiloAndGrams(max);
       } else {
@@ -89,17 +89,27 @@ export default function SuspendedTransacs({
     }).then((result) => {
       if (result.isConfirmed) {
         const _orders = [..._selected.orders];
-        setInvoice_no(_selected.invoice_no);
         const productsWithNewMax = _orders
           .map((order) => {
             const orderWithNewMax = handleGetMax(order);
-            return orderWithNewMax.max > 0 ? orderWithNewMax : false;
+            return orderWithNewMax?.max > 0 ? orderWithNewMax : false;
           })
           .filter(Boolean);
-        setOrders(productsWithNewMax || []);
 
         dispatch(DESTROY({ token, data: { _id: _selected._id } }));
         toggle();
+
+        if (productsWithNewMax.length === 0) {
+          setOrders([]);
+          setInvoice_no("");
+          return Swal.fire({
+            title: "Transaction Failed!",
+            text: "The suspended transaction could not be resumed because the items are out of stock. The transaction will now be removed from the suspended transactions list.",
+            icon: "error",
+          });
+        }
+        setOrders(productsWithNewMax || []);
+        setInvoice_no(_selected.invoice_no);
         Swal.fire({
           title: "Resumed!",
           text: "The suspended transaction has been successfully resumed.",

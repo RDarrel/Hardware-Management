@@ -1,16 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  MDBContainer,
-  MDBRow,
-  MDBCol,
-  MDBCard,
-  MDBCardBody,
-  MDBCardHeader,
-  MDBIcon,
-  MDBProgress,
-  MDBBtn,
-  MDBTable,
-} from "mdbreact";
+import { MDBContainer } from "mdbreact";
 import Total from "./total";
 import { useDispatch, useSelector } from "react-redux";
 import { BROWSE } from "../../../../services/redux/slices/administrator/adminDashboard";
@@ -33,7 +22,7 @@ const Dashboard = () => {
     <MDBContainer fluid id="v6" className="mb-5">
       <Total sales={sales} />
       <Graph products={sales} />
-      <CurrentSales />
+      <CurrentSales sales={sales} />
       <TopSellingProducts products={topSellingProducts} />
     </MDBContainer>
   );

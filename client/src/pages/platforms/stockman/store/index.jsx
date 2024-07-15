@@ -17,10 +17,11 @@ import View from "./view/index";
 import "./product.css";
 import { ProducCard } from "./card";
 import Cart from "../../../widgets/cart";
+import ProductsLoading from "../../../widgets/productsLoading";
 
 const Store = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
-    { collections, isLoading } = useSelector(({ products }) => products),
+    { collections, isLoading = true } = useSelector(({ products }) => products),
     { suppliers: suppliersCollections } = useSelector(({ cart }) => cart),
     { collections: cartCollections } = useSelector(({ cart }) => cart),
     [suppliers, setSuppliers] = useState([]),
@@ -30,11 +31,10 @@ const Store = () => {
     [isShowCart, setIsShowCart] = useState(false),
     [selected, setSelected] = useState({}),
     [currentPage, setCurrentPage] = useState(1),
-    [itemsPerPage] = useState(12), // Adjust the number of items per page as needed
+    [itemsPerPage] = useState(12),
     dispatch = useDispatch();
 
   const toggleView = () => setIsView(!isView);
-
   useEffect(() => {
     dispatch(BROWSE({ token, key: { sorted: "true" } }));
   }, [token, dispatch]);
@@ -80,29 +80,42 @@ const Store = () => {
   return (
     <>
       <MDBCard className="mt-4 p-0 pb-3" narrow>
-        <MDBView cascade className="gradient-card-header blue py-2 mx-4 ">
-          <Header />
+        <MDBView
+          cascade
+          className="gradient-card-header blue py-2 mx-4 parent-element"
+        >
+          <Header
+            setProducts={setProducts}
+            products={collections}
+            setCurrentPage={setCurrentPage}
+          />
         </MDBView>
 
         <MDBCardBody>
-          <MDBRow>
-            {currentProducts.length > 0 &&
-              currentProducts.map((product, index) => (
-                <ProducCard
-                  index={index}
-                  product={product}
-                  key={index}
-                  setIsView={setIsView}
-                  setSelected={setSelected}
-                />
-              ))}
-          </MDBRow>
+          {isLoading ? (
+            <ProductsLoading />
+          ) : (
+            <>
+              <MDBRow>
+                {currentProducts.length > 0 &&
+                  currentProducts.map((product, index) => (
+                    <ProducCard
+                      index={index}
+                      product={product}
+                      key={index}
+                      setIsView={setIsView}
+                      setSelected={setSelected}
+                    />
+                  ))}
+              </MDBRow>
 
-          <Pagination
-            currentPage={currentPage}
-            pageNumbers={pageNumbers}
-            handlePageChange={handlePageChange}
-          />
+              <Pagination
+                currentPage={currentPage}
+                pageNumbers={pageNumbers}
+                handlePageChange={handlePageChange}
+              />
+            </>
+          )}
         </MDBCardBody>
       </MDBCard>
 

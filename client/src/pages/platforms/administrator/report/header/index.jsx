@@ -18,7 +18,8 @@ export const Header = ({
   setUsingDateRange = () => {},
   isDashBoard = false,
   usingDateRange = false,
-  dateRange = "",
+  fromRange = new Date(),
+  toRange = new Date(),
 }) => {
   const [soldKiloState, setSoldKiloState] = useState(0);
   const [soldQtyState, setSoldQtyState] = useState(0);
@@ -32,10 +33,11 @@ export const Header = ({
 
   useEffect(() => {
     if (usingDateRange) {
-      setFrom(new Date(dateRange));
+      setFrom(new Date(fromRange));
+      setTo(new Date(toRange));
       setUsingDateRange(false);
     }
-  }, [usingDateRange, setUsingDateRange, setFrom, dateRange]);
+  }, [usingDateRange, setUsingDateRange, setFrom, fromRange, toRange]);
 
   useEffect(() => {
     setSoldKilo(soldKiloState);

@@ -16,7 +16,7 @@ import seperateKiloAndGrams from "../../../../services/utilities/seperateKiloAnd
 
 const POS = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(({ products }) => products),
+    { collections, isLoading } = useSelector(({ products }) => products),
     [orders, setOrders] = useState([]),
     [selectedProduct, setSelectedProduct] = useState({}),
     [products, setProducts] = useState([]),
@@ -304,6 +304,7 @@ const POS = () => {
             setSelectedProduct={setSelectedProduct}
             page={page}
             setPage={setPage}
+            isLoading={isLoading}
           />
         </MDBCol>
         <Orders

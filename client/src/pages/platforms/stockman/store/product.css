@@ -1,7 +1,14 @@
 /* search */
+.parent-element {
+  position: relative !important;
+  overflow: visible !important;
+}
 
 .customSelect {
+  position: absolute;
+  top: -20px;
 }
+
 .cashier-search-cotaniner {
   display: flex;
   align-items: center;

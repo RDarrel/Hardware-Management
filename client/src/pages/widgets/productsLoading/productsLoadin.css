@@ -1,0 +1,29 @@
+.blinking-card {
+  animation: blink 1.5s infinite; /* Slower blinking */
+  height: 12rem;
+  transition: background-color 0.2s;
+  width: 100% !important;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+    background-color: #fff;
+  }
+  25% {
+    opacity: 0.95; /* Less drop */
+    background-color: #f9f9f9;
+  }
+  50% {
+    opacity: 0.9; /* Less drop */
+    background-color: #f0f0f0;
+  }
+  75% {
+    opacity: 0.95;
+    background-color: #f9f9f9;
+  }
+  100% {
+    opacity: 1;
+    background-color: #fff;
+  }
+}
