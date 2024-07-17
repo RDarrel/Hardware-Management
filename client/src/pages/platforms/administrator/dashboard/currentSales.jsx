@@ -162,7 +162,6 @@ function CurrentSales({ sales }) {
   ]);
 
   const getDiffPercentage = useCallback((current, last) => {
-    console.log(last);
     if (last > 0) {
       const diff = current - last;
       const result = Math.abs((diff / last) * 100);

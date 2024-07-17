@@ -34,30 +34,33 @@ export default function Receipt({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("true");
-
-    dispatch(
-      POS({
-        token,
-        data: {
-          customer,
-          invoice_no,
-          cashier: auth._id,
-          total,
-          cash,
-          purchases: orderDetails,
-        },
-      })
+    window.open(
+      "/printOut",
+      "Claim Stub",
+      "top=100px,left=100px,width=550px,height=750px"
     );
+    // dispatch(
+    //   POS({
+    //     token,
+    //     data: {
+    //       customer,
+    //       invoice_no,
+    //       cashier: auth._id,
+    //       total,
+    //       cash,
+    //       purchases: orderDetails,
+    //     },
+    //   })
+    // );
 
-    dispatch(UPDATE_MAX({ purchases: orderDetails }));
-    Swal.fire({
-      title: "Successfully Paid",
-      icon: "success",
-    });
-    setInvoice_no("");
-    setOrders([]);
-    toggle();
+    // dispatch(UPDATE_MAX({ purchases: orderDetails }));
+    // Swal.fire({
+    //   title: "Successfully Paid",
+    //   icon: "success",
+    // });
+    // setInvoice_no("");
+    // setOrders([]);
+    // toggle();
   };
 
   const change = cash - total || 0;

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import "./print.css";
 
 const items = [
@@ -16,6 +16,7 @@ const items = [
     isPerKilo: false,
     price: "100",
     quantity: "1",
+
     subtotal: "1000",
   },
   {
@@ -37,19 +38,11 @@ const items = [
 ];
 
 const PrintOut = () => {
-  const printRef = useRef();
-
   useEffect(() => {
-    // Trigger the print dialog after a short delay to ensure content is rendered
-    const timer = setTimeout(() => {
-      window.print();
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    window.print();
   }, []);
-
   return (
-    <div ref={printRef} className="container-receipt mt-1">
+    <div className="container-receipt mt-1">
       <div className="header">
         <h6 className="store">Liberty Hardware</h6>
         <h6 className="address">Conception Gen. Tinio Nueva Ecija</h6>
@@ -82,8 +75,8 @@ const PrintOut = () => {
         {items.map((item, index) => {
           const { isPerKilo, quantity, kilo, price } = item;
           return (
-            <div key={index}>
-              <div className="d-flex justify-content-between w-100">
+            <div>
+              <div key={index} className="d-flex justify-content-between w-100">
                 <div className="receipt-product-container">
                   <span className="text-start item-name">
                     {item.name.toUpperCase()}
@@ -131,7 +124,7 @@ const PrintOut = () => {
           </div>
         </div>
         <div className="text-center">
-          <span>THANK YOU AND COME AGAIN.</span>
+          <span>THANKYOU AND COME AGAIN.</span>
         </div>
       </div>
     </div>
