@@ -18,6 +18,7 @@ import "./product.css";
 import { ProducCard } from "./card";
 import Cart from "../../../widgets/cart";
 import ProductsLoading from "../../../widgets/productsLoading";
+import { globalSearch } from "../../../../services/utilities";
 
 const Store = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
@@ -32,6 +33,8 @@ const Store = () => {
     [selected, setSelected] = useState({}),
     [currentPage, setCurrentPage] = useState(1),
     [itemsPerPage] = useState(12),
+    [didSearch, setDidSearch] = useState(false),
+    [search, setSearch] = useState(""),
     dispatch = useDispatch();
 
   const toggleView = () => setIsView(!isView);
@@ -77,6 +80,14 @@ const Store = () => {
     pageNumbers.push(i);
   }
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    setProducts(globalSearch(collections, search));
+
+    setDidSearch(true);
+  };
+
   return (
     <>
       <MDBCard className="mt-4 p-0 pb-3" narrow>
@@ -88,6 +99,13 @@ const Store = () => {
             setProducts={setProducts}
             products={collections}
             setCurrentPage={setCurrentPage}
+            search={search}
+            didSearch={didSearch}
+            setDidSearch={setDidSearch}
+            setSearch={setSearch}
+            setContainer={setProducts}
+            handleSearch={handleSearch}
+            collections={collections}
           />
         </MDBView>
 
@@ -109,11 +127,13 @@ const Store = () => {
                   ))}
               </MDBRow>
 
-              <Pagination
-                currentPage={currentPage}
-                pageNumbers={pageNumbers}
-                handlePageChange={handlePageChange}
-              />
+              {products.length > 11 && (
+                <Pagination
+                  currentPage={currentPage}
+                  pageNumbers={pageNumbers}
+                  handlePageChange={handlePageChange}
+                />
+              )}
             </>
           )}
         </MDBCardBody>

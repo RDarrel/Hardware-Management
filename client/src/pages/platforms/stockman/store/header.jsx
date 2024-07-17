@@ -6,7 +6,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { BROWSE } from "../../../../services/redux/slices/administrator/productManagement/category";
 import sortBy from "../../../../services/utilities/sorting";
 
-export const Header = ({ setProducts, products, setCurrentPage }) => {
+export const Header = ({
+  setProducts,
+  products,
+  setCurrentPage,
+  collections: collectionsProducts = [],
+  didSearch = false,
+  search,
+  handleSearch = () => {},
+  setContainer = () => {},
+  setDidSearch = () => {},
+  setSearch = () => {},
+}) => {
   const { token } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ category }) => category),
     [category, setCategory] = useState(""),
@@ -63,10 +74,28 @@ export const Header = ({ setProducts, products, setCurrentPage }) => {
         />
       </MDBCol>
       <MDBCol className="m-0 p-0 d-flex justify-content-end " md="4">
-        <form className="cashier-search w-75">
-          <input placeholder="Search..." autoCorrect="off" spellCheck={false} />
-          <button type="submit">
-            <MDBIcon icon={"search"} className="search-icon" />
+        <form className="cashier-search w-75" onSubmit={handleSearch}>
+          <input
+            placeholder="Search..."
+            autoCorrect="off"
+            spellCheck={false}
+            required
+            value={search}
+            onChange={({ target }) => setSearch(target.value.toUpperCase())}
+          />
+          <button
+            onClick={() => {
+              if (!didSearch) return;
+              setDidSearch(false);
+              setSearch("");
+              setContainer(collectionsProducts);
+            }}
+            type={!didSearch ? "button" : "submit"}
+          >
+            <MDBIcon
+              icon={didSearch ? "times" : "search"}
+              className="search-icon"
+            />
           </button>
         </form>
       </MDBCol>

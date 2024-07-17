@@ -162,7 +162,8 @@ function CurrentSales({ sales }) {
   ]);
 
   const getDiffPercentage = useCallback((current, last) => {
-    if (last !== 0) {
+    console.log(last);
+    if (last > 0) {
       const diff = current - last;
       const result = Math.abs((diff / last) * 100);
       const wholeResult = Math.floor(result);
@@ -174,26 +175,19 @@ function CurrentSales({ sales }) {
   }, []);
 
   useEffect(() => {
-    if (
-      totalYearlySales &&
-      totalMonthlySales &&
-      totalWeeklySales &&
-      totalDailySales
-    ) {
-      setYearlyDifferenceSale(
-        getDiffPercentage(totalYearlySales, totalLastYearlySales)
-      );
-      setMonthlyDifferenceSale(
-        getDiffPercentage(totalMonthlySales, totalLastMonthlySales)
-      );
-      setWeeklyDifferenceSale(
-        getDiffPercentage(totalWeeklySales, totalLastWeeklySales)
-      );
+    setYearlyDifferenceSale(
+      getDiffPercentage(totalYearlySales, totalLastYearlySales)
+    );
+    setMonthlyDifferenceSale(
+      getDiffPercentage(totalMonthlySales, totalLastMonthlySales)
+    );
+    setWeeklyDifferenceSale(
+      getDiffPercentage(totalWeeklySales, totalLastWeeklySales)
+    );
 
-      setDailyDifferenceSale(
-        getDiffPercentage(totalDailySales, totalLastDailySales)
-      );
-    }
+    setDailyDifferenceSale(
+      getDiffPercentage(totalDailySales, totalLastDailySales)
+    );
   }, [
     totalYearlySales,
     totalLastYearlySales,
@@ -210,6 +204,7 @@ function CurrentSales({ sales }) {
   const currentMonthIsBetter = totalMonthlySales > totalLastMonthlySales;
   const currentWeekIsBetter = totalWeeklySales > totalLastWeeklySales;
   const currentDayISBetter = totalDailySales > totalLastDailySales;
+
   return (
     <section className="mt-2">
       <MDBRow>

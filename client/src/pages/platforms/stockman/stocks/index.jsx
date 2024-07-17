@@ -4,6 +4,7 @@ import { MDBBadge, MDBCard, MDBCardBody, MDBTable } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
 import {
   ENDPOINT,
+  globalSearch,
   handlePagination,
   variation,
 } from "../../../../services/utilities";
@@ -15,6 +16,8 @@ export const Stocks = () => {
     { collections } = useSelector(({ stocks }) => stocks),
     [stocks, setStocks] = useState([]),
     [page, setPage] = useState(1),
+    [didSearch, setDidSearch] = useState(false),
+    [search, setSearch] = useState(""),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -30,24 +33,13 @@ export const Stocks = () => {
     }
   }, [collections]);
 
-  // const formattedStock = (obj, isPerKilo) => {
-  //   const stock = Number(obj.sold);
-  //   const stockColor = stock < 5 ? "red" : "green";
+  const handleSearch = (e) => {
+    e.preventDefault();
 
-  //   if (isPerKilo) {
-  //     return (
-  //       <MDBBadge color={stockColor} className="p-2" pill>
-  //         <h6 className="font-weight-bold">{stock}</h6>
-  //       </MDBBadge>
-  //     );
-  //   } else {
-  //     return (
-  //       <MDBBadge color={stockColor} className="p-2" pill>
-  //         <h6 className="font-weight-bold">{stock} </h6>
-  //       </MDBBadge>
-  //     );
-  //   }
-  // };
+    setStocks(globalSearch(collections, search));
+
+    setDidSearch(true);
+  };
 
   return (
     <MDBCard>
@@ -56,6 +48,13 @@ export const Stocks = () => {
           title={"Stock List"}
           disable={{ create: true }}
           icon="warehouse"
+          search={search}
+          didSearch={didSearch}
+          setDidSearch={setDidSearch}
+          setSearch={setSearch}
+          setContainer={setStocks}
+          handleSearch={handleSearch}
+          collections={collections}
         />
 
         <MDBTable responsive hover>

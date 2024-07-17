@@ -1,6 +1,6 @@
 // ImagePlaceholder.js
 import React from "react";
-import { MDBCol, MDBIcon, MDBRow } from "mdbreact";
+import { MDBIcon } from "mdbreact";
 
 const ProductImg = ({ label, setMedia, index, img, media }) => {
   const handleRemoveImg = () => {

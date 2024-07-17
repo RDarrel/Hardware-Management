@@ -20,6 +20,7 @@ import {
 import Swal from "sweetalert2";
 import handlePagination from "../../../widgets/pagination";
 import PaginationButtons from "../../../widgets/pagination/buttons";
+import { globalSearch } from "../../../../services/utilities";
 
 const Suppliers = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
@@ -29,6 +30,8 @@ const Suppliers = () => {
     [show, setShow] = useState(false),
     [selected, setSelected] = useState({}),
     [page, setPage] = useState(1),
+    [didSearch, setDidSearch] = useState(false),
+    [search, setSearch] = useState(""),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -82,6 +85,14 @@ const Suppliers = () => {
     });
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    setSuppliers(globalSearch(collections, search));
+
+    setDidSearch(true);
+  };
+
   return (
     <MDBCard>
       <MDBCardBody>
@@ -89,6 +100,13 @@ const Suppliers = () => {
           title="Supplier List"
           toggleCreate={() => setShow(!show)}
           icon="hands-helping"
+          search={search}
+          didSearch={didSearch}
+          setDidSearch={setDidSearch}
+          setSearch={setSearch}
+          setContainer={setSuppliers}
+          handleSearch={handleSearch}
+          collections={collections}
         />
         <MDBTable>
           <thead>

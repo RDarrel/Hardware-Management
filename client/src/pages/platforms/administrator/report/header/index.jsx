@@ -16,6 +16,8 @@ export const Header = ({
   setTotalIncome = () => {},
   setTotalSales = () => {},
   setUsingDateRange = () => {},
+  setBaseFrom = () => {},
+  setBaseTo = () => {},
   isDashBoard = false,
   usingDateRange = false,
   fromRange = new Date(),
@@ -44,15 +46,21 @@ export const Header = ({
     setSoldQty(soldQtyState);
     setTotalIncome(totalIncomeState);
     setTotalSales(totalSalesState);
+    setBaseFrom(from);
+    setBaseTo(to);
   }, [
     soldKiloState,
     totalIncomeState,
     totalSalesState,
     soldQtyState,
+    from,
+    to,
     setSoldKilo,
     setSoldQty,
     setTotalIncome,
     setTotalSales,
+    setBaseFrom,
+    setBaseTo,
   ]);
 
   const getTheCreatedAt = useCallback(

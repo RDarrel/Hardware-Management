@@ -8,7 +8,7 @@ import {
   MDBSwitch,
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
-import { ENDPOINT } from "../../../../../services/utilities";
+import { ENDPOINT, globalSearch } from "../../../../../services/utilities";
 import {
   BROWSE,
   DESTROY,
@@ -219,6 +219,14 @@ const Products = () => {
   };
 
   const toggleCreate = () => setShow(!show);
+  const [search, setSearch] = useState(""),
+    [didSearch, setDidSearch] = useState(false);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setProducts(globalSearch(collections, search));
+    setDidSearch(true);
+  };
 
   return (
     <>
@@ -230,6 +238,13 @@ const Products = () => {
                 toggleCreate={toggleCreate}
                 title="Product List"
                 icon="award"
+                search={search}
+                setDidSearch={setDidSearch}
+                didSearch={didSearch}
+                collections={collections}
+                setContainer={setProducts}
+                handleSearch={handleSearch}
+                setSearch={setSearch}
               />
               <Table
                 products={products}

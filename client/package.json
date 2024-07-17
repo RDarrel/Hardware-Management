@@ -6,6 +6,8 @@
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
     "draft-js": "^0.10.5",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "google-map-react": "^1.1.0",
     "mdbreact": "./mdbreact-4.25.0.tgz",
     "react": "^16.12.0",

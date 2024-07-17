@@ -26,89 +26,100 @@ export const Table = ({
           </tr>
         </thead>
         <tbody>
-          {handlePagination(products, page, maxPage).map((product) =>
-            product?.variations?.length === 2 ? (
-              product.variations.map((variation, indexVariation) =>
-                variation.options.map((option, indexOption) =>
-                  option.prices?.map((price, indexPrice) => {
-                    const isFirstRow =
-                      indexVariation === 0 &&
-                      indexOption === 0 &&
-                      indexPrice === 0;
-                    const key = price._id;
-                    return handleTableData(key, product, isFirstRow, {
-                      variation,
-                      option,
-                      actionFor: "variant2",
-                      price,
-                    });
-                  })
-                )
-              )
-            ) : product?.variations?.length === 1 ? (
-              product.variations.map((variation, indexVariation) =>
-                variation.options.map((option, indexOption) => {
-                  const isFirstRow = indexVariation === 0 && indexOption === 0;
-                  const key = option._id;
+          {products.length > 0 ? (
+            <>
+              {handlePagination(products, page, maxPage).map((product) =>
+                product?.variations?.length === 2 ? (
+                  product.variations.map((variation, indexVariation) =>
+                    variation.options.map((option, indexOption) =>
+                      option.prices?.map((price, indexPrice) => {
+                        const isFirstRow =
+                          indexVariation === 0 &&
+                          indexOption === 0 &&
+                          indexPrice === 0;
+                        const key = price._id;
+                        return handleTableData(key, product, isFirstRow, {
+                          variation,
+                          option,
+                          actionFor: "variant2",
+                          price,
+                        });
+                      })
+                    )
+                  )
+                ) : product?.variations?.length === 1 ? (
+                  product.variations.map((variation, indexVariation) =>
+                    variation.options.map((option, indexOption) => {
+                      const isFirstRow =
+                        indexVariation === 0 && indexOption === 0;
+                      const key = option._id;
 
-                  return handleTableData(key, product, isFirstRow, {
-                    variation,
-                    option,
-                    actionFor: "",
-                  });
-                })
-              )
-            ) : (
-              <tr key={product._id} className="border-top">
-                <td className="m-2">
-                  <div className="d-flex align-items-center text-truncate mt-3 mb-3">
-                    {getProductImg(product)}
-                    <h6
-                      className="text-truncate"
-                      style={{
-                        maxWidth: "400px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {product.name}
-                    </h6>
-                  </div>
-                </td>
-                <td>{null} </td>
-                <td>
-                  <h6 className="text-danger font-weight-bold">
-                    ₱{product?.capital?.toLocaleString()}
-                  </h6>
-                </td>
-                <td>
-                  <h6 className="text-danger font-weight-bold">
-                    ₱{product?.srp?.toLocaleString()}
-                  </h6>
-                </td>
-                <td className="text-center">
-                  <MDBBtnGroup>
-                    <MDBBtn
-                      size="sm"
-                      rounded
-                      color="danger"
-                      onClick={() => handleDelete(product._id)}
-                    >
-                      <MDBIcon icon="trash" />
-                    </MDBBtn>
-                    <MDBBtn
-                      rounded
-                      size="sm"
-                      color="primary"
-                      onClick={() => handleUpdate(product)}
-                    >
-                      <MDBIcon icon="pencil-alt" />
-                    </MDBBtn>
-                  </MDBBtnGroup>
-                </td>
-              </tr>
-            )
+                      return handleTableData(key, product, isFirstRow, {
+                        variation,
+                        option,
+                        actionFor: "",
+                      });
+                    })
+                  )
+                ) : (
+                  <tr key={product._id} className="border-top">
+                    <td className="m-2">
+                      <div className="d-flex align-items-center text-truncate mt-3 mb-3">
+                        {getProductImg(product)}
+                        <h6
+                          className="text-truncate"
+                          style={{
+                            maxWidth: "400px",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {product.name}
+                        </h6>
+                      </div>
+                    </td>
+                    <td>{null} </td>
+                    <td>
+                      <h6 className="text-danger font-weight-bold">
+                        ₱{product?.capital?.toLocaleString()}
+                      </h6>
+                    </td>
+                    <td>
+                      <h6 className="text-danger font-weight-bold">
+                        ₱{product?.srp?.toLocaleString()}
+                      </h6>
+                    </td>
+                    <td className="text-center">
+                      <MDBBtnGroup>
+                        <MDBBtn
+                          size="sm"
+                          rounded
+                          color="danger"
+                          onClick={() => handleDelete(product._id)}
+                        >
+                          <MDBIcon icon="trash" />
+                        </MDBBtn>
+                        <MDBBtn
+                          rounded
+                          size="sm"
+                          color="primary"
+                          onClick={() => handleUpdate(product)}
+                        >
+                          <MDBIcon icon="pencil-alt" />
+                        </MDBBtn>
+                      </MDBBtnGroup>
+                    </td>
+                  </tr>
+                )
+              )}
+            </>
+          ) : (
+            <tr>
+              <td colSpan={5} className="text-center">
+                No Records
+              </td>
+            </tr>
           )}
         </tbody>
       </table>

@@ -2,21 +2,30 @@ import React, { useEffect, useState } from "react";
 import { BROWSE } from "../../../../../services/redux/slices/administrator/report/salesReport";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  MDBBtn,
   MDBCard,
   MDBCardBody,
   MDBCardHeader,
   MDBCol,
+  MDBIcon,
   MDBRow,
   MDBTable,
 } from "mdbreact";
-import { ENDPOINT, variation } from "../../../../../services/utilities";
+import {
+  ENDPOINT,
+  formattedDate,
+  variation,
+} from "../../../../../services/utilities";
 import handlePagination from "../../../../widgets/pagination";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
 import { Header } from "../header";
+import excel from "../../../../../services/utilities/downloadExcel/excel";
 
 const Sales = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth);
   const { collections } = useSelector(({ salesReport }) => salesReport);
+  const [baseFrom, setBaseFrom] = useState("");
+  const [baseTo, setBaseTo] = useState("");
   const [totalSales, setTotalSales] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [soldQty, setSoldQty] = useState(0);
@@ -29,16 +38,59 @@ const Sales = () => {
     dispatch(BROWSE({ token }));
   }, [dispatch, token]);
 
+  const handleExport = () => {
+    const options = {
+      sheet: "SHSF-8",
+      filename: "SF-Form-8",
+      title: "Sales Report",
+      from: formattedDate(baseFrom),
+      to: formattedDate(baseTo),
+      income: `₱${totalIncome.toLocaleString()}`,
+      sales: `₱${totalSales.toLocaleString()}`,
+      pcs: soldQty,
+      kg: soldKilo,
+    };
+
+    const formatSales = filteredSales.map((sale) => {
+      const { product, sold, capital, income, srp } = sale;
+      return {
+        product: product.name,
+        hasVariant: product.hasVariant,
+        ...(product.hasVariant && {
+          variant: variation.name(sale, product.variations),
+        }),
+        sold,
+        unit: product.isPerKilo ? "Kg" : "Pcs",
+        capital: `₱ ${capital.toLocaleString()}`,
+        srp: `₱ ${srp.toLocaleString()}`,
+        sales: `₱ ${Number(srp * sold).toLocaleString()}`,
+        income: `₱ ${income.toLocaleString()}`,
+      };
+    });
+    excel({ options, array: formatSales });
+  };
   return (
     <>
-      <Header
-        setFilteredData={setFilteredSales}
-        collections={collections}
-        setSoldKilo={setSoldKilo}
-        setSoldQty={setSoldQty}
-        setTotalIncome={setTotalIncome}
-        setTotalSales={setTotalSales}
-      />
+      <MDBRow className="d-flex align-items-center">
+        <MDBCol md="10">
+          <Header
+            setFilteredData={setFilteredSales}
+            collections={collections}
+            setSoldKilo={setSoldKilo}
+            setSoldQty={setSoldQty}
+            setTotalIncome={setTotalIncome}
+            setTotalSales={setTotalSales}
+            setBaseFrom={setBaseFrom}
+            setBaseTo={setBaseTo}
+          />
+        </MDBCol>
+        <MDBCol>
+          <MDBBtn size="sm" onClick={handleExport}>
+            <MDBIcon icon="file-excel" className="mr-2" />
+            Export In Excel
+          </MDBBtn>
+        </MDBCol>
+      </MDBRow>
       <MDBRow>
         <MDBCol md="3" className="mb-3">
           <MDBCard>

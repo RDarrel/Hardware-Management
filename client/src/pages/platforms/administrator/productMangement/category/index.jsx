@@ -17,6 +17,7 @@ import handlePagination from "../../../../widgets/pagination";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
 import Modal from "./modal";
 import Swal from "sweetalert2";
+import { globalSearch } from "../../../../../services/utilities";
 
 const Categories = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
@@ -26,6 +27,8 @@ const Categories = () => {
     [willCreate, setWillCreate] = useState(true),
     [show, setShow] = useState(false),
     [selected, setSelected] = useState({}),
+    [didSearch, setDidSearch] = useState(false),
+    [search, setSearch] = useState(""),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -56,6 +59,15 @@ const Categories = () => {
       }
     });
   };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    setCategory(globalSearch(collections, search));
+
+    setDidSearch(true);
+  };
+
   return (
     <MDBCard>
       <MDBCardBody>
@@ -63,6 +75,13 @@ const Categories = () => {
           title={"Category List"}
           icon="tags"
           toggleCreate={() => setShow(true)}
+          search={search}
+          didSearch={didSearch}
+          setDidSearch={setDidSearch}
+          setSearch={setSearch}
+          setContainer={setCategory}
+          handleSearch={handleSearch}
+          collections={collections}
         />
         <MDBTable>
           <thead>

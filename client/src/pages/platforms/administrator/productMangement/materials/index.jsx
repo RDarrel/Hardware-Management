@@ -17,6 +17,7 @@ import Swal from "sweetalert2";
 import Modal from "./modal";
 import handlePagination from "../../../../widgets/pagination";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
+import { globalSearch } from "../../../../../services/utilities";
 
 const Materials = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
@@ -26,6 +27,8 @@ const Materials = () => {
     [selected, setSelected] = useState({}),
     [page, setPage] = useState(1),
     [show, setShow] = useState(false),
+    [didSearch, setDidSearch] = useState(false),
+    [search, setSearch] = useState(""),
     dispatch = useDispatch();
 
   const toggle = () => setShow(!show);
@@ -58,6 +61,14 @@ const Materials = () => {
       }
     });
   };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    setMaterials(globalSearch(collections, search));
+
+    setDidSearch(true);
+  };
   return (
     <>
       <MDBCard>
@@ -66,6 +77,13 @@ const Materials = () => {
             title={"Material List"}
             icon="toolbox"
             toggleCreate={toggle}
+            search={search}
+            didSearch={didSearch}
+            setDidSearch={setDidSearch}
+            setSearch={setSearch}
+            setContainer={setMaterials}
+            handleSearch={handleSearch}
+            collections={collections}
           />
           <MDBTable>
             <thead>

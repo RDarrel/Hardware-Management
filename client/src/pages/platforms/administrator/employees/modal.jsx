@@ -84,6 +84,14 @@ export default function Modal({
       dispatch(SAVE({ data: form, token }));
     }
 
+    Swal.fire({
+      icon: "success",
+      title: "Success",
+      text: "Successfully added employee!",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+
     setForm(_form);
     toggle();
   };

@@ -18,3 +18,20 @@ exports.save = (req, res) =>
       });
     })
     .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
+
+exports.update = (req, res) =>
+  Users.findByIdAndUpdate(req.body._id, req.body, { new: true })
+    .then((item) => {
+      if (item) {
+        res.json({
+          success: "Role Updated Successfully",
+          payload: item,
+        });
+      } else {
+        res.status(404).json({
+          error: "ID Not Found",
+          message: "The provided ID does not exist.",
+        });
+      }
+    })
+    .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
