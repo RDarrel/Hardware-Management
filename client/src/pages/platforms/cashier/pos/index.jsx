@@ -241,8 +241,8 @@ const POS = () => {
       setOrders(_orders);
     } else {
       const timestamp = Date.now(); // Get the current timestamp
-      const randomNum = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
-      const _invoice_no = `${timestamp}${randomNum}`;
+      // const randomNum = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
+      const _invoice_no = `${timestamp}`;
 
       if (!invoice_no) {
         setInvoice_no(_invoice_no);

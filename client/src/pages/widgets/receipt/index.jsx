@@ -39,28 +39,49 @@ export default function Receipt({
       "Claim Stub",
       "top=100px,left=100px,width=550px,height=750px"
     );
-    // dispatch(
-    //   POS({
-    //     token,
-    //     data: {
-    //       customer,
-    //       invoice_no,
-    //       cashier: auth._id,
-    //       total,
-    //       cash,
-    //       purchases: orderDetails,
-    //     },
-    //   })
-    // );
+    const purchases = orderDetails.map((order) => {
+      const { product } = order;
+      const { hasVariant } = product;
+      return {
+        ...order,
+        ...(hasVariant && {
+          variant: variation.name(order, product.variations),
+        }),
+      };
+    });
+    console.log(purchases);
+    const printData = {
+      invoice_no,
+      customer,
+      total,
+      cash,
+      purchases,
+    };
 
-    // dispatch(UPDATE_MAX({ purchases: orderDetails }));
-    // Swal.fire({
-    //   title: "Successfully Paid",
-    //   icon: "success",
-    // });
-    // setInvoice_no("");
-    // setOrders([]);
-    // toggle();
+    localStorage.setItem("collection", JSON.stringify(printData));
+
+    dispatch(
+      POS({
+        token,
+        data: {
+          customer,
+          invoice_no,
+          cashier: auth._id,
+          total,
+          cash,
+          purchases: orderDetails,
+        },
+      })
+    );
+
+    dispatch(UPDATE_MAX({ purchases: orderDetails }));
+    Swal.fire({
+      title: "Successfully Paid",
+      icon: "success",
+    });
+    setInvoice_no("");
+    setOrders([]);
+    toggle();
   };
 
   const change = cash - total || 0;
@@ -120,7 +141,7 @@ export default function Receipt({
                         )}
                       </div>
                     </td>
-                    <td className="text-center">
+                    <td className="text-center text-nowrap">
                       {variation.qtyOrKilo(order, order?.product?.isPerKilo)}
                     </td>
 
