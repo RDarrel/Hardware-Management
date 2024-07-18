@@ -89,7 +89,7 @@ const PrintOut = () => {
   return (
     <div className="container-receipt mt-1">
       <div className="header">
-        <h6 className="store">Liberty Hardwares</h6>
+        <h6 className="store">Liberty Hardware</h6>
         <h6 className="address">Conception Gen. Tinio Nueva Ecija</h6>
       </div>
       <div className="sub-header">
