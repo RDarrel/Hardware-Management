@@ -22,10 +22,10 @@ const Profile = () => {
         className="d-flex justify-content-end align-items-center h-100 p-1"
         onMouseLeave={() => setId((prev) => prev + 1)}
       >
-        <div className="mr-5 d-flex align-items-center">
+        {/* <div className="mr-5 d-flex align-items-center">
           <MDBIcon icon="hand-holding-usd" style={{ color: "white" }} />
           <h5 className="mt-1 ml-2 text-white">Transcations</h5>
-        </div>
+        </div> */}
         <MDBPopover placement="bottom" popover id={`popover-${id}`} key={id}>
           <MDBBtn
             className="d-flex align-items-center m-0 p-0 profile-pop-over-btn mr-5"

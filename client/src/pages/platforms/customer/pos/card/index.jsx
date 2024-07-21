@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 
-import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage } from "mdbreact";
+import { MDBCard, MDBCardBody, MDBCardImage } from "mdbreact";
 import { ENDPOINT } from "../../../../../services/utilities";
 
-const Card = ({ products, setSelected, setIsView }) => {
+const Card = ({ products, setSelected, setIsView, selected }) => {
   const [didHoverID, setDidHoverID] = useState(-1);
   return (
-    <MDBRow className="mb-5">
-      <MDBCol size="12" className=" d-flex justify-content-center">
-        <MDBRow className="mt-4 w-75">
+    <div className="mb-5">
+      <div className="d-flex justify-content-center">
+        <div
+          className=" w-75 d-flex flex-wrap justify-content-around"
+          style={{ padding: 0 }}
+        >
           {products.map((product, index) => {
             const { variations = [], hasVariant, has2Variant, srp } = product;
 
@@ -17,8 +20,18 @@ const Card = ({ products, setSelected, setIsView }) => {
                 ? variations[0]?.options[0].prices[0]?.srp
                 : variations[0]?.options[0].srp
               : srp;
+
             return (
-              <MDBCol md="3" className="mt-2 " key={index}>
+              <div
+                className="mt-2"
+                key={index}
+                style={{
+                  flex: "0 0 18%",
+                  maxWidth: "18%",
+                  margin: "0 1px",
+                  marginBottom: "0px",
+                }}
+              >
                 <MDBCard
                   onClick={() => {
                     setSelected(product);
@@ -33,7 +46,7 @@ const Card = ({ products, setSelected, setIsView }) => {
                     }`,
                     maxHeight: "300px",
                     height: "250px",
-                    transform: didHoverID === index ? "translateY(-8px)" : "",
+                    transform: didHoverID === index ? "translateY(-3px)" : "",
                     transition: "transform 0.3s ease-in-out",
                   }}
                   className={`h-100 cursor-pointer transition-all z-depth-${
@@ -50,23 +63,33 @@ const Card = ({ products, setSelected, setIsView }) => {
                     />
                   </div>
                   <MDBCardBody>
-                    <h6 className="mb-4"> {product.name}</h6>
+                    <h6
+                      className="mb-4"
+                      style={{
+                        whiteSpace: "nowrap",
+                        maxWidth: "800px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {product.name}
+                    </h6>
                     <div
                       style={{ position: "absolute", bottom: 0 }}
                       className="mt-5"
                     >
                       <h6 className="text-danger font-weight-bold">
-                        ₱ {showPrice}
+                        ₱ {showPrice.toLocaleString()}
                       </h6>
                     </div>
                   </MDBCardBody>
                 </MDBCard>
-              </MDBCol>
+              </div>
             );
           })}
-        </MDBRow>
-      </MDBCol>
-    </MDBRow>
+        </div>
+      </div>
+    </div>
   );
 };
 

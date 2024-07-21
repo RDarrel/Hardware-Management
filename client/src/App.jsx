@@ -8,6 +8,7 @@ import { VALIDATEREFRESH } from "./services/redux/slices/auth";
 import POS from "./pages/platforms/cashier/pos";
 import Checkout from "./pages/widgets/checkout";
 import PrintOut from "./components/printOut";
+import Quotation from "./pages/platforms/customer/pos";
 
 export default function App() {
   const { auth, token } = useSelector(({ auth }) => auth),
@@ -23,6 +24,7 @@ export default function App() {
     <Switch>
       <Route path="/" exact component={Home} />
       <Route path="/pos" exact component={POS} />
+      <Route path="/quotation" exact component={Quotation} />
       <Route path="/printOut" exact component={PrintOut} />
       <Route path="/pos/checkout" exact component={Checkout} />
       <Platforms />

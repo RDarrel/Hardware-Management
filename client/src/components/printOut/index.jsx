@@ -55,14 +55,14 @@ const PrintOut = () => {
     setObj(data);
   }, [formatedData]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      window.print();
-      window.close();
-    }, 90);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     window.print();
+  //     window.close();
+  //   }, 90);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   const getCurrentFormattedDate = () => {
     const today = new Date();
@@ -127,7 +127,7 @@ const PrintOut = () => {
             <div key={index}>
               <div className="d-flex justify-content-between w-100">
                 <div className="receipt-product-container">
-                  <span className="text-start item-name">
+                  <span className="text-start item-name ">
                     {product.name.toUpperCase()}
                   </span>
                 </div>
@@ -139,10 +139,12 @@ const PrintOut = () => {
                     <span>{variant}</span>
                   </div>
                 )}
-                <span>{srp.toLocaleString()}.00</span>
+                <span className="srp">{srp.toLocaleString()}.00</span>
 
                 <div className="subtotal-receipt d-flex justify-content-end">
-                  <span>{subtotal.toLocaleString()}.00</span>
+                  <span className="subtotal">
+                    {subtotal.toLocaleString()}.00
+                  </span>
                 </div>
               </div>
             </div>
@@ -186,8 +188,10 @@ const PrintOut = () => {
             </MDBCol>
           </MDBRow>
         </div>
-        <div className="text-center">
-          <span>THANK YOU AND COME AGAIN.</span>
+        <div className="text-center d-flex flex-column">
+          <small>THIS SERVERVE AS YOUR</small>
+          <small>SALES INVOICE</small>
+          <small>THANK YOU AND COME AGAIN.</small>
         </div>
       </div>
     </div>

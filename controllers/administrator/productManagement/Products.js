@@ -176,7 +176,9 @@ const mergePricesToLowestOptions = (options, highestVrOptions) => {
 exports.sellingProducts = async (_, res) => {
   try {
     await RemoveExpiredProducts();
-    const products = await Entity.find();
+    const products = await Entity.find()
+      .populate("category")
+      .populate("material");
     const container = [];
 
     for (const product of products) {

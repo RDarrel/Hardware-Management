@@ -39,6 +39,10 @@ export default function Login({ show, toggle = null }) {
       if (role === "CASHIER") {
         history.push("/pos");
         dispatch(RESET());
+      }
+      if (role === "CUSTOMER") {
+        history.push("/quotation");
+        dispatch(RESET());
       } else {
         history.push("/dashboard");
         dispatch(SETROUTE("Dashboard"));
