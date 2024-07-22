@@ -70,7 +70,8 @@ body {
 
 .qty-kilo {
   width: 49px;
-  letter-spacing: -1px;
+  font-weight: 550;
+  font-stretch: condensed;
 }
 
 .time {
@@ -90,6 +91,21 @@ body {
 .subtotal-receipt {
   width: 62px;
   letter-spacing: -1px;
+}
+.item-name {
+  font-weight: 550 !important;
+  font-stretch: condensed;
+}
+
+.srp {
+  font-weight: 550 !important;
+  font-stretch: condensed;
+}
+
+.subtotal {
+  font-stretch: condensed;
+
+  font-weight: 550 !important;
 }
 
 @media print {
@@ -160,7 +176,9 @@ body {
     text-align: center;
     font-weight: bold !important;
   }
-
+  .time-name {
+    font-weight: bold !important;
+  }
   .receipt-table {
     width: 90%;
     margin-top: 10px !important;

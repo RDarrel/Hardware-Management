@@ -11,6 +11,7 @@ const Variations = ({
   variant2,
   setSelectedImage,
   setPrice = () => {},
+  textColor = "",
   setVariant2,
   isChangeVariant = false, //para ito dun sa maliliit na modal
 }) => {
@@ -43,6 +44,8 @@ const Variations = ({
 
   useEffect(() => {
     if (variations && variations.length > 0) {
+      setVariation1(null);
+      setVariation2(null);
       setVariation1(variations[0]);
       if (has2Variant && variations.length > 1) {
         setVariation2(variations[1]);
@@ -93,7 +96,6 @@ const Variations = ({
   };
 
   const handleClickVr1 = (_id) => {
-    console.log(variant1 === _id);
     if (variant1 === _id) {
       setOption1ID("");
       return setVariant1("");
@@ -106,14 +108,14 @@ const Variations = ({
       if (option2ID) {
         const prices = variation1.options.find(
           (option) => option._id === _id
-        ).prices;
+        )?.prices;
         const srp = prices.find((price) => price._id === option2ID)?.srp;
         setPrice(srp);
       } else {
         setOption1ID(_id);
       }
     } else {
-      const srp = variation1.options.find((option) => option._id === _id).srp;
+      const srp = variation1.options.find((option) => option._id === _id)?.srp;
       setPrice(srp);
     }
     setVariant1(_id);
@@ -127,11 +129,11 @@ const Variations = ({
     if (variant2 === _id) return setVariant2("");
     handleDisableVr1(variation1?.options, _id);
     if (option1ID) {
-      const prices = variation1.options.find(
-        (option) => option._id === option1ID
-      ).prices;
+      const prices =
+        variation1.options.find((option) => option._id === option1ID)?.prices ||
+        [];
 
-      const srp = prices.find((price) => price._id === _id).srp;
+      const srp = prices?.find((price) => price._id === _id)?.srp;
 
       setPrice(srp);
     }
@@ -144,7 +146,7 @@ const Variations = ({
       {variation1 && (
         <MDBRow className="d-flex align-items-center mt-2">
           <MDBCol md="2">
-            <h6>{variation1.name}:</h6>
+            <h6 className={textColor}>{variation1.name}:</h6>
           </MDBCol>
           <MDBCol md="10">
             <div className="button-wrapper d-flex flex-wrap">
@@ -198,7 +200,7 @@ const Variations = ({
       {variation2 && (
         <MDBRow className="d-flex align-items-center mt-2">
           <MDBCol md="2">
-            <h6>{variation2.name}:</h6>
+            <h6 className={textColor}>{variation2.name}:</h6>
           </MDBCol>
           <MDBCol md="10">
             <div className="button-wrapper d-flex flex-wrap">

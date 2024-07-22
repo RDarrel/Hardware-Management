@@ -12,6 +12,7 @@ import {
 } from "mdbreact";
 import Profile from "../profile";
 import { ENDPOINT, variation } from "../../../../../services/utilities";
+import CustomSelect from "../../../../../components/customSelect";
 
 export const Header = ({ cart, setIsShowCart }) => {
   const [id, setID] = useState(-1);
@@ -21,7 +22,7 @@ export const Header = ({ cart, setIsShowCart }) => {
       <MDBCardBody className="bg-danger m-0 p-0 ">
         <Profile />
 
-        <MDBRow className="d-flex align-items-center justify-content-center   mb-3">
+        <MDBRow className="d-flex align-items-center justify-content-center   mb-1">
           <MDBCol md="9">
             <MDBRow className="d-flex align-items-center justify-content-center">
               <MDBCol md="12" className="d-flex align-items-center">
@@ -29,22 +30,27 @@ export const Header = ({ cart, setIsShowCart }) => {
                   icon="shopping-bag"
                   size="3x"
                   style={{ color: "white" }}
-                  className="mr-2"
+                  className="mr-2 bag-icon"
                 />
-                <h4 className="mt-3 text-white text-nowrap">
-                  LIBERTY'S HARDWARE
-                </h4>
+                <h5 className="mt-2 text-white text-nowrap">
+                  LIBERTY HARDWARE
+                </h5>
+
                 <div className="input-container ml-3">
                   <input
                     className="form-control input"
                     style={{ height: "50px" }}
                     placeholder="Search..."
                   />
-                  <select className="form-select bg-light">
-                    <option>All</option>
-                    <option>Hardware Supplies</option>
-                    <option>Farnitures</option>
-                  </select>
+                  <CustomSelect
+                    className="form-select "
+                    preValue="All Categories"
+                    inputClassName="text-center m-0 p-0"
+                  />
+
+                  <MDBBtn size="sm" color="danger" className="btn-search">
+                    <MDBIcon icon="search" />
+                  </MDBBtn>
                 </div>
                 <div
                   onMouseLeave={() => setID((prev) => prev + 1)}

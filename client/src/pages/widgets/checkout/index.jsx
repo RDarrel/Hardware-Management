@@ -43,8 +43,6 @@ const Checkout = () => {
 
     setTotal(_total);
   }, [cart]);
-
-  console.log(cart);
   const handleBuy = async () => {
     const timestamp = Date.now(); // Get the current timestamp
     const randomNum = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
@@ -82,7 +80,7 @@ const Checkout = () => {
         <MDBCol md="8">
           <div
             className="d-flex  mb-2 ml-1 align-items-center cursor-pointer"
-            onClick={() => history.push("/pos")}
+            onClick={() => history.push("/quotation")}
           >
             <MDBIcon
               icon="less-than"
