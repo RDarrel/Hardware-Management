@@ -7,16 +7,22 @@ import {
   MDBBtn,
   MDBIcon,
 } from "mdbreact";
-
+import { useDispatch, useSelector } from "react-redux";
+import { SAVE, CHECKOUT } from "../../../../../services/redux/slices/cart";
 import { ENDPOINT } from "../../../../../services/utilities";
-import Kilo from "../../../../widgets/orderType/kilo";
+import { useHistory } from "react-router";
 import { Quantity } from "../../../../widgets/orderType/quantity";
+
+import Kilo from "../../../../widgets/orderType/kilo";
 import Variations from "../../../../widgets/variations";
 import Description from "./description";
 import GET from "./GET";
+import Modal from "./modal";
+import Swal from "sweetalert2";
 
 const ViewSelected = ({ selected = {} }) => {
-  const [images, setImages] = useState([]),
+  const { auth, token } = useSelector(({ auth }) => auth),
+    [images, setImages] = useState([]),
     [variant1, setVariant1] = useState(""),
     [variant2, setVariant2] = useState(""),
     [price, setPrice] = useState(0),
@@ -29,7 +35,9 @@ const ViewSelected = ({ selected = {} }) => {
     [baseImages, setBaseImages] = useState([]),
     [storageOfRemoveImages, setStorageOfRemoveImages] = useState([]),
     thumbnailsPerPage = 4,
-    [selectedImage, setSelectedImage] = useState();
+    [selectedImage, setSelectedImage] = useState(),
+    history = useHistory(),
+    dispatch = useDispatch();
 
   useEffect(() => {
     if (selected._id) {
@@ -47,12 +55,13 @@ const ViewSelected = ({ selected = {} }) => {
         label,
       }));
 
-      const variantImages = media.variant?.options?.map(({ _id }) => ({
-        large: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
-        thumb: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
-        label: _id,
-      }));
-
+      const variantImages = media.variant?.options
+        ?.filter(({ isUpload }) => isUpload)
+        .map(({ _id }) => ({
+          large: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
+          thumb: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
+          label: _id,
+        }));
       setBaseImages([]);
       setSelectedImage({});
       setIsFullView(false);
@@ -73,8 +82,6 @@ const ViewSelected = ({ selected = {} }) => {
   const handleClickThumbnail = (largeImage) => {
     setSelectedImage(largeImage);
   };
-
-  console.log(quantity);
 
   const nextPage = () => {
     const _images = [...images];
@@ -97,7 +104,6 @@ const ViewSelected = ({ selected = {} }) => {
 
   const totalPages = Math.ceil(images.length / thumbnailsPerPage);
   const currentThumbnails = images.slice(0, 0 + 4);
-  const handleSubmit = () => {};
 
   const safeRender = (property) => {
     if (typeof property === "object") {
@@ -105,6 +111,62 @@ const ViewSelected = ({ selected = {} }) => {
       return JSON.stringify(property);
     }
     return property;
+  };
+
+  const handleSubmit = (isCart = true) => {
+    var form = {
+      product: selected._id,
+      cartBy: auth._id,
+      isPerKilo: selected.isPerKilo,
+      hasVariant: selected.hasVariant,
+      has2Variant: selected.has2Variant,
+    };
+
+    if (selected.hasVariant) {
+      if (selected.has2Variant) {
+        if (!variant1 || !variant2)
+          return Swal.fire({
+            title: "Please choose a variant",
+            text: "You need to select a variant before proceeding.",
+            icon: "warning",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          });
+        form.variant1 = variant1;
+        form.variant2 = variant2;
+      } else {
+        if (!variant1)
+          return Swal.fire({
+            title: "Please choose a variant",
+            text: "You need to select a variant before proceeding.",
+            icon: "warning",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          });
+        form.variant1 = variant1;
+      }
+    }
+
+    if (selected.isPerKilo) {
+      form.kilo = kilo;
+      form.kiloGrams = kiloGrams;
+    } else {
+      form.quantity = quantity;
+    }
+
+    if (isCart) {
+      dispatch(SAVE({ token, data: { ...form } }));
+      Swal.fire({
+        title: "Successfully",
+        text: "Added to your cart",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "OK",
+      });
+    } else {
+      dispatch(CHECKOUT([{ ...form, product: selected }]));
+      history.push("/pos/checkout");
+    }
   };
 
   return (
@@ -230,7 +292,7 @@ const ViewSelected = ({ selected = {} }) => {
                         type="submit"
                         size="md"
                         className="text-nowrap"
-                        onClick={handleSubmit}
+                        onClick={() => handleSubmit(true)}
                         outline
                       >
                         <MDBIcon icon="shopping-cart" className="mr-1" /> ADD TO
@@ -256,6 +318,13 @@ const ViewSelected = ({ selected = {} }) => {
           </div>
         </div>
       </div>
+      <Modal
+        show={isFullView}
+        setShow={setIsFullView}
+        imgForFullView={imgForFullView}
+        images={baseImages}
+        selected={selected}
+      />
     </div>
   );
 };

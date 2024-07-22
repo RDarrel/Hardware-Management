@@ -1,19 +1,20 @@
 const Entity = require("../../../models/administrator/report/Sales"),
   handleDuplicate = require("../../../config/duplicate");
 
-exports.browse = (req, res) =>
+exports.browse = (_, res) => {
   Entity.find()
     .populate("product")
     .select("-__v")
     .sort({ createdAt: -1 })
     .lean()
-    .then((items) =>
+    .then((items) => {
       res.json({
         success: "Sales Fetched Successfully",
         payload: items.filter((item) => item.name !== "ADMINISTRATOR"),
-      })
-    )
+      });
+    })
     .catch((error) => res.status(400).json({ error: error.message }));
+};
 
 exports.save = (req, res) =>
   Entity.create(req.body)

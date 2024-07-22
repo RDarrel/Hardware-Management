@@ -28,7 +28,11 @@ const Description = ({ selected = {}, safeRender }) => {
                 <h6 className=" grey-text text-start text-nowrap">Stock</h6>
               </MDBCol>
               <MDBCol>
-                <h6 className="ml-5 text-start">{GET.totalStocks(selected)}</h6>
+                <h6 className="ml-5 text-start">
+                  {selected.isPerKilo
+                    ? GET.converterKilo(GET.totalStocks(selected))
+                    : GET.totalStocks(selected)}
+                </h6>
               </MDBCol>
             </MDBRow>
             <MDBRow className="mt-3">

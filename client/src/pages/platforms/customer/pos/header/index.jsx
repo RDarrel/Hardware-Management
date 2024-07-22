@@ -96,9 +96,44 @@ export const Header = ({ cart, setIsShowCart }) => {
                               className="d-flex align-items-center"
                               md="10"
                             >
-                              <img
+                              <div className="d-flex align-items-center">
+                                <img
+                                  src={`${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`}
+                                  alt={product.name}
+                                  className="product-image mr-2"
+                                />
+                                <div>
+                                  <h6
+                                    style={{
+                                      maxWidth: "300px",
+                                      whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                    }}
+                                    className="font-weight-bold ml-2 text-dark"
+                                  >
+                                    {product.name}
+                                  </h6>
+                                  {product.hasVariant && (
+                                    <div
+                                      className="d-flex align-items-center ml-2"
+                                      style={{ marginTop: "-10px" }}
+                                    >
+                                      <span className="mr-1">Variant:</span>
+                                      <span>
+                                        {variation.name(
+                                          obj,
+                                          product.variations
+                                        )}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              {/* <img
                                 src={`${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`}
                                 height={"50px"}
+                                width={"50px"}
                                 alt={`${product.name}`}
                               />
                               <h6
@@ -111,12 +146,12 @@ export const Header = ({ cart, setIsShowCart }) => {
                                 className="font-weight-bold ml-2 text-dark"
                               >
                                 {product.name}
-                              </h6>
+                              </h6> */}
                             </MDBCol>
                             <MDBCol md="2">
-                              <h5 className="text-danger ">
+                              <h6 className="text-danger text-nowrap">
                                 ₱{variation.getTheSubTotal("srp", obj, product)}{" "}
-                              </h5>
+                              </h6>
                             </MDBCol>
                           </MDBRow>
                         );

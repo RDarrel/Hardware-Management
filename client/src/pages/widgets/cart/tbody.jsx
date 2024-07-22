@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ENDPOINT, variation } from "../../../services/utilities";
 import {
   MDBPopover,
@@ -7,13 +7,14 @@ import {
   MDBPopoverBody,
   MDBRow,
   MDBCol,
-  MDBInputGroup,
 } from "mdbreact";
 import Variations from "../variations";
 import CustomSelect from "../../../components/customSelect";
+import Kilo from "../orderType/kilo";
+import { Quantity } from "../orderType/quantity";
 
 export const Tbody = ({
-  isCashier,
+  isCustomer,
   cart,
   handleChangeKilo,
   handleChangeKiloGrams,
@@ -33,6 +34,10 @@ export const Tbody = ({
   suppliers,
   handleChangeSupplier,
 }) => {
+  useEffect(() => {
+    setVariant1(null);
+    setVariant2(null);
+  }, [setVariant1, setVariant2]);
   return (
     <tbody>
       {cart.length > 0 &&
@@ -110,11 +115,16 @@ export const Tbody = ({
                         >
                           <Variations
                             isCart={true}
+                            isChangeVariant={true}
                             has2Variant={product.hasVariant}
                             variations={product.variations}
-                            variant1={variant1 || obj.variant1}
+                            variant1={
+                              variant1 === null ? obj?.variant1 : variant1
+                            }
                             setVariant1={setVariant1}
-                            variant2={variant2 || obj.variant2}
+                            variant2={
+                              variant2 === null ? obj?.variant2 : variant2
+                            }
                             setVariant2={setVariant2}
                           />
 
@@ -159,90 +169,53 @@ export const Tbody = ({
                 </div>
               </td>
 
-              <td className="d-flex justify-content-center ">
-                <div className="mt-2 w-100 d-flex justify-content-center">
+              {isCustomer && (
+                <td className=" font-weight-bold">
+                  ₱{variation.getTheCapitalOrSrp("srp", obj, product)}
+                </td>
+              )}
+
+              <td className="d-flex justify-content-center  align-items-center">
+                <div className="mt-3 w-100">
                   {product.isPerKilo ? (
-                    <MDBInputGroup
-                      style={{ width: "50%" }}
-                      type="number"
-                      value={String(obj.kilo)}
-                      onChange={({ target }) => {
-                        const newKilo = Number(target.value);
-                        handleChangeKilo(obj._id, newKilo <= 0 ? 0 : newKilo);
-                      }}
-                      className="text-center border border-light m-0 p-0"
-                      append={
-                        <select
-                          className="form-control"
-                          value={String(obj.kiloGrams)}
-                          onChange={({ target }) =>
-                            handleChangeKiloGrams(obj._id, Number(target.value))
-                          }
-                        >
-                          <option value={"0"}>kl</option>
-                          <option value={"0.25"}>1/4</option>
-                          <option value={"0.5"}>1/2</option>
-                          <option value={"0.75"}>3/4</option>
-                        </select>
+                    <Kilo
+                      kilo={obj.kilo}
+                      kiloGrams={obj.kiloGrams}
+                      setKilo={(value) => handleChangeKilo(obj._id, value)}
+                      setKiloGrams={(value) =>
+                        handleChangeKiloGrams(obj._id, value)
                       }
+                      availableStocks={obj?.max || 0}
+                      isCustomer={isCustomer}
+                      isCart={true}
                     />
                   ) : (
-                    <MDBInputGroup
-                      type="number"
-                      className="text-center border border-light"
-                      style={{ width: "50%" }}
-                      value={String(obj.quantity)}
-                      min="1"
-                      onChange={({ target }) => {
-                        var quantity = Number(target.value);
-                        if (quantity < 1) quantity = 1;
-                        handleChangeQty("", quantity, obj._id);
-                      }}
-                      size="sm"
-                      prepend={
-                        <MDBBtn
-                          className="m-0 px-2 py-0"
-                          size="sm"
-                          color="light"
-                          onClick={() =>
-                            handleChangeQty("MINUS", obj.quantity, obj._id)
-                          }
-                          style={{ boxShadow: "0px 0px 0px 0px" }}
-                          outline
-                        >
-                          <MDBIcon icon="minus" style={{ color: "black" }} />
-                        </MDBBtn>
+                    <Quantity
+                      isCart={true}
+                      isCustomer={isCustomer}
+                      setQuantity={(value, action) =>
+                        handleChangeQty(action, value, obj._id)
                       }
-                      append={
-                        <MDBBtn
-                          className="m-0 px-2  py-0"
-                          size="sm"
-                          color="light"
-                          style={{ boxShadow: "0px 0px 0px 0px" }}
-                          onClick={() =>
-                            handleChangeQty("ADD", obj.quantity, obj._id)
-                          }
-                          outline
-                        >
-                          <MDBIcon icon="plus" style={{ color: "black" }} />
-                        </MDBBtn>
-                      }
+                      availableStocks={obj.max || 0}
+                      quantity={obj.quantity}
                     />
                   )}
                 </div>
               </td>
-              <td>
-                <CustomSelect
-                  className="m-0 p-0 mt-2"
-                  choices={suppliers}
-                  preValue={obj.supplier}
-                  inputClassName="text-center"
-                  onChange={(value) => handleChangeSupplier(obj, value)}
-                  texts="company"
-                  values="_id"
-                />
-              </td>
-              {isCashier && (
+              {!isCustomer && (
+                <td>
+                  <CustomSelect
+                    className="m-0 p-0 mt-2"
+                    choices={suppliers}
+                    preValue={obj.supplier}
+                    inputClassName="text-center"
+                    onChange={(value) => handleChangeSupplier(obj, value)}
+                    texts="company"
+                    values="_id"
+                  />
+                </td>
+              )}
+              {isCustomer && (
                 <td className="text-danger font-weight-bold">
                   ₱{variation.getTheSubTotal("srp", obj, product)}
                 </td>

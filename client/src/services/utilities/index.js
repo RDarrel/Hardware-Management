@@ -15,6 +15,7 @@ import formattedDate from "./formattedDate";
 import variation from "./variation/variation";
 import transaction from "./transaction";
 import isValid from "./duplicateChecker/index";
+import customSort from "./customSort";
 const ENDPOINT = "http://localhost:5000";
 // const ENDPOINT = window.location.origin;
 const socket = io.connect(ENDPOINT);
@@ -32,6 +33,7 @@ export {
   socket,
   variation,
   transaction,
+  customSort,
   isValid,
   formattedDate,
   handlePagination,

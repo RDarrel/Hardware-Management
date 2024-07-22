@@ -14,7 +14,6 @@ const sortByTopSellingProducts = async (products) => {
       }
       return acc;
     }, []);
-
     const containerWithSold = products.map((item) => {
       const matchingStock = uniqueProductStocks.find(
         (stock) => String(stock?.product?._id) === String(item?._id)

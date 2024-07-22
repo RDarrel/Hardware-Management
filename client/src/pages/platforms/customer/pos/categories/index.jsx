@@ -55,7 +55,7 @@ const Categories = ({ products }) => {
       <div className="d-flex justify-content-center ">
         <div className="w-75">
           <MDBCard className="boxshadow-none ">
-            <MDBCardHeader className="bg-white grey-text" tag="h5">
+            <MDBCardHeader className="bg-white grey-text" tag="h6">
               CATEGORIES
             </MDBCardHeader>
             <MDBCardBody className="w-100">

@@ -1,0 +1,108 @@
+.sidebar {
+  width: 250px;
+  border: none;
+}
+
+.sidebar-title {
+  font-weight: 550;
+  font-size: 1.25rem;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.sidebar-category {
+  cursor: pointer;
+  font-weight: 500 !important;
+  padding: 10px;
+  margin-top: -5px;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-category.active {
+  color: #ff4500; /* Red color when active */
+}
+
+.sidebar-category .arrow {
+  margin-right: 10px;
+  color: #ff4500; /* Red color */
+}
+
+.sidebar-category.active .arrow {
+  visibility: visible;
+}
+
+.sidebar-category .arrow {
+  visibility: hidden;
+}
+
+.sidebar-price-range {
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  margin-top: 15px;
+}
+
+.price-range-title {
+  font-weight: bold;
+  margin-bottom: -10px;
+}
+
+.price-range-inputs {
+  display: flex;
+  align-items: center;
+}
+
+.price-range-separator {
+  margin: 0 30px;
+}
+
+.mdb-input {
+  flex: 1;
+}
+.warning-message-price-range {
+  color: red;
+  margin-top: -25px;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.apply-btn {
+  margin-top: -10px !important;
+}
+
+.custom-row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.custom-col-withSidebar {
+  padding-left: 4px;
+  padding-right: 4px;
+  max-width: 20%;
+  flex: 0 0 20%;
+}
+
+.custom-col {
+  padding-left: 4px !important;
+  padding-right: 2px;
+  max-width: calc(16.666667% - 0px); /* Adjust width and remove the gap */
+  flex: 0 0 calc(16.666667% - 0px); /* Adjust flex to remove the gap */
+}
+
+.product-card {
+  width: 100%;
+}
+
+.col-sorting {
+  max-width: 100%; /* Adjust width for five columns */
+  flex: 0 0 99%; /* Adjust flex for five columns */
+  padding-left: 4px;
+  margin-bottom: 57px;
+}
+
+.card-sorting {
+  position: absolute;
+  width: 100% !important;
+  background-color: rgb(234, 227, 227);
+}
