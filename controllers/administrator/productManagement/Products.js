@@ -130,42 +130,46 @@ const filteredVariations = async (product, options, has2Variant) => {
   return container;
 };
 
+const filterValidPrices = (prices) =>
+  prices.filter(({ disable, max }) => !disable && max > 0);
+
+const addMissingPrices = (prices, highestOptions) => {
+  const newPrices = [...prices];
+  for (const optionInVr2 of highestOptions) {
+    if (!newPrices.some(({ _id }) => _id === optionInVr2._id)) {
+      newPrices.push({ ...optionInVr2, disable: true, max: 0 });
+    }
+  }
+  return newPrices;
+};
+
+const ensureAllOptionsHaveHighest = (_options, highestOptions) => {
+  for (const option of _options) {
+    const { prices = [] } = option;
+    const newPrices = addMissingPrices(prices, highestOptions);
+    option.prices = newPrices;
+  }
+};
+
 const mergePricesToLowestOptions = (options, highestVrOptions) => {
   try {
-    const highestOptions = highestVrOptions.prices.filter(
-      ({ disable }) => !disable
-    );
+    const highestOptions = filterValidPrices(highestVrOptions.prices);
     const _options = [...options];
-    for (const option of _options) {
-      const { prices = [] } = option;
-      const newPrices = prices.filter(({ disable }) => !disable);
-      for (const optionInVr2 of highestOptions) {
-        //chinecheck ko kung yung option ba niya eh nandun sa highest vr2 kung wala mag pupush ako sa kaniya pero naka disable
-        if (!newPrices.some(({ _id }) => _id === optionInVr2._id)) {
-          newPrices.push({ ...optionInVr2, disable: true, max: 0 });
-        }
-      }
-      for (const newPrice of newPrices) {
-        //chinecheck ko kung yung option ba neto ay andun sa choices
-        //kung wala ipupush ko yung option niya sa choices
-        const hasExistInChoices = highestOptions.some(
-          ({ _id }) => newPrice._id === _id
-        );
 
-        if (!hasExistInChoices) {
+    for (const option of _options) {
+      const newPrices = addMissingPrices(
+        filterValidPrices(option.prices),
+        highestOptions
+      );
+      for (const newPrice of newPrices) {
+        if (!highestOptions.some(({ _id }) => newPrice._id === _id)) {
           highestOptions.push(newPrice);
-          const index = _options.findIndex(
-            ({ _id }) => highestVrOptions._id === _id
-          );
-          _options[index].prices.push({ ...newPrice, disable: true, max: 0 });
         }
       }
-      const index = _options.findIndex(({ _id }) => option._id === _id);
-      _options[index] = {
-        ..._options[index],
-        prices: newPrices,
-      };
+      option.prices = newPrices;
     }
+
+    ensureAllOptionsHaveHighest(_options, highestOptions);
 
     return { optionsInProducts: _options, choicesVariant: highestOptions };
   } catch (error) {

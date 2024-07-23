@@ -16,9 +16,9 @@ const arrangeStocks = async () => {
         expiredQuantity = 0,
         expiredKilo = 0,
       } = currentValue;
-      const key = `${currentValue.product._id}-${currentValue.variant1 || ""}-${
-        currentValue.variant2 || ""
-      }`;
+      const key = `${currentValue.product?._id}-${
+        currentValue.variant1 || ""
+      }-${currentValue.variant2 || ""}`;
 
       const index = accumulator.findIndex((accu) => accu.key === key);
 

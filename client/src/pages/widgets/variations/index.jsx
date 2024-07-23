@@ -27,7 +27,15 @@ const Variations = ({
     setVariant2(null);
   }, [setVariant1, setVariant2]);
 
+  console.log(variant1, variant2);
+
   useEffect(() => {
+    if (variant1 !== option1ID) {
+      setOption1ID("");
+    }
+    if (variant2 !== option2ID) {
+      setOption2ID("");
+    }
     if (!variant1) {
       setDisableIDSVr2([]);
     }
@@ -38,9 +46,7 @@ const Variations = ({
       setDisableIDSVr1([]);
       setDisableIDSVr2([]);
     }
-  }, [variant1, variant2]);
-
-  console.log(variant1);
+  }, [variant1, variant2, option1ID, option2ID]);
 
   useEffect(() => {
     if (variations && variations.length > 0) {
@@ -51,6 +57,7 @@ const Variations = ({
         setVariation2(variations[1]);
         //this is for default filtering of disable option
         if (isChangeVariant && !option1ID) {
+          console.log("running");
           handleDisableVr2(variations[0].options, variant1);
         }
         if (variant2) {
@@ -97,7 +104,6 @@ const Variations = ({
 
   const handleClickVr1 = (_id) => {
     if (variant1 === _id) {
-      setOption1ID("");
       return setVariant1("");
     }
     const vr1Img = !isCart && images.find(({ label }) => label === _id);
@@ -110,6 +116,7 @@ const Variations = ({
           (option) => option._id === _id
         )?.prices;
         const srp = prices.find((price) => price._id === option2ID)?.srp;
+        setOption1ID(_id);
         setPrice(srp);
       } else {
         setOption1ID(_id);
@@ -128,13 +135,13 @@ const Variations = ({
   const handleClickVr2 = (_id) => {
     if (variant2 === _id) return setVariant2("");
     handleDisableVr1(variation1?.options, _id);
+    console.log(option1ID);
+
     if (option1ID) {
       const prices =
         variation1.options.find((option) => option._id === option1ID)?.prices ||
         [];
-
       const srp = prices?.find((price) => price._id === _id)?.srp;
-
       setPrice(srp);
     }
     setOption2ID(_id);
@@ -153,6 +160,7 @@ const Variations = ({
               {variation1.options.map((option, index) => {
                 const image =
                   !isCart && images.find(({ label }) => option._id === label);
+                const isDisable = disableIDSVr1.includes(option._id);
 
                 if (!option.disable) {
                   return (
@@ -160,11 +168,11 @@ const Variations = ({
                       <MDBBtn
                         outline
                         size="sm"
-                        disabled={disableIDSVr1.includes(option._id)}
+                        disabled={isDisable}
                         color={option._id === variant1 ? "danger" : "light"}
-                        className={`button ${
-                          option.name === variant1 ? "selected" : ""
-                        }`}
+                        className={`button  ${
+                          isDisable && "boxshadow-none"
+                        }   ${option.name === variant1 ? "selected" : ""}`}
                         onClick={() => handleClickVr1(option._id)}
                       >
                         {image && (
@@ -205,17 +213,19 @@ const Variations = ({
           <MDBCol md="10">
             <div className="button-wrapper d-flex flex-wrap">
               {variation2.options.map((option, index) => {
+                const isDisable = disableIDSVr2.includes(option._id);
+
                 return (
                   <div key={index} className="button-container">
                     <MDBBtn
                       outline
                       size="sm"
                       color={option._id === variant2 ? "danger" : "light"}
-                      className={`button ${
-                        option._id === variant1 ? "selected" : ""
-                      }`}
+                      className={`button  
+                         ${isDisable && "boxshadow-none"}
+                        ${option._id === variant1 ? "selected" : ""}`}
                       onClick={() => handleClickVr2(option._id)}
-                      disabled={disableIDSVr2.includes(option._id)}
+                      disabled={isDisable}
                     >
                       <span
                         style={{ fontSize: "13px" }}

@@ -36,7 +36,7 @@ const TopProducts = ({ products }) => {
       <div className="d-flex justify-content-center ">
         <div className="w-75">
           <MDBCard className="boxshadow-none ">
-            <MDBCardHeader className="bg-white text-danger" tag="h5">
+            <MDBCardHeader className="bg-white text-danger" tag="h6">
               TOP PRODUCTS
             </MDBCardHeader>
             <MDBCardBody className="w-100">

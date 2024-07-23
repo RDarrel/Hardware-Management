@@ -16,13 +16,13 @@ const Table = ({
   handleActionInCheckOut,
   handleChangeSelectAll,
   isCheckAll,
-  isCashier,
+  isCustomer,
   suppliers,
 }) => {
   const { token } = useSelector(({ auth }) => auth),
     [popoverKey, setPopoverKey] = useState(0),
-    [variant1, setVariant1] = useState(""),
-    [variant2, setVariant2] = useState(""),
+    [variant1, setVariant1] = useState(null),
+    [variant2, setVariant2] = useState(null),
     dispatch = useDispatch();
 
   const handleClose = () => {
@@ -161,9 +161,11 @@ const Table = ({
                 Product
               </div>
             </th>
+            {isCustomer && <th className="text-center">SRP</th>}
+
             <th className="text-center">Quantity/Kilo</th>
-            <th className="text-center">Supplier</th>
-            {isCashier && <th>Subtotal</th>}
+            {!isCustomer && <th className="text-center">Supplier</th>}
+            {isCustomer && <th>Subtotal</th>}
             <th>Action</th>
           </tr>
         </thead>
@@ -184,7 +186,7 @@ const Table = ({
           popoverKey={popoverKey}
           isCheckAll={isCheckAll}
           handleActionInCheckOut={handleActionInCheckOut}
-          isCashier={isCashier}
+          isCustomer={isCustomer}
           suppliers={suppliers}
           handleChangeSupplier={handleChangeSupplier}
         />

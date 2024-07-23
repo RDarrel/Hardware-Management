@@ -12,8 +12,9 @@ import {
 } from "mdbreact";
 import Table from "./table";
 import { useDispatch } from "react-redux";
+import { transaction, variation } from "../../../services/utilities";
 
-const Cart = ({ show, toggle, collections, isCashier = false, suppliers }) => {
+const Cart = ({ show, toggle, collections, isCustomer = false, suppliers }) => {
   const [isCheckAll, setIsCheckAll] = useState(true),
     [checkOutProducts, setCheckOutProducts] = useState([]),
     [cart, setCart] = useState([]),
@@ -53,7 +54,7 @@ const Cart = ({ show, toggle, collections, isCashier = false, suppliers }) => {
   };
 
   const handleCheckOut = () => {
-    if (isCashier) {
+    if (isCustomer) {
       dispatch(CHECKOUT(checkOutProducts));
       history.push("pos/checkout");
     } else {
@@ -66,7 +67,7 @@ const Cart = ({ show, toggle, collections, isCashier = false, suppliers }) => {
       isOpen={show}
       toggle={() => toggle()}
       size="lg"
-      className="modal-notify modal-primary"
+      className={`modal-notify modal-${isCustomer ? "danger" : "primary"}`}
       fullHeight
       position="right"
     >
@@ -81,7 +82,7 @@ const Cart = ({ show, toggle, collections, isCashier = false, suppliers }) => {
             suppliers={suppliers}
             handleChangeSelectAll={handleChangeSelectAll}
             isCheckAll={isCheckAll}
-            isCashier={isCashier}
+            isCustomer={isCustomer}
             checkOutProducts={checkOutProducts}
             handleActionInCheckOut={handleActionInCheckOut}
           />
@@ -89,18 +90,60 @@ const Cart = ({ show, toggle, collections, isCashier = false, suppliers }) => {
           <h6 className="text-center">No Cart</h6>
         )}
       </MDBModalBody>
-      <MDBModalFooter className="d-flex justify-content-end  fixed-footer">
-        <MDBBtn
-          color="primary"
-          outline
-          onClick={handleCheckOut}
-          disabled={cart.length === 0}
-        >
-          <span>
-            Check Out
-            <i className="fas fa-long-arrow-alt-right ms-2"></i>
-          </span>
-        </MDBBtn>
+      <MDBModalFooter
+        className={`fixed-footer d-flex justify-content-${
+          isCustomer ? "between" : "end"
+        }  align-items-center`}
+      >
+        {isCustomer && (
+          <div className="d-flex align-items-center mt-1">
+            <div className="d-flex align-items-center">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                checked={isCheckAll}
+                id="checkbox"
+                onChange={() => handleChangeSelectAll(!isCheckAll)}
+              />
+              <label
+                htmlFor="checkbox"
+                className="form-check-label mr-2 label-table"
+              >
+                Select All (15)
+              </label>
+            </div>
+          </div>
+        )}
+        <div className="d-flex justify-content-end align-items-center">
+          {isCustomer && (
+            <div className="d-flex align-items-center mr-2 mt-3">
+              <h6>Total ({checkOutProducts.length} item): </h6>
+              <h4 className="text-danger ml-1 ">
+                ₱
+                {transaction
+                  .getTotal(
+                    checkOutProducts.map((c) => {
+                      return {
+                        ...c,
+                        srp: variation.getTheCapitalOrSrp("srp", c, c.product),
+                      };
+                    })
+                  )
+                  ?.toLocaleString() || 0}
+              </h4>
+            </div>
+          )}
+          <MDBBtn
+            color="danger"
+            onClick={handleCheckOut}
+            disabled={cart.length === 0}
+          >
+            <span>
+              Check Out
+              <i className="fas fa-long-arrow-alt-right ms-2 ml-2"></i>
+            </span>
+          </MDBBtn>
+        </div>
       </MDBModalFooter>
     </MDBModal>
   );

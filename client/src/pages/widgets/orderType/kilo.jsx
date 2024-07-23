@@ -2,6 +2,7 @@ import { MDBRow, MDBCol, MDBBtn, MDBIcon, MDBInputGroup } from "mdbreact";
 import React, { useEffect } from "react";
 import Swal from "sweetalert2";
 import seperateKiloAndGrams from "../../../services/utilities/seperateKiloAndGrams";
+import GET from "../../platforms/customer/pos/viewSelected/GET";
 
 const Kilo = ({
   kilo,
@@ -11,33 +12,8 @@ const Kilo = ({
   handleSubmit,
   isCustomer = false,
   availableStocks = 0,
+  isCart = false,
 }) => {
-  const showText = () => {
-    const { kilo: kl = 0, kiloGrams: kg = 0 } =
-      seperateKiloAndGrams(availableStocks);
-    var grams = "";
-    console.log(kg);
-    switch (kg) {
-      case 0.5:
-        grams = "1/4";
-        break;
-
-      case 0.75:
-        grams = "3/4";
-        break;
-      case 0.25:
-        grams = "1/2";
-        break;
-
-      default:
-        grams = "";
-        break;
-    }
-    return `${
-      kl > 0 ? `${kl} ${kl > 1 ? "Kilos" : "kilo"} and` : ""
-    } ${grams} ${kl === 0 ? "grams" : ""}`;
-  };
-
   useEffect(() => {
     if (isCustomer) {
       const totalKilo = kilo + kiloGrams;
@@ -45,7 +21,6 @@ const Kilo = ({
         const { kilo: kl = 0, kiloGrams: kg = 0 } =
           seperateKiloAndGrams(availableStocks);
 
-        console.log(kl);
         setKilo(kl);
         setKiloGrams(kg);
       }
@@ -54,8 +29,10 @@ const Kilo = ({
 
   const handleDisableGrams = (kilo, kiloGrams) => {
     if (!isCustomer) return false;
-    if (kilo > availableStocks) {
-      const { grams } = seperateKiloAndGrams(availableStocks);
+    const { kiloGrams: grams = 0, kilo: kl = 0 } =
+      seperateKiloAndGrams(availableStocks);
+
+    if (kilo === kl) {
       if (kiloGrams > grams) {
         return true;
       } else {
@@ -78,7 +55,9 @@ const Kilo = ({
         Swal.fire({
           icon: "warning",
           title: "Stock Limit Exceeded",
-          text: `You can only purchase up to ${showText()} `,
+          text: `You can only purchase up to ${GET.converterKilo(
+            availableStocks
+          )} `,
           confirmButtonText: "OK",
         });
       } else {
@@ -90,10 +69,16 @@ const Kilo = ({
   };
 
   return (
-    <MDBRow className="mt-4 d-flex align-items-center">
-      <MDBCol md="2">
-        <h6 className={!isCustomer ? "" : "grey-text"}>Kilo:</h6>
-      </MDBCol>
+    <MDBRow
+      className={`mt-4 d-flex align-items-center ${
+        isCart && "justify-content-center"
+      }`}
+    >
+      {!isCart && (
+        <MDBCol md="2">
+          <h6 className={!isCustomer ? "" : "grey-text"}>Kilo:</h6>
+        </MDBCol>
+      )}
       <MDBCol
         md={isCustomer ? "6" : "4"}
         className="m-0 d-flex align-items-center"
@@ -120,30 +105,36 @@ const Kilo = ({
               <option
                 value={"0.25"}
                 disabled={handleDisableGrams(kilo, 0.25)}
-                className={handleDisableGrams(kilo, 0.25) ? "bg-danger" : ""}
+                className={
+                  handleDisableGrams(kilo, 0.25) ? "bg-danger text-white" : ""
+                }
               >
                 1/4 kl
               </option>
               <option
                 value={"0.5"}
                 disabled={handleDisableGrams(kilo, 0.5)}
-                className={handleDisableGrams(kilo, 0.5) ? "bg-danger" : ""}
+                className={
+                  handleDisableGrams(kilo, 0.5) ? "bg-danger text-white" : ""
+                }
               >
                 1/2 kl
               </option>
               <option
                 value={"0.75"}
                 disabled={handleDisableGrams(kilo, 0.75)}
-                className={handleDisableGrams(kilo, 0.75) ? "bg-danger" : ""}
+                className={
+                  handleDisableGrams(kilo, 0.75) ? "bg-danger text-white" : ""
+                }
               >
                 3/4 kl
               </option>
             </select>
           }
         />
-        {isCustomer && (
+        {isCustomer && !isCart && (
           <h6 className="grey-text ml-2 mt-2 text-nowrap">
-            {showText()} available
+            {GET.converterKilo(availableStocks)} available
           </h6>
         )}
       </MDBCol>

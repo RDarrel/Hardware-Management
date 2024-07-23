@@ -7,6 +7,7 @@ export const Quantity = ({
   setQuantity,
   handleSubmit,
   isCustomer = false,
+  isCart = false,
   availableStocks = 0,
 }) => {
   useEffect(() => {
@@ -17,10 +18,14 @@ export const Quantity = ({
     }
   }, [quantity, setQuantity, isCustomer, availableStocks]);
 
-  const handleChangeQuantity = (newQty) => {
+  const handleChangeQuantity = (newQty, action) => {
     if (isCustomer) {
       if (newQty > availableStocks && availableStocks > 0) {
-        setQuantity(availableStocks);
+        if (isCart) {
+          setQuantity(availableStocks, action);
+        } else {
+          setQuantity(availableStocks);
+        }
         Swal.fire({
           icon: "warning",
           title: "Purchase Limit Exceeded",
@@ -33,18 +38,32 @@ export const Quantity = ({
           },
         });
       } else {
-        setQuantity(newQty);
+        if (isCart) {
+          setQuantity(newQty, action);
+        } else {
+          setQuantity(newQty);
+        }
       }
     } else {
-      setQuantity(newQty);
+      if (isCart) {
+        setQuantity(newQty, action);
+      } else {
+        setQuantity(newQty);
+      }
     }
   };
 
   return (
-    <MDBRow className="d-flex align-items-center mt-3">
-      <MDBCol md="2">
-        <h6 className={isCustomer ? "grey-text" : ""}>Quantity:</h6>
-      </MDBCol>
+    <MDBRow
+      className={`d-flex align-items-center mt-3 ${
+        isCart && "justify-content-center"
+      }`}
+    >
+      {!isCart && (
+        <MDBCol md="2">
+          <h6 className={isCustomer ? "grey-text" : ""}>Quantity:</h6>
+        </MDBCol>
+      )}
       <MDBCol
         md={!isCustomer ? "4" : "6"}
         className="d-flex align-items-center"
@@ -52,13 +71,13 @@ export const Quantity = ({
         <MDBInputGroup
           type="number"
           className="text-center border border-light"
-          style={{ width: "70%" }}
+          style={{ width: isCart ? "100%" : "40%" }}
           value={String(quantity)}
           min="1"
           onChange={({ target }) => {
             var quantity = Number(target.value);
             if (quantity < 1) quantity = 1;
-            handleChangeQuantity(quantity);
+            handleChangeQuantity(quantity, "");
           }}
           size="sm"
           prepend={
@@ -66,9 +85,10 @@ export const Quantity = ({
               className="m-0 px-2 py-0"
               size="sm"
               color="light"
-              onClick={() =>
-                handleChangeQuantity(quantity > 1 ? quantity - 1 : quantity)
-              }
+              onClick={() => {
+                const newQty = quantity > 1 ? quantity - 1 : quantity;
+                handleChangeQuantity(newQty, "MINUS");
+              }}
               style={{ boxShadow: "0px 0px 0px 0px" }}
               outline
             >
@@ -81,14 +101,14 @@ export const Quantity = ({
               size="sm"
               color="light"
               style={{ boxShadow: "0px 0px 0px 0px" }}
-              onClick={() => handleChangeQuantity(quantity + 1)}
+              onClick={() => handleChangeQuantity(quantity + 1, "ADD")}
               outline
             >
               <MDBIcon icon="plus" style={{ color: "black" }} />
             </MDBBtn>
           }
         />
-        {isCustomer && (
+        {isCustomer && !isCart && (
           <h6 className="grey-text ml-2 mt-2 text-nowrap">
             {availableStocks} pieces available
           </h6>

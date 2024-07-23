@@ -1,32 +1,57 @@
 import React from "react";
 import { MDBBreadcrumb, MDBBreadcrumbItem } from "mdbreact";
-const BreadCrumb = ({ selected }) => {
+import capitalize from "../../../../../services/utilities/capitalize";
+const BreadCrumb = ({
+  selected,
+  handleSideBar,
+  sideBarActive,
+  activeCategory,
+}) => {
   return (
     <div className="mt-3">
       <div className="d-flex justify-content-center">
         <div className="w-75">
           <MDBBreadcrumb>
             <MDBBreadcrumbItem>
-              <a href="#">Home</a>
+              <button
+                className="btn-link-style"
+                onClick={() => handleSideBar("home")}
+              >
+                Home
+              </button>
             </MDBBreadcrumbItem>
             <MDBBreadcrumbItem>
-              <a href="#">All products</a>
+              <button
+                className="btn-link-style"
+                onClick={() => handleSideBar("all")}
+              >
+                All products
+              </button>
             </MDBBreadcrumbItem>
-            <MDBBreadcrumbItem>
-              <a href="#">{selected.category?.name}</a>
-            </MDBBreadcrumbItem>
+            {activeCategory && (
+              <MDBBreadcrumbItem>
+                <button
+                  className="btn-link-style"
+                  onClick={() => handleSideBar("category")}
+                >
+                  {capitalize.firstLetter(activeCategory?.name)}
+                </button>
+              </MDBBreadcrumbItem>
+            )}
 
-            <MDBBreadcrumbItem
-              active
-              style={{
-                whiteSpace: "nowrap",
-                maxWidth: "500px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {selected.name}
-            </MDBBreadcrumbItem>
+            {!sideBarActive && (
+              <MDBBreadcrumbItem
+                active
+                style={{
+                  whiteSpace: "nowrap",
+                  maxWidth: "500px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {capitalize.firstLetter(selected.name)}
+              </MDBBreadcrumbItem>
+            )}
           </MDBBreadcrumb>
         </div>
       </div>
