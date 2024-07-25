@@ -3,6 +3,7 @@ import { MDBCol, MDBRow } from "mdbreact";
 import Sidebar from "./sidebar";
 import Sorting from "./sorting";
 import Products from "./products";
+import SearchNotFound from "../searchNotFound";
 
 const ProductsCard = ({
   products,
@@ -13,13 +14,20 @@ const ProductsCard = ({
   productsTemplate,
   setProductsTemplate,
   showSideBar = false,
+  isResetFiltering,
+  setIsResetFiltering,
+  setInSearchFilter,
+  didSearch = false,
+  searchValue,
+  notFound,
+  searchResults,
 }) => {
   return (
     <div className="mb-5">
-      <div className="d-flex justify-content-center" style={{ padding: 0 }}>
+      <div className="d-flex justify-content-center">
         <div className="w-75">
-          <MDBRow>
-            {showSideBar && (
+          <MDBRow className={didSearch ? "mt-3" : ""}>
+            {(showSideBar || didSearch) && (
               <MDBCol md="2">
                 <Sidebar
                   activeCategory={activeCategory}
@@ -28,26 +36,51 @@ const ProductsCard = ({
                   productsTemplate={productsTemplate}
                   products={products}
                   setActiveCategory={setActiveCategory}
+                  isResetFiltering={isResetFiltering}
+                  setIsResetFiltering={setIsResetFiltering}
+                  setInSearchFilter={setInSearchFilter}
+                  didSearch={didSearch}
+                  searchResults={searchResults}
+                  searchValue={searchValue}
                 />
               </MDBCol>
             )}
-            <MDBCol md={showSideBar ? "10" : "12"}>
+            <MDBCol md={showSideBar || didSearch ? "10" : "12"}>
               <MDBRow
                 className="custom-row"
                 style={{
-                  ...(showSideBar && {
+                  ...((showSideBar || didSearch) && {
                     marginLeft: "60px",
-                    marginRight: "-5px",
                   }),
                 }}
               >
-                {showSideBar && (
-                  <Sorting products={products} setProducts={setProducts} />
+                {(showSideBar || didSearch) && products.length > 0 && (
+                  <Sorting
+                    products={products}
+                    setProducts={setProducts}
+                    productsTemplate={productsTemplate}
+                    setProductsTemplate={setProductsTemplate}
+                    isResetFiltering={isResetFiltering}
+                    setIsResetFiltering={setIsResetFiltering}
+                    setActiveCategory={setActiveCategory}
+                    didSearch={didSearch}
+                    searchValue={searchValue}
+                  />
                 )}
+                {(showSideBar || didSearch) && products.length === 0 && (
+                  <SearchNotFound setIsResetFiltering={setIsResetFiltering} />
+                )}
+                {notFound && (
+                  <SearchNotFound
+                    setIsResetFiltering={setIsResetFiltering}
+                    notFound={notFound}
+                  />
+                )}
+
                 <Products
                   products={products}
                   handleSelectProduct={handleSelectProduct}
-                  showSideBar={showSideBar}
+                  showSideBar={showSideBar || didSearch}
                 />
               </MDBRow>
             </MDBCol>

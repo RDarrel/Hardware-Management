@@ -13,6 +13,7 @@ import ViewSelected from "./viewSelected";
 import ProductsCard from "./card";
 import productOrder from "../../../../services/utilities/product";
 import { customSort } from "../../../../services/utilities";
+import sortBy from "../../../../services/utilities/sorting";
 
 const Quotation = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
@@ -20,13 +21,20 @@ const Quotation = () => {
     { collections: cartCollections } = useSelector(({ cart }) => cart),
     [cart, setCart] = useState([]),
     [products, setProducts] = useState([]),
+    [topProducts, setTopProducts] = useState([]),
     [showSideBar, setShowSideBar] = useState(false),
     [sideBarActive, setSideBarActive] = useState(""),
+    [searchValue, setSearchValue] = useState(""),
     [selected, setSelected] = useState({ name: "", media: {} }),
+    [didSearch, setDidSearch] = useState(false),
     [productsTemplate, setProductsTemplate] = useState([]),
-    [activeCategory, setActiveCategory] = useState(""),
+    [activeCategory, setActiveCategory] = useState({}),
+    [inSearchFilter, setInSearchFilter] = useState(false),
     [isShowCart, setIsShowCart] = useState(false),
-    [hasSelect, setHasSelect] = useState(false),
+    [searchResults, setSearchResults] = useState([]),
+    [hasMovingUp, setHasMovingUp] = useState(false),
+    [notFound, setNotFound] = useState(false),
+    [isResetFiltering, setIsResetFiltering] = useState(false),
     dispatch = useDispatch();
 
   const topRef = useRef(null);
@@ -59,13 +67,14 @@ const Quotation = () => {
       };
     });
 
-    const sorted = [...productsWithDefaultSrp].sort((a, b) => {
-      const dateA = new Date(a.createdAt);
-      const dateB = new Date(b.createdAt);
-      return dateB - dateA;
-    });
+    // const sorted = [...productsWithDefaultSrp].sort((a, b) => {
+    //   const dateA = new Date(a.createdAt);
+    //   const dateB = new Date(b.createdAt);
+    //   return dateB - dateA;
+    // });
     setProductsTemplate(productsWithDefaultSrp);
-    setProducts(sorted);
+    setProducts(sortBy.shuffle(productsWithDefaultSrp));
+    setTopProducts(collections.slice(0, 18));
   }, [collections]);
 
   useEffect(() => {
@@ -91,11 +100,11 @@ const Quotation = () => {
   }, [cartCollections, collections]);
 
   useEffect(() => {
-    if (hasSelect) {
+    if (hasMovingUp) {
       topRef.current.scrollIntoView({ behavior: "smooth" });
-      setHasSelect(false);
+      setHasMovingUp(false);
     }
-  }, [hasSelect]);
+  }, [hasMovingUp]);
 
   const handleSelectProduct = (product) => {
     const productsInActiveCateg = productsTemplate
@@ -104,17 +113,32 @@ const Quotation = () => {
 
     const sortedProducts = customSort(productsInActiveCateg, productsTemplate);
     setProducts(sortedProducts);
+    setProductsTemplate((prev) => [...sortBy.shuffle(prev)]);
     setSelected(product);
-    setHasSelect(true);
+    setHasMovingUp(true);
     setShowSideBar(false);
     setActiveCategory(product.category);
     setSideBarActive("");
+    setInSearchFilter(false);
+    setDidSearch(false);
+    setNotFound(false);
   };
+
+  const handleSelectCategory = (category) => {
+    setShowSideBar(true);
+    setActiveCategory(category);
+    setSideBarActive(category.name);
+    setSelected({ _id: "1" });
+    setHasMovingUp(true);
+    setInSearchFilter(true);
+  };
+
   const handleSideBar = (active) => {
     if (active === "home") {
       setActiveCategory("");
       setSelected({});
       setShowSideBar(false);
+      setProducts(sortBy.shuffle(productsTemplate));
     } else if (active === "all") {
       setActiveCategory("");
       setSideBarActive(active);
@@ -126,38 +150,78 @@ const Quotation = () => {
   };
 
   return (
-    <div style={{ overflowX: "hidden", height: "100vh" }} className="100vh">
-      <div ref={topRef}></div>
-      <Header cart={cart} setIsShowCart={setIsShowCart} />
+    <>
+      <div
+        style={{
+          overflowX: "hidden",
+          height: "100vh",
+        }}
+      >
+        <div ref={topRef}></div>
+        <Header
+          cart={cart}
+          setIsShowCart={setIsShowCart}
+          activeCategory={activeCategory}
+          inSearchFilter={inSearchFilter}
+          setDidSearch={setDidSearch}
+          productsTemplate={productsTemplate}
+          setProducts={setProducts}
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          setHasMovingUp={setHasMovingUp}
+          setActiveCategory={setActiveCategory}
+          setInSearchFilter={setInSearchFilter}
+          setSelected={setSelected}
+          setShowSideBar={setShowSideBar}
+          setNotFound={setNotFound}
+          setSearchResults={setSearchResults}
+        />
 
-      {selected._id ? (
-        <div className="container-view-selected">
-          <BreadCrumb
-            selected={selected}
-            handleSideBar={handleSideBar}
-            sideBarActive={sideBarActive}
-            activeCategory={activeCategory}
-          />
-          {!showSideBar && <ViewSelected selected={selected} />}
-        </div>
-      ) : (
-        <>
-          <Categories products={productsTemplate} />
-          <TopProducts products={productsTemplate} />
-          <DailyDiscover />
-        </>
-      )}
-      <ProductsCard
-        showSideBar={showSideBar}
-        products={products}
-        activeCategory={activeCategory._id}
-        setActiveCategory={setActiveCategory}
-        setProducts={setProducts}
-        selected={selected}
-        handleSelectProduct={handleSelectProduct}
-        productsTemplate={productsTemplate}
-        setProductsTemplate={setProductsTemplate}
-      />
+        {selected._id && !didSearch ? (
+          <div className="container-view-selected">
+            <BreadCrumb
+              selected={selected}
+              handleSideBar={handleSideBar}
+              sideBarActive={sideBarActive}
+              activeCategory={activeCategory}
+            />
+            {!showSideBar && !didSearch && <ViewSelected selected={selected} />}
+          </div>
+        ) : (
+          !didSearch &&
+          !notFound && (
+            <>
+              <Categories
+                products={collections}
+                handleSelectCategory={handleSelectCategory}
+              />
+              <TopProducts
+                products={topProducts}
+                handleSelectProduct={handleSelectProduct}
+              />
+              <DailyDiscover />
+            </>
+          )
+        )}
+        <ProductsCard
+          showSideBar={showSideBar}
+          products={products}
+          activeCategory={activeCategory._id}
+          setActiveCategory={setActiveCategory}
+          setProducts={setProducts}
+          selected={selected}
+          handleSelectProduct={handleSelectProduct}
+          productsTemplate={productsTemplate}
+          setProductsTemplate={setProductsTemplate}
+          isResetFiltering={isResetFiltering}
+          setIsResetFiltering={setIsResetFiltering}
+          setInSearchFilter={setInSearchFilter}
+          didSearch={didSearch}
+          searchValue={searchValue}
+          notFound={notFound}
+          searchResults={searchResults}
+        />
+      </div>
 
       <Cart
         toggle={toggleCart}
@@ -165,7 +229,7 @@ const Quotation = () => {
         show={isShowCart}
         isCustomer={true}
       />
-    </div>
+    </>
   );
 };
 

@@ -38,7 +38,6 @@ const PrintOut = () => {
   };
 
   const formatedData = useCallback((datas) => {
-    console.log("running");
     return datas.map((data) => {
       const { product } = data;
       const { isPerKilo } = product;

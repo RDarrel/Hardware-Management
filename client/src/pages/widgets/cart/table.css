@@ -29,3 +29,7 @@
 .fixed-footer.no-shadow {
   box-shadow: none;
 }
+
+.bg-red {
+  background-color: #f6412d !important;
+}

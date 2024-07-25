@@ -171,7 +171,10 @@ export const Tbody = ({
 
               {isCustomer && (
                 <td className=" font-weight-bold">
-                  ₱{variation.getTheCapitalOrSrp("srp", obj, product)}
+                  ₱
+                  {variation
+                    .getTheCapitalOrSrp("srp", obj, product)
+                    .toLocaleString()}
                 </td>
               )}
 
@@ -217,7 +220,10 @@ export const Tbody = ({
               )}
               {isCustomer && (
                 <td className="text-danger font-weight-bold">
-                  ₱{variation.getTheSubTotal("srp", obj, product)}
+                  ₱
+                  {variation
+                    .getTheSubTotal("srp", obj, product)
+                    .toLocaleString()}
                 </td>
               )}
               <td>

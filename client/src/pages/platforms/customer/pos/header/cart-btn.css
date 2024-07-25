@@ -8,7 +8,7 @@
 }
 
 .cart-pop-over-btn {
-  background: linear-gradient(to bottom, #ff3547, #ff3547);
+  background: linear-gradient(to bottom, #f6412d, #f6412d);
   border: none;
   box-shadow: 0px 0px 0px 0px !important;
   color: black !important;
@@ -30,6 +30,8 @@
 
 .input {
   width: 100%;
+  box-shadow: 0px 0px 2px 2px red;
+  height: 47px !important;
   padding-right: 300px; /* Adjust based on the width of the select */
 }
 
@@ -46,7 +48,94 @@
 
 .btn-search {
   position: absolute;
-  right: -3px;
-  height: 42px;
-  top: -2px;
+  right: -2px;
+  width: 70px;
+  height: 38px;
+  background-color: #f6412d !important;
+  box-shadow: none;
+  top: -1px;
+}
+
+.custom-select-wrapper {
+  position: absolute;
+  top: 8px;
+  right: 57px;
+  display: inline-block;
+  border-left: 1px solid rgb(236, 225, 225);
+}
+
+.custom-select {
+  width: auto;
+  max-width: 185px;
+  padding: 5px 30px 5px 1px;
+  margin-left: 10px;
+  margin-right: 20px;
+  font-size: 14px;
+  color: #333;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none !important;
+  cursor: pointer;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  position: relative;
+}
+
+.custom-select:focus {
+  outline: none;
+}
+
+.custom-arrow {
+  position: absolute;
+  top: 15%;
+  right: 7px;
+  transform: translateY(-50%);
+  transform: scaleY(0.9);
+  pointer-events: none;
+  color: #333;
+}
+
+.custom-options {
+  position: absolute;
+  margin-top: 12px;
+  top: 90%;
+  left: 0;
+  width: 220px; /* Adjust this width as needed */
+  border: 1px solid #ccc;
+  background-color: #fff;
+  z-index: 1000;
+  display: none;
+}
+
+.custom-select-wrapper .custom-options,
+.custom-select-wrapper .custom-options {
+  display: block;
+}
+
+.custom-option {
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.option-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 10px); /* Adjust to leave space for the checkmark */
+}
+
+.custom-option.selected {
+  background-color: #f0f0f0;
+}
+
+.checkmark {
+  color: #ff5722;
+}
+
+.custom-option:hover {
+  background-color: #f0f0f0;
 }

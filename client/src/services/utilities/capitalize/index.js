@@ -2,7 +2,7 @@ const capitalize = {
   firstLetter: (name) => {
     const exceptions = ["and", "or", "of", "in", "on", "at", "to", "with"];
     return name
-      .split(" ")
+      ?.split(" ")
       .map((word, index) => {
         if (exceptions.includes(word.toLowerCase()) && index !== 0) {
           return word.toLowerCase();

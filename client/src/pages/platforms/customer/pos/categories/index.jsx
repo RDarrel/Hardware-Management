@@ -12,9 +12,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { BROWSE } from "../../../../../services/redux/slices/administrator/productManagement/category";
 import sortBy from "../../../../../services/utilities/sorting";
 import scrollBy from "../scrollBy";
+import capitalize from "../../../../../services/utilities/capitalize";
 const ITEMS_PER_PAGE = 6;
 
-const Categories = ({ products }) => {
+const Categories = ({ products, handleSelectCategory }) => {
   const { token } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ category }) => category),
     [categories, setCategories] = useState([]),
@@ -82,7 +83,10 @@ const Categories = ({ products }) => {
                     const product = products[2] || {};
                     return (
                       <MDBCol lg="2" key={index} className="w-100">
-                        <MDBCard className="boxshadow-none w-100">
+                        <MDBCard
+                          className="boxshadow-none w-100"
+                          onClick={() => handleSelectCategory(category)}
+                        >
                           <MDBCardImage
                             className="img-fluid d-flex justify-content-center"
                             src={`${ENDPOINT}/assets/products/${product._id}/Cover Photo.jpg`}
@@ -98,20 +102,21 @@ const Categories = ({ products }) => {
                             textOverflow: "ellipsis",
                           }}
                         >
-                          {category.name}
+                          {capitalize.firstLetter(category.name)}
                         </h6>
                       </MDBCol>
                     );
                   })}
                 </MDBRow>
               </div>
-              <button
-                className="scroll-btn right-btn"
-                onClick={() => handleScroll("right")}
-                disabled={currentIndex + ITEMS_PER_PAGE >= categories.length}
-              >
-                &gt;
-              </button>
+              {!currentIndex + ITEMS_PER_PAGE >= categories.length && (
+                <button
+                  className="scroll-btn right-btn"
+                  onClick={() => handleScroll("right")}
+                >
+                  &gt;
+                </button>
+              )}
             </MDBCardBody>
           </MDBCard>
         </div>

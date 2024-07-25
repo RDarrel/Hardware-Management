@@ -1,4 +1,9 @@
-.badge {
+.quotation-container {
+  overflow: hidden;
+  overflow-y: hidden !important;
+}
+
+.product-badge {
   position: relative;
   background-color: #ff5722;
   color: white;
@@ -19,11 +24,12 @@
   /* align-self: flex-center; */
   padding-left: 5px;
   padding-right: 4px;
-  margin-top: 3px; /* Adjust spacing from the top */
+  margin-top: -2px;
 }
 
 .badge-number {
   font-size: 12px;
+  margin-top: -4px;
 }
 
 .boxshadow-none {
@@ -114,4 +120,14 @@
   color: #007bff; /* Blue color */
   font-size: inherit;
   text-decoration: none; /* Ensure no underline */
+}
+
+.notfoundSearch-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px !important;
+}
+
+.img-notFound {
+  height: 150px;
 }

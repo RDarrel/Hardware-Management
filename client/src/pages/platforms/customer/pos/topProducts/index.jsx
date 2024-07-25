@@ -9,10 +9,11 @@ import {
 } from "mdbreact";
 import { ENDPOINT } from "../../../../../services/utilities";
 import scrollBy from "../scrollBy";
+import capitalize from "../../../../../services/utilities/capitalize";
 
 const ITEMS_PER_PAGE = 6;
 
-const TopProducts = ({ products }) => {
+const TopProducts = ({ products, handleSelectProduct }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef(null);
 
@@ -30,7 +31,6 @@ const TopProducts = ({ products }) => {
     currentIndex,
     currentIndex + ITEMS_PER_PAGE
   );
-
   return (
     <div className="mt-3">
       <div className="d-flex justify-content-center ">
@@ -60,8 +60,11 @@ const TopProducts = ({ products }) => {
                 <MDBRow className=" w-100">
                   {visibleProducts.map((product, index) => (
                     <MDBCol lg="2" key={index} className="w-100">
-                      <MDBCard className="boxshadow-none w-100">
-                        <div className="badge">
+                      <MDBCard
+                        className="boxshadow-none w-100"
+                        onClick={() => handleSelectProduct(product)}
+                      >
+                        <div className="product-badge">
                           <div className="badge-text">TOP</div>
                           <div className="badge-number">
                             {currentIndex + index + 1}
@@ -82,19 +85,21 @@ const TopProducts = ({ products }) => {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {product.name}
+                        {capitalize.firstLetter(product.name)}
                       </h6>
                     </MDBCol>
                   ))}
                 </MDBRow>
               </div>
-              <button
-                className="scroll-btn right-btn"
-                onClick={() => handleScroll("right")}
-                disabled={currentIndex + ITEMS_PER_PAGE >= products.length}
-              >
-                &gt;
-              </button>
+              {currentIndex + ITEMS_PER_PAGE < products.length && (
+                <button
+                  className="scroll-btn right-btn"
+                  onClick={() => handleScroll("right")}
+                  disabled={currentIndex + ITEMS_PER_PAGE >= products.length}
+                >
+                  &gt;
+                </button>
+              )}
             </MDBCardBody>
           </MDBCard>
         </div>

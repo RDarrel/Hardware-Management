@@ -19,6 +19,8 @@ import Description from "./description";
 import GET from "./GET";
 import Modal from "./modal";
 import Swal from "sweetalert2";
+import truncateString from "../../../../../services/utilities/truncateString";
+import capitalize from "../../../../../services/utilities/capitalize";
 
 const ViewSelected = ({ selected = {} }) => {
   const { auth, token } = useSelector(({ auth }) => auth),
@@ -226,7 +228,9 @@ const ViewSelected = ({ selected = {} }) => {
                         style={{ fontWeight: "500" }}
                         className="font-weight-bold"
                       >
-                        {safeRender(selected.name) || ""}
+                        {truncateString(
+                          capitalize.firstLetter(safeRender(selected.name))
+                        ) || ""}
                       </h4>
                     </MDBCol>
                   </MDBRow>
@@ -236,7 +240,7 @@ const ViewSelected = ({ selected = {} }) => {
                     </MDBCol>
                     <MDBCol>
                       <h4 style={{ fontWeight: "700" }} className="text-danger">
-                        ₱{price}
+                        ₱{price.toLocaleString()}
                       </h4>
                     </MDBCol>
                   </MDBRow>

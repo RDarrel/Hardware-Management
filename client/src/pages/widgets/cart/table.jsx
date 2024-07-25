@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./table.css";
 import { MDBTable } from "mdbreact";
 import {
   UPDATE,

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { MDBCard, MDBCardBody, MDBCardImage, MDBCol } from "mdbreact";
 import { ENDPOINT } from "../../../../../services/utilities";
+import capitalize from "../../../../../services/utilities/capitalize";
 const Products = ({ products = [], showSideBar, handleSelectProduct }) => {
   const [didHoverID, setDidHoverID] = useState(-1);
 
@@ -54,7 +55,7 @@ const Products = ({ products = [], showSideBar, handleSelectProduct }) => {
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {product.name}
+                  {capitalize.firstLetter(product.name)}
                 </h6>
                 <div
                   style={{ position: "absolute", bottom: 0 }}
