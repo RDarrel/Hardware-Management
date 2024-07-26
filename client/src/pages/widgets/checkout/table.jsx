@@ -8,12 +8,9 @@ const Table = ({ cart }) => {
       <thead>
         <tr>
           <th>Product Ordered</th>
-          <th>Quantity/Kilo</th>
-          <th>
-            <div className="text-end d-flex justify-content-end mr-2">
-              Subtotal
-            </div>
-          </th>
+          <th className="text-center">SRP</th>
+          <th className="text-center">Quantity/Kilo</th>
+          <th className="text-center">Subtotal</th>
         </tr>
       </thead>
       <tbody>
@@ -32,8 +29,8 @@ const Table = ({ cart }) => {
                     style={{ width: "60px" }}
                   />
                   <div>
-                    <h5
-                      className="text-truncate"
+                    <h6
+                      className="text-truncate font-weight-bold"
                       style={{
                         maxWidth: "400px",
                         whiteSpace: "nowrap",
@@ -42,10 +39,13 @@ const Table = ({ cart }) => {
                       }}
                     >
                       {product.name}
-                    </h5>
+                    </h6>
                     {product.hasVariant && (
-                      <div className="d-flex align-items-center">
-                        <h6 className="mr-1">Variations:</h6>
+                      <div
+                        className="d-flex align-items-center"
+                        style={{ marginTop: "-7px" }}
+                      >
+                        <h6 className="mr-1">Variant:</h6>
                         <h6>{variation.name(obj, product.variations)}</h6>
                       </div>
                     )}
@@ -53,11 +53,15 @@ const Table = ({ cart }) => {
                 </div>
               </td>
 
-              <td className="font-weight-bold">
+              <td className="text-center font-weight-bold">
+                ₱{variation.getTheCapitalOrSrp("srp", obj, product)}
+              </td>
+
+              <td className="font-weight-bold text-center">
                 {variation.qtyOrKilo(obj, product.isPerKilo)}
               </td>
 
-              <td className="font-weight-bold d-flex justify-content-end mr-2">
+              <td className="font-weight-bold text-danger text-center ">
                 {obj.subtotal ? `₱${obj.subtotal}` : "--"}
               </td>
             </tr>

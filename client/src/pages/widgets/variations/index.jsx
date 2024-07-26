@@ -27,8 +27,6 @@ const Variations = ({
     setVariant2(null);
   }, [setVariant1, setVariant2]);
 
-  console.log(variant1, variant2);
-
   useEffect(() => {
     if (variant1 !== option1ID) {
       setOption1ID("");

@@ -1,3 +1,18 @@
+const calculateRelevance = (name, searchTerm) => {
+  const lowerSearchTerm = searchTerm.toLowerCase();
+  const lowerName = name.toLowerCase();
+
+  if (lowerName === lowerSearchTerm) {
+    return 3;
+  } else if (lowerName.startsWith(lowerSearchTerm)) {
+    return 2;
+  } else if (lowerName.includes(lowerSearchTerm)) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
+
 const sortBy = {
   categories: ({
     categories = [],
@@ -28,12 +43,10 @@ const sortBy = {
         (a, b) => b.sold - a.sold
       );
 
-      console.log(sortedCategory);
-
       const newActiveCategory = sortedCategory.find(
         ({ _id }) => _id === activeCategory
       )?._id;
-      console.log(newActiveCategory);
+
       if (
         newActiveCategory &&
         newActiveCategory !== activeCategory &&
@@ -48,9 +61,47 @@ const sortBy = {
     }
   },
 
+  activeCategory: (collections, activeCategory) => {
+    return [...collections].sort((a, b) => {
+      if (a._id === activeCategory && b._id !== activeCategory) {
+        return -1;
+      } else if (a._id !== activeCategory && b._id === activeCategory) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  },
+
   products: (products, setProducts = () => {}) => {
     const sortedBySold = products?.slice().sort((a, b) => b.sold - a.sold);
     setProducts(sortedBySold || []);
+  },
+
+  shuffle: (products = []) => {
+    const array = [...products];
+    let currentIndex = array.length,
+      randomIndex;
+
+    while (currentIndex !== 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
+      ];
+    }
+    return array;
+  },
+
+  relevance: (array, searchTerm) => {
+    return [...array].sort((a, b) => {
+      const relevanceA = calculateRelevance(a.name, searchTerm);
+      const relevanceB = calculateRelevance(b.name, searchTerm);
+
+      return relevanceB - relevanceA;
+    });
   },
 };
 

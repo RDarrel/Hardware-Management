@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
+import "./table.css";
 
 import { CHECKOUT } from "../../../services/redux/slices/cart";
 import {
@@ -67,11 +68,18 @@ const Cart = ({ show, toggle, collections, isCustomer = false, suppliers }) => {
       isOpen={show}
       toggle={() => toggle()}
       size="lg"
-      className={`modal-notify modal-${isCustomer ? "danger" : "primary"}`}
+      className={`modal-notify ${!isCustomer && "modal-primary"} `}
       fullHeight
       position="right"
+      animation="top"
+      tabIndex="10"
     >
-      <MDBModalHeader tag="p" toggle={() => toggle()} titleClass="heading lead">
+      <MDBModalHeader
+        tag="p"
+        toggle={() => toggle()}
+        titleClass="heading lead"
+        className={isCustomer ? "bg-red" : ""}
+      >
         <MDBIcon icon="shopping-cart" className="mr-2" />
         Shoppping Cart
       </MDBModalHeader>
@@ -109,7 +117,7 @@ const Cart = ({ show, toggle, collections, isCustomer = false, suppliers }) => {
                 htmlFor="checkbox"
                 className="form-check-label mr-2 label-table"
               >
-                Select All (15)
+                Select All ({checkOutProducts.length})
               </label>
             </div>
           </div>

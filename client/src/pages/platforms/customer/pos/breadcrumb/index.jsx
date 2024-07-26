@@ -49,7 +49,7 @@ const BreadCrumb = ({
                   textOverflow: "ellipsis",
                 }}
               >
-                {capitalize.firstLetter(selected.name)}
+                {capitalize.firstLetter(selected?.name)}
               </MDBBreadcrumbItem>
             )}
           </MDBBreadcrumb>
