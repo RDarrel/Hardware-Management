@@ -17,6 +17,7 @@ const Table = ({
   isCheckAll,
   isCustomer,
   suppliers,
+  disabledButtons,
 }) => {
   const { token } = useSelector(({ auth }) => auth),
     [popoverKey, setPopoverKey] = useState(0),
@@ -38,7 +39,7 @@ const Table = ({
         ({ _id }) => _id === _variant2
       )?.name;
 
-      return `${foundVariant1}/${foundVariant2}`;
+      return `${foundVariant1} / ${foundVariant2}`;
     } else {
       return `${foundVariant1}`;
     }
@@ -172,6 +173,7 @@ const Table = ({
           checkOutProducts={checkOutProducts}
           variant1={variant1}
           variant2={variant2}
+          disabledButtons={disabledButtons}
           setVariant1={setVariant1}
           setVariant2={setVariant2}
           handleChangeKilo={handleChangeKilo}

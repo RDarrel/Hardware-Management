@@ -1,10 +1,7 @@
-body {
+.container-receipt {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-}
-
-.container-receipt {
   width: 300px !important;
 }
 

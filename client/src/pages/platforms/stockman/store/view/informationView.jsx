@@ -4,6 +4,7 @@ import Kilo from "../orderType/kilo";
 import { Quantity } from "../orderType/quantity";
 import Variations from "../variations";
 import CustomSelect from "../../../../../components/customSelect";
+import truncateString from "../../../../../services/utilities/truncateString";
 
 export const InformationView = ({
   selected,
@@ -119,7 +120,9 @@ export const InformationView = ({
             <h6 className="text-start">Name:</h6>
           </MDBCol>
           <MDBCol>
-            <h5 style={{ fontWeight: "500" }}>{selected.name}</h5>
+            <h5 style={{ fontWeight: "500" }}>
+              {truncateString(selected.name)}
+            </h5>
           </MDBCol>
         </MDBRow>
         {isCashier && (
@@ -200,14 +203,14 @@ export const InformationView = ({
           />
         )}
 
-        <MDBRow className="d-flex align-items-center mt-5">
+        {/* <MDBRow className="d-flex align-items-center mt-5">
           <MDBCol md="2">
             <h6>Description:</h6>
           </MDBCol>
           <MDBCol>
             <h6 style={{ fontWeight: "400" }}>{selected.description}</h6>
           </MDBCol>
-        </MDBRow>
+        </MDBRow> */}
       </MDBCol>
     </MDBRow>
   );

@@ -14,7 +14,7 @@ import { fullName } from "../../../../../services/utilities";
 const Profile = () => {
   const { auth } = useSelector(({ auth }) => auth);
   const [id, setId] = useState(0);
-
+  console.log("running");
   return (
     <MDBRow>
       <MDBCol
@@ -22,13 +22,9 @@ const Profile = () => {
         className="d-flex justify-content-end align-items-center h-100 p-1"
         onMouseLeave={() => setId((prev) => prev + 1)}
       >
-        {/* <div className="mr-5 d-flex align-items-center">
-          <MDBIcon icon="hand-holding-usd" style={{ color: "white" }} />
-          <h5 className="mt-1 ml-2 text-white">Transcations</h5>
-        </div> */}
         <MDBPopover placement="bottom" popover id={`popover-${id}`} key={id}>
           <MDBBtn
-            className="d-flex align-items-center m-0 p-0 profile-pop-over-btn mr-5"
+            className="d-flex align-items-center m-0 p-0 quotation-profile-pop-over-btn mr-5"
             size="sm"
             id={`btn-pop-over-${id}`}
           >
@@ -36,7 +32,7 @@ const Profile = () => {
             <h6 className="text-white mt-2 ml-3">{fullName(auth.fullName)}</h6>
           </MDBBtn>
           <MDBPopoverBody
-            className="profile-popover-body"
+            className="quotation-profile-popover-body"
             id={`pop-body-${id}`}
           >
             <MDBBtn

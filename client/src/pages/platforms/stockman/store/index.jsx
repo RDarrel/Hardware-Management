@@ -169,6 +169,7 @@ const Store = () => {
         show={isShowCart}
         toggle={() => setIsShowCart(false)}
         collections={cart}
+        disabledButtons={true}
       />
     </>
   );

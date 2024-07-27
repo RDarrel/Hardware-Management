@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { MDBRow, MDBCol, MDBBtn, MDBIcon } from "mdbreact";
+import capitalize from "../../../services/utilities/capitalize";
 
 const Variations = ({
   has2Variant,
@@ -133,7 +134,6 @@ const Variations = ({
   const handleClickVr2 = (_id) => {
     if (variant2 === _id) return setVariant2("");
     handleDisableVr1(variation1?.options, _id);
-    console.log(option1ID);
 
     if (option1ID) {
       const prices =
@@ -151,10 +151,12 @@ const Variations = ({
       {variation1 && (
         <MDBRow className="d-flex align-items-center mt-2">
           <MDBCol md="2">
-            <h6 className={textColor}>{variation1.name}:</h6>
+            <h6 className={textColor}>
+              {capitalize.firstLetter(variation1.name)}:
+            </h6>
           </MDBCol>
           <MDBCol md="10">
-            <div className="button-wrapper d-flex flex-wrap">
+            <div className="button-wrapper d-flex flex-wrap ml-0">
               {variation1.options.map((option, index) => {
                 const image =
                   !isCart && images.find(({ label }) => option._id === label);
@@ -162,7 +164,7 @@ const Variations = ({
 
                 if (!option.disable) {
                   return (
-                    <div key={index} className="button-container">
+                    <div key={index} className="button-container m-0 p-0">
                       <MDBBtn
                         outline
                         size="sm"
@@ -206,7 +208,9 @@ const Variations = ({
       {variation2 && (
         <MDBRow className="d-flex align-items-center mt-2">
           <MDBCol md="2">
-            <h6 className={textColor}>{variation2.name}:</h6>
+            <h6 className={textColor}>
+              {capitalize.firstLetter(variation2.name)}:
+            </h6>
           </MDBCol>
           <MDBCol md="10">
             <div className="button-wrapper d-flex flex-wrap">

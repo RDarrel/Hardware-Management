@@ -75,7 +75,7 @@ const Categories = ({
     if (activeCategory !== "all") {
       const _products = [...collectionsProducts];
       const fiteredProductByCategory = _products.filter(
-        ({ category: pc }) => pc === activeCategory
+        ({ category: pc }) => pc._id === activeCategory
       );
       handleSortedProducts(fiteredProductByCategory);
     } else {

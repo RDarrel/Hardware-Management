@@ -9,6 +9,7 @@ export const Quantity = ({
   isCustomer = false,
   isCart = false,
   availableStocks = 0,
+  disabledButtons,
 }) => {
   useEffect(() => {
     if (isCustomer) {
@@ -65,13 +66,13 @@ export const Quantity = ({
         </MDBCol>
       )}
       <MDBCol
-        md={!isCustomer ? "4" : "6"}
+        md={disabledButtons ? 7 : 6}
         className="d-flex align-items-center"
       >
         <MDBInputGroup
           type="number"
           className="text-center border border-light"
-          style={{ width: isCart ? "100%" : "40%" }}
+          style={{ width: "100%" }}
           value={String(quantity)}
           min="1"
           onChange={({ target }) => {
@@ -114,7 +115,7 @@ export const Quantity = ({
           </h6>
         )}
       </MDBCol>
-      {!isCustomer && (
+      {!isCustomer && !disabledButtons && (
         <MDBCol md="6" className="d-flex align-items-center">
           <MDBBtn
             color="primary"

@@ -1,9 +1,9 @@
-.profile-popover-body {
+.quotation-profile-popover-body {
   height: auto;
   max-width: 170px !important;
 }
 
-.profile-pop-over-btn {
+.quotation-profile-pop-over-btn {
   background: linear-gradient(to bottom, #f6412d, #f6412d);
   border: none;
   box-shadow: 0px 0px 0px 0px !important;

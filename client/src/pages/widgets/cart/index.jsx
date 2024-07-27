@@ -15,7 +15,14 @@ import Table from "./table";
 import { useDispatch } from "react-redux";
 import { transaction, variation } from "../../../services/utilities";
 
-const Cart = ({ show, toggle, collections, isCustomer = false, suppliers }) => {
+const Cart = ({
+  show,
+  toggle,
+  collections,
+  isCustomer = false,
+  suppliers,
+  disabledButtons = false,
+}) => {
   const [isCheckAll, setIsCheckAll] = useState(true),
     [checkOutProducts, setCheckOutProducts] = useState([]),
     [cart, setCart] = useState([]),
@@ -72,7 +79,7 @@ const Cart = ({ show, toggle, collections, isCustomer = false, suppliers }) => {
       fullHeight
       position="right"
       animation="top"
-      tabIndex="10"
+      tabIndex="-2"
     >
       <MDBModalHeader
         tag="p"
@@ -93,6 +100,7 @@ const Cart = ({ show, toggle, collections, isCustomer = false, suppliers }) => {
             isCustomer={isCustomer}
             checkOutProducts={checkOutProducts}
             handleActionInCheckOut={handleActionInCheckOut}
+            disabledButtons={disabledButtons}
           />
         ) : (
           <h6 className="text-center">No Cart</h6>
@@ -142,7 +150,8 @@ const Cart = ({ show, toggle, collections, isCustomer = false, suppliers }) => {
             </div>
           )}
           <MDBBtn
-            color="danger"
+            color={!isCustomer ? "primary" : "danger"}
+            outline={!isCustomer}
             onClick={handleCheckOut}
             disabled={cart.length === 0}
           >

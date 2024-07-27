@@ -33,6 +33,7 @@ export const Tbody = ({
   isCheckAll = true,
   suppliers,
   handleChangeSupplier,
+  disabledButtons,
 }) => {
   useEffect(() => {
     setVariant1(null);
@@ -179,7 +180,7 @@ export const Tbody = ({
               )}
 
               <td className="d-flex justify-content-center  align-items-center">
-                <div className="mt-3 w-100">
+                <div className="mt-3 w-100 ">
                   {product.isPerKilo ? (
                     <Kilo
                       kilo={obj.kilo}
@@ -191,6 +192,7 @@ export const Tbody = ({
                       availableStocks={obj?.max || 0}
                       isCustomer={isCustomer}
                       isCart={true}
+                      disabledButtons={disabledButtons}
                     />
                   ) : (
                     <Quantity
@@ -201,6 +203,7 @@ export const Tbody = ({
                       }
                       availableStocks={obj.max || 0}
                       quantity={obj.quantity}
+                      disabledButtons={disabledButtons}
                     />
                   )}
                 </div>

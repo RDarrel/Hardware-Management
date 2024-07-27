@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Poppins:wght@100;300&family=Roboto:ital,wght@1,300&display=swap"
+      rel="stylesheet"
+    />
+    <title>{{ appName }}</title>
+    <style>
+      .invoice-header-row {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        position: relative;
+      }
+
+      .invoice-header-col {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .customer-name {
+        height: 30px !important;
+        width: 100% !important;
+      }
+
+      .invoice-header {
+        position: relative;
+        width: 400px;
+        height: 90px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        background: linear-gradient(
+          45deg,
+          transparent 20%,
+          rgba(24, 25, 26, 1) 20%
+        );
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        overflow: visible;
+        z-index: 1;
+      }
+
+      .invoice-header::before {
+        content: "";
+        position: absolute;
+        top: -40px;
+        left: -40px;
+        width: 80px;
+        height: 160px;
+        border-radius: 5px;
+        background: linear-gradient(
+          45deg,
+          transparent 20%,
+          rgba(24, 25, 26, 0.7) 20%
+        );
+        transform: rotate(-45deg);
+        z-index: -1;
+      }
+
+      .invoice-header::after {
+        content: "";
+        position: absolute;
+        top: -30px;
+        left: -50px;
+        width: 80px;
+        height: 160px;
+        border-radius: 5px;
+        background: linear-gradient(
+          45deg,
+          transparent 20%,
+          rgba(24, 25, 26, 0.5) 20%
+        );
+        transform: rotate(-45deg);
+        z-index: -2;
+      }
+
+      .invoice-header-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 0 20px;
+        font-weight: 400;
+        z-index: 2;
+      }
+    </style>
+  </head>
+  <body
+    style="
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      overflow: visible;
+    "
+  >
+    <div class="invoice-header-row">
+      <div class="invoice-header-col">
+        <h5 style="font-weight: bold; margin-left: 2px">Liberty Hardware</h5>
+      </div>
+      <div style="display: flex; justify-content: end; position: relative">
+        <div class="invoice-header">
+          <div class="invoice-header-content">
+            <h4 style="font-weight: bold; letter-spacing: 2px; margin: 0">
+              INVOICE
+            </h4>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                margin: 5px 0;
+              "
+            >
+              <span>Invoice #: </span>
+              <span>{{ invoice_no }}</span>
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; width: 100%"
+            >
+              <span>Date: </span>
+              <span>July 26, 2024</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

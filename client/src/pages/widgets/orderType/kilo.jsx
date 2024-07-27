@@ -13,6 +13,7 @@ const Kilo = ({
   isCustomer = false,
   availableStocks = 0,
   isCart = false,
+  disabledButtons,
 }) => {
   useEffect(() => {
     if (isCustomer) {
@@ -80,7 +81,7 @@ const Kilo = ({
         </MDBCol>
       )}
       <MDBCol
-        md={isCustomer ? "6" : "4"}
+        md={disabledButtons ? 7 : 6}
         className="m-0 d-flex align-items-center"
       >
         <MDBInputGroup
@@ -89,10 +90,9 @@ const Kilo = ({
           onChange={({ target }) => {
             var newKilo = Number(target.value);
             if (newKilo < 0) newKilo = 0;
-            console.log(newKilo);
             handleChangeKilo(newKilo);
           }}
-          className="text-center border border-light"
+          className="text-center border border-light "
           append={
             <select
               className="form-control"
@@ -138,7 +138,7 @@ const Kilo = ({
           </h6>
         )}
       </MDBCol>
-      {!isCustomer && (
+      {!isCustomer && !disabledButtons && (
         <MDBCol md="6" className="d-flex align-items-center">
           <MDBBtn
             color="primary"

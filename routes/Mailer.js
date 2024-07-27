@@ -1,6 +1,9 @@
 const router = require("express").Router(),
-  { sendLink, sendCode } = require("../controllers/Mailer");
+  { sendLink, sendCode, receipt } = require("../controllers/Mailer");
 
-router.post("/link", sendLink).post("/code", sendCode);
+router
+  .post("/link", sendLink)
+  .post("/code", sendCode)
+  .post("/receipt", receipt);
 
 module.exports = router;

@@ -31,8 +31,6 @@ const Body = ({
     setVariant2(null);
   }, [setVariant1, setVariant2]);
 
-  console.log(variant1);
-
   return (
     <div className="order-details m-0 p-0 ">
       {orderDetails.length === 0 ? (

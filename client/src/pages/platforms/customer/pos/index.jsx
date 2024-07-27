@@ -149,8 +149,18 @@ const Quotation = () => {
     }
   };
 
+  useEffect(() => {
+    if (isShowCart || showSideBar) {
+      document.body.classList.add("modal-open");
+    }
+
+    return () => {
+      document.body.classList.remove("modal-open");
+    };
+  }, [isShowCart, showSideBar]);
+
   return (
-    <>
+    <div>
       <div
         style={{
           overflowX: "hidden",
@@ -229,7 +239,7 @@ const Quotation = () => {
         show={isShowCart}
         isCustomer={true}
       />
-    </>
+    </div>
   );
 };
 
