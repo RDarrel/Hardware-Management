@@ -100,7 +100,7 @@
 }
 .daily-discover {
   position: sticky;
-  top: 114px;
+  top: 110px;
   z-index: 998; /* Ensure it stays on top */
 }
 

@@ -24,7 +24,9 @@ const Cart = ({ id, setIsShowCart, setID, cart }) => {
             style={{ color: "white" }}
             className="mr-3 ml-3 cursor-pointer"
           />
-          <span className="counter mt-3">{cart.length > 0 && cart.length}</span>
+          <span className="counter mt-3">
+            {cart.length > 0 ? cart.length : 0}
+          </span>
         </MDBBtn>
         <MDBPopoverBody className="cart-popover-body" id={`pop-body-${id}`}>
           {cart.slice(0, 5).map((obj, index) => {
@@ -68,7 +70,10 @@ const Cart = ({ id, setIsShowCart, setID, cart }) => {
                 </MDBCol>
                 <MDBCol md="2">
                   <h6 className="text-danger text-nowrap">
-                    ₱{variation.getTheSubTotal("srp", obj, product)}{" "}
+                    ₱
+                    {variation
+                      .getTheSubTotal("srp", obj, product)
+                      .toLocaleString()}
                   </h6>
                 </MDBCol>
               </MDBRow>

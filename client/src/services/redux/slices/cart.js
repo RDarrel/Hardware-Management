@@ -75,6 +75,24 @@ export const SAVE = createAsyncThunk(`${name}/save`, (form, thunkAPI) => {
   }
 });
 
+export const GENERATE_RECEIPT = createAsyncThunk(
+  `${name}/GENERATE_RECEIPT`,
+  (form, thunkAPI) => {
+    try {
+      return axioKit.save("mailer", form.data, form.token, "generateReceipt");
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const POS = createAsyncThunk(`${name}/pos`, (form, thunkAPI) => {
   try {
     return axioKit.save(name, form.data, form.token, "pos");
@@ -329,6 +347,26 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(BUY.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(GENERATE_RECEIPT.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(GENERATE_RECEIPT.fulfilled, (state, action) => {
+        const { success, payload } = action.payload;
+        state.collections = state.collections.filter(
+          (collection) => !payload.includes(collection._id)
+        );
+        state.message = success;
+        state.isSuccess = true;
+        state.isLoading = false;
+      })
+      .addCase(GENERATE_RECEIPT.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;

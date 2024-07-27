@@ -1,9 +1,10 @@
-import React from "react";
-import { MDBCol, MDBRow } from "mdbreact";
+import React, { useEffect, useState } from "react";
+import { MDBCol, MDBRow, MDBSpinner } from "mdbreact";
 import Sidebar from "./sidebar";
 import Sorting from "./sorting";
 import Products from "./products";
 import SearchNotFound from "../searchNotFound";
+import { StorePagination } from "../../../../widgets/storePagination";
 
 const ProductsCard = ({
   products,
@@ -21,7 +22,37 @@ const ProductsCard = ({
   searchValue,
   notFound,
   searchResults,
+  isLoading,
 }) => {
+  const [itemsPerPage, setItemsPerPage] = useState(42);
+  const [page, setPage] = useState(1);
+  const indexOfLastProduct = page * itemsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  const handlePageChange = (pageNumber) => {
+    setPage(pageNumber);
+  };
+
+  useEffect(() => {
+    if (showSideBar) {
+      setItemsPerPage(40);
+    } else {
+      setItemsPerPage(42);
+    }
+  }, [showSideBar]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [products]);
   return (
     <div className="mb-5">
       <div className="d-flex justify-content-center">
@@ -77,11 +108,28 @@ const ProductsCard = ({
                   />
                 )}
 
-                <Products
-                  products={products}
-                  handleSelectProduct={handleSelectProduct}
-                  showSideBar={showSideBar || didSearch}
-                />
+                {!isLoading && (
+                  <Products
+                    products={currentProducts}
+                    handleSelectProduct={handleSelectProduct}
+                    showSideBar={showSideBar || didSearch}
+                  />
+                )}
+              </MDBRow>
+              <MDBRow>
+                <MDBCol md="12" className="d-flex justify-content-center">
+                  {!isLoading ? (
+                    <StorePagination
+                      pageNumbers={pageNumbers}
+                      handlePageChange={handlePageChange}
+                      currentPage={page}
+                    />
+                  ) : (
+                    <div className="mt-3">
+                      <MDBSpinner />
+                    </div>
+                  )}
+                </MDBCol>
               </MDBRow>
             </MDBCol>
           </MDBRow>

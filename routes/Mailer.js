@@ -4,6 +4,6 @@ const router = require("express").Router(),
 router
   .post("/link", sendLink)
   .post("/code", sendCode)
-  .post("/receipt", receipt);
+  .post("/generateReceipt", receipt);
 
 module.exports = router;

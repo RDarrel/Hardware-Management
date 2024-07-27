@@ -30,13 +30,7 @@ export default function Register() {
         SAVE({
           email: email.value,
           password: password.value,
-          role: "64834b49033916fc83e236c5",
-          wasBanned: true,
-          banned: {
-            at: new Date().toLocaleString(),
-            for: "Account is still being processed.",
-            by: "647dd2a5dced91b0b39444b3",
-          },
+          role: "CUSTOMER",
         })
       );
     } else {

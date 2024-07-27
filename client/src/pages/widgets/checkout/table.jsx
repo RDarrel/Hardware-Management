@@ -7,7 +7,7 @@ const Table = ({ cart }) => {
     <MDBTable>
       <thead>
         <tr>
-          <th>Product Ordered</th>
+          <th>Products Ordered</th>
           <th className="text-center">SRP</th>
           <th className="text-center">Quantity/Kilo</th>
           <th className="text-center">Subtotal</th>
@@ -54,7 +54,10 @@ const Table = ({ cart }) => {
               </td>
 
               <td className="text-center font-weight-bold">
-                ₱{variation.getTheCapitalOrSrp("srp", obj, product)}
+                ₱
+                {variation
+                  .getTheCapitalOrSrp("srp", obj, product)
+                  .toLocaleString()}
               </td>
 
               <td className="font-weight-bold text-center">
@@ -62,7 +65,7 @@ const Table = ({ cart }) => {
               </td>
 
               <td className="font-weight-bold text-danger text-center ">
-                {obj.subtotal ? `₱${obj.subtotal}` : "--"}
+                {obj.subtotal.toLocaleString()}
               </td>
             </tr>
           );

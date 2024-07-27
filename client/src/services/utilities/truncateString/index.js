@@ -1,5 +1,4 @@
-const truncateString = (str) => {
-  const max = 100;
+const truncateString = (str, max = 100) => {
   if (str.length <= max) {
     return str;
   }

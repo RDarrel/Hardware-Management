@@ -9,7 +9,7 @@ import {
   MDBPopoverBody,
 } from "mdbreact";
 import { useSelector } from "react-redux";
-import { fullName } from "../../../../../services/utilities";
+// import { fullName } from "../../../../../services/utilities";
 
 const Profile = () => {
   const { auth } = useSelector(({ auth }) => auth);
@@ -29,7 +29,7 @@ const Profile = () => {
             id={`btn-pop-over-${id}`}
           >
             <MDBIcon icon="user-alt" size="2x" style={{ color: "white" }} />
-            <h6 className="text-white mt-2 ml-3">{fullName(auth.fullName)}</h6>
+            <h6 className="text-white mt-2 ml-3">{auth.email}</h6>
           </MDBBtn>
           <MDBPopoverBody
             className="quotation-profile-popover-body"

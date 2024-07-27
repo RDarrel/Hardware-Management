@@ -31,8 +31,8 @@ const Cart = ({
 
   useEffect(() => {
     setCart(collections);
-    setCheckOutProducts(collections);
-  }, [collections]);
+    setCheckOutProducts(isCustomer ? [] : collections);
+  }, [collections, isCustomer]);
 
   useEffect(() => {
     if (cart.length > 0) {
@@ -130,14 +130,14 @@ const Cart = ({
             </div>
           </div>
         )}
-        <div className="d-flex justify-content-end align-items-center">
+        <div className="d-flex justify-content-end align-items-center mt-2">
           {isCustomer && (
-            <div className="d-flex align-items-center mr-2 mt-3">
+            <div className="d-flex align-items-center mr-2 mt-2">
               <h6>Total ({checkOutProducts.length} item): </h6>
               <h4 className="text-danger ml-1 ">
                 ₱
-                {transaction
-                  .getTotal(
+                {Number(
+                  transaction.getTotal(
                     checkOutProducts.map((c) => {
                       return {
                         ...c,
@@ -145,7 +145,7 @@ const Cart = ({
                       };
                     })
                   )
-                  ?.toLocaleString() || 0}
+                ).toLocaleString() || 0}
               </h4>
             </div>
           )}
@@ -153,7 +153,7 @@ const Cart = ({
             color={!isCustomer ? "primary" : "danger"}
             outline={!isCustomer}
             onClick={handleCheckOut}
-            disabled={cart.length === 0}
+            disabled={checkOutProducts.length === 0}
           >
             <span>
               Check Out

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import { POS } from "../../../services/redux/slices/cart";
 import {
   formattedDate,
-  fullName,
+  // fullName,
   variation,
 } from "../../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +17,9 @@ import {
 } from "mdbreact";
 import Table from "./table";
 import Swal from "sweetalert2";
+import truncateString from "../../../services/utilities/truncateString";
+import capitalize from "../../../services/utilities/capitalize";
+import { GENERATE_RECEIPT } from "../../../services/redux/slices/cart";
 const Checkout = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
     { checkOutProducts } = useSelector(({ cart }) => cart),
@@ -31,6 +33,14 @@ const Checkout = () => {
       ...obj,
       subtotal: variation.getTheSubTotal("srp", obj, obj.product),
       srp: variation.getTheCapitalOrSrp("srp", obj, obj.product),
+      hasVariant: obj.product?.hasVariant,
+      variant: variation.getTheVariant(
+        obj.variant1,
+        obj.variant2,
+        obj.product?.variations
+      ),
+      name: truncateString(capitalize.firstLetter(obj.product.name), 80),
+      qty: variation.qtyOrKilo(obj, obj.product?.isPerKilo),
     }));
 
     setCart(productWihtSubtotal);
@@ -44,12 +54,10 @@ const Checkout = () => {
     setTotal(_total);
   }, [cart]);
   const handleBuy = async () => {
-    const timestamp = Date.now(); // Get the current timestamp
-    const randomNum = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
-    const invoice_no = `${timestamp}${randomNum}`;
     Swal.fire({
       title: "Are you sure?",
-      text: `You want to buy this product kindly check your products.`,
+      text: ` Please review your selection before confirming. Once you proceed, a receipt will be generated and
+       sent to your email address. Ensure that your email is correct to receive the confirmation.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -59,23 +67,33 @@ const Checkout = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(
-          POS({
+          GENERATE_RECEIPT({
             token,
-            data: { invoice_no, cashier: auth._id, total, purchases: cart },
+            data: {
+              total,
+              products: cart,
+              date: formattedDate(),
+              to: auth.email,
+            },
           })
         );
+
         Swal.fire({
-          title: "Successfully",
+          title: "Successfully sent your receipt in your email",
           icon: "success",
         }).then(() => {
-          history.push("/pos");
+          history.push("/quotation");
         });
       }
     });
   };
 
   return (
-    <>
+    <div
+      style={{
+        overflowX: "hidden",
+      }}
+    >
       <MDBRow className="d-flex justify-content-center mb-4 mt-4">
         <MDBCol md="8">
           <div
@@ -119,14 +137,16 @@ const Checkout = () => {
 
               <div className="m-3">
                 <div className="d-flex align-items-center">
-                  <h5 className="mt-2 mr-2">Cashier:</h5>
-                  <h5 className="mt-2">
-                    <strong>{fullName(auth.fullName)} (+63) 9203552827</strong>
+                  <h5 className="mt-2 mr-2 grey-text">Customer:</h5>
+                  <h5 className="mt-2 ">
+                    <strong>{auth.email}</strong>
                   </h5>
                 </div>
                 <div className="d-flex align-items-center">
-                  <h5 className="mt-2 mr-2">Date:</h5>
-                  <h6 className="mt-2 font-weight-bold">{formattedDate()}</h6>
+                  <h5 className="mt-2 mr-2 grey-text">Date:</h5>
+                  <h6 className="mt-2 font-weight-bold ml-4">
+                    &nbsp; &nbsp; {formattedDate()}
+                  </h6>
                 </div>
               </div>
             </MDBCardBody>
@@ -143,15 +163,15 @@ const Checkout = () => {
                   className="text-right d-flex align-items-center justify-content-end"
                 >
                   <h5 className="mr-5">Order Total ({cart.length} Item):</h5>
-                  <h2 style={{ fontWeight: 900 }} className="text-danger  ml-2">
-                    ₱{total}
-                  </h2>
+                  <h3 style={{ fontWeight: 800 }} className="text-danger  ml-2">
+                    ₱{total.toLocaleString()}.00
+                  </h3>
                 </MDBCol>
               </MDBRow>
               <MDBRow className="mt-3 mr-1 mb-3">
                 <MDBCol md="12" className="text-right">
                   <MDBBtn color="danger" type="button" onClick={handleBuy}>
-                    Buy Now
+                    Generate Receipt
                   </MDBBtn>
                 </MDBCol>
               </MDBRow>
@@ -159,7 +179,7 @@ const Checkout = () => {
           </MDBCard>
         </MDBCol>
       </MDBRow>
-    </>
+    </div>
   );
 };
 

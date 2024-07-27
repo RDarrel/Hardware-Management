@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const handlebars = require("handlebars");
+const Cart = require("../models/Cart");
 const fs = require("fs");
 
 const transporter = nodemailer.createTransport({
@@ -89,34 +90,50 @@ exports.sendCode = (req, res) => {
   });
 };
 
+const handleRemoveCart = async (products) => {
+  try {
+    const idsToDelete = products.map(({ _id }) => _id).filter(Boolean);
+
+    await Cart.deleteMany({ _id: { $in: idsToDelete } });
+  } catch (error) {
+    console.log("Error in remove cart", error.message);
+  }
+};
+
 exports.receipt = (req, res) => {
+  const { products, total, date = "", to = "" } = req.body;
+  handleRemoveCart(products);
   readHTMLFile("./mails/receipt.html", (err, html) => {
     let template = handlebars.compile(html);
 
     let replacements = {
-      link: "liberty hardware",
-      message: "test",
       appName: process.env.APP_NAME,
+      products,
+      total,
+      date,
     };
     let htmlToSend = template(replacements);
 
     let msg = {
       from: `${process.env.APP_NAME}  <${process.env.EMAIL_USER}>`,
-      to: "rdpajarillaga596@gmail.com",
-      subject: "receipt",
+      to,
+      subject: "Quotation",
       html: htmlToSend,
-      // attachments: [
-      //   {
-      //     filename: "default.png",
-      //     path: "./assets/default.png",
-      //     cid: "aplogo",
-      //   },
-      // ],
+      attachments: [
+        {
+          filename: "logo.png",
+          path: "./assets/logo.jpg",
+          cid: "aplogo",
+        },
+      ],
     };
     transporter
       .sendMail(msg)
       .then(() => {
-        return res.json({ message: "Receipt sent successfully." });
+        return res.json({
+          message: "Receipt sent successfully.",
+          payload: products,
+        });
       })
       .catch(() => {
         return res.status(500).json({ message: "Failed to send receipt." });

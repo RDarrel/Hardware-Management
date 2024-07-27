@@ -14,74 +14,26 @@
     <style>
       .invoice-header-row {
         display: flex;
-        justify-content: center;
-        padding: 20px;
+        justify-content: space-between;
         position: relative;
+        margin-bottom: 10px;
+      }
+
+      .company-details {
+        margin-bottom: 20px;
       }
 
       .invoice-header-col {
         width: 100%;
         overflow: hidden;
         position: relative;
+        display: flex;
+        align-items: center;
       }
 
       .customer-name {
         height: 30px !important;
         width: 100% !important;
-      }
-
-      .invoice-header {
-        position: relative;
-        width: 400px;
-        height: 90px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        background: linear-gradient(
-          45deg,
-          transparent 20%,
-          rgba(24, 25, 26, 1) 20%
-        );
-        background-size: 100% 100%;
-        background-repeat: no-repeat;
-        overflow: visible;
-        z-index: 1;
-      }
-
-      .invoice-header::before {
-        content: "";
-        position: absolute;
-        top: -40px;
-        left: -40px;
-        width: 80px;
-        height: 160px;
-        border-radius: 5px;
-        background: linear-gradient(
-          45deg,
-          transparent 20%,
-          rgba(24, 25, 26, 0.7) 20%
-        );
-        transform: rotate(-45deg);
-        z-index: -1;
-      }
-
-      .invoice-header::after {
-        content: "";
-        position: absolute;
-        top: -30px;
-        left: -50px;
-        width: 80px;
-        height: 160px;
-        border-radius: 5px;
-        background: linear-gradient(
-          45deg,
-          transparent 20%,
-          rgba(24, 25, 26, 0.5) 20%
-        );
-        transform: rotate(-45deg);
-        z-index: -2;
       }
 
       .invoice-header-content {
@@ -95,46 +47,177 @@
         font-weight: 400;
         z-index: 2;
       }
+
+      .invoice-header-content h4 {
+        font-weight: bold;
+        letter-spacing: 2px;
+        margin: 0;
+      }
+
+      .invoice-header-content div {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin: 5px 0;
+      }
+
+      .container {
+        padding: 20px;
+        background-color: white;
+      }
+
+      table {
+        font-family: "Lato", sans-serif;
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        border: 1px solid black;
+        text-align: left;
+        padding: 0.4rem;
+        font-size: 1rem;
+        text-transform: capitalize;
+        color: black;
+        font-weight: 590;
+      }
+
+      .tr-bordered {
+        border: 1px solid black;
+      }
+
+      .td-bordered {
+        border: 1px solid black;
+        text-align: left;
+        padding: 15px; /* converted from 0.2rem */
+        font-size: 14px; /* converted from 0.9rem */
+        font-weight: 400;
+      }
+
+      .empty-td {
+        border-left: none;
+      }
     </style>
   </head>
-  <body
-    style="
-      background-color: #f2f2f2;
-      margin: 0;
-      padding: 0;
-      position: relative;
-      overflow: visible;
-    "
-  >
-    <div class="invoice-header-row">
-      <div class="invoice-header-col">
-        <h5 style="font-weight: bold; margin-left: 2px">Liberty Hardware</h5>
-      </div>
-      <div style="display: flex; justify-content: end; position: relative">
-        <div class="invoice-header">
-          <div class="invoice-header-content">
-            <h4 style="font-weight: bold; letter-spacing: 2px; margin: 0">
-              INVOICE
-            </h4>
-            <div
+  <body>
+    <div
+      style="
+        padding: 20px;
+        position: relative;
+        overflow: visible;
+        background-color: #f2f2f2;
+      "
+    >
+      <div class="container">
+        <div class="invoice-header-row">
+          <div class="invoice-header-col">
+            <img style="height: 90px" src="cid:aplogo" />
+            <h2 style="font-weight: bold; margin-left: 2px">
+              Liberty Hardware
+            </h2>
+          </div>
+
+          <div>
+            <h1 style="margin: 0px; padding: 0px; margin-top: 13px">
+              QUOTATION
+            </h1>
+            <h3
               style="
-                display: flex;
-                justify-content: space-between;
-                width: 100%;
-                margin: 5px 0;
+                margin-right: 10px;
+                font-weight: 500;
+                margin: 0px;
+                padding: 0px;
               "
             >
-              <span>Invoice #: </span>
-              <span>{{ invoice_no }}</span>
-            </div>
-            <div
-              style="display: flex; justify-content: space-between; width: 100%"
-            >
-              <span>Date: </span>
-              <span>July 26, 2024</span>
-            </div>
+              Date: <strong>{{date}}</strong>
+            </h3>
           </div>
         </div>
+        <div class="company-details">
+          <h3 style="margin: 0px; padding: 0px; font-weight: 500">
+            Address:
+            <strong> Brgy.Conception General Tinio Nueva Ecija </strong>
+          </h3>
+
+          <h3
+            style="margin: 0px; padding: 0px; font-weight: 500; margin-top: 3px"
+          >
+            Phone:&nbsp;&nbsp;&nbsp; <strong>09755323224</strong>
+          </h3>
+        </div>
+        <table style="width: 100%">
+          <thead>
+            <tr class="tr-bordered">
+              <th>Items</th>
+              <th style="text-align: center">SRP</th>
+              <th style="text-align: center">Qty/Kilo</th>
+              <th style="text-align: center">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each products}}
+            <tr class="tr-bordered">
+              <td class="td-bordered" style="width: 420px">
+                <div>
+                  <span
+                    style="
+                      max-width: 40px;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                      font-weight: bold;
+                    "
+                  >
+                    {{this.name}}
+                  </span>
+                  {{#if this.hasVariant}}
+                  <br />
+                  <span style="margin-top: -10px">
+                    Variant: {{this.variant}}
+                  </span>
+                  {{/if}}
+                </div>
+              </td>
+              <td class="td-bordered" style="text-align: center">
+                ₱{{this.srp}}
+              </td>
+              <td class="td-bordered" style="text-align: center">
+                {{this.qty}}
+              </td>
+              <td class="td-bordered" style="text-align: center; width: 200px">
+                ₱{{this.subtotal}}
+              </td>
+            </tr>
+            {{/each}}
+
+            <tr>
+              <td
+                colspan="3"
+                style="border-bottom: transparent; border-left: transparent"
+              ></td>
+              <td
+                style="font-size: 16px; padding-left: 16px"
+                colspan="1"
+                class="td-bordered"
+              >
+                <div style="text-align: center">
+                  <p style="margin: 0; white-space: nowrap">
+                    Total Quote:&nbsp;&nbsp; ₱{{total}}.00
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style="font-weight: 500">
+          This quotation is not a contract or a bill. it is our best guess at
+          the total price for the service and goods described above. The
+          customer will be billed after indicating acceptance of this qoute.
+          Payment will be due prior to the delivery of service and goods.
+        </h3>
       </div>
     </div>
   </body>

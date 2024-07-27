@@ -17,7 +17,7 @@ import sortBy from "../../../../services/utilities/sorting";
 
 const Quotation = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(({ products }) => products),
+    { collections, isLoading } = useSelector(({ products }) => products),
     { collections: cartCollections } = useSelector(({ cart }) => cart),
     [cart, setCart] = useState([]),
     [products, setProducts] = useState([]),
@@ -67,11 +67,6 @@ const Quotation = () => {
       };
     });
 
-    // const sorted = [...productsWithDefaultSrp].sort((a, b) => {
-    //   const dateA = new Date(a.createdAt);
-    //   const dateB = new Date(b.createdAt);
-    //   return dateB - dateA;
-    // });
     setProductsTemplate(productsWithDefaultSrp);
     setProducts(sortBy.shuffle(productsWithDefaultSrp));
     setTopProducts(collections.slice(0, 18));
@@ -96,6 +91,8 @@ const Quotation = () => {
         };
       });
       setCart(_carts);
+    } else {
+      setCart([]);
     }
   }, [cartCollections, collections]);
 
@@ -204,9 +201,11 @@ const Quotation = () => {
               <Categories
                 products={collections}
                 handleSelectCategory={handleSelectCategory}
+                isLoading={isLoading}
               />
               <TopProducts
                 products={topProducts}
+                isLoading={isLoading}
                 handleSelectProduct={handleSelectProduct}
               />
               <DailyDiscover />
@@ -230,6 +229,7 @@ const Quotation = () => {
           searchValue={searchValue}
           notFound={notFound}
           searchResults={searchResults}
+          isLoading={isLoading}
         />
       </div>
 
