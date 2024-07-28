@@ -25,8 +25,8 @@ const Table = ({ cart }) => {
                   <img
                     src={img}
                     alt={product.name}
-                    className="mr-2"
-                    style={{ width: "60px" }}
+                    className="mr-2 "
+                    style={{ width: "50px", height: "50px" }}
                   />
                   <div>
                     <h6

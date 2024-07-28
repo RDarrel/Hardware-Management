@@ -81,7 +81,7 @@ const Kilo = ({
         </MDBCol>
       )}
       <MDBCol
-        md={disabledButtons ? 7 : 6}
+        md={disabledButtons ? "7" : "6"}
         className="m-0 d-flex align-items-center"
       >
         <MDBInputGroup

@@ -359,9 +359,13 @@ export const reduxSlice = createSlice({
       })
       .addCase(GENERATE_RECEIPT.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
-        state.collections = state.collections.filter(
-          (collection) => !payload.includes(collection._id)
+
+        const _collections = [...state.collections];
+        const newCollectionns = _collections.filter(
+          (collection) => !payload.some(({ _id }) => collection._id === _id)
         );
+        state.collections = newCollectionns;
+
         state.message = success;
         state.isSuccess = true;
         state.isLoading = false;

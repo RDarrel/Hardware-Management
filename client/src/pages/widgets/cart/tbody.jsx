@@ -102,7 +102,7 @@ export const Tbody = ({
                             <span>Variations:</span>
                             <br />
                             <span style={{ marginTop: "-1px" }}>
-                              {getTheVariant(
+                              {variation.getTheVariant(
                                 obj.variant1,
                                 obj.variant2 || "",
                                 product.variations

@@ -15,9 +15,10 @@ import Modal from "./modal";
 import handlePagination from "../../../widgets/pagination";
 import PaginationButtons from "../../../widgets/pagination/buttons";
 import Role from "./role";
+import Spinner from "../../../widgets/spinner";
 export default function Employees() {
   const { token, maxPage } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(({ employees }) => employees),
+    { collections, isLoading } = useSelector(({ employees }) => employees),
     [show, setShow] = useState(false),
     [employees, setEmployees] = useState([]),
     [didSearch, setDidSearch] = useState(false),
@@ -60,62 +61,68 @@ export default function Employees() {
           setSearch={setSearch}
           search={search}
         />
-        <MDBTable striped responsive>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th className="text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {employees.length > 0 ? (
-              handlePagination(employees, page, maxPage).map(
-                ({ role, fullName: name, email, _id }, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{fullName(name)}</td>
-                    <td>{email}</td>
-                    <td>{role}</td>
-                    <td className="text-center">
-                      <MDBBtnGroup>
-                        <MDBBtn
-                          size="sm"
-                          rounded
-                          color="primary"
-                          onClick={() => {
-                            setSelected({ role, _id });
-                            toggleRole();
-                          }}
-                        >
-                          <MDBIcon icon="key" />
-                        </MDBBtn>
-                        <MDBBtn size="sm" rounded color="danger">
-                          <MDBIcon icon="user-slash" />
-                        </MDBBtn>
-                      </MDBBtnGroup>
+        {!isLoading ? (
+          <>
+            <MDBTable striped responsive>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th className="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {employees.length > 0 ? (
+                  handlePagination(employees, page, maxPage).map(
+                    ({ role, fullName: name, email, _id }, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{fullName(name)}</td>
+                        <td>{email}</td>
+                        <td>{role}</td>
+                        <td className="text-center">
+                          <MDBBtnGroup>
+                            <MDBBtn
+                              size="sm"
+                              rounded
+                              color="primary"
+                              onClick={() => {
+                                setSelected({ role, _id });
+                                toggleRole();
+                              }}
+                            >
+                              <MDBIcon icon="key" />
+                            </MDBBtn>
+                            <MDBBtn size="sm" rounded color="danger">
+                              <MDBIcon icon="user-slash" />
+                            </MDBBtn>
+                          </MDBBtnGroup>
+                        </td>
+                      </tr>
+                    )
+                  )
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="text-center">
+                      No Records.
                     </td>
                   </tr>
-                )
-              )
-            ) : (
-              <tr>
-                <td colSpan={5} className="text-center">
-                  No Records.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </MDBTable>
-        <PaginationButtons
-          page={page}
-          setPage={setPage}
-          array={employees}
-          max={maxPage}
-          title="Employee"
-        />
+                )}
+              </tbody>
+            </MDBTable>
+            <PaginationButtons
+              page={page}
+              setPage={setPage}
+              array={employees}
+              max={maxPage}
+              title="Employee"
+            />
+          </>
+        ) : (
+          <Spinner />
+        )}
       </MDBCardBody>
       <Modal
         collections={collections}

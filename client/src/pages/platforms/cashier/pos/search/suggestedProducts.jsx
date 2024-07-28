@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { MDBCard, MDBCardBody } from "mdbreact";
 import { variation } from "../../../../../services/utilities";
+import sortBy from "../../../../../services/utilities/sorting";
 
 function SuggestedProducts({
   products: collections = [],
@@ -16,22 +17,7 @@ function SuggestedProducts({
   useEffect(() => {
     if (search && collections.length > 0) {
       const productsWithVariant = mergeVariantInProduct(collections);
-      const filteredProducts = productsWithVariant.filter((collection) => {
-        const { name } = collection;
-        return name
-          .toLocaleLowerCase()
-          .replace(/\s/g, "")
-          .includes(search.toLocaleLowerCase().replace(/\s/g, ""));
-      });
-      // Sort filteredProducts by how close the match is to the beginning
-      filteredProducts.sort((a, b) => {
-        const nameA = a.name.toLowerCase().replace(/\s/g, "");
-        const nameB = b.name.toLowerCase().replace(/\s/g, "");
-        const indexA = nameA.indexOf(search.toLowerCase().replace(/\s/g, ""));
-        const indexB = nameB.indexOf(search.toLowerCase().replace(/\s/g, ""));
-        return indexA - indexB; // Sort by index position (asce
-      });
-
+      const filteredProducts = sortBy.relevance(productsWithVariant, search);
       if (filteredProducts.length > 1) {
         setSuggested(filteredProducts);
       }

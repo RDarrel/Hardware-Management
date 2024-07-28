@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router";
-import {
-  formattedDate,
-  // fullName,
-  variation,
-} from "../../../services/utilities";
+import { formattedDate, variation } from "../../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
 import "./style.css";
 import {
@@ -20,13 +15,12 @@ import Swal from "sweetalert2";
 import truncateString from "../../../services/utilities/truncateString";
 import capitalize from "../../../services/utilities/capitalize";
 import { GENERATE_RECEIPT } from "../../../services/redux/slices/cart";
-const Checkout = () => {
+const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
   const { token, auth } = useSelector(({ auth }) => auth),
-    { checkOutProducts } = useSelector(({ cart }) => cart),
+    // { checkOutProducts } = useSelector(({ cart }) => cart),
     [cart, setCart] = useState([]),
     [total, setTotal] = useState(0),
-    dispatch = useDispatch(),
-    history = useHistory();
+    dispatch = useDispatch();
 
   useEffect(() => {
     const productWihtSubtotal = checkOutProducts.map((obj) => ({
@@ -82,7 +76,8 @@ const Checkout = () => {
           title: "Successfully sent your receipt in your email",
           icon: "success",
         }).then(() => {
-          history.push("/quotation");
+          toggleCart();
+          setIsCheckout(false);
         });
       }
     });
@@ -98,7 +93,10 @@ const Checkout = () => {
         <MDBCol md="8">
           <div
             className="d-flex  mb-2 ml-1 align-items-center cursor-pointer"
-            onClick={() => history.push("/quotation")}
+            onClick={() => {
+              setIsCheckout(false);
+              toggleCart();
+            }}
           >
             <MDBIcon
               icon="less-than"

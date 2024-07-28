@@ -20,10 +20,13 @@ import handlePagination from "../../../../widgets/pagination";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
 import { Header } from "../header";
 import excel from "../../../../../services/utilities/downloadExcel/excel";
+import Spinner from "../../../../widgets/spinner";
 
 const Sales = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth);
-  const { collections } = useSelector(({ salesReport }) => salesReport);
+  const { collections, isLoading } = useSelector(
+    ({ salesReport }) => salesReport
+  );
   const [baseFrom, setBaseFrom] = useState("");
   const [baseTo, setBaseTo] = useState("");
   const [totalSales, setTotalSales] = useState(0);
@@ -142,96 +145,102 @@ const Sales = () => {
       </MDBRow>
       <MDBCard>
         <MDBCardBody>
-          <MDBTable responsive bordered striped>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Product</th>
-                <th className=" text-center">Sold</th>
-                <th className="text-center">Unit</th>
-                <th className="text-center">Capital</th>
-                <th className="text-center">SRP</th>
-                <th className="text-center">Sales</th>
-                <th className="text-center">INCOME</th>
-              </tr>
-            </thead>
-            <tbody>
-              {handlePagination(filteredSales, page, maxPage).map(
-                (sale, index) => {
-                  const { product } = sale;
-                  const { media } = product;
-                  const img = `${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`;
+          {!isLoading ? (
+            <>
+              <MDBTable responsive bordered striped>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th className=" text-center">Sold</th>
+                    <th className="text-center">Unit</th>
+                    <th className="text-center">Capital</th>
+                    <th className="text-center">SRP</th>
+                    <th className="text-center">Sales</th>
+                    <th className="text-center">INCOME</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {handlePagination(filteredSales, page, maxPage).map(
+                    (sale, index) => {
+                      const { product } = sale;
+                      const { media } = product;
+                      const img = `${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`;
 
-                  return (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <img
-                            src={img}
-                            alt={product.name}
-                            className="product-image mr-2"
-                          />
-                          <div>
-                            <h6 className="product-name mt-1">
-                              {product.name}
-                            </h6>
-                            {product.hasVariant && (
-                              <div
-                                className="d-flex align-items-center"
-                                style={{ marginTop: "-20px" }}
-                              >
-                                <span className="mr-1">Variations:</span>
-                                <span>
-                                  {variation.name(sale, product.variations)}
-                                </span>
+                      return (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>
+                            <div className="d-flex align-items-center">
+                              <img
+                                src={img}
+                                alt={product.name}
+                                className="product-image mr-2"
+                              />
+                              <div>
+                                <h6 className="product-name mt-1">
+                                  {product.name}
+                                </h6>
+                                {product.hasVariant && (
+                                  <div
+                                    className="d-flex align-items-center"
+                                    style={{ marginTop: "-20px" }}
+                                  >
+                                    <span className="mr-1">Variations:</span>
+                                    <span>
+                                      {variation.name(sale, product.variations)}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="text-center">{sale?.sold}</td>
-                      <td className="text-center">
-                        {product.isPerKilo ? "Kg" : "Pcs"}
-                      </td>
-                      <td className="text-center">
-                        <span className="font-weight-bold text-danger ">
-                          ₱{sale.capital}
-                        </span>
-                      </td>
-                      <td className="text-center">
-                        <span className="font-weight-bold text-danger">
-                          ₱{sale.srp.toLocaleString()}
-                        </span>
-                      </td>
-                      <td className="text-center">
-                        <span className="font-weight-bold text-danger">
-                          ₱{(sale.srp * sale.sold).toLocaleString()}
-                        </span>
-                      </td>
-                      <td className="text-center">
-                        <span className="font-weight-bold text-danger">
-                          ₱{sale.income.toLocaleString()}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                }
-              )}
-            </tbody>
-          </MDBTable>
-          <MDBRow className="m-0 p-0">
-            <MDBCol md="12 m-2">
-              <PaginationButtons
-                page={page}
-                max={maxPage}
-                mt={1}
-                setPage={setPage}
-                array={filteredSales}
-                title={"Product"}
-              />
-            </MDBCol>
-          </MDBRow>
+                            </div>
+                          </td>
+                          <td className="text-center">{sale?.sold}</td>
+                          <td className="text-center">
+                            {product.isPerKilo ? "Kg" : "Pcs"}
+                          </td>
+                          <td className="text-center">
+                            <span className="font-weight-bold text-danger ">
+                              ₱{sale.capital}
+                            </span>
+                          </td>
+                          <td className="text-center">
+                            <span className="font-weight-bold text-danger">
+                              ₱{sale.srp.toLocaleString()}
+                            </span>
+                          </td>
+                          <td className="text-center">
+                            <span className="font-weight-bold text-danger">
+                              ₱{(sale.srp * sale.sold).toLocaleString()}
+                            </span>
+                          </td>
+                          <td className="text-center">
+                            <span className="font-weight-bold text-danger">
+                              ₱{sale.income.toLocaleString()}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  )}
+                </tbody>
+              </MDBTable>
+              <MDBRow className="m-0 p-0">
+                <MDBCol md="12 m-2">
+                  <PaginationButtons
+                    page={page}
+                    max={maxPage}
+                    mt={1}
+                    setPage={setPage}
+                    array={filteredSales}
+                    title={"Product"}
+                  />
+                </MDBCol>
+              </MDBRow>
+            </>
+          ) : (
+            <Spinner />
+          )}
         </MDBCardBody>
       </MDBCard>
     </>

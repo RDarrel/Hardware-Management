@@ -12,6 +12,7 @@ import PendingTable from "./pending/Table";
 import ApprovedTable from "./approved/table";
 import filterBy from "../filterBy";
 import GET from "../GET";
+import Spinner from "../../spinner";
 
 const Collapse = ({
   collections = [],
@@ -19,6 +20,7 @@ const Collapse = ({
   isReceived,
   isRejected,
   isApproved,
+  isLoading,
 }) => {
   const [purchases, setPurchases] = useState([]),
     [activeId, setActiveId] = useState(-1),
@@ -87,61 +89,68 @@ const Collapse = ({
       </MDBRow>
       <MDBCard>
         <MDBCardBody>
-          {purchases.length > 0 ? (
-            purchases.map((purchase, index) => {
-              const textColor =
-                activeId !== index
-                  ? didHoverId === index
-                    ? "text-primary"
-                    : "text-black"
-                  : "text-white";
+          {!isLoading ? (
+            <>
+              {" "}
+              {purchases.length > 0 ? (
+                purchases.map((purchase, index) => {
+                  const textColor =
+                    activeId !== index
+                      ? didHoverId === index
+                        ? "text-primary"
+                        : "text-black"
+                      : "text-white";
 
-              const bgBorder =
-                activeId === index
-                  ? " bg-info transition"
-                  : didHoverId === index
-                  ? "rounded border border-info bg-transparent ease-out"
-                  : "bg-transparent ease-out";
+                  const bgBorder =
+                    activeId === index
+                      ? " bg-info transition"
+                      : didHoverId === index
+                      ? "rounded border border-info bg-transparent ease-out"
+                      : "bg-transparent ease-out";
 
-              return (
-                <div
-                  key={index}
-                  className="mt-2"
-                  onMouseLeave={() => setDidHoverId(-1)}
-                  onMouseEnter={() => setDidHoverId(index)}
-                >
-                  <MDBCollapseHeader
-                    className={bgBorder}
-                    onClick={() => {
-                      setActiveId((prev) => (prev === index ? -1 : index));
-                    }}
-                  >
-                    <div className="d-flex justify-content-between">
-                      <label className={textColor}>{`${index + 1}. ${
-                        purchase?.supplier?.company || "--"
-                      }`}</label>
-                      <div className="d-flex align-items-center">
-                        <i
-                          style={{
-                            rotate: `${activeId === index ? 0 : 90}deg`,
-                          }}
-                          className={`fa fa-angle-down transition-all ${textColor}`}
-                        />
-                      </div>
+                  return (
+                    <div
+                      key={index}
+                      className="mt-2"
+                      onMouseLeave={() => setDidHoverId(-1)}
+                      onMouseEnter={() => setDidHoverId(index)}
+                    >
+                      <MDBCollapseHeader
+                        className={bgBorder}
+                        onClick={() => {
+                          setActiveId((prev) => (prev === index ? -1 : index));
+                        }}
+                      >
+                        <div className="d-flex justify-content-between">
+                          <label className={textColor}>{`${index + 1}. ${
+                            purchase?.supplier?.company || "--"
+                          }`}</label>
+                          <div className="d-flex align-items-center">
+                            <i
+                              style={{
+                                rotate: `${activeId === index ? 0 : 90}deg`,
+                              }}
+                              className={`fa fa-angle-down transition-all ${textColor}`}
+                            />
+                          </div>
+                        </div>
+                      </MDBCollapseHeader>
+                      <MDBCollapse
+                        id={`collapse-${index}`}
+                        isOpen={index === activeId}
+                        className="border border-black"
+                      >
+                        {renderTable(purchase)}
+                      </MDBCollapse>
                     </div>
-                  </MDBCollapseHeader>
-                  <MDBCollapse
-                    id={`collapse-${index}`}
-                    isOpen={index === activeId}
-                    className="border border-black"
-                  >
-                    {renderTable(purchase)}
-                  </MDBCollapse>
-                </div>
-              );
-            })
+                  );
+                })
+              ) : (
+                <h6 className="text-center">No Records.</h6>
+              )}
+            </>
           ) : (
-            <h6 className="text-center">No Records.</h6>
+            <Spinner />
           )}
         </MDBCardBody>
       </MDBCard>

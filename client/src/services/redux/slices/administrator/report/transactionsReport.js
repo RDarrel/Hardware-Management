@@ -162,19 +162,16 @@ export const reduxSlice = createSlice({
       })
 
       .addCase(GET_RETURN_REFUND.pending, (state) => {
-        state.isLoading = true;
         state.isSuccess = false;
         state.message = "";
       })
       .addCase(GET_RETURN_REFUND.fulfilled, (state, action) => {
         const { payload } = action.payload;
         state.returnRefund = payload;
-        state.isLoading = false;
       })
       .addCase(GET_RETURN_REFUND.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
-        state.isLoading = false;
       })
 
       .addCase(FIND.pending, (state) => {

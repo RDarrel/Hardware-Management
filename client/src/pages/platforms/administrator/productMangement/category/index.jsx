@@ -18,10 +18,11 @@ import PaginationButtons from "../../../../widgets/pagination/buttons";
 import Modal from "./modal";
 import Swal from "sweetalert2";
 import { globalSearch } from "../../../../../services/utilities";
+import Spinner from "../../../../widgets/spinner";
 
 const Categories = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(({ category }) => category),
+    { collections, isLoading } = useSelector(({ category }) => category),
     [category, setCategory] = useState([]),
     [page, setPage] = useState(1),
     [willCreate, setWillCreate] = useState(true),
@@ -83,62 +84,72 @@ const Categories = () => {
           handleSearch={handleSearch}
           collections={collections}
         />
-        <MDBTable>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th className="text-center">Name</th>
-              <th className="text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {category.length ? (
-              handlePagination(category, page, maxPage).map((obj, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td className="text-center font-weight-bolder">{obj.name}</td>
-                  <td className="text-center">
-                    <MDBBtnGroup>
-                      <MDBBtn
-                        color="danger"
-                        size="sm"
-                        rounded
-                        onClick={() => handleDelete(obj._id)}
-                      >
-                        <MDBIcon icon="trash" />
-                      </MDBBtn>
-                      <MDBBtn
-                        color="primary"
-                        size="sm"
-                        rounded
-                        onClick={() => {
-                          setSelected(obj);
-                          setShow(true);
-                          setWillCreate(false);
-                        }}
-                      >
-                        <MDBIcon icon="pencil-alt" />
-                      </MDBBtn>
-                    </MDBBtnGroup>
-                  </td>
+        {!isLoading ? (
+          <>
+            <MDBTable>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th className="text-center">Name</th>
+                  <th className="text-center">Action</th>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={3} className="text-center">
-                  Nor records.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </MDBTable>
-        <PaginationButtons
-          page={page}
-          setPage={setPage}
-          max={maxPage}
-          array={category}
-          title={"Category"}
-        />
+              </thead>
+              <tbody>
+                {category.length ? (
+                  handlePagination(category, page, maxPage).map(
+                    (obj, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td className="text-center font-weight-bolder">
+                          {obj.name}
+                        </td>
+                        <td className="text-center">
+                          <MDBBtnGroup>
+                            <MDBBtn
+                              color="danger"
+                              size="sm"
+                              rounded
+                              onClick={() => handleDelete(obj._id)}
+                            >
+                              <MDBIcon icon="trash" />
+                            </MDBBtn>
+                            <MDBBtn
+                              color="primary"
+                              size="sm"
+                              rounded
+                              onClick={() => {
+                                setSelected(obj);
+                                setShow(true);
+                                setWillCreate(false);
+                              }}
+                            >
+                              <MDBIcon icon="pencil-alt" />
+                            </MDBBtn>
+                          </MDBBtnGroup>
+                        </td>
+                      </tr>
+                    )
+                  )
+                ) : (
+                  <tr>
+                    <td colSpan={3} className="text-center">
+                      Nor records.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </MDBTable>
+            <PaginationButtons
+              page={page}
+              setPage={setPage}
+              max={maxPage}
+              array={category}
+              title={"Category"}
+            />
+          </>
+        ) : (
+          <Spinner />
+        )}
       </MDBCardBody>
       <Modal
         show={show}

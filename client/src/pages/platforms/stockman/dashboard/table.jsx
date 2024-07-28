@@ -77,7 +77,7 @@ const Table = ({
                       </h6>
                       {product.hasVariant && (
                         <div className="d-flex align-items-center">
-                          <span className="mr-1">Variations:</span>
+                          <span className="mr-1">Variant:</span>
                           <span>{variation.name(obj, product.variations)}</span>
                         </div>
                       )}

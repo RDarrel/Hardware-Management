@@ -14,6 +14,7 @@ import ProductsCard from "./card";
 import productOrder from "../../../../services/utilities/product";
 import { customSort } from "../../../../services/utilities";
 import sortBy from "../../../../services/utilities/sorting";
+import Checkout from "../../../widgets/checkout";
 
 const Quotation = () => {
   const { token, auth } = useSelector(({ auth }) => auth),
@@ -26,15 +27,17 @@ const Quotation = () => {
     [sideBarActive, setSideBarActive] = useState(""),
     [searchValue, setSearchValue] = useState(""),
     [selected, setSelected] = useState({ name: "", media: {} }),
-    [didSearch, setDidSearch] = useState(false),
     [productsTemplate, setProductsTemplate] = useState([]),
+    [searchResults, setSearchResults] = useState([]),
+    [checkoutProducts, setCheckOutProducts] = useState([]),
     [activeCategory, setActiveCategory] = useState({}),
+    [didSearch, setDidSearch] = useState(false),
     [inSearchFilter, setInSearchFilter] = useState(false),
     [isShowCart, setIsShowCart] = useState(false),
-    [searchResults, setSearchResults] = useState([]),
     [hasMovingUp, setHasMovingUp] = useState(false),
     [notFound, setNotFound] = useState(false),
     [isResetFiltering, setIsResetFiltering] = useState(false),
+    [isCheckout, setIsCheckout] = useState(false),
     dispatch = useDispatch();
 
   const topRef = useRef(null);
@@ -158,87 +161,101 @@ const Quotation = () => {
 
   return (
     <div>
-      <div
-        style={{
-          overflowX: "hidden",
-          height: "100vh",
-        }}
-      >
-        <div ref={topRef}></div>
-        <Header
-          cart={cart}
-          setIsShowCart={setIsShowCart}
-          activeCategory={activeCategory}
-          inSearchFilter={inSearchFilter}
-          setDidSearch={setDidSearch}
-          productsTemplate={productsTemplate}
-          setProducts={setProducts}
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-          setHasMovingUp={setHasMovingUp}
-          setActiveCategory={setActiveCategory}
-          setInSearchFilter={setInSearchFilter}
-          setSelected={setSelected}
-          setShowSideBar={setShowSideBar}
-          setNotFound={setNotFound}
-          setSearchResults={setSearchResults}
-        />
-
-        {selected._id && !didSearch ? (
-          <div className="container-view-selected">
-            <BreadCrumb
-              selected={selected}
-              handleSideBar={handleSideBar}
-              sideBarActive={sideBarActive}
+      {!isCheckout ? (
+        <>
+          <div
+            style={{
+              overflowX: "hidden",
+              height: "100vh",
+            }}
+          >
+            <div ref={topRef}></div>
+            <Header
+              cart={cart}
+              setIsShowCart={setIsShowCart}
               activeCategory={activeCategory}
+              inSearchFilter={inSearchFilter}
+              setDidSearch={setDidSearch}
+              productsTemplate={productsTemplate}
+              setProducts={setProducts}
+              searchValue={searchValue}
+              setSearchValue={setSearchValue}
+              setHasMovingUp={setHasMovingUp}
+              setActiveCategory={setActiveCategory}
+              setInSearchFilter={setInSearchFilter}
+              setSelected={setSelected}
+              setShowSideBar={setShowSideBar}
+              setNotFound={setNotFound}
+              setSearchResults={setSearchResults}
             />
-            {!showSideBar && !didSearch && <ViewSelected selected={selected} />}
-          </div>
-        ) : (
-          !didSearch &&
-          !notFound && (
-            <>
-              <Categories
-                products={collections}
-                handleSelectCategory={handleSelectCategory}
-                isLoading={isLoading}
-              />
-              <TopProducts
-                products={topProducts}
-                isLoading={isLoading}
-                handleSelectProduct={handleSelectProduct}
-              />
-              <DailyDiscover />
-            </>
-          )
-        )}
-        <ProductsCard
-          showSideBar={showSideBar}
-          products={products}
-          activeCategory={activeCategory._id}
-          setActiveCategory={setActiveCategory}
-          setProducts={setProducts}
-          selected={selected}
-          handleSelectProduct={handleSelectProduct}
-          productsTemplate={productsTemplate}
-          setProductsTemplate={setProductsTemplate}
-          isResetFiltering={isResetFiltering}
-          setIsResetFiltering={setIsResetFiltering}
-          setInSearchFilter={setInSearchFilter}
-          didSearch={didSearch}
-          searchValue={searchValue}
-          notFound={notFound}
-          searchResults={searchResults}
-          isLoading={isLoading}
-        />
-      </div>
 
-      <Cart
-        toggle={toggleCart}
-        collections={cart}
-        show={isShowCart}
-        isCustomer={true}
-      />
+            {selected._id && !didSearch ? (
+              <div className="container-view-selected">
+                <BreadCrumb
+                  selected={selected}
+                  handleSideBar={handleSideBar}
+                  sideBarActive={sideBarActive}
+                  activeCategory={activeCategory}
+                />
+                {!showSideBar && !didSearch && (
+                  <ViewSelected selected={selected} />
+                )}
+              </div>
+            ) : (
+              !didSearch &&
+              !notFound && (
+                <>
+                  <Categories
+                    products={collections}
+                    handleSelectCategory={handleSelectCategory}
+                    isLoading={isLoading}
+                  />
+                  <TopProducts
+                    products={topProducts}
+                    isLoading={isLoading}
+                    handleSelectProduct={handleSelectProduct}
+                  />
+                  <DailyDiscover />
+                </>
+              )
+            )}
+            <ProductsCard
+              showSideBar={showSideBar}
+              products={products}
+              activeCategory={activeCategory._id}
+              setActiveCategory={setActiveCategory}
+              setProducts={setProducts}
+              selected={selected}
+              handleSelectProduct={handleSelectProduct}
+              productsTemplate={productsTemplate}
+              setProductsTemplate={setProductsTemplate}
+              isResetFiltering={isResetFiltering}
+              setIsResetFiltering={setIsResetFiltering}
+              setInSearchFilter={setInSearchFilter}
+              didSearch={didSearch}
+              searchValue={searchValue}
+              notFound={notFound}
+              searchResults={searchResults}
+              isLoading={isLoading}
+            />
+          </div>
+
+          <Cart
+            toggle={toggleCart}
+            collections={cart}
+            show={isShowCart}
+            isCustomer={true}
+            setIsCheckout={setIsCheckout}
+            setCheckOutProducts={setCheckOutProducts}
+          />
+        </>
+      ) : (
+        <Checkout
+          checkOutProducts={checkoutProducts}
+          setIsCheckout={setIsCheckout}
+          toggleCart={toggleCart}
+        />
+      )}
     </div>
   );
 };

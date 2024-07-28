@@ -37,7 +37,10 @@ const TopProducts = ({ products, handleSelectProduct, isLoading }) => {
       <div className="d-flex justify-content-center ">
         <div className="w-75">
           <MDBCard className="boxshadow-none ">
-            <MDBCardHeader className="bg-white text-danger" tag="h6">
+            <MDBCardHeader
+              className="bg-white text-danger font-weight-bold"
+              tag="h6"
+            >
               TOP PRODUCTS
             </MDBCardHeader>
             <MDBCardBody className="w-100">
@@ -60,11 +63,11 @@ const TopProducts = ({ products, handleSelectProduct, isLoading }) => {
                     }}
                     ref={scrollContainerRef}
                   >
-                    <MDBRow className=" w-100">
+                    <MDBRow>
                       {visibleProducts.map((product, index) => (
-                        <MDBCol lg="2" key={index} className="w-100">
+                        <MDBCol md="2" key={index}>
                           <MDBCard
-                            className="boxshadow-none w-100"
+                            className="boxshadow-none  mt-0 p-2  "
                             onClick={() => handleSelectProduct(product)}
                           >
                             <div className="product-badge">
@@ -76,7 +79,7 @@ const TopProducts = ({ products, handleSelectProduct, isLoading }) => {
                             <MDBCardImage
                               className="img-fluid d-flex justify-content-center"
                               src={`${ENDPOINT}/assets/products/${product._id}/Cover Photo.jpg`}
-                              style={{ height: "150px" }}
+                              style={{ height: "150px", width: "10%" }}
                             />
                           </MDBCard>
                           <h6

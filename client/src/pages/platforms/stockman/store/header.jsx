@@ -90,7 +90,7 @@ export const Header = ({
               setSearch("");
               setContainer(collectionsProducts);
             }}
-            type={!didSearch ? "button" : "submit"}
+            type={didSearch ? "button" : "submit"}
           >
             <MDBIcon
               icon={didSearch ? "times" : "search"}

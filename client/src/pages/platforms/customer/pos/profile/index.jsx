@@ -9,12 +9,10 @@ import {
   MDBPopoverBody,
 } from "mdbreact";
 import { useSelector } from "react-redux";
-// import { fullName } from "../../../../../services/utilities";
 
 const Profile = () => {
   const { auth } = useSelector(({ auth }) => auth);
   const [id, setId] = useState(0);
-  console.log("running");
   return (
     <MDBRow>
       <MDBCol
@@ -51,7 +49,6 @@ const Profile = () => {
             </MDBBtn>
           </MDBPopoverBody>
         </MDBPopover>
-        ;
       </MDBCol>
     </MDBRow>
   );

@@ -184,7 +184,7 @@ const ViewSelected = ({ selected = {} }) => {
                       <img
                         src={selectedImage?.large}
                         alt="Selected"
-                        className="cursor-pointer"
+                        className="cursor-pointer hoverable"
                         onClick={() => {
                           setIsFullView(true);
                           setImgForFullView(selectedImage);

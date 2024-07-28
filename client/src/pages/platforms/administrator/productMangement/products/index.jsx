@@ -19,10 +19,11 @@ import ProductInformation from "../../../../../components/product/index";
 import "./product.css";
 import { Table } from "./table";
 import { Search } from "../../../../widgets/search";
+import Spinner from "../../../../widgets/spinner";
 
 const Products = () => {
   const { token } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(({ products }) => products),
+    { collections, isLoading } = useSelector(({ products }) => products),
     [products, setProducts] = useState([]),
     [selected, setSelected] = useState({}),
     [show, setShow] = useState(false),
@@ -246,13 +247,17 @@ const Products = () => {
                 handleSearch={handleSearch}
                 setSearch={setSearch}
               />
-              <Table
-                products={products}
-                handleTableData={handleTableData}
-                getProductImg={getProductImg}
-                handleDelete={handleDelete}
-                handleUpdate={handleUpdate}
-              />
+              {!isLoading ? (
+                <Table
+                  products={products}
+                  handleTableData={handleTableData}
+                  getProductImg={getProductImg}
+                  handleDelete={handleDelete}
+                  handleUpdate={handleUpdate}
+                />
+              ) : (
+                <Spinner />
+              )}
             </MDBCardBody>
           </MDBCard>
         </>

@@ -7,7 +7,7 @@ import OutOfStocksProducts from "./outOfStocksProducts";
 
 export default function Dashboard() {
   const { token } = useSelector(({ auth }) => auth),
-    { nearlyExpired, outOfStocks } = useSelector(
+    { nearlyExpired, outOfStocks, isLoading } = useSelector(
       ({ StockmanDashboard }) => StockmanDashboard
     ),
     dispatch = useDispatch();
@@ -21,10 +21,13 @@ export default function Dashboard() {
   return (
     <MDBContainer fluid id="v6" className="mb-5">
       <MDBRow>
-        <NearlyExpiredProducts nearlyExpired={nearlyExpired} />
+        <NearlyExpiredProducts
+          nearlyExpired={nearlyExpired}
+          isLoading={isLoading}
+        />
       </MDBRow>
       <MDBRow>
-        <OutOfStocksProducts outOfStocks={outOfStocks} />
+        <OutOfStocksProducts outOfStocks={outOfStocks} isLoading={isLoading} />
       </MDBRow>
     </MDBContainer>
   );

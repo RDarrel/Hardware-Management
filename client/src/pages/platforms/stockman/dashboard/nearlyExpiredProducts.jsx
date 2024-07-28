@@ -1,8 +1,9 @@
 import React from "react";
 import { MDBCol, MDBCard, MDBCardBody, MDBCardHeader, MDBIcon } from "mdbreact";
+import Spinner from "../../../widgets/spinner";
 import Table from "./table";
 
-const NearlyExpiredProducts = ({ nearlyExpired }) => {
+const NearlyExpiredProducts = ({ nearlyExpired, isLoading }) => {
   return (
     <MDBCol lg="12" md="12">
       <MDBCard className="mb-3">
@@ -10,11 +11,15 @@ const NearlyExpiredProducts = ({ nearlyExpired }) => {
           <MDBIcon icon="exclamation-triangle" /> Nearly Products Expired
         </MDBCardHeader>
         <MDBCardBody>
-          <Table
-            products={nearlyExpired}
-            title={"Nearly Products Expired"}
-            hasPlural={false}
-          />
+          {!isLoading ? (
+            <Table
+              products={nearlyExpired}
+              title={"Nearly Products Expired"}
+              hasPlural={false}
+            />
+          ) : (
+            <Spinner />
+          )}
         </MDBCardBody>
       </MDBCard>
     </MDBCol>

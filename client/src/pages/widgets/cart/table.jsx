@@ -33,8 +33,8 @@ const Table = ({
     const foundVariant1 = variations[0].options.find(
       ({ _id }) => _id === _variant1
     )?.name;
-
-    if (variations.length > 1) {
+    console.log(variations);
+    if (variations.length === 2) {
       const foundVariant2 = variations[1].options.find(
         ({ _id }) => _id === _variant2
       )?.name;

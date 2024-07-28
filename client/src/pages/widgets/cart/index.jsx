@@ -22,6 +22,8 @@ const Cart = ({
   isCustomer = false,
   suppliers,
   disabledButtons = false,
+  setIsCheckout = () => {},
+  setCheckOutProducts: baseCheckoutProducts = () => {},
 }) => {
   const [isCheckAll, setIsCheckAll] = useState(true),
     [checkOutProducts, setCheckOutProducts] = useState([]),
@@ -63,8 +65,10 @@ const Cart = ({
 
   const handleCheckOut = () => {
     if (isCustomer) {
-      dispatch(CHECKOUT(checkOutProducts));
-      history.push("pos/checkout");
+      setIsCheckout(true);
+      baseCheckoutProducts(checkOutProducts);
+      // dispatch(CHECKOUT(checkOutProducts));
+      // history.push("pos/checkout");
     } else {
       dispatch(CHECKOUT(checkOutProducts));
       history.push("/checkout");
@@ -79,7 +83,6 @@ const Cart = ({
       fullHeight
       position="right"
       animation="top"
-      tabIndex="-2"
     >
       <MDBModalHeader
         tag="p"

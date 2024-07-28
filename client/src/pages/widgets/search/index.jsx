@@ -47,7 +47,7 @@ export const Search = ({
                 setSearch("");
                 setContainer(collections);
               }}
-              type={!didSearch ? "button" : "submit"}
+              type={didSearch ? "button" : "submit"}
             >
               <MDBIcon
                 icon={didSearch ? "times" : "search"}

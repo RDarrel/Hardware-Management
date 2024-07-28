@@ -21,10 +21,11 @@ import {
 } from "../../../../../services/utilities";
 import getTotalSales from "../getTotalSales";
 import Receipt from "../../../../widgets/receipt";
+import Spinner from "../../../../widgets/spinner";
 
 export const Transactions = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(
+    { collections, isLoading } = useSelector(
       ({ transactionsReport }) => transactionsReport
     ),
     [transactions, setTransactions] = useState([]),
@@ -60,77 +61,88 @@ export const Transactions = () => {
           />
         </div>
         <MDBCardBody>
-          <MDBTable striped bordered>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th className="text-center">Cashier</th>
-                <th className="text-center">Invoice No.</th>
-                <th className="text-center">Date</th>
-                <th className="text-center">Total Amount</th>
-                <th className="text-center">Cash</th>
-                <th className="text-center">Change</th>
-                <th className="text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {handlePagination(transactions, page, maxPage).map(
-                (transaction, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td className="text-center">
-                      {fullName(transaction.cashier?.fullName)}
-                    </td>
-                    <td className="text-center">{transaction.invoice_no}</td>
-                    <td className="text-center">
-                      {formattedDate(transaction.createdAt)}
-                    </td>
-                    <td className="text-danger text-center font-weight-bolder">
-                      ₱{transaction.total.toLocaleString()}.00
-                    </td>
-                    <td className="text-danger text-center font-weight-bold">
-                      ₱{transaction.cash.toLocaleString()}.00
-                    </td>
-                    <td className="text-danger text-center font-weight-bold">
-                      ₱{(transaction.cash - transaction.total).toLocaleString()}
-                      .00
-                    </td>
-                    <td className="text-center">
-                      <MDBBtn
-                        size="sm"
-                        color="warning"
-                        rounded
-                        onClick={() =>
-                          hanldeShowPurchases(
-                            transaction.purchases,
-                            transaction
-                          )
-                        }
-                      >
-                        <MDBIcon icon="eye" />
-                      </MDBBtn>
-                    </td>
+          {!isLoading ? (
+            <>
+              <MDBTable striped bordered>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th className="text-center">Cashier</th>
+                    <th className="text-center">Invoice No.</th>
+                    <th className="text-center">Date</th>
+                    <th className="text-center">Total Amount</th>
+                    <th className="text-center">Cash</th>
+                    <th className="text-center">Change</th>
+                    <th className="text-center">Action</th>
                   </tr>
-                )
-              )}
-            </tbody>
-          </MDBTable>
-          <MDBRow>
-            <MDBCol md="12" className="d-flex justify-content-end ">
-              <MDBBadge color="info" className="">
-                <h6 className="font-weight-bolder text-white mx-1 my-1 ">
-                  Grand Total Sales: ₱{getTotalSales(transactions)}.00
-                </h6>
-              </MDBBadge>
-            </MDBCol>
-          </MDBRow>
-          <PaginationButtons
-            page={page}
-            setPage={setPage}
-            max={maxPage}
-            array={transactions}
-            title={"Transactions"}
-          />
+                </thead>
+                <tbody>
+                  {handlePagination(transactions, page, maxPage).map(
+                    (transaction, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td className="text-center">
+                          {fullName(transaction.cashier?.fullName)}
+                        </td>
+                        <td className="text-center">
+                          {transaction.invoice_no}
+                        </td>
+                        <td className="text-center">
+                          {formattedDate(transaction.createdAt)}
+                        </td>
+                        <td className="text-danger text-center font-weight-bolder">
+                          ₱{transaction.total.toLocaleString()}.00
+                        </td>
+                        <td className="text-danger text-center font-weight-bold">
+                          ₱{transaction.cash.toLocaleString()}.00
+                        </td>
+                        <td className="text-danger text-center font-weight-bold">
+                          ₱
+                          {(
+                            transaction.cash - transaction.total
+                          ).toLocaleString()}
+                          .00
+                        </td>
+                        <td className="text-center">
+                          <MDBBtn
+                            size="sm"
+                            color="warning"
+                            rounded
+                            onClick={() =>
+                              hanldeShowPurchases(
+                                transaction.purchases,
+                                transaction
+                              )
+                            }
+                          >
+                            <MDBIcon icon="eye" />
+                          </MDBBtn>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </MDBTable>
+              <MDBRow>
+                <MDBCol md="12" className="d-flex justify-content-end ">
+                  <MDBBadge color="info" className="">
+                    <h6 className="font-weight-bolder text-white mx-1 my-1 ">
+                      Grand Total Sales: ₱{getTotalSales(transactions)}.00
+                    </h6>
+                  </MDBBadge>
+                </MDBCol>
+              </MDBRow>
+              <PaginationButtons
+                page={page}
+                setPage={setPage}
+                max={maxPage}
+                array={transactions}
+                title={"Transactions"}
+              />
+            </>
+          ) : (
+            <Spinner />
+          )}
         </MDBCardBody>
       </MDBCard>
       <Receipt

@@ -66,7 +66,7 @@ export const Quantity = ({
         </MDBCol>
       )}
       <MDBCol
-        md={disabledButtons ? 7 : 6}
+        md={disabledButtons ? "7" : "6"}
         className="d-flex align-items-center"
       >
         <MDBInputGroup

@@ -21,10 +21,11 @@ import Swal from "sweetalert2";
 import handlePagination from "../../../widgets/pagination";
 import PaginationButtons from "../../../widgets/pagination/buttons";
 import { globalSearch } from "../../../../services/utilities";
+import Spinner from "../../../widgets/spinner";
 
 const Suppliers = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(({ suppliers }) => suppliers),
+    { collections, isLoading } = useSelector(({ suppliers }) => suppliers),
     [suppliers, setSuppliers] = useState([]),
     [willCreate, setWillCreate] = useState(true),
     [show, setShow] = useState(false),
@@ -108,72 +109,79 @@ const Suppliers = () => {
           handleSearch={handleSearch}
           collections={collections}
         />
-        <MDBTable>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Company Name</th>
-              <th>Location</th>
-              <th>Contact</th>
-              <th className="text-center">Status</th>
-              <th className="text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {suppliers.length > 0 &&
-              handlePagination(suppliers, page, maxPage).map(
-                (supplier, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{supplier.company}</td>
-                    <td>{supplier.location}</td>
-                    <td>{supplier.contact}</td>
-                    <td className="text-center">
-                      <MDBSwitch
-                        labelLeft="Inactive"
-                        labelRight="Active"
-                        checked={supplier.status ? true : false}
-                        onChange={({ target }) =>
-                          handleChangeStatus(target.checked, supplier._id)
-                        }
-                      />
-                    </td>
-                    <td className="text-center">
-                      <MDBBtnGroup>
-                        <MDBBtn
-                          color="danger"
-                          size="sm"
-                          rounded
-                          onClick={() => handleDelete(supplier._id)}
-                        >
-                          <MDBIcon icon="trash" />
-                        </MDBBtn>
-                        <MDBBtn
-                          color="primary"
-                          size="sm"
-                          rounded
-                          onClick={() => {
-                            setSelected(supplier);
-                            setShow(true);
-                            setWillCreate(false);
-                          }}
-                        >
-                          <MDBIcon icon="pencil-alt" />
-                        </MDBBtn>
-                      </MDBBtnGroup>
-                    </td>
-                  </tr>
-                )
-              )}
-          </tbody>
-        </MDBTable>
-        <PaginationButtons
-          max={maxPage}
-          page={page}
-          array={suppliers}
-          setPage={setPage}
-          title={"Supplier"}
-        />
+        {!isLoading ? (
+          <>
+            {" "}
+            <MDBTable>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Company Name</th>
+                  <th>Location</th>
+                  <th>Contact</th>
+                  <th className="text-center">Status</th>
+                  <th className="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {suppliers.length > 0 &&
+                  handlePagination(suppliers, page, maxPage).map(
+                    (supplier, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{supplier.company}</td>
+                        <td>{supplier.location}</td>
+                        <td>{supplier.contact}</td>
+                        <td className="text-center">
+                          <MDBSwitch
+                            labelLeft="Inactive"
+                            labelRight="Active"
+                            checked={supplier.status ? true : false}
+                            onChange={({ target }) =>
+                              handleChangeStatus(target.checked, supplier._id)
+                            }
+                          />
+                        </td>
+                        <td className="text-center">
+                          <MDBBtnGroup>
+                            <MDBBtn
+                              color="danger"
+                              size="sm"
+                              rounded
+                              onClick={() => handleDelete(supplier._id)}
+                            >
+                              <MDBIcon icon="trash" />
+                            </MDBBtn>
+                            <MDBBtn
+                              color="primary"
+                              size="sm"
+                              rounded
+                              onClick={() => {
+                                setSelected(supplier);
+                                setShow(true);
+                                setWillCreate(false);
+                              }}
+                            >
+                              <MDBIcon icon="pencil-alt" />
+                            </MDBBtn>
+                          </MDBBtnGroup>
+                        </td>
+                      </tr>
+                    )
+                  )}
+              </tbody>
+            </MDBTable>
+            <PaginationButtons
+              max={maxPage}
+              page={page}
+              array={suppliers}
+              setPage={setPage}
+              title={"Supplier"}
+            />
+          </>
+        ) : (
+          <Spinner />
+        )}
       </MDBCardBody>
       <Modal
         show={show}

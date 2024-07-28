@@ -82,7 +82,7 @@ export const FullView = ({
               }}
             >
               <img
-                className={`cursor-pointer border border-${
+                className={`cursor-pointer  border border-${
                   index === activeIndex ? "danger" : ""
                 }`}
                 alt="img"

@@ -122,9 +122,9 @@ export const Header = ({
       <MDBCardBody className="m-0 p-0 " style={{ backgroundColor: "#F6412D" }}>
         <Profile />
 
-        <MDBRow className="d-flex align-items-center justify-content-center   mb-1">
-          <MDBCol md="9">
-            <MDBRow className="d-flex align-items-center justify-content-center">
+        <MDBRow className="d-flex align-items-center justify-content-center   mb-1 ml-5">
+          <MDBCol md="9 ">
+            <MDBRow className="d-flex align-items-center justify-content-center ">
               <MDBCol md="12" className="d-flex align-items-center">
                 <MDBIcon
                   icon="shopping-bag"
@@ -136,7 +136,7 @@ export const Header = ({
                   LIBERTY HARDWARE
                 </h5>
 
-                <div className="input-container ml-3">
+                <div className="input-container ml-3 ">
                   <form onSubmit={handleSearch}>
                     <input
                       className="form-control input"

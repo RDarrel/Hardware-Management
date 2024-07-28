@@ -57,7 +57,10 @@ const Categories = ({ products, handleSelectCategory, isLoading }) => {
       <div className="d-flex justify-content-center ">
         <div className="w-75">
           <MDBCard className="boxshadow-none ">
-            <MDBCardHeader className="bg-white grey-text" tag="h6">
+            <MDBCardHeader
+              className="bg-white grey-text font-weight-bold"
+              tag="h6"
+            >
               CATEGORIES
             </MDBCardHeader>
             <MDBCardBody className="w-100">
@@ -85,9 +88,9 @@ const Categories = ({ products, handleSelectCategory, isLoading }) => {
                         const { products } = category;
                         const product = products[2] || {};
                         return (
-                          <MDBCol lg="2" key={index} className="w-100">
+                          <MDBCol md="2" key={index}>
                             <MDBCard
-                              className="boxshadow-none w-100"
+                              className="boxshadow-none w-100  p-2"
                               onClick={() => handleSelectCategory(category)}
                             >
                               <MDBCardImage

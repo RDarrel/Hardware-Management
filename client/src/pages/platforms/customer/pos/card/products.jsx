@@ -40,7 +40,7 @@ const Products = ({ products = [], showSideBar, handleSelectProduct }) => {
                 <MDBCardImage
                   top
                   waves
-                  className="img-fluid d-flex justify-content-center"
+                  className="img-fluid d-flex justify-content-center "
                   src={`${ENDPOINT}/assets/products/${product._id}/Cover Photo.jpg`}
                   style={{ height: "160px", width: "70%" }}
                 />

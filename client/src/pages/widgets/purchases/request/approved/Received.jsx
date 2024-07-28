@@ -140,7 +140,7 @@ export default function Received({
                             </h6>
                             {product.hasVariant && (
                               <div className="d-flex align-items-center">
-                                <h6 className="mr-1">Variations:</h6>
+                                <h6 className="mr-1">Variant:</h6>
                                 <h6>
                                   {variation.name(
                                     merchandise,

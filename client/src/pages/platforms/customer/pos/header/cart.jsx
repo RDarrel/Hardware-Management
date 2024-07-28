@@ -10,7 +10,7 @@ import {
 import { ENDPOINT, variation } from "../../../../../services/utilities";
 const Cart = ({ id, setIsShowCart, setID, cart }) => {
   return (
-    <div onMouseLeave={() => setID((prev) => prev + 1)} className="p-2 mr-5">
+    <div onMouseLeave={() => setID((prev) => prev + 1)} className="p-2 ">
       <MDBPopover placement="bottom" popover id={`popover-${id}`} key={id}>
         <MDBBtn
           className="d-flex align-items-center cart-pop-over-btn mr-2"

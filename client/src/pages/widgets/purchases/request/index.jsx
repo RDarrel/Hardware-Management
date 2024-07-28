@@ -18,7 +18,7 @@ import Collapse from "./collapse";
 export default function Request({ isAdmin }) {
   const [activeTab, setActiveTab] = useState("pending");
   const { token, auth } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(({ purchases }) => purchases),
+    { collections, isLoading } = useSelector(({ purchases }) => purchases),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -92,6 +92,7 @@ export default function Request({ isAdmin }) {
               collections={collections}
               isAdmin={isAdmin}
               isApproved={false}
+              isLoading={isLoading}
             />
           </MDBModalBody>
         </MDBTabPane>
@@ -102,6 +103,7 @@ export default function Request({ isAdmin }) {
               isAdmin={isAdmin}
               isApproved={true}
               isRejected={false}
+              isLoading={isLoading}
             />
           </MDBModalBody>
         </MDBTabPane>
@@ -113,6 +115,7 @@ export default function Request({ isAdmin }) {
               isApproved={true}
               isReceived={true}
               isRejected={false}
+              isLoading={isLoading}
             />
           </MDBModalBody>
         </MDBTabPane>
@@ -122,6 +125,7 @@ export default function Request({ isAdmin }) {
               collections={collections}
               isAdmin={isAdmin}
               isRejected={true}
+              isLoading={isLoading}
             />
           </MDBModalBody>
         </MDBTabPane>

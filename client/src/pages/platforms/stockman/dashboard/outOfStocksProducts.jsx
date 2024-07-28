@@ -1,8 +1,9 @@
 import React from "react";
 import { MDBCol, MDBCard, MDBCardBody, MDBCardHeader, MDBIcon } from "mdbreact";
 import Table from "./table";
+import Spinner from "../../../widgets/spinner";
 
-const OutOfStocksProducts = ({ outOfStocks = [] }) => {
+const OutOfStocksProducts = ({ outOfStocks = [], isLoading }) => {
   return (
     <MDBCol lg="12" md="12">
       <MDBCard className="mb-4">
@@ -11,11 +12,15 @@ const OutOfStocksProducts = ({ outOfStocks = [] }) => {
           Nearly Product Out of Stocks
         </MDBCardHeader>
         <MDBCardBody>
-          <Table
-            products={outOfStocks}
-            isStock={true}
-            title={"Nearly out of stock"}
-          />
+          {!isLoading ? (
+            <Table
+              products={outOfStocks}
+              isStock={true}
+              title={"Nearly out of stock"}
+            />
+          ) : (
+            <Spinner />
+          )}
         </MDBCardBody>
       </MDBCard>
     </MDBCol>

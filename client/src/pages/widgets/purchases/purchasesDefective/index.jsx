@@ -19,7 +19,7 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
   const [activeTab, setActiveTab] = useState("pending");
   const { token, auth } = useSelector(({ auth }) => auth),
     [purchases, setPurchases] = useState([]),
-    { collections = [] } = useSelector(({ purchases }) => purchases),
+    { collections = [], isLoading } = useSelector(({ purchases }) => purchases),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -100,6 +100,7 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
               status="defective"
               isAdmin={isAdmin}
               isDefective={isDefective}
+              isLoading={isLoading}
             />
           </MDBModalBody>
         </MDBTabPane>
@@ -111,6 +112,7 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
               status="replacement"
               isDefective={isDefective}
               isAdmin={isAdmin}
+              isLoading={isLoading}
             />
           </MDBModalBody>
         </MDBTabPane>
@@ -121,6 +123,7 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
               status="received"
               isDefective={isDefective}
               isAdmin={isAdmin}
+              isLoading={isLoading}
             />
           </MDBModalBody>
         </MDBTabPane>
@@ -132,6 +135,7 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
               status="refund"
               isDefective={isDefective}
               isAdmin={isAdmin}
+              isLoading={isLoading}
             />
           </MDBModalBody>
         </MDBTabPane>

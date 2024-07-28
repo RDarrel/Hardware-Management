@@ -18,10 +18,11 @@ import Modal from "./modal";
 import handlePagination from "../../../../widgets/pagination";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
 import { globalSearch } from "../../../../../services/utilities";
+import Spinner from "../../../../widgets/spinner";
 
 const Materials = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
-    { collections } = useSelector(({ materials }) => materials),
+    { collections, isLoading } = useSelector(({ materials }) => materials),
     [materials, setMaterials] = useState([]),
     [willCreate, setWillCreate] = useState(true),
     [selected, setSelected] = useState({}),
@@ -85,66 +86,72 @@ const Materials = () => {
             handleSearch={handleSearch}
             collections={collections}
           />
-          <MDBTable>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th className="text-center">Name</th>
-                <th className="text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {materials.length > 0 ? (
-                handlePagination(materials, page, maxPage).map(
-                  (material, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td className="text-center font-weight-bolder">
-                        {material.name}
-                      </td>
-                      <td className="text-center">
-                        <MDBBtnGroup>
-                          <MDBBtn
-                            size="sm"
-                            rounded
-                            color="danger"
-                            onClick={() => handleDelete(material._id)}
-                          >
-                            <MDBIcon icon="trash" />
-                          </MDBBtn>
-                          <MDBBtn
-                            size="sm"
-                            rounded
-                            color="primary"
-                            onClick={() => {
-                              setWillCreate(false);
-                              setSelected(material);
-                              toggle();
-                            }}
-                          >
-                            <MDBIcon icon="pencil-alt" />
-                          </MDBBtn>
-                        </MDBBtnGroup>
+          {!isLoading ? (
+            <>
+              <MDBTable>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th className="text-center">Name</th>
+                    <th className="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {materials.length > 0 ? (
+                    handlePagination(materials, page, maxPage).map(
+                      (material, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td className="text-center font-weight-bolder">
+                            {material.name}
+                          </td>
+                          <td className="text-center">
+                            <MDBBtnGroup>
+                              <MDBBtn
+                                size="sm"
+                                rounded
+                                color="danger"
+                                onClick={() => handleDelete(material._id)}
+                              >
+                                <MDBIcon icon="trash" />
+                              </MDBBtn>
+                              <MDBBtn
+                                size="sm"
+                                rounded
+                                color="primary"
+                                onClick={() => {
+                                  setWillCreate(false);
+                                  setSelected(material);
+                                  toggle();
+                                }}
+                              >
+                                <MDBIcon icon="pencil-alt" />
+                              </MDBBtn>
+                            </MDBBtnGroup>
+                          </td>
+                        </tr>
+                      )
+                    )
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="text-center">
+                        No Records.
                       </td>
                     </tr>
-                  )
-                )
-              ) : (
-                <tr>
-                  <td colSpan={3} className="text-center">
-                    No Records.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </MDBTable>
-          <PaginationButtons
-            array={materials}
-            page={page}
-            setPage={setPage}
-            max={maxPage}
-            title={"Material"}
-          />
+                  )}
+                </tbody>
+              </MDBTable>
+              <PaginationButtons
+                array={materials}
+                page={page}
+                setPage={setPage}
+                max={maxPage}
+                title={"Material"}
+              />
+            </>
+          ) : (
+            <Spinner />
+          )}
         </MDBCardBody>
       </MDBCard>
       <Modal
