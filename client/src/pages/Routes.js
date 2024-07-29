@@ -6,7 +6,7 @@ import ACCESS from "./platforms/access.js";
 
 //global
 import Profile from "../components/profile";
-import ViewProfile from "../components/profile/view.jsx";
+// import ViewProfile from "../components/profile/view.jsx";
 import { useSelector } from "react-redux";
 import Checkout from "./platforms/stockman/checkout/index.jsx";
 
@@ -62,7 +62,7 @@ export default function Routes() {
   return (
     <Switch>
       {handleRoutes()}
-      <Route path="/profile" exact component={ViewProfile} />
+      <Route path="/profile" exact component={Profile} />
       <Route path="/profile/update" exact component={Profile} />
       <Route path="/checkout" exact component={Checkout} />
 

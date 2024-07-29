@@ -1,5 +1,6 @@
 const Entity = require("../models/Users"),
   generateToken = require("../config/generateToken"),
+  bcrypt = require("bcryptjs"),
   fs = require("fs");
 
 exports.login = (req, res) => {
@@ -16,7 +17,8 @@ exports.login = (req, res) => {
 
       if (item.wasBanned)
         return res.status(400).json({
-          error: "User Banned",
+          error:
+            "Your account has been suspended by an admin due to a violation of our terms of service. Please contact support for further details and assistance.",
           message: item.banned.for,
         });
 
@@ -38,6 +40,40 @@ exports.login = (req, res) => {
       });
     })
     .catch((error) => res.status(400).json({ error: error.message }));
+};
+
+exports.changePassword = async (req, res) => {
+  const { newPassword = "", _id, oldPassword } = req.body;
+  const salt = await bcrypt.genSalt(10);
+  const hashNewPassword = await bcrypt.hash(newPassword, salt);
+  const entity = await Entity.findOne({ _id });
+  const isMatch = await bcrypt.compare(oldPassword, entity.password);
+
+  if (!isMatch) {
+    res.json({
+      error: "Incorrect Password",
+      message: "Your provided old password is incorrect.",
+    });
+  } else {
+    Entity.findByIdAndUpdate(_id, { password: hashNewPassword }, { new: true })
+      .then((item) => {
+        if (item) {
+          res.json({
+            message: "",
+            success: "Password Change Successfully",
+            payload: item,
+          });
+        } else {
+          res.status(404).json({
+            error: "ID Not Found",
+            message: "The provided ID does not exist.",
+          });
+        }
+      })
+      .catch((error) =>
+        res.status(400).json({ error: handleDuplicate(error) })
+      );
+  }
 };
 
 exports.provideAuth = (req, res) =>

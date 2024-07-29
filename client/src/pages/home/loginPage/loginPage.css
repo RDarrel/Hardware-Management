@@ -1,0 +1,34 @@
+.radius-left {
+  border-top-left-radius: 120px;
+  border-bottom-left-radius: 100px;
+
+  border-top-right-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+.radius-right {
+  border-top-right-radius: 120px;
+  border-bottom-right-radius: 100px;
+
+  border-top-left-radius: 32px;
+  border-bottom-left-radius: 32px;
+}
+
+.btn-signup {
+  margin-top: 30px;
+  border-radius: 10px;
+  background-color: #007bff;
+  width: 150px;
+  height: 35px;
+  border: 1px white solid !important;
+}
+
+.base-card {
+  border-radius: 32px;
+}
+
+.btn-login {
+  height: 35px;
+  width: 140px;
+  border-radius: 10px;
+}

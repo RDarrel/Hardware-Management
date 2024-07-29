@@ -58,6 +58,24 @@ export const VALIDATEREFRESH = createAsyncThunk(
   }
 );
 
+export const CHANGE_PASSWORD = createAsyncThunk(
+  `${name}/CHANGE_PASSWORD`,
+  (form, thunkAPI) => {
+    try {
+      return axioKit.save(name, form.data, form.token, "changePassword");
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   try {
     return axioKit.update("users", form.data, form.token);
@@ -132,6 +150,24 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(LOGIN.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(CHANGE_PASSWORD.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(CHANGE_PASSWORD.fulfilled, (state, action) => {
+        const { message, payload } = action.payload;
+        state.auth = message ? state.auth : payload;
+        state.isLoading = false;
+        state.message = message;
+        state.isSuccess = message ? false : true;
+      })
+      .addCase(CHANGE_PASSWORD.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;

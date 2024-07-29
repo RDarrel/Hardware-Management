@@ -3,30 +3,27 @@ import {
   MDBRow,
   MDBCol,
   MDBCard,
-  MDBView,
   MDBCardBody,
   MDBInput,
   MDBContainer,
-  MDBAvatar,
   MDBBtn,
-  MDBProgress,
   MDBSelect,
   MDBSelectInput,
   MDBSelectOption,
   MDBSelectOptions,
   MDBSpinner,
+  MDBCardHeader,
 } from "mdbreact";
 import { PresetImage, isJpegOrJpgFile } from "../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { IMAGE, UPLOAD } from "../../services/redux/slices/auth";
 import { UPDATE } from "../../services/redux/slices/auth";
-import { useHistory } from "react-router";
+import ChangePassword from "./changePassword";
+import ChangePhoto from "./photo";
 
 export default function Profile() {
-  const { auth, progress, image, token, progressBar } = useSelector(
-      ({ auth }) => auth
-    ),
+  const { auth, image, token, progressBar } = useSelector(({ auth }) => auth),
     [file, setFile] = useState(null),
     [form, setForm] = useState({
       fullName: {
@@ -48,16 +45,15 @@ export default function Profile() {
       bio: "",
     }),
     { addToast } = useToasts(),
-    dispatch = useDispatch(),
-    history = useHistory();
+    dispatch = useDispatch();
 
-  const handleImageChange = e => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
 
     if (file && isJpegOrJpgFile(file)) {
       const reader = new FileReader();
 
-      reader.onload = e => {
+      reader.onload = (e) => {
         const img = new Image();
 
         img.src = e.target.result;
@@ -115,7 +111,7 @@ export default function Profile() {
     }
   }, [auth]);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const _form = { ...form };
@@ -139,55 +135,20 @@ export default function Profile() {
   return (
     <MDBContainer fluid>
       <MDBRow>
-        <MDBCol lg="3" className="mb-4">
-          <MDBCard narrow>
-            <MDBView cascade className="mdb-color lighten-3 card-header">
-              <h5 className="mb-0 font-weight-bold text-center text-white">
-                Edit Photo
-              </h5>
-            </MDBView>
-            <MDBCardBody className="text-center">
-              <MDBAvatar
-                tag="img"
-                src={image}
-                onError={e => (e.target.src = PresetImage(auth.isMale))}
-                alt={`preview-${auth._id}`}
-                className="z-depth-1 mb-3 mx-auto rounded"
-              />
-
-              {progressBar >= 0 && <MDBProgress value={progressBar} animated />}
-              <p className="text-muted">
-                <small>
-                  {progressBar > -1
-                    ? "Please wait while we update your profile photo"
-                    : "Profile photo will be changed automatically"}
-                </small>
-              </p>
-              <label
-                htmlFor="changeImage"
-                className="btn btn-info btn-sm btn-rounded"
-              >
-                Upload New Photo
-              </label>
-              <input
-                id="changeImage"
-                onChange={handleImageChange}
-                type="file"
-                className="d-none"
-                accept="image/jpeg, image/jpg"
-              />
-            </MDBCardBody>
-          </MDBCard>
-        </MDBCol>
         <MDBCol lg="9">
-          <MDBCard narrow>
-            <MDBView cascade className="mdb-color lighten-3 card-header">
-              <h5 className="mb-0 font-weight-bold text-center text-white">
-                Account Details ({progress.percentage}%)
-              </h5>
-            </MDBView>
-
+          <MDBCard>
+            <MDBCardHeader color="white">
+              <span className="text-dark font-weight-bold">Update Profile</span>
+            </MDBCardHeader>
             <MDBCardBody className="text-center">
+              <ChangePhoto
+                progressBar={progressBar}
+                PresetImage={PresetImage}
+                auth={auth}
+                handleImageChange={handleImageChange}
+                image={image}
+                form={form}
+              />
               {form._id ? (
                 <form onSubmit={handleSubmit}>
                   <MDBRow>
@@ -195,7 +156,7 @@ export default function Profile() {
                       <MDBInput
                         type="text"
                         value={form.fullName?.fname}
-                        onChange={e =>
+                        onChange={(e) =>
                           handleObjChange("fullName", "fname", e.target.value)
                         }
                         label="First name"
@@ -206,7 +167,7 @@ export default function Profile() {
                       <MDBInput
                         type="text"
                         value={form.fullName?.mname}
-                        onChange={e =>
+                        onChange={(e) =>
                           handleObjChange("fullName", "mname", e.target.value)
                         }
                         label="Middle name"
@@ -216,7 +177,7 @@ export default function Profile() {
                       <MDBInput
                         type="text"
                         value={form.fullName?.lname}
-                        onChange={e =>
+                        onChange={(e) =>
                           handleObjChange("fullName", "lname", e.target.value)
                         }
                         label="Last name"
@@ -227,7 +188,7 @@ export default function Profile() {
                       <MDBSelect
                         className="colorful-select dropdown-primary hidden-md-down text-left"
                         label="Suffix"
-                        getValue={e =>
+                        getValue={(e) =>
                           handleObjChange(
                             "fullName",
                             "suffix",
@@ -282,7 +243,7 @@ export default function Profile() {
                       <MDBInput
                         type="text"
                         value={form.address?.region}
-                        onChange={e =>
+                        onChange={(e) =>
                           handleObjChange("address", "region", e.target.value)
                         }
                         label="Region"
@@ -293,7 +254,7 @@ export default function Profile() {
                       <MDBInput
                         type="text"
                         value={form.address?.province}
-                        onChange={e =>
+                        onChange={(e) =>
                           handleObjChange("address", "province", e.target.value)
                         }
                         label="Province"
@@ -304,7 +265,7 @@ export default function Profile() {
                       <MDBInput
                         type="text"
                         value={form.address?.city}
-                        onChange={e =>
+                        onChange={(e) =>
                           handleObjChange("address", "city", e.target.value)
                         }
                         label="City/Municipality"
@@ -317,7 +278,7 @@ export default function Profile() {
                       <MDBInput
                         type="text"
                         value={form.address?.barangay}
-                        onChange={e =>
+                        onChange={(e) =>
                           handleObjChange("address", "barangay", e.target.value)
                         }
                         label="Barangay"
@@ -327,7 +288,7 @@ export default function Profile() {
                       <MDBInput
                         type="text"
                         value={form.address?.street}
-                        onChange={e =>
+                        onChange={(e) =>
                           handleObjChange("address", "street", e.target.value)
                         }
                         label="Street"
@@ -339,7 +300,7 @@ export default function Profile() {
                       <MDBInput
                         type="date"
                         value={form.dob}
-                        onChange={e => handleChange("dob", e.target.value)}
+                        onChange={(e) => handleChange("dob", e.target.value)}
                         required
                         label="Birthdate"
                       />
@@ -348,7 +309,7 @@ export default function Profile() {
                       <MDBInput
                         type="text"
                         value={form.mobile}
-                        onChange={e =>
+                        onChange={(e) =>
                           handleChange(
                             "mobile",
                             e.target.value.replace(/\D/g, "")
@@ -364,7 +325,9 @@ export default function Profile() {
                       <MDBSelect
                         className="colorful-select dropdown-primary hidden-md-down text-left"
                         label="Gender"
-                        getValue={e => handleChange("isMale", e[0] === "true")}
+                        getValue={(e) =>
+                          handleChange("isMale", e[0] === "true")
+                        }
                       >
                         <MDBSelectInput />
                         <MDBSelectOptions>
@@ -384,11 +347,11 @@ export default function Profile() {
                   <MDBInput
                     type="textarea"
                     value={form.bio}
-                    onChange={e => handleChange("bio", e.target.value)}
+                    onChange={(e) => handleChange("bio", e.target.value)}
                     label="Biography"
                   />
-                  <div className="d-flex justify-content-between">
-                    <MDBBtn
+                  <div className="d-flex justify-content-end">
+                    {/* <MDBBtn
                       onClick={() => history.push("/profile")}
                       type="button"
                       color="primary"
@@ -396,7 +359,7 @@ export default function Profile() {
                       rounded
                     >
                       View profile
-                    </MDBBtn>
+                    </MDBBtn> */}
                     <MDBBtn color="info" type="submit" rounded>
                       Update account
                     </MDBBtn>
@@ -408,6 +371,7 @@ export default function Profile() {
             </MDBCardBody>
           </MDBCard>
         </MDBCol>
+        <ChangePassword />
       </MDBRow>
     </MDBContainer>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { BROWSE } from "../../../../services/redux/slices/stockman/stocks";
 import { MDBBadge, MDBCard, MDBCardBody, MDBTable } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,14 +25,24 @@ export const Stocks = () => {
     dispatch(BROWSE({ token }));
   }, [dispatch, token]);
 
+  const handleSortStocks = useCallback((array) => {
+    const sortedCollections = [...array].sort(
+      (a, b) => a.available - b.available
+    );
+    setStocks(sortedCollections);
+  }, []);
+
+  // useEffect(() => {
+  //   if (collections.length > 0) {
+  //     handleSortStocks(collections);
+  //   }
+  // }, [collections]);
+
   useEffect(() => {
-    if (collections.length > 0) {
-      const sortedCollections = [...collections].sort(
-        (a, b) => a.available - b.available
-      );
-      setStocks(sortedCollections);
+    if (!didSearch) {
+      handleSortStocks(collections);
     }
-  }, [collections]);
+  }, [didSearch, collections, handleSortStocks]);
 
   const handleSearch = (e) => {
     e.preventDefault();

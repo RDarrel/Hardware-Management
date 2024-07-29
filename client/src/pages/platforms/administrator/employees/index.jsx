@@ -7,7 +7,10 @@ import {
   MDBIcon,
   MDBTable,
 } from "mdbreact";
-import { BROWSE } from "../../../../services/redux/slices/administrator/employees";
+import {
+  BROWSE,
+  UPDATE,
+} from "../../../../services/redux/slices/administrator/employees";
 import { useDispatch, useSelector } from "react-redux";
 import { fullName, globalSearch } from "../../../../services/utilities";
 import { Search } from "../../../widgets/search";
@@ -16,6 +19,7 @@ import handlePagination from "../../../widgets/pagination";
 import PaginationButtons from "../../../widgets/pagination/buttons";
 import Role from "./role";
 import Spinner from "../../../widgets/spinner";
+import Swal from "sweetalert2";
 export default function Employees() {
   const { token, maxPage } = useSelector(({ auth }) => auth),
     { collections, isLoading } = useSelector(({ employees }) => employees),
@@ -46,6 +50,27 @@ export default function Employees() {
     setDidSearch(true);
   };
 
+  const handleBanned = (hasBanned, _id) => {
+    const title = `${hasBanned ? "active" : "banned"}`;
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You want to ${title} this employee!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${title} it!`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(UPDATE({ token, data: { _id, wasBanned: !hasBanned } }));
+        Swal.fire({
+          title: "Suceessfully!",
+          text: `Your employee has been ${title}.`,
+          icon: "success",
+        });
+      }
+    });
+  };
   return (
     <MDBCard>
       <MDBCardBody>
@@ -67,21 +92,28 @@ export default function Employees() {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Role</th>
+                  <th className="text-center">Name</th>
+                  <th className="text-center">Email</th>
+                  <th className="text-center">Status</th>
+                  <th className="text-center">Role</th>
                   <th className="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {employees.length > 0 ? (
                   handlePagination(employees, page, maxPage).map(
-                    ({ role, fullName: name, email, _id }, index) => (
+                    (
+                      { role, fullName: name, email, _id, wasBanned },
+                      index
+                    ) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{fullName(name)}</td>
-                        <td>{email}</td>
-                        <td>{role}</td>
+                        <td className="text-center">{fullName(name)}</td>
+                        <td className="text-center">{email}</td>
+                        <td className="text-center">
+                          {wasBanned ? "Banned" : "Active"}
+                        </td>
+                        <td className="text-center">{role}</td>
                         <td className="text-center">
                           <MDBBtnGroup>
                             <MDBBtn
@@ -95,8 +127,15 @@ export default function Employees() {
                             >
                               <MDBIcon icon="key" />
                             </MDBBtn>
-                            <MDBBtn size="sm" rounded color="danger">
-                              <MDBIcon icon="user-slash" />
+                            <MDBBtn
+                              size="sm"
+                              rounded
+                              color={wasBanned ? "danger" : "success"}
+                              onClick={() => handleBanned(wasBanned, _id)}
+                            >
+                              <MDBIcon
+                                icon={wasBanned ? "user-slash" : "user-shield"}
+                              />
                             </MDBBtn>
                           </MDBBtnGroup>
                         </td>

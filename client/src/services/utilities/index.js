@@ -21,6 +21,7 @@ const ENDPOINT = "http://localhost:5000";
 const socket = io.connect(ENDPOINT);
 
 const PresetImage = (gender) => {
+  console.log(gender);
   if (gender) return Male;
 
   return Female;

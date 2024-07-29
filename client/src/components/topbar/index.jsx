@@ -44,13 +44,13 @@ class TopNavigation extends Component {
       transition: "padding-left .3s",
     };
 
-    const { auth, route } = this.props;
+    const { auth } = this.props;
     return (
       <MDBNavbar
-        className="flexible-MDBNavbar"
+        // className="flexible-MDBNavbar"
         light
         expand="md"
-        scrolling
+        // scrolling
         fixed="top"
         style={{ zIndex: 3 }}
       >
@@ -68,54 +68,9 @@ class TopNavigation extends Component {
         </div>
 
         <MDBNavbarBrand href="#" style={navStyle}>
-          <strong>{route}</strong>
+          {/* <strong>{route}</strong> */}
         </MDBNavbarBrand>
         <MDBNavbarNav expand="sm" right style={{ flexDirection: "row" }}>
-          {/* <MDBDropdown>
-              <MDBDropdownToggle nav caret>
-                <MDBBadge color="red" className="mr-2">
-                  3
-                </MDBBadge>
-                <MDBIcon icon="bell" />{" "}
-                <span className="d-none d-md-inline">Notifications</span>
-              </MDBDropdownToggle>
-              <MDBDropdownMenu right style={{ minWidth: "400px" }}>
-                <MDBDropdownItem href="#!">
-                  <MDBIcon icon="money-bill-alt" className="mr-2" />
-                  New order received
-                  <span className="float-right">
-                    <MDBIcon icon="clock" /> 13 min
-                  </span>
-                </MDBDropdownItem>
-                <MDBDropdownItem href="#!">
-                  <MDBIcon icon="money-bill-alt" className="mr-2" />
-                  New order received
-                  <span className="float-right">
-                    <MDBIcon icon="clock" /> 33 min
-                  </span>
-                </MDBDropdownItem>
-                <MDBDropdownItem href="#!">
-                  <MDBIcon icon="chart-line" className="mr-2" />
-                  Your campaign is about to end
-                  <span className="float-right">
-                    <MDBIcon icon="clock" /> 53 min
-                  </span>
-                </MDBDropdownItem>
-              </MDBDropdownMenu>
-            </MDBDropdown>
-            <MDBNavItem>
-              <MDBNavLink to="#">
-                <MDBIcon icon="envelope" />
-                <span className="d-none d-md-inline ml-1">Contact</span>
-              </MDBNavLink>
-            </MDBNavItem>
-
-            <MDBNavItem>
-              <MDBNavLink to="#">
-                <MDBIcon icon="comments" />
-                <span className="d-none d-md-inline ml-1">Support</span>
-              </MDBNavLink>
-            </MDBNavItem> */}
           <MDBDropdown>
             <MDBDropdownToggle nav>
               <MDBIcon icon="user" />
