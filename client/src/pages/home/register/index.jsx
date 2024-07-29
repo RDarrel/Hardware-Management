@@ -1,42 +1,9 @@
-import React, { useState, useEffect } from "react";
-import {
-  MDBAnimation,
-  MDBBtn,
-  MDBCard,
-  MDBCardBody,
-  MDBCol,
-  MDBIcon,
-  MDBInput,
-  MDBRow,
-} from "mdbreact";
-import { useDispatch, useSelector } from "react-redux";
-import { CUSTOMALERT, SAVE } from "../../../services/redux/slices/users";
+import React, { useEffect } from "react";
+import { MDBAnimation, MDBCol, MDBRow } from "mdbreact";
+import { useSelector } from "react-redux";
 
 export default function Register() {
-  const [isLocked, setIsLocked] = useState({
-      password: true,
-      confirmPassword: true,
-    }),
-    { message, isLoading, isSuccess } = useSelector(({ users }) => users),
-    dispatch = useDispatch();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const { email, password, confirmPassword } = e.target;
-
-    if (password.value === confirmPassword.value) {
-      dispatch(
-        SAVE({
-          email: email.value,
-          password: password.value,
-          role: "CUSTOMER",
-        })
-      );
-    } else {
-      dispatch(CUSTOMALERT("Passwords does not match."));
-    }
-  };
+  const { isSuccess } = useSelector(({ users }) => users);
 
   useEffect(() => {
     if (isSuccess) {
@@ -46,28 +13,22 @@ export default function Register() {
   }, [isSuccess]);
 
   return (
-    <MDBRow className="flex-center pt-5 mt-3">
+    <MDBRow className=" pt-5 mt-3">
       <MDBCol md="6" className="text-center text-md-left mb-5">
         <MDBAnimation type="fadeInLeft">
           <div className="white-text">
             <h1 className="h1-responsive font-weight-bold">
-              Join us right now!
+              WHAT <br /> ARE YOU <br /> WAITING FOR?
             </h1>
-            <hr className="hr-light" />
             <h6>
-              As a solution provider company, we specialize in understanding and
-              addressing the needs of our clients by offering tailored and
-              innovative solutions. Through close collaboration and utilizing
-              our expertise, we develop comprehensive strategies that encompass
-              software implementation, process optimization, consultancy
-              services, and specialized products. Our goal is to deliver
-              effective and efficient solutions that resolve complex problems
-              and help our clients achieve their objectives.
+              Give your future a boost at Liberty! We're committed to providing
+              top-notch service and products to help you succeed in all your
+              projects. Let's build something great together!
             </h6>
           </div>
         </MDBAnimation>
       </MDBCol>
-      <MDBCol md="6" className="col-xl-5 offset-xl-1">
+      {/* <MDBCol md="6" className="col-xl-5 offset-xl-1">
         <MDBAnimation type="fadeInRight">
           <form
             onSubmit={handleSubmit}
@@ -154,32 +115,32 @@ export default function Register() {
                   </MDBBtn>
                   <hr className="hr-light mb-3 mt-4" />
 
-                  {/* <div className="inline-ul text-center d-flex justify-content-center">
-                  <MDBIcon
-                    fab
-                    icon="google"
-                    size="lg"
-                    className="white-text p-2 m-2 cursor-pointer"
-                  />
-                  <MDBIcon
-                    fab
-                    icon="facebook"
-                    size="lg"
-                    className="white-text p-2 m-2 cursor-pointer"
-                  />
-                  <MDBIcon
-                    fab
-                    icon="yahoo"
-                    size="lg"
-                    className="white-text p-2 m-2 cursor-pointer"
-                  />
-                </div> */}
+                  <div className="inline-ul text-center d-flex justify-content-center">
+                    <MDBIcon
+                      fab
+                      icon="google"
+                      size="lg"
+                      className="white-text p-2 m-2 cursor-pointer"
+                    />
+                    <MDBIcon
+                      fab
+                      icon="facebook"
+                      size="lg"
+                      className="white-text p-2 m-2 cursor-pointer"
+                    />
+                    <MDBIcon
+                      fab
+                      icon="yahoo"
+                      size="lg"
+                      className="white-text p-2 m-2 cursor-pointer"
+                    />
+                  </div>
                 </div>
               </MDBCardBody>
             </MDBCard>
           </form>
         </MDBAnimation>
-      </MDBCol>
+      </MDBCol> */}
     </MDBRow>
   );
 }

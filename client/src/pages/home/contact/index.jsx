@@ -7,12 +7,12 @@ export default function ContactUs() {
   const { addToast } = useToasts(),
     { auth } = useSelector(({ auth }) => auth);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     console.log(auth._id);
 
-    addToast("Wow, it worked", {
+    addToast("Mesage successfully sent", {
       appearance: "success",
     });
   };
@@ -62,7 +62,7 @@ export default function ContactUs() {
           <ul className="text-center list-unstyled">
             <li>
               <MDBIcon icon="map-marker-alt" size="2x" />
-              <p>Nueva Ecija, Cabanatuan City, Mabini Extension</p>
+              <p>Brgy.Conception General Tinio Nueva Ecija</p>
             </li>
             <li>
               <MDBIcon icon="mobile-alt" size="2x" />

@@ -25,7 +25,7 @@ export default function App() {
     <Switch>
       <Route path="/" exact component={Home} />
       <Route path="/pos" exact component={POS} />
-      <Route path="/loginPage" exact component={LoginPage} />
+      <Route path="/login" exact component={LoginPage} />
       <Route path="/quotation" exact component={Quotation} />
       <Route path="/printOut" exact component={PrintOut} />
       <Route path="/pos/checkout" exact component={Checkout} />

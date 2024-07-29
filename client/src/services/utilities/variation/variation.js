@@ -114,7 +114,7 @@ const variation = {
         ({ _id }) => _id === _variant2
       )?.name;
 
-      return `${foundVariant1}/${foundVariant2}`;
+      return `${foundVariant1} / ${foundVariant2}`;
     } else {
       return `${foundVariant1}`;
     }

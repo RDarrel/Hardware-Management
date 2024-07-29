@@ -1,21 +1,19 @@
 import React from "react";
-import Phone from "../../../assets/landing/phone.jpg";
 import { MDBRow, MDBCol, MDBIcon, MDBAnimation } from "mdbreact";
+import Phone from "../../../assets/landing/phone.jpg";
 
 export default function Description() {
   return (
     <section className="section my-5" data-wow-delay="0.3s">
       <MDBAnimation type="fadeInUp" reveal>
-        <h1 className="text-center my-5 h1">Why is it so great?</h1>
+        <h1 className="text-center my-5 h1">Why Choose Liberty?</h1>
       </MDBAnimation>
       <MDBAnimation type="fadeInUp" reveal>
         <p className="text-center mb-5 w-responsive mx-auto">
-          Our solution provider company is highly esteemed for its exceptional
-          ability to understand client needs and deliver tailored solutions that
-          drive efficiency and success. With a team of skilled professionals and
-          a deep understanding of industry trends and technologies, we
-          consistently provide high-quality solutions that meet specific
-          requirements and enhance business processes.
+          At Liberty, we are dedicated to providing the highest quality hardware
+          solutions to meet your needs. Our experienced team is committed to
+          delivering reliable and efficient products that help you succeed in
+          all your projects.
         </p>
       </MDBAnimation>
       <MDBRow>
@@ -23,16 +21,15 @@ export default function Description() {
           <MDBRow className="mb-2">
             <MDBCol size="2">
               <MDBAnimation reveal type="fadeInLeftBig" duration="1.25s">
-                <MDBIcon size="2x" className="indigo-text" icon="shield-alt" />
+                <MDBIcon size="2x" className="indigo-text" icon="tools" />
               </MDBAnimation>
             </MDBCol>
             <MDBCol size="10">
               <MDBAnimation reveal type="fadeInLeftBig">
-                <h5 className="font-weight-bold my-4">Secure</h5>
+                <h5 className="font-weight-bold my-4">Durable</h5>
                 <p className="grey-text">
-                  We prioritize data and system security, implementing robust
-                  measures to ensure confidentiality, integrity, and
-                  availability.
+                  Our products are built to last, ensuring you get the most out
+                  of your investment with long-lasting and reliable hardware.
                 </p>
               </MDBAnimation>
             </MDBCol>
@@ -41,16 +38,15 @@ export default function Description() {
           <MDBRow className="mb-2">
             <MDBCol size="2">
               <MDBAnimation reveal type="fadeInLeftBig" duration="1.25s">
-                <MDBIcon size="2x" className="blue-text" icon="flask" />
+                <MDBIcon size="2x" className="blue-text" icon="lightbulb" />
               </MDBAnimation>
             </MDBCol>
             <MDBCol size="10">
               <MDBAnimation reveal type="fadeInLeftBig">
-                <h5 className="font-weight-bold my-4">Experimental</h5>
+                <h5 className="font-weight-bold my-4">Innovative</h5>
                 <p className="grey-text">
-                  We embrace experimentation and innovation to push boundaries
-                  and discover cutting-edge solutions for our clients' unique
-                  challenges.
+                  We embrace innovation to bring you the latest and most
+                  effective hardware solutions for your projects.
                 </p>
               </MDBAnimation>
             </MDBCol>
@@ -59,28 +55,28 @@ export default function Description() {
           <MDBRow className="mb-2">
             <MDBCol size="2">
               <MDBAnimation reveal type="fadeInLeftBig" duration="1.25s">
-                <MDBIcon
-                  size="2x"
-                  className="cyan-text"
-                  icon="glass-martini-alt"
-                />
+                <MDBIcon size="2x" className="cyan-text" icon="hands-helping" />
               </MDBAnimation>
             </MDBCol>
             <MDBCol size="10">
               <MDBAnimation reveal type="fadeInLeftBig">
-                <h5 className="font-weight-bold my-4">Relaxing</h5>
+                <h5 className="font-weight-bold my-4">Supportive</h5>
                 <p className="grey-text">
-                  We aim to provide a stress-free experience for our clients by
-                  handling their challenges and providing effective solutions,
-                  allowing them to relax and focus on their core business.
+                  We provide excellent customer support, ensuring you have the
+                  assistance you need to complete your projects successfully.
                 </p>
               </MDBAnimation>
             </MDBCol>
           </MDBRow>
         </MDBCol>
-        <MDBCol md="4 mb-2 text-center text-md-left flex-center">
+        <MDBCol md="4 mb-2 text-center text-md-left flex-center ">
           <MDBAnimation reveal type="fadeInUp">
-            <img src={Phone} alt="" className="z-depth-0" />
+            <img
+              src={Phone}
+              alt="Hardware"
+              className="z-depth-0"
+              height={300}
+            />
           </MDBAnimation>
         </MDBCol>
 
@@ -88,16 +84,20 @@ export default function Description() {
           <MDBRow className="mb-2">
             <MDBCol size="10" className="text-right">
               <MDBAnimation reveal type="fadeInRightBig">
-                <h5 className="font-weight-bold my-4">Beloved</h5>
+                <h5 className="font-weight-bold my-4">Trusted</h5>
                 <p className="grey-text">
-                  We strive to earn the trust and loyalty of our clients by
-                  delivering exceptional solutions and personalized service.
+                  Our clients trust us to provide reliable hardware solutions
+                  that meet their needs and exceed their expectations.
                 </p>
               </MDBAnimation>
             </MDBCol>
             <MDBCol size="2">
               <MDBAnimation reveal type="fadeInRightBig" duration="1.25s">
-                <MDBIcon size="2x" icon="heart" className="deep-purple-text" />
+                <MDBIcon
+                  size="2x"
+                  icon="thumbs-up"
+                  className="deep-purple-text"
+                />
               </MDBAnimation>
             </MDBCol>
           </MDBRow>
@@ -105,17 +105,16 @@ export default function Description() {
           <MDBRow className="mb-2">
             <MDBCol size="10" className="text-right">
               <MDBAnimation reveal type="fadeInRightBig">
-                <h5 className="font-weight-bold my-4">Rapid</h5>
+                <h5 className="font-weight-bold my-4">Efficient</h5>
                 <p className="grey-text">
-                  Our agile approach and streamlined processes enable us to
-                  deliver solutions quickly, ensuring timely results for our
-                  clients.
+                  Our streamlined processes ensure you get the hardware you need
+                  quickly and efficiently, keeping your projects on track.
                 </p>
               </MDBAnimation>
             </MDBCol>
             <MDBCol size="2">
               <MDBAnimation reveal type="fadeInRightBig" duration="1.25s">
-                <MDBIcon size="2x" icon="bolt" className="text-warning" />
+                <MDBIcon size="2x" icon="rocket" className="text-warning" />
               </MDBAnimation>
             </MDBCol>
           </MDBRow>
@@ -123,17 +122,16 @@ export default function Description() {
           <MDBRow className="mb-2">
             <MDBCol size="10" className="text-right">
               <MDBAnimation reveal type="fadeInRightBig">
-                <h5 className="font-weight-bold my-4">Magical</h5>
+                <h5 className="font-weight-bold my-4">Exceptional</h5>
                 <p className="grey-text">
-                  Through a combination of creativity and technical expertise,
-                  we create transformative solutions that seem like magic,
-                  bringing joy and excitement to our clients' operations.
+                  Combining creativity and technical expertise, we deliver
+                  exceptional hardware solutions that elevate your projects.
                 </p>
               </MDBAnimation>
             </MDBCol>
             <MDBCol size="2">
               <MDBAnimation reveal type="fadeInRightBig" duration="1.25s">
-                <MDBIcon size="2x" icon="magic" className="pink-text" />
+                <MDBIcon size="2x" icon="star" className="pink-text" />
               </MDBAnimation>
             </MDBCol>
           </MDBRow>
