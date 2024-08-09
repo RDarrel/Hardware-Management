@@ -22,7 +22,11 @@ import Swal from "sweetalert2";
 import truncateString from "../../../../../services/utilities/truncateString";
 import capitalize from "../../../../../services/utilities/capitalize";
 
-const ViewSelected = ({ selected = {} }) => {
+const ViewSelected = ({
+  selected = {},
+  setIsCheckout,
+  setCheckOutProducts,
+}) => {
   const { auth, token } = useSelector(({ auth }) => auth),
     [images, setImages] = useState([]),
     [variant1, setVariant1] = useState(""),
@@ -38,7 +42,6 @@ const ViewSelected = ({ selected = {} }) => {
     [storageOfRemoveImages, setStorageOfRemoveImages] = useState([]),
     thumbnailsPerPage = 4,
     [selectedImage, setSelectedImage] = useState(),
-    history = useHistory(),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -166,8 +169,10 @@ const ViewSelected = ({ selected = {} }) => {
         confirmButtonText: "OK",
       });
     } else {
-      dispatch(CHECKOUT([{ ...form, product: selected }]));
-      history.push("/pos/checkout");
+      setCheckOutProducts([{ ...form, product: selected }]);
+      setIsCheckout(true);
+      // dispatch(CHECKOUT([{ ...form, product: selected }]));
+      // history.push("/pos/checkout");
     }
   };
 
@@ -303,12 +308,12 @@ const ViewSelected = ({ selected = {} }) => {
                         CART
                       </MDBBtn>
                       <MDBBtn
-                        color="danger"
+                        color="primary"
                         type="submit"
                         size="md"
                         onClick={() => handleSubmit(false)}
                       >
-                        Buy Now
+                        Generate Receipt Now
                       </MDBBtn>
                     </MDBCol>
                   </MDBRow>

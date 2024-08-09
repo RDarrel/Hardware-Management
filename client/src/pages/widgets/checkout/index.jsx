@@ -23,7 +23,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
     dispatch = useDispatch();
 
   useEffect(() => {
-    const productWihtSubtotal = checkOutProducts.map((obj) => ({
+    const productWihtSubtotal = checkOutProducts?.map((obj) => ({
       ...obj,
       subtotal: variation.getTheSubTotal("srp", obj, obj.product),
       srp: variation.getTheCapitalOrSrp("srp", obj, obj.product),
@@ -47,6 +47,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
 
     setTotal(_total);
   }, [cart]);
+
   const handleBuy = async () => {
     Swal.fire({
       title: "Are you sure?",
@@ -76,7 +77,8 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
           title: "Successfully sent your receipt in your email",
           icon: "success",
         }).then(() => {
-          toggleCart();
+          toggleCart(false);
+
           setIsCheckout(false);
         });
       }
@@ -95,7 +97,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
             className="d-flex  mb-2 ml-1 align-items-center cursor-pointer"
             onClick={() => {
               setIsCheckout(false);
-              toggleCart();
+              toggleCart(false);
             }}
           >
             <MDBIcon

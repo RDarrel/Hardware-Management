@@ -198,7 +198,11 @@ const Quotation = () => {
                   activeCategory={activeCategory}
                 />
                 {!showSideBar && !didSearch && (
-                  <ViewSelected selected={selected} />
+                  <ViewSelected
+                    selected={selected}
+                    setIsCheckout={setIsCheckout}
+                    setCheckOutProducts={setCheckOutProducts}
+                  />
                 )}
               </div>
             ) : (
@@ -253,7 +257,7 @@ const Quotation = () => {
         <Checkout
           checkOutProducts={checkoutProducts}
           setIsCheckout={setIsCheckout}
-          toggleCart={toggleCart}
+          toggleCart={setIsShowCart}
         />
       )}
     </div>
