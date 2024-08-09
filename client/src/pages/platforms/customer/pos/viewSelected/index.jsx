@@ -8,9 +8,9 @@ import {
   MDBIcon,
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
-import { SAVE, CHECKOUT } from "../../../../../services/redux/slices/cart";
+import { SAVE } from "../../../../../services/redux/slices/cart";
 import { ENDPOINT } from "../../../../../services/utilities";
-import { useHistory } from "react-router";
+// import { useHistory } from "react-router";
 import { Quantity } from "../../../../widgets/orderType/quantity";
 
 import Kilo from "../../../../widgets/orderType/kilo";
