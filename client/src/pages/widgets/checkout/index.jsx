@@ -170,7 +170,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
               </MDBRow>
               <MDBRow className="mt-3 mr-1 mb-3">
                 <MDBCol md="12" className="text-right">
-                  <MDBBtn color="danger" type="button" onClick={handleBuy}>
+                  <MDBBtn color="primary" type="button" onClick={handleBuy}>
                     Generate Receipt
                   </MDBBtn>
                 </MDBCol>

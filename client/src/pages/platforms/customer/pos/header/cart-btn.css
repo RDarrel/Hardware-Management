@@ -8,7 +8,7 @@
 }
 
 .cart-pop-over-btn {
-  background: linear-gradient(to bottom, #f6412d, #f6412d);
+  background: linear-gradient(to bottom, #4285f4, #4285f4);
   border: none;
   box-shadow: 0px 0px 0px 0px !important;
   color: black !important;
@@ -30,7 +30,7 @@
 
 .input {
   width: 100%;
-  box-shadow: 0px 0px 2px 2px red;
+  /* box-shadow: 0px 0px 2px 2px red; */
   height: 47px !important;
   padding-right: 300px; /* Adjust based on the width of the select */
 }
@@ -51,7 +51,7 @@
   right: -2px;
   width: 70px;
   height: 38px;
-  background-color: #f6412d !important;
+  background-color: #4285f4 !important;
   box-shadow: none;
   top: -1px;
 }

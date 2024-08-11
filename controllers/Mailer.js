@@ -99,7 +99,13 @@ const handleRemoveCart = async (products) => {
     console.log("Error in remove cart", error.message);
   }
 };
-
+const handleFormattedTotal = (total) => {
+  if (total % 1 !== 0) {
+    return `${total}`;
+  } else {
+    return `${total.toFixed(2)}`;
+  }
+};
 exports.receipt = (req, res) => {
   const { products, total, date = "", to = "" } = req.body;
   handleRemoveCart(products);
@@ -109,14 +115,14 @@ exports.receipt = (req, res) => {
     let replacements = {
       appName: process.env.APP_NAME,
       products,
-      total,
+      total: handleFormattedTotal(total),
       date,
     };
     let htmlToSend = template(replacements);
 
     let msg = {
       from: `${process.env.APP_NAME}  <${process.env.EMAIL_USER}>`,
-      to,
+      to: "rdpajarillaga596@gmail.com",
       subject: "Quotation",
       html: htmlToSend,
       attachments: [

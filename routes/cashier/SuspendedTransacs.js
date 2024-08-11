@@ -4,11 +4,13 @@ const router = require("express").Router(),
     save,
     update,
     destroy,
+    quotations,
   } = require("../../controllers/cashier/SuspendedTransacs"),
   { validate } = require("../../middleware/jwt");
 
 router
   .get("/", validate, browse)
+  .get("/quotations", validate, quotations)
   .post("/save", validate, save)
   .put("/update", validate, update)
   .delete("/destroy", validate, destroy);

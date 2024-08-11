@@ -14,7 +14,6 @@ export default function Receipt({
   invoice_no = "",
   orderDetails = [],
   setInvoice_no,
-  setOrders = () => {},
   customerView,
   isReturnRefund = false,
   isReturn = false,
@@ -23,14 +22,19 @@ export default function Receipt({
   reason = "",
   isAdmin = false,
   cash = 0,
+  isWalkin,
+  customerQuotation = "",
+  handleSuspend = () => {},
+  setCustomerQuotation = () => {},
+  setOrders = () => {},
 }) {
   const { auth, token } = useSelector(({ auth }) => auth),
     [customer, setCustomer] = useState(""),
     dispatch = useDispatch();
 
   useEffect(() => {
-    setCustomer("");
-  }, []);
+    setCustomer(customerQuotation);
+  }, [show, customerQuotation]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -49,7 +53,6 @@ export default function Receipt({
         }),
       };
     });
-    console.log(purchases);
     const printData = {
       invoice_no,
       customer,
@@ -80,16 +83,24 @@ export default function Receipt({
       icon: "success",
     });
     setInvoice_no("");
+    setCustomerQuotation("");
     setOrders([]);
     toggle();
   };
-
+  const handleSend = (e) => {
+    e.preventDefault();
+    handleSuspend(customer);
+    setCustomerQuotation("");
+    // setInvoice_no("");
+    // setOrders([]);
+    // toggle();
+  };
   const change = cash - total || 0;
 
   return (
     <MDBModal isOpen={show} toggle={toggle} backdrop size="lg" centered>
       <MDBModalBody className="mb-0 m-0 p-0">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={!isWalkin ? handleSubmit : handleSend}>
           <Header
             invoice_no={invoice_no}
             createdAt={createdAt}
@@ -101,6 +112,7 @@ export default function Receipt({
             cashier={cashier}
             customerView={customerView}
             reason={reason}
+            isWalkin={isWalkin}
           />
           <div className={`mx-2 mt-${isAdmin ? "2" : "4"}`}>
             <table className="invoice-table">
@@ -164,22 +176,38 @@ export default function Receipt({
                     className="pl-1 "
                     style={{ borderRight: "none", fontSize: "1rem" }}
                   >
-                    <p className="ml-3 paragraph mt-1 text-nowrap">
+                    <p
+                      className={`ml-3 paragraph ${
+                        !isWalkin ? "mt-1" : "mb-1"
+                      } text-nowrap`}
+                    >
                       Total Amount
                     </p>
-                    <p className="ml-3 paragraph"> Cash</p>
-                    <p className="ml-3 paragraph  mb-2">Change</p>
+                    {!isWalkin && (
+                      <>
+                        <p className="ml-3 paragraph"> Cash</p>
+                        <p className="ml-3 paragraph  mb-2">Change</p>
+                      </>
+                    )}
                   </td>
                   <td style={{ borderLeft: "none", fontSize: "1rem" }}>
-                    <p className="ml-4 paragraph  mt-1">
+                    <p
+                      className={`ml-4 paragraph   ${
+                        !isWalkin ? "mt-1" : "mb-1"
+                      }`}
+                    >
                       ₱{total.toLocaleString()}.00
                     </p>
-                    <p className="ml-4 paragraph">
-                      ₱{cash.toLocaleString()}.00
-                    </p>
-                    <p className="ml-4 paragraph mb-2">
-                      ₱{change.toLocaleString()}.00
-                    </p>
+                    {!isWalkin && (
+                      <>
+                        <p className="ml-4 paragraph">
+                          ₱{cash.toLocaleString()}.00
+                        </p>
+                        <p className="ml-4 paragraph mb-2">
+                          ₱{change.toLocaleString()}.00
+                        </p>
+                      </>
+                    )}
                   </td>
                 </tr>
               </tbody>
@@ -192,7 +220,7 @@ export default function Receipt({
                 color="primary"
                 className="mb-2 font-weight-bold float-right"
               >
-                Proceed
+                {!isWalkin ? "Proceed" : "Send to cashier"}
               </MDBBtn>
             )}
             <MDBBtn

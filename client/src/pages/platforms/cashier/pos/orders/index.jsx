@@ -19,6 +19,9 @@ const Orders = ({
   invoice_no,
   setInvoice_no,
   handleMaxSaleMessage,
+  isWalkin,
+  customerQuotation,
+  setCustomerQuotation,
 }) => {
   const { auth, token } = useSelector(({ auth }) => auth),
     [total, setTotal] = useState(0),
@@ -121,15 +124,17 @@ const Orders = ({
     setOrders(_orders);
     handleClose();
   };
-  const handleSuspend = () => {
+  const handleSuspend = (customer = "") => {
     Swal.fire({
       title: "Are you sure?",
-      text: "This transaction will be suspended and can be resumed later.",
+      text: isWalkin
+        ? "You want to send this receipt in cashier"
+        : "This transaction will be suspended and can be resumed later.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, suspend it!",
+      confirmButtonText: `Yes, ${!isWalkin ? "suspend" : "send"} it!`,
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(
@@ -138,17 +143,25 @@ const Orders = ({
             data: {
               cashier: auth._id,
               total,
+              customer,
               orders: orderDetails,
               invoice_no,
+              type: !isWalkin ? "suspend" : "quotation",
+              assistBy: auth._id,
             },
           })
         );
         setInvoice_no("");
         setOrders([]);
         setOrderDetails([]);
+        if (isWalkin) {
+          setIsCheckOut(false);
+        }
         Swal.fire({
-          title: "Suspended!",
-          text: "The transaction has been successfully suspended.",
+          title: !isWalkin ? "Suspended!" : "Send",
+          text: !isWalkin
+            ? "The transaction has been successfully suspended."
+            : "Receipt successfully Sent",
           icon: "success",
         });
       }
@@ -176,22 +189,20 @@ const Orders = ({
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "F3") {
-        event.preventDefault(); // Prevent the default browser action for F1
+        event.preventDefault();
         const suspend = document.getElementById("suspend");
-        if (suspend && !isCheckOut) {
+        if (suspend && !isCheckOut && !isWalkin) {
           suspend.click();
         }
-        // Perform your suspend action here
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
 
-    // Cleanup event listener on component unmount
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isCheckOut]);
+  }, [isCheckOut, isWalkin]);
 
   return (
     <MDBCol md="6">
@@ -206,7 +217,7 @@ const Orders = ({
                 Order Details
                 {orderDetails.length > 0 ? `(${orderDetails.length})` : ""}
               </h5>
-              {invoice_no && (
+              {invoice_no && !isWalkin && (
                 <MDBBtn
                   size="sm"
                   color="info"
@@ -250,6 +261,7 @@ const Orders = ({
               invoice_no={invoice_no}
               cash={cash}
               setCash={setCash}
+              isWalkin={isWalkin}
               total={total}
               toggle={() => setIsCheckOut(!isCheckOut)}
               orderDetails={orderDetails}
@@ -266,6 +278,10 @@ const Orders = ({
         setInvoice_no={setInvoice_no}
         cash={cash}
         setOrders={setOrders}
+        isWalkin={isWalkin}
+        customerQuotation={customerQuotation}
+        setCustomerQuotation={setCustomerQuotation}
+        handleSuspend={handleSuspend}
       />
     </MDBCol>
   );

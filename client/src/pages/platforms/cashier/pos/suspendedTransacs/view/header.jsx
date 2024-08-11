@@ -2,7 +2,7 @@ import React from "react";
 import navbarLogo from "../../../../../../assets/logo/navbar.jpg";
 import { formattedDate } from "../../../../../../services/utilities";
 
-const Header = ({ invoice_no, createdAt }) => {
+const Header = ({ invoice_no, createdAt, isQuotation, customer }) => {
   return (
     <>
       <div className="invoice-header-row">
@@ -22,10 +22,12 @@ const Header = ({ invoice_no, createdAt }) => {
                 className="font-weight-bold mb-1"
                 style={{ letterSpacing: "2px" }}
               >
-                INVOICE
+                {!isQuotation ? "INVOICE" : "QUOTATION"}
               </h4>
               <div className="d-flex  justify-content-between  ">
-                <span className="text-nowrap mr-3">Invoice #: </span>
+                <span className="text-nowrap mr-3">
+                  {!isQuotation ? "Invoice" : "Quotation"} #:{" "}
+                </span>
                 <span className="text-nowrap">{invoice_no}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -38,7 +40,9 @@ const Header = ({ invoice_no, createdAt }) => {
       </div>
 
       <div className="d-flex customer-name align-items-center m-0 p-0">
-        <h6 className="ml-2 mr-2 font-weight-bold">Customer: --</h6>
+        <h6 className="ml-2 mr-2 font-weight-bold">
+          Customer: {!isQuotation ? "--" : customer}
+        </h6>
       </div>
     </>
   );

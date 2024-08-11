@@ -24,9 +24,22 @@ export default function App() {
   return (
     <Switch>
       <Route path="/" exact component={Home} />
-      <Route path="/pos" exact component={POS} />
+      <Route
+        path="/pos"
+        exact
+        render={(props) => <POS {...props} isWalkin={false} />}
+      />
       <Route path="/login" exact component={LoginPage} />
-      <Route path="/quotation" exact component={Quotation} />
+      <Route
+        path="/quotation"
+        exact
+        render={(props) => <Quotation {...props} isWalkin={false} />}
+      />
+      <Route
+        path="/walkin-quotation"
+        exact
+        render={(props) => <POS {...props} isWalkin={true} />}
+      />
       <Route path="/printOut" exact component={PrintOut} />
       <Route path="/pos/checkout" exact component={Checkout} />
       <Platforms />

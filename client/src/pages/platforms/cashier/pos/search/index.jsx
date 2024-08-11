@@ -14,6 +14,7 @@ const Search = ({
   handleAddOrder,
   setPage,
   isLoading = false,
+  isCheckOut = false,
 }) => {
   const inputRef = useRef(null);
 
@@ -27,12 +28,13 @@ const Search = ({
     const handleKeyDown = (event) => {
       if (
         event.key.toUpperCase() === "F" &&
-        document.activeElement !== inputRef.current
+        document.activeElement !== inputRef.current &&
+        !isCheckOut
       ) {
-        event.preventDefault(); // Prevent the default action of the "F" key
-        setSearch(""); // Clear the search state
-        inputRef.current.value = ""; // Clear the input field value directly
-        inputRef.current.focus(); // Focus the input field
+        event.preventDefault();
+        setSearch("");
+        inputRef.current.value = "";
+        inputRef.current.focus();
       }
     };
 
@@ -40,7 +42,7 @@ const Search = ({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [search, inputRef, setSearch]);
+  }, [search, inputRef, setSearch, isCheckOut]);
   return (
     <MDBCard className="mb-1">
       <MDBCardBody className="m-0 p-1">

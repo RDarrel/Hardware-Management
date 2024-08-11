@@ -66,7 +66,7 @@ const variation = {
       if (has2Variant) {
         const srp = variations[0].options
           .find(({ _id }) => _id === variant1)
-          .prices.find(({ _id }) => _id === variant2)[name];
+          ?.prices.find(({ _id }) => _id === variant2)[name];
 
         return computeSubtotal({ srp, isPerKilo, kilo, kiloGrams, quantity });
       } else {

@@ -13,8 +13,11 @@ import { useDispatch, useSelector } from "react-redux";
 import View from "./view";
 import Swal from "sweetalert2";
 import seperateKiloAndGrams from "../../../../../services/utilities/seperateKiloAndGrams";
-import { DESTROY } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
-import { formattedDate } from "../../../../../services/utilities";
+import {
+  DESTROY,
+  DESTROY_QOUTATION,
+} from "../../../../../services/redux/slices/cashier/suspendedTransacs";
+import { formattedDate, fullName } from "../../../../../services/utilities";
 
 export default function SuspendedTransacs({
   show,
@@ -23,6 +26,8 @@ export default function SuspendedTransacs({
   setInvoice_no,
   products = [],
   setOrders,
+  isQuotation = false,
+  setCustomerQuotation = () => {},
 }) {
   const { token } = useSelector(({ auth }) => auth),
     [showInvoice, setShowInvoice] = useState(false),
@@ -79,17 +84,19 @@ export default function SuspendedTransacs({
   };
 
   const handleResume = (_selected) => {
-    console.log(_selected);
     Swal.fire({
       title: "Are you sure ?",
-      text: "you want to resume this suspended transaction?",
+      text: isQuotation
+        ? "you want to place order this quotation?"
+        : "you want to resume this suspended transaction?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, resume it!",
+      confirmButtonText: `Yes, ${isQuotation ? "place order" : "resume"} it!`,
     }).then((result) => {
       if (result.isConfirmed) {
+        const baseDestroy = isQuotation ? DESTROY_QOUTATION : DESTROY;
         const _orders = [..._selected.orders];
         const productsWithNewMax = _orders
           .map((order) => {
@@ -98,15 +105,18 @@ export default function SuspendedTransacs({
           })
           .filter(Boolean);
 
-        dispatch(DESTROY({ token, data: { _id: _selected._id } }));
+        dispatch(baseDestroy({ token, data: { _id: _selected._id } }));
         toggle();
         setShowInvoice(false);
+        if (isQuotation) {
+          setCustomerQuotation(_selected.customer);
+        }
 
         if (productsWithNewMax.length === 0) {
           setOrders([]);
           setInvoice_no("");
           return Swal.fire({
-            title: "Transaction Failed!",
+            title: isQuotation ? "Quotation Failed" : "Transaction Failed!",
             text: "The suspended transaction could not be resumed because the items are out of stock. The transaction will now be removed from the suspended transactions list.",
             icon: "error",
           });
@@ -114,11 +124,12 @@ export default function SuspendedTransacs({
         setOrders(productsWithNewMax || []);
         setInvoice_no(_selected.invoice_no);
         Swal.fire({
-          title: "Resumed!",
-          text: "The suspended transaction has been successfully resumed.",
+          title: isQuotation ? "Place order" : "Resumed!",
+          text: isQuotation
+            ? "Quotation has been place order"
+            : "The suspended transaction has been successfully resumed.",
           icon: "success",
         });
-        // Your resume logic here
       }
     });
   };
@@ -126,7 +137,9 @@ export default function SuspendedTransacs({
   const handleDelete = (_id) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "You want to delete this suspended transaction!",
+      text: isQuotation
+        ? "You want to delete this quotation"
+        : "You want to delete this suspended transaction!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -134,26 +147,38 @@ export default function SuspendedTransacs({
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(DESTROY({ token, data: { _id } }));
+        const baseDestroy = isQuotation ? DESTROY_QOUTATION : DESTROY;
+        dispatch(baseDestroy({ token, data: { _id } }));
         Swal.fire({
           title: "Deleted!",
-          text: "Your category has been deleted.",
+          text: `Your ${
+            isQuotation ? "quotation" : "suspended transaction"
+          } has been deleted.`,
           icon: "success",
         });
       }
     });
   };
+
   return (
     <>
-      <MDBModal isOpen={show} toggle={toggle} backdrop size="lg">
+      <MDBModal
+        isOpen={show}
+        toggle={toggle}
+        backdrop
+        size={!isQuotation || showInvoice ? "lg" : "xl"}
+      >
         {!showInvoice && (
           <MDBModalHeader
             toggle={handleClose}
             tag="h5"
             className="light-blue darken-3 white-text"
           >
-            <MDBIcon far icon="pause-circle" className="mr-2" /> Suspended
-            Transactions
+            <MDBIcon
+              icon={!isQuotation ? "pause-circle" : "walking"}
+              className="mr-2"
+            />
+            {!isQuotation ? "Suspended Transactions" : "Walkin Quotations"}
           </MDBModalHeader>
         )}
         <MDBModalBody className={`mb-0 ${showInvoice ? "m-0 p-0" : ""}`}>
@@ -163,8 +188,12 @@ export default function SuspendedTransacs({
                 <thead>
                   <tr>
                     <th>#</th>
+                    {isQuotation && <th className="text-center">Assist By</th>}
                     <th className="text-center">Time</th>
-                    <th className="text-center">Invoice No.</th>
+                    {isQuotation && <th className="text-center">Customer</th>}
+                    <th className="text-center">
+                      {!isQuotation ? "Invoice No." : "Quotation No."}
+                    </th>
                     <th className="text-center">Total Amount</th>
                     <th className="text-center"> Action</th>
                   </tr>
@@ -174,10 +203,21 @@ export default function SuspendedTransacs({
                     collections.map((order, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
+                        {isQuotation && (
+                          <td className="text-center font-weight-bold">
+                            {fullName(order?.assistBy?.fullName)}
+                          </td>
+                        )}
+
                         <td className="text-center font-weight-bold">
                           {formattedDate(order.createdAt, true)}
                         </td>
 
+                        {isQuotation && (
+                          <td className="text-center font-weight-bold">
+                            {order.customer}
+                          </td>
+                        )}
                         <td className="text-center font-weight-bold">
                           {order.invoice_no}
                         </td>
@@ -236,7 +276,9 @@ export default function SuspendedTransacs({
               show={show}
               selectedTransac={selectedTransac}
               total={selectedTransac?.total}
+              customer={selectedTransac?.customer || ""}
               toggle={() => setShowInvoice(false)}
+              isQuotation={isQuotation}
             />
           )}
           {!showInvoice && collections.length > 9 && (

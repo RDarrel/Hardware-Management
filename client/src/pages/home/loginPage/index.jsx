@@ -39,6 +39,9 @@ export default function LoginPage() {
       if (role === "CASHIER") {
         history.push("/pos");
         dispatch(RESET());
+      } else if (role === "STAFF") {
+        history.push("/walkin-quotation");
+        dispatch(RESET());
       } else if (role === "CUSTOMER") {
         history.push("/quotation");
         dispatch(RESET());

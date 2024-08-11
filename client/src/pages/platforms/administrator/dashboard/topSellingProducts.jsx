@@ -34,7 +34,10 @@ const TopSellingProducts = ({ products }) => {
                           className="product-image mr-2"
                         />
                         <div>
-                          <h6 className="product-name mt-2 font-weight-bold">
+                          <h6
+                            className="product-name mt-2 font-weight-bold"
+                            style={{ textAlign: "start" }}
+                          >
                             {product.name}
                           </h6>
                           {product.hasVariant && (

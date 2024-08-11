@@ -37,12 +37,18 @@ export default function Login({ show, toggle = null }) {
   useEffect(() => {
     if (auth._id && isSuccess) {
       if (role === "CASHIER") {
+        console.log("nag login");
         history.push("/pos");
         dispatch(RESET());
       } else if (role === "CUSTOMER") {
         history.push("/quotation");
         dispatch(RESET());
+      } else if (role.toUpperCase() === "STAFF") {
+        console.log("true");
+        history.push("/walkin-quotation");
+        dispatch(RESET());
       } else {
+        console.log("false", role);
         history.push("/dashboard");
         dispatch(SETROUTE("Dashboard"));
         dispatch(RESET());

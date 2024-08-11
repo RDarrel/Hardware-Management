@@ -119,7 +119,8 @@ export const Header = ({
   }, []);
   return (
     <MDBCard style={{ position: "sticky", top: "0", zIndex: "1000" }}>
-      <MDBCardBody className="m-0 p-0 " style={{ backgroundColor: "#F6412D" }}>
+      {/* <MDBCardBody className="m-0 p-0 " style={{ backgroundColor: "#F6412D" }}> */}
+      <MDBCardBody className="m-0 p-0 bg-primary ">
         <Profile />
 
         <MDBRow className="d-flex align-items-center justify-content-center   mb-1 ml-5">
@@ -186,12 +187,7 @@ export const Header = ({
                       </div>
                     )}
 
-                    <MDBBtn
-                      size="sm"
-                      color="danger"
-                      className="btn-search"
-                      type="submit"
-                    >
+                    <MDBBtn size="sm" className="btn-search" type="submit">
                       <MDBIcon icon="search" />
                     </MDBBtn>
                   </form>

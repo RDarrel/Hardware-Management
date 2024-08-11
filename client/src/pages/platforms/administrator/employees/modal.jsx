@@ -158,7 +158,7 @@ export default function Modal({
           <MDBRow>
             <MDBCol md="12">
               <CustomSelect
-                choices={["STOCKMAN", "CASHIER"]}
+                choices={["STOCKMAN", "CASHIER", "STAFF"]}
                 label={"Role"}
                 onChange={(value) => setForm({ ...form, role: value })}
               />

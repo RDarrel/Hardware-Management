@@ -6,6 +6,7 @@ const Footer = ({
   invoice_no,
   total,
   setCheckout,
+  isWalkin,
   orderDetails,
   cash,
   toggle,
@@ -63,7 +64,9 @@ const Footer = ({
           <MDBCardBody className="m-0 p-0 ">
             <div className="mb-1  p-2">
               <div className="d-flex justify-content-between align-items-center mb-2">
-                <span className="m-0">Invoice No.</span>
+                <span className="m-0">
+                  {!isWalkin ? "Invoice No." : "Quotation No."}
+                </span>
                 <h6 className="m-0">{invoice_no ? invoice_no : ""}</h6>
               </div>
               <div className="d-flex justify-content-between align-items-center mb-2">
@@ -76,36 +79,40 @@ const Footer = ({
                     : ""}
                 </h5>
               </div>
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <span className=" m-0">Cash</span>
-                {invoice_no ? (
-                  <div className="w-25" ref={cashDivRef}>
-                    <MDBInputGroup
-                      className="m-0 p-0  font-weight-bold text-danger d-flex align-items-center"
-                      prepend={
-                        <h5 className="d-flex align-items-center mt-2 text-danger">
-                          ₱
-                        </h5>
-                      }
-                      value={String(cash)}
-                      type="number"
-                      onChange={({ target }) => setCash(Number(target.value))}
-                    />
-                  </div>
-                ) : (
-                  ""
-                )}
-              </div>
-              <div className="d-flex justify-content-between align-items-center ">
-                <span className="font-weight-bold m-0">Change</span>
-                <h5 className="text-danger m-0 ">
-                  {invoice_no
-                    ? change
-                      ? `₱${change ? change : 0}.00`
-                      : "0.00"
-                    : ""}
-                </h5>
-              </div>
+              {!isWalkin && (
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <span className=" m-0">Cash</span>
+                  {invoice_no ? (
+                    <div className="w-25" ref={cashDivRef}>
+                      <MDBInputGroup
+                        className="m-0 p-0  font-weight-bold text-danger d-flex align-items-center"
+                        prepend={
+                          <h5 className="d-flex align-items-center mt-2 text-danger">
+                            ₱
+                          </h5>
+                        }
+                        value={String(cash)}
+                        type="number"
+                        onChange={({ target }) => setCash(Number(target.value))}
+                      />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              )}
+              {!isWalkin && (
+                <div className="d-flex justify-content-between align-items-center ">
+                  <span className="font-weight-bold m-0">Change</span>
+                  <h5 className="text-danger m-0 ">
+                    {invoice_no
+                      ? change
+                        ? `₱${change ? change : 0}.00`
+                        : "0.00"
+                      : ""}
+                  </h5>
+                </div>
+              )}
             </div>
           </MDBCardBody>
         </MDBCard>

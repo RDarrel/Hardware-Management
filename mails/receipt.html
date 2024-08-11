@@ -107,16 +107,16 @@
         padding: 20px;
         position: relative;
         overflow: visible;
-        background-color: #f2f2f2;
+        /* background-color: #f2f2f2; */
       "
     >
       <div class="container">
         <div class="invoice-header-row">
           <div class="invoice-header-col">
             <img style="height: 90px" src="cid:aplogo" />
-            <h2 style="font-weight: bold; margin-left: 2px">
+            <!-- <h2 style="font-weight: bold; margin-left: 2px">
               Liberty Hardware
-            </h2>
+            </h2> -->
           </div>
 
           <div>
@@ -129,6 +129,7 @@
                 font-weight: 500;
                 margin: 0px;
                 padding: 0px;
+                white-space: nowrap;
               "
             >
               Date: <strong>{{date}}</strong>
@@ -204,7 +205,7 @@
               >
                 <div style="text-align: center">
                   <p style="margin: 0; white-space: nowrap">
-                    Total Quote:&nbsp;&nbsp; ₱{{total}}.00
+                    Total Quote:&nbsp;&nbsp; ₱{{total}}
                   </p>
                 </div>
               </td>

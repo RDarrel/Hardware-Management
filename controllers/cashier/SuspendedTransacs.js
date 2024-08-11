@@ -5,6 +5,7 @@ exports.browse = (req, res) => {
   const cashier = req.query.cashier;
   Entity.find({ cashier })
     .populate("orders.product")
+    .populate("assistBy")
     .select("-__v")
     .sort({ createdAt: -1 })
     .lean()
@@ -17,14 +18,41 @@ exports.browse = (req, res) => {
     .catch((error) => res.status(400).json({ error: error.message }));
 };
 
+exports.quotations = (_, res) => {
+  Entity.find({ type: "quotation" })
+    .populate("orders.product")
+    .populate("assistBy")
+    .select("-__v")
+    .sort({ createdAt: -1 })
+    .lean()
+    .then((items) =>
+      res.json({
+        success: "Quotations  Fetched Successfully",
+        payload: items,
+      })
+    )
+    .catch((error) => res.status(400).json({ error: error.message }));
+};
+
 exports.save = async (req, res) => {
   try {
-    const { invoice_no = "", cashier = "", orders = [], total = 0 } = req.body;
+    const {
+      invoice_no = "",
+      cashier = "",
+      orders = [],
+      total = 0,
+      type = "suspend",
+      assistBy = "",
+      customer = "",
+    } = req.body;
     const newSuspendTransac = await Entity.create({
       invoice_no,
       cashier,
       orders,
       total,
+      type,
+      assistBy,
+      customer,
     });
     const populateProduct = await Entity.findOne({
       _id: newSuspendTransac._id,

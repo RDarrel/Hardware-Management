@@ -3,18 +3,18 @@ import { SELLING_PRODUCTS } from "../../../../services/redux/slices/administrato
 import { BROWSE as BROWSECART } from "../../../../services/redux/slices/cart";
 import { useDispatch, useSelector } from "react-redux";
 import { MDBCol, MDBRow, MDBContainer } from "mdbreact";
-import "./pos.css";
-import Orders from "./orders";
-import Modal from "./modal";
+import { variation } from "../../../../services/utilities";
 import { Products } from "./products";
-import Search from "./search";
-import Header from "./header";
 import { useToasts } from "react-toast-notifications";
 import Swal from "sweetalert2";
-import { variation } from "../../../../services/utilities";
+import Orders from "./orders";
+import Modal from "./modal";
+import Search from "./search";
+import Header from "./header";
 import seperateKiloAndGrams from "../../../../services/utilities/seperateKiloAndGrams";
+import "./pos.css";
 
-const POS = () => {
+const POS = ({ isWalkin = false }) => {
   const { token, auth } = useSelector(({ auth }) => auth),
     { collections, isLoading } = useSelector(({ products }) => products),
     [orders, setOrders] = useState([]),
@@ -23,12 +23,14 @@ const POS = () => {
     [isShowAddedToCart, setIsShowAddedToCart] = useState(true),
     [isCheckOut, setIsCheckOut] = useState(false),
     [isSuspend, setIsSuspend] = useState(false),
+    [isQuotation, setIsQuotation] = useState(false),
     [didSearch, setDidSearch] = useState(false),
     [showSuspend, setShowSuspend] = useState(false),
     [showGuide, setShowGuide] = useState(false),
     [showFindTransac, setShowFindTransac] = useState(false),
     [invoice_no, setInvoice_no] = useState(""),
     [search, setSearch] = useState(""),
+    [customerQuotation, setCustomerQuotation] = useState(""),
     [showVariant, setShowVariant] = useState(false),
     { addToast } = useToasts(),
     dispatch = useDispatch();
@@ -55,9 +57,13 @@ const POS = () => {
     setShowFindTransac(!showFindTransac);
   }, [showFindTransac]);
 
-  const toggleSuspended = useCallback(() => {
-    setShowSuspend(!showSuspend);
-  }, [showSuspend]);
+  const toggleSuspended = useCallback(
+    (_isQuotation) => {
+      setShowSuspend(!showSuspend);
+      setIsQuotation(!_isQuotation);
+    },
+    [showSuspend]
+  );
 
   const toggleGuide = useCallback(() => {
     setShowGuide(!showGuide);
@@ -78,18 +84,17 @@ const POS = () => {
         default:
           return; // Allow default behavior for other keys
       }
-      console.log(event.key);
 
       switch (event.key.toUpperCase()) {
         case "F5":
-          if (!showSuspend && !isCheckOut) {
+          if (!showSuspend && !isCheckOut && !isWalkin) {
             toggleFindTransac();
           } else {
             console.log("closing");
           }
           break;
         case "F4":
-          if (!showFindTransac && !isCheckOut) {
+          if (!showFindTransac && !isCheckOut && !isWalkin) {
             toggleSuspended();
           }
           break;
@@ -114,6 +119,7 @@ const POS = () => {
     showSuspend,
     showFindTransac,
     isCheckOut,
+    isWalkin,
   ]);
 
   const handleMaxSaleMessage = (max, isPerKilo = false) => {
@@ -284,6 +290,9 @@ const POS = () => {
         toggleSuspended={toggleSuspended}
         toggleGuide={toggleGuide}
         isLoading={isLoading}
+        isWalkin={isWalkin}
+        isQuotation={isQuotation}
+        setCustomerQuotation={setCustomerQuotation}
       />
       <MDBRow>
         <MDBCol md="6">
@@ -298,6 +307,7 @@ const POS = () => {
             collections={collections}
             setPage={setPage}
             isLoading={isLoading}
+            isCheckOut={isCheckOut}
           />
           <Products
             products={products}
@@ -320,6 +330,9 @@ const POS = () => {
           isSuspend={isSuspend}
           setIsSuspend={setIsSuspend}
           setInvoice_no={setInvoice_no}
+          isWalkin={isWalkin}
+          customerQuotation={customerQuotation}
+          setCustomerQuotation={setCustomerQuotation}
         />
       </MDBRow>
       <Modal

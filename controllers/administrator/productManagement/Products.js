@@ -126,13 +126,12 @@ const filteredVariations = async (product, options, has2Variant) => {
       }
     }
   }
-
   return container;
 };
 
-const filterValidPrices = (prices) =>
-  prices.filter(({ disable, max }) => !disable && max > 0);
-
+const filterValidPrices = (prices) => {
+  return prices.filter(({ disable, max }) => !disable && max > 0);
+};
 const addMissingPrices = (prices, highestOptions) => {
   const newPrices = [...prices];
   for (const optionInVr2 of highestOptions) {
@@ -151,8 +150,9 @@ const ensureAllOptionsHaveHighest = (_options, highestOptions) => {
   }
 };
 
-const mergePricesToLowestOptions = (options, highestVrOptions) => {
+const mergePricesToLowestOptions = (options, highestVrOptions, product) => {
   try {
+    if (!highestVrOptions?._id) return false;
     const highestOptions = filterValidPrices(highestVrOptions.prices);
     const _options = [...options];
 
@@ -190,7 +190,7 @@ exports.sellingProducts = async (_, res) => {
 
       if (hasVariant) {
         const { variations = [] } = product;
-        const options = [...variations[0].options];
+        const options = [...variations[0]?.options];
 
         var filteredOptions = await filteredVariations(
           product,
@@ -201,14 +201,22 @@ exports.sellingProducts = async (_, res) => {
         var choices = [];
         if (has2Variant) {
           //para kunin yung pinaka maraming choices na prices para yun yung isoshow na available sa variant2
-          optionsInVariant2 = filteredOptions.reduce((maxObj, currentObj) => {
-            // Default condition
-            return currentObj.prices.length > (maxObj.prices?.length || 0)
-              ? currentObj
-              : maxObj;
-          }, {});
+          var optionsInVariant2 = filteredOptions.reduce(
+            (maxObj, currentObj) => {
+              // Default condition
+              return currentObj?.prices?.length > (maxObj.prices?.length || 0)
+                ? currentObj
+                : maxObj;
+            },
+            {}
+          );
+
           const { optionsInProducts = [], choicesVariant = [] } =
-            mergePricesToLowestOptions(filteredOptions, optionsInVariant2);
+            mergePricesToLowestOptions(
+              filteredOptions,
+              optionsInVariant2,
+              product
+            );
 
           filteredOptions = optionsInProducts;
           choices = choicesVariant;
@@ -237,7 +245,6 @@ exports.sellingProducts = async (_, res) => {
       }
     }
 
-    // Step 5: Sort the container based on the sold property in descending order
     const sortedContainer = await sortByTopSellingProducts(container);
     res.status(200).json({
       payload: sortedContainer,

@@ -5,6 +5,7 @@ const name = "cashier/SuspendedTransacs";
 
 const initialState = {
   collections: [],
+  quotations: [],
   progress: 0,
   isSuccess: false,
   isLoading: false,
@@ -16,6 +17,24 @@ export const BROWSE = createAsyncThunk(
   ({ token, key }, thunkAPI) => {
     try {
       return axioKit.universal(name, token, key);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const QUOTATIONS = createAsyncThunk(
+  `${name}/QUOTATIONS`,
+  ({ token }, thunkAPI) => {
+    try {
+      return axioKit.universal(`${name}/quotations`, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -117,6 +136,24 @@ export const DESTROY = createAsyncThunk(
   }
 );
 
+export const DESTROY_QOUTATION = createAsyncThunk(
+  `${name}/destroy_quotation`,
+  ({ token, data }, thunkAPI) => {
+    try {
+      return axioKit.destroy(name, data, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const reduxSlice = createSlice({
   name,
   initialState,
@@ -142,6 +179,22 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(BROWSE.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(QUOTATIONS.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(QUOTATIONS.fulfilled, (state, action) => {
+        const { payload } = action.payload;
+        state.quotations = payload;
+        state.isLoading = false;
+      })
+      .addCase(QUOTATIONS.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;
@@ -259,6 +312,24 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(DESTROY.rejected, (state, action) => {
+        const { error } = action;
+        state.showModal = false;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(DESTROY_QOUTATION.fulfilled, (state, action) => {
+        const { success, payload } = action.payload;
+        const index = state.quotations.findIndex(
+          ({ _id }) => _id === payload?._id
+        );
+        state.quotations.splice(index, 1);
+        state.showModal = false;
+        state.message = success;
+        state.isSuccess = true;
+        state.isLoading = false;
+      })
+      .addCase(DESTROY_QOUTATION.rejected, (state, action) => {
         const { error } = action;
         state.showModal = false;
         state.message = error.message;

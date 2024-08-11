@@ -79,7 +79,8 @@ const Cart = ({
       isOpen={show}
       toggle={() => toggle()}
       size="lg"
-      className={`modal-notify ${!isCustomer && "modal-primary"} `}
+      // className={`modal-notify ${!isCustomer && "modal-primary"} `}
+      className={`modal-notify modal-primary`}
       fullHeight
       position="right"
       animation="top"
@@ -88,7 +89,7 @@ const Cart = ({
         tag="p"
         toggle={() => toggle()}
         titleClass="heading lead"
-        className={isCustomer ? "bg-red" : ""}
+        // className={isCustomer ? "bg-red" : ""}
       >
         <MDBIcon icon="shopping-cart" className="mr-2" />
         Shoppping Cart
@@ -153,7 +154,8 @@ const Cart = ({
             </div>
           )}
           <MDBBtn
-            color={!isCustomer ? "primary" : "danger"}
+            // color={!isCustomer ? "primary" : "danger"}
+            color={"primary"}
             outline={!isCustomer}
             onClick={handleCheckOut}
             disabled={checkOutProducts.length === 0}

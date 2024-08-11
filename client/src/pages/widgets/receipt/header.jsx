@@ -14,6 +14,7 @@ const Header = ({
   customerView,
   setCustomer,
   reason,
+  isWalkin,
 }) => {
   return (
     <>
@@ -34,10 +35,12 @@ const Header = ({
                 className="font-weight-bold mb-1"
                 style={{ letterSpacing: "2px" }}
               >
-                INVOICE
+                {!isWalkin ? " INVOICE" : "QOUTATION"}
               </h4>
               <div className="d-flex  justify-content-between  ">
-                <span className="text-nowrap mr-3">Invoice #: </span>
+                <span className="text-nowrap mr-3">
+                  {!isWalkin ? "Invoice" : "Quotation"} #:{" "}
+                </span>
                 <span className="text-nowrap">{invoice_no}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -74,6 +77,7 @@ const Header = ({
         {!isAdmin && (
           <MDBInput
             value={customer}
+            required={isWalkin}
             className=" customer-name"
             label="Enter name (optional)"
             onChange={({ target }) => setCustomer(target.value.toUpperCase())}

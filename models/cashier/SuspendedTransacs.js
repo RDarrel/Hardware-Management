@@ -13,6 +13,16 @@ const modelSchema = new mongoose.Schema(
     invoice_no: {
       type: "String",
     },
+    type: {
+      type: String,
+    },
+    customer: {
+      type: String,
+    },
+    assistBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+    },
     orders: [
       {
         product: {

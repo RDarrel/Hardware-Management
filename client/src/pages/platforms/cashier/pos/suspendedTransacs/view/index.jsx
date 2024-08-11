@@ -11,6 +11,8 @@ export default function View({
   createdAt = "",
   handleResume,
   selectedTransac,
+  isQuotation,
+  customer,
 }) {
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,7 +21,12 @@ export default function View({
 
   return (
     <>
-      <Header invoice_no={invoice_no} createdAt={createdAt} />
+      <Header
+        invoice_no={invoice_no}
+        createdAt={createdAt}
+        isQuotation={isQuotation}
+        customer={customer}
+      />
       <form onSubmit={handleSubmit}>
         <div className={`mx-2 mt-2`}>
           <table className="invoice-table">
@@ -106,7 +113,7 @@ export default function View({
             color="primary"
             className="mb-2 font-weight-bold float-right"
           >
-            Resume
+            {isQuotation ? "Place Order" : "Resume"}
           </MDBBtn>
           <MDBBtn
             type="button"

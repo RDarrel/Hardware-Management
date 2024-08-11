@@ -16,7 +16,7 @@ import { customSort } from "../../../../services/utilities";
 import sortBy from "../../../../services/utilities/sorting";
 import Checkout from "../../../widgets/checkout";
 
-const Quotation = () => {
+const Quotation = ({ isWalkin = false }) => {
   const { token, auth } = useSelector(({ auth }) => auth),
     { collections, isLoading } = useSelector(({ products }) => products),
     { collections: cartCollections } = useSelector(({ cart }) => cart),
