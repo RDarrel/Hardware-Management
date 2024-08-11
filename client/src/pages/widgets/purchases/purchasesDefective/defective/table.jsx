@@ -12,6 +12,7 @@ const Table = ({ purchases, isAdmin, isRefund = false, isDefective }) => {
     [total, setTotal] = useState(""),
     [merchandises, setMerchandises] = useState("");
 
+  console.log(isRefund);
   const toggle = () => setShow(!show);
   return (
     <>
@@ -19,9 +20,7 @@ const Table = ({ purchases, isAdmin, isRefund = false, isDefective }) => {
         <thead>
           <tr>
             <th>#</th>
-            {isAdmin && !isRefund && (
-              <th className="text-center">Received By</th>
-            )}
+            {!isRefund && <th className="text-center">Received By</th>}
             <th className="text-center">
               {isRefund ? "Refund " : "Received"} On
             </th>
@@ -34,11 +33,12 @@ const Table = ({ purchases, isAdmin, isRefund = false, isDefective }) => {
             purchases.map((purchase, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
-                {isAdmin && !isRefund && (
+                {!isRefund && (
                   <td className="text-center">
                     {fullName(purchase.requestBy?.fullName)}
                   </td>
                 )}
+
                 <td className="text-center">
                   {formattedDate(purchase.received)}
                 </td>

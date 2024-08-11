@@ -23,22 +23,22 @@ const arrangeStocks = async () => {
       const index = accumulator.findIndex((accu) => accu.key === key);
 
       if (index > -1) {
-        if (currentValue.product.isPerKilo) {
+        if (currentValue?.product?.isPerKilo) {
           accumulator[index].available += kiloStock > 0 ? kiloStock : 0;
           accumulator[index].beginning += kilo + kiloGrams;
           accumulator[index].sold +=
-            kilo + kiloGrams - (kiloStock - expiredKilo) || 0;
+            kilo + kiloGrams - Math.abs(kiloStock - expiredKilo) || 0;
         } else {
           accumulator[index].available += quantityStock > 0 ? quantityStock : 0;
           accumulator[index].beginning += quantity;
           accumulator[index].sold +=
-            quantity - (quantityStock - expiredQuantity) || 0;
+            quantity - Math.abs(quantityStock - expiredQuantity) || 0;
         }
       } else {
         const { isPerKilo } = product;
         const sold = isPerKilo
-          ? kilo + kiloGrams - (kiloStock - expiredKilo) || 0
-          : quantity - (quantityStock - expiredQuantity) || 0;
+          ? kilo + kiloGrams - Math.abs(kiloStock - expiredKilo) || 0
+          : quantity - Math.abs(quantityStock - expiredQuantity) || 0;
         accumulator.push({
           ...currentValue._doc,
           key,

@@ -29,7 +29,6 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
         key: {
           status: activeTab,
           isAdmin,
-          requestBy: auth._id,
           type: isDefective ? "defective" : "discrepancy",
         },
       })

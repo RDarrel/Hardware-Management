@@ -55,6 +55,7 @@ const Collapse = ({
             isAdmin={isAdmin}
             purchases={purchase.stockmans}
             isDefective={isDefective}
+            isRefund={false}
           />
         );
 
@@ -65,6 +66,7 @@ const Collapse = ({
             purchases={purchase.stockmans}
             isApproved={true}
             isDefective={isDefective}
+            isRefund={false}
           />
         );
 
@@ -75,6 +77,7 @@ const Collapse = ({
             isApproved={false}
             purchases={purchase.stockmans}
             isReceived={true}
+            isRefund={false}
           />
         );
       default:

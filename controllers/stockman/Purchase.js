@@ -13,7 +13,6 @@ exports.browse = async (req, res) => {
       req.query.isAdmin === "true"
         ? { status }
         : {
-            ...(status === "pending" && { requestBy: req.query.requestBy }),
             status,
           };
 
