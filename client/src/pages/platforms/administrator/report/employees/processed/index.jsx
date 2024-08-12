@@ -17,6 +17,7 @@ import {
   transaction,
 } from "../../../../../../services/utilities";
 import Receipt from "./receipt";
+import formattedTotal from "../../../../../../services/utilities/forattedTotal";
 
 export default function Processed({
   show,
@@ -116,28 +117,24 @@ export default function Processed({
                     {!isTransaction && (
                       <td className="text-center font-weight-bolder text-danger">
                         ₱
-                        {transaction
-                          .getTotal(_transaction.products)
-                          .toLocaleString()}
-                        .00
+                        {formattedTotal(
+                          transaction.getTotal(_transaction.products)
+                        )}
                       </td>
                     )}
                     {isTransaction && (
                       <>
                         <td className="text-center font-weight-bolder text-danger">
-                          ₱ {_transaction?.total?.toLocaleString()}
-                          .00
+                          ₱ {formattedTotal(_transaction?.total)}
                         </td>
                         <td className="text-center font-weight-bolder text-danger">
-                          ₱{_transaction.cash?.toLocaleString() || 0}
-                          .00
+                          ₱{formattedTotal(_transaction?.cash || 0)}
                         </td>
                         <td className="text-center font-weight-bolder text-danger">
                           ₱
-                          {(
+                          {formattedTotal(
                             _transaction.cash - _transaction.total
-                          )?.toLocaleString()}
-                          .00
+                          )}
                         </td>
                       </>
                     )}

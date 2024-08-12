@@ -22,6 +22,7 @@ import {
 import getTotalSales from "../getTotalSales";
 import Receipt from "../../../../widgets/receipt";
 import Spinner from "../../../../widgets/spinner";
+import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 export const Transactions = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
@@ -91,17 +92,14 @@ export const Transactions = () => {
                           {formattedDate(transaction.createdAt)}
                         </td>
                         <td className="text-danger text-center font-weight-bolder">
-                          ₱{transaction.total.toLocaleString()}.00
+                          ₱{formattedTotal(transaction.total)}
                         </td>
                         <td className="text-danger text-center font-weight-bold">
-                          ₱{transaction.cash.toLocaleString()}.00
+                          ₱{formattedTotal(transaction.cash)}
                         </td>
                         <td className="text-danger text-center font-weight-bold">
                           ₱
-                          {(
-                            transaction.cash - transaction.total
-                          ).toLocaleString()}
-                          .00
+                          {formattedTotal(transaction.cash - transaction.total)}
                         </td>
                         <td className="text-center">
                           <MDBBtn

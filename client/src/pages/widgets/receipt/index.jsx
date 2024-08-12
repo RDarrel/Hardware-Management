@@ -7,6 +7,7 @@ import { variation } from "../../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
 import "./receipt.css";
 import Header from "./header";
+import formattedTotal from "../../../services/utilities/forattedTotal";
 export default function Receipt({
   show,
   toggle,
@@ -196,15 +197,15 @@ export default function Receipt({
                         !isWalkin ? "mt-1" : "mb-1"
                       }`}
                     >
-                      ₱{total.toLocaleString()}.00
+                      ₱{formattedTotal(total)}
                     </p>
                     {!isWalkin && (
                       <>
                         <p className="ml-4 paragraph">
-                          ₱{cash.toLocaleString()}.00
+                          ₱{formattedTotal(cash)}
                         </p>
                         <p className="ml-4 paragraph mb-2">
-                          ₱{change.toLocaleString()}.00
+                          ₱{formattedTotal(change)}
                         </p>
                       </>
                     )}

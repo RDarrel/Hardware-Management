@@ -27,7 +27,6 @@ export const EmployeesReport = () => {
     [showToast, setShowToast] = useState(""),
     { addToast } = useToasts(),
     dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
@@ -195,13 +194,15 @@ export const EmployeesReport = () => {
             cashier={cashier}
             isTransaction={isTransaction}
           />
-          <PaginationButtons
-            array={transactions}
-            max={maxPage}
-            page={page}
-            setPage={setPage}
-            title={"Transaction"}
-          />
+          {!isLoading && (
+            <PaginationButtons
+              array={transactions}
+              max={maxPage}
+              page={page}
+              setPage={setPage}
+              title={"Transaction"}
+            />
+          )}
         </MDBCardBody>
       </MDBCard>
     </>

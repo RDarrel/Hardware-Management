@@ -3,6 +3,7 @@ import { MDBBtn } from "mdbreact";
 // import "./receipt.css";
 import Header from "./header";
 import { variation } from "../../../../../../services/utilities";
+import formattedTotal from "../../../../../../services/utilities/forattedTotal";
 export default function View({
   toggle,
   total = 0,
@@ -98,7 +99,7 @@ export default function View({
                 </td>
                 <td style={{ borderLeft: "none", fontSize: "1rem" }}>
                   <p className="ml-4 paragraph  mt-1">
-                    ₱{total.toLocaleString()}.00
+                    ₱{formattedTotal(total)}
                   </p>
                   <p className="ml-4 paragraph">₱0.00</p>
                   <p className="ml-4 paragraph mb-2">₱0.00</p>

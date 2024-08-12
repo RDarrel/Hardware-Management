@@ -1,6 +1,7 @@
 import React from "react";
 import { variation } from "../../../../../services/utilities";
 import getTotalRefundAmount from "../getTotalRefund";
+import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 const Table = ({ orderDetails, transaction }) => {
   const handleRefundView = (order) => {
@@ -144,13 +145,13 @@ const Table = ({ orderDetails, transaction }) => {
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
             <p className="ml-4 paragraph  mt-1">
-              ₱{transaction?.totalWithoutDeduc?.toLocaleString()}.00
+              ₱{formattedTotal(transaction?.totalWithoutDeduc)}
             </p>
             <p className="ml-4 paragraph">
-              ₱{getTotalRefundAmount(transaction.products)?.toLocaleString()}.00
+              ₱{formattedTotal(getTotalRefundAmount(transaction.products))}
             </p>
             <p className="ml-4 paragraph mb-2">
-              ₱{transaction?.total?.toLocaleString()}.00
+              ₱{formattedTotal(transaction?.total)}.00
             </p>
           </td>
         </tr>

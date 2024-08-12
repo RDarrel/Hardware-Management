@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 import truncateString from "../../../services/utilities/truncateString";
 import capitalize from "../../../services/utilities/capitalize";
 import { GENERATE_RECEIPT } from "../../../services/redux/slices/cart";
+import formattedTotal from "../../../services/utilities/forattedTotal";
 const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
   const { token, auth } = useSelector(({ auth }) => auth),
     // { checkOutProducts } = useSelector(({ cart }) => cart),
@@ -83,14 +84,6 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
         });
       }
     });
-  };
-
-  const handleFormattedTotal = (total) => {
-    if (total % 1 !== 0) {
-      return `${total.toLocaleString()}`;
-    } else {
-      return `${total.toLocaleString()}.00`;
-    }
   };
 
   return (
@@ -172,7 +165,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
                 >
                   <h5 className="mr-5">Order Total ({cart.length} Item):</h5>
                   <h3 style={{ fontWeight: 800 }} className="text-danger  ml-2">
-                    ₱{handleFormattedTotal(total)}
+                    ₱{formattedTotal(total)}
                   </h3>
                 </MDBCol>
               </MDBRow>

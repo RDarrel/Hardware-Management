@@ -1,5 +1,6 @@
 import React from "react";
 import { variation } from "../../../../../../../services/utilities";
+import formattedTotal from "../../../../../../../services/utilities/forattedTotal";
 
 const Table = ({ orderDetails, total, cash, change, isTransaction }) => {
   return (
@@ -46,9 +47,7 @@ const Table = ({ orderDetails, total, cash, change, isTransaction }) => {
             </td>
 
             <td className="text-center">₱{order.srp}</td>
-            <td className="text-center">
-              ₱{order?.subtotal?.toLocaleString()}
-            </td>
+            <td className="text-center">₱{formattedTotal(order?.subtotal)}</td>
           </tr>
         ))}
         <tr className="p-2 ">
@@ -82,13 +81,13 @@ const Table = ({ orderDetails, total, cash, change, isTransaction }) => {
             <p
               className={`ml-4 paragraph  mt-1 ${!isTransaction ? "mb-1" : ""}`}
             >
-              ₱{total.toLocaleString()}.00
+              ₱{formattedTotal(total)}
             </p>
             {isTransaction && (
               <>
-                <p className="ml-4 paragraph">₱{cash?.toLocaleString()}.00</p>
+                <p className="ml-4 paragraph">₱{cash?.toLocaleString()}</p>
                 <p className="ml-4 paragraph mb-2">
-                  ₱{change.toLocaleString()}.00
+                  ₱{formattedTotal(change)}{" "}
                 </p>
               </>
             )}

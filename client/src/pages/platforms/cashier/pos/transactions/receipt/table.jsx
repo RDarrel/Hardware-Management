@@ -1,6 +1,7 @@
 import React from "react";
 import { MDBBtn, MDBBtnGroup, MDBIcon } from "mdbreact";
 import { variation } from "../../../../../../services/utilities";
+import formattedTotal from "../../../../../../services/utilities/forattedTotal";
 
 const Table = ({ handleAction, orderDetails = [], total, cash }) => {
   const change = cash - total || 0;
@@ -97,9 +98,9 @@ const Table = ({ handleAction, orderDetails = [], total, cash }) => {
             <p className="ml-3 paragraph  mb-2">Change</p>
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
-            <p className="ml-4 paragraph  mt-1">₱{total.toLocaleString()}.00</p>
+            <p className="ml-4 paragraph  mt-1">₱{formattedTotal(total)}</p>
             <p className="ml-4 paragraph">₱{cash.toLocaleString()}.00</p>
-            <p className="ml-4 paragraph mb-2">₱{change.toLocaleString()}.00</p>
+            <p className="ml-4 paragraph mb-2">₱{formattedTotal(change)}.00</p>
           </td>
           <td
             style={{

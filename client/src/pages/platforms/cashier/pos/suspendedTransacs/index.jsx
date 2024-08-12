@@ -18,6 +18,7 @@ import {
   DESTROY_QOUTATION,
 } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
 import { formattedDate, fullName } from "../../../../../services/utilities";
+import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 export default function SuspendedTransacs({
   show,
@@ -222,7 +223,7 @@ export default function SuspendedTransacs({
                           {order.invoice_no}
                         </td>
                         <td className="text-center text-danger font-weight-bold">
-                          ₱{order.total.toLocaleString()}
+                          ₱{formattedTotal(order.total)}
                         </td>
                         <td className="text-center">
                           <MDBBtnGroup>

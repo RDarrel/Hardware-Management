@@ -21,6 +21,7 @@ import {
 } from "../../../../../services/utilities";
 import Swal from "sweetalert2";
 import Receipt from "./receipt";
+import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 export default function Transactions({ show, toggle }) {
   const { token, auth } = useSelector(({ auth }) => auth),
@@ -228,7 +229,7 @@ export default function Transactions({ show, toggle }) {
                         {foundTransaction.invoice_no}
                       </td>
                       <td className="font-weight-bold text-danger text-center">
-                        ₱{foundTransaction.total.toLocaleString()}
+                        ₱{formattedTotal(foundTransaction.total)}
                       </td>
                       <td className="text-center font-weight-bold">
                         {formattedDate(foundTransaction.createdAt)}

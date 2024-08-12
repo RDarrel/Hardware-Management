@@ -9,6 +9,7 @@ import {
 import PaginationButtons from "../../../widgets/pagination/buttons";
 import Receipt from "../../../widgets/receipt";
 import Modal from "./modal";
+import formattedTotal from "../../../../services/utilities/forattedTotal";
 const Table = ({ collections, isReturn, baseKey }) => {
   const [page, setPage] = useState(1),
     [show, setShow] = useState(false),
@@ -84,7 +85,7 @@ const Table = ({ collections, isReturn, baseKey }) => {
                   </MDBBadge>
                 </td>
                 <td className="text-center font-weight-bolder text-danger">
-                  ₱{transaction.getTotal(obj.products)}.00
+                  ₱{formattedTotal(transaction.getTotal(obj.products))}
                 </td>
                 <td className="text-center ">
                   <MDBBtn
