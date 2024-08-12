@@ -119,11 +119,15 @@ const ProductsCard = ({
               <MDBRow>
                 <MDBCol md="12" className="d-flex justify-content-center">
                   {!isLoading ? (
-                    <StorePagination
-                      pageNumbers={pageNumbers}
-                      handlePageChange={handlePageChange}
-                      currentPage={page}
-                    />
+                    <>
+                      {currentProducts.length > 0 && (
+                        <StorePagination
+                          pageNumbers={pageNumbers}
+                          handlePageChange={handlePageChange}
+                          currentPage={page}
+                        />
+                      )}
+                    </>
                   ) : (
                     <div className="mt-3">
                       <MDBSpinner />
