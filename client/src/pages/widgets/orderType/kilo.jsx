@@ -88,7 +88,8 @@ const Kilo = ({
           type="number"
           value={String(kilo)}
           onChange={({ target }) => {
-            var newKilo = Number(target.value);
+            let newKilo = target.value.replace(/[^0-9]/g, "");
+            newKilo = Number(newKilo);
             if (newKilo < 0) newKilo = 0;
             handleChangeKilo(newKilo);
           }}

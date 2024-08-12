@@ -41,10 +41,7 @@ export default function Dashboard() {
   return (
     <MDBContainer fluid id="v6" className="mb-5">
       <MDBRow>
-        <NearlyExpiredProducts
-          nearlyExpired={nearlyExpired}
-          isLoading={isLoading}
-        />
+        <OutOfStocksProducts outOfStocks={outOfStocks} isLoading={isLoading} />
       </MDBRow>
       <MDBRow>
         <NearlyOutOfStocksProducts
@@ -53,7 +50,10 @@ export default function Dashboard() {
         />
       </MDBRow>
       <MDBRow>
-        <OutOfStocksProducts outOfStocks={outOfStocks} isLoading={isLoading} />
+        <NearlyExpiredProducts
+          nearlyExpired={nearlyExpired}
+          isLoading={isLoading}
+        />
       </MDBRow>
     </MDBContainer>
   );

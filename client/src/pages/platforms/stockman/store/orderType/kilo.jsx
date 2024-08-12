@@ -12,7 +12,8 @@ const Kilo = ({ kilo, setKilo, kiloGrams, setKiloGrams, handleSubmit }) => {
           type="number"
           value={String(kilo)}
           onChange={({ target }) => {
-            var kilo = Number(target.value);
+            let filteredKilo = target.value.replace(/[^0-9]/g, "");
+            var kilo = Number(filteredKilo);
             if (kilo < 0) kilo = 0;
             setKilo(kilo);
           }}

@@ -9,7 +9,7 @@ const NearlyOutOfStocksProducts = ({ outOfStocks = [], isLoading }) => {
       <MDBCard className="mb-4">
         <MDBCardHeader color="primary-color">
           <MDBIcon icon="exclamation-triangle" className="mr-1" />
-          Nearly Out of Stocks Products
+          Nearly Out of Stock Products
         </MDBCardHeader>
         <MDBCardBody>
           {!isLoading ? (

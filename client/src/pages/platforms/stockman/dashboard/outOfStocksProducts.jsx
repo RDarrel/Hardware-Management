@@ -7,9 +7,9 @@ const OutOfStocksProducts = ({ outOfStocks = [], isLoading }) => {
   return (
     <MDBCol lg="12" md="12">
       <MDBCard className="mb-4">
-        <MDBCardHeader color="info-color">
+        <MDBCardHeader color="danger-color">
           <MDBIcon icon="exclamation-triangle" className="mr-1" />
-          Out of Stocks Products
+          Out of Stock Products
         </MDBCardHeader>
         <MDBCardBody>
           {!isLoading ? (

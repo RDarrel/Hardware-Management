@@ -48,7 +48,8 @@ const OrderType = ({
           type="number"
           value={String(item.kilo)}
           onChange={({ target }) => {
-            const newKilo = Number(target.value);
+            let filterKilo = target.value.replace(/[^0-9]/g, "");
+            const newKilo = Number(filterKilo);
             if (newKilo < 0) {
               handleChange(index, 0, true);
             } else if (newKilo >= maxKilo) {
@@ -103,7 +104,8 @@ const OrderType = ({
           style={{ width: "100%" }}
           value={String(item.quantity)}
           onChange={({ target }) => {
-            const newQty = Number(target.value);
+            let filterQuantity = target.value.replace(/[^0-9]/g, "");
+            const newQty = Number(filterQuantity);
             if (newQty < 1) {
               handleChange(index, 1, false);
             } else if (newQty >= maxQty) {

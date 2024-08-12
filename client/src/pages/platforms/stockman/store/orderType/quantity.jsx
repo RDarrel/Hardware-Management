@@ -13,7 +13,8 @@ export const Quantity = ({ quantity, setQuantity, handleSubmit }) => {
           value={String(quantity)}
           min="1"
           onChange={({ target }) => {
-            var quantity = Number(target.value);
+            let filteredQuantity = target.value.replace(/[^0-9]/g, "");
+            var quantity = Number(filteredQuantity);
             if (quantity < 1) quantity = 1;
             setQuantity(quantity);
           }}

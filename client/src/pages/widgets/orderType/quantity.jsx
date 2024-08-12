@@ -76,9 +76,10 @@ export const Quantity = ({
           value={String(quantity)}
           min="1"
           onChange={({ target }) => {
-            var quantity = Number(target.value);
-            if (quantity < 1) quantity = 1;
-            handleChangeQuantity(quantity, "");
+            let _quantity = target.value.replace(/[^0-9]/g, "");
+            _quantity = Number(_quantity);
+            if (_quantity < 1) _quantity = 1;
+            handleChangeQuantity(_quantity, "");
           }}
           size="sm"
           prepend={

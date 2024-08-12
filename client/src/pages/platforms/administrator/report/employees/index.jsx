@@ -27,6 +27,7 @@ export const EmployeesReport = () => {
     [showToast, setShowToast] = useState(""),
     { addToast } = useToasts(),
     dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
