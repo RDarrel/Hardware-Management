@@ -3,13 +3,13 @@ import { MDBCol, MDBCard, MDBCardBody, MDBCardHeader, MDBIcon } from "mdbreact";
 import Table from "./table";
 import Spinner from "../../../widgets/spinner";
 
-const OutOfStocksProducts = ({ outOfStocks = [], isLoading }) => {
+const NearlyOutOfStocksProducts = ({ outOfStocks = [], isLoading }) => {
   return (
     <MDBCol lg="12" md="12">
       <MDBCard className="mb-4">
-        <MDBCardHeader color="info-color">
+        <MDBCardHeader color="primary-color">
           <MDBIcon icon="exclamation-triangle" className="mr-1" />
-          Out of Stocks Products
+          Nearly Out of Stocks Products
         </MDBCardHeader>
         <MDBCardBody>
           {!isLoading ? (
@@ -27,4 +27,4 @@ const OutOfStocksProducts = ({ outOfStocks = [], isLoading }) => {
   );
 };
 
-export default OutOfStocksProducts;
+export default NearlyOutOfStocksProducts;

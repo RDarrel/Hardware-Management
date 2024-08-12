@@ -85,6 +85,14 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
     });
   };
 
+  const handleFormattedTotal = (total) => {
+    if (total % 1 !== 0) {
+      return `${total.toLocaleString()}`;
+    } else {
+      return `${total.toLocaleString()}.00`;
+    }
+  };
+
   return (
     <div
       style={{
@@ -107,7 +115,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
             />
             <h6 className="mt-2 text-primary">Back to store</h6>
           </div>
-          <div className="d-flex align-items-center ml-2">
+          {/* <div className="d-flex align-items-center ml-2">
             <MDBIcon
               icon="shopping-cart"
               size="3x"
@@ -130,7 +138,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
                 }}
               />
             </h4>
-          </div>
+          </div> */}
           <MDBCard className="mt-3">
             <MDBCardBody className="m-0 p-0">
               <div className="striped-border"></div>
@@ -164,7 +172,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
                 >
                   <h5 className="mr-5">Order Total ({cart.length} Item):</h5>
                   <h3 style={{ fontWeight: 800 }} className="text-danger  ml-2">
-                    ₱{total.toLocaleString()}.00
+                    ₱{handleFormattedTotal(total)}
                   </h3>
                 </MDBCol>
               </MDBRow>
