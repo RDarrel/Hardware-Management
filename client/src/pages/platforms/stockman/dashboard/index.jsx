@@ -33,7 +33,6 @@ export default function Dashboard() {
 
       const _nearlyOutOfStocks = handleFilter(collections, false);
       const _outOfStocks = handleFilter(collections, true);
-      console.log(_outOfStocks);
       setOutOfStocks(_outOfStocks);
       setNearlyOutOfStocks(_nearlyOutOfStocks);
     }
