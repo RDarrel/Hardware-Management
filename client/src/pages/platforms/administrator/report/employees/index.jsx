@@ -182,7 +182,7 @@ export const EmployeesReport = () => {
                 <MDBBadge color="info">
                   <h6 className="font-weight-bolder text-white  mx-1 my-1">
                     Grand Total Sales: ₱
-                    {formattedTotal(getTotalSales(transactions))}.00
+                    {formattedTotal(getTotalSales(transactions))}
                   </h6>
                 </MDBBadge>
               </div>
