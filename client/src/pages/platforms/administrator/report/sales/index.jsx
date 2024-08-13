@@ -21,6 +21,7 @@ import PaginationButtons from "../../../../widgets/pagination/buttons";
 import { Header } from "../header";
 import excel from "../../../../../services/utilities/downloadExcel/excel";
 import Spinner from "../../../../widgets/spinner";
+import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 const Sales = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth);
@@ -100,7 +101,7 @@ const Sales = () => {
             <MDBCardHeader color="warning-color">Total Sales</MDBCardHeader>
             <div className="d-flex  align-items-center justify-content-between">
               <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
-                ₱ {totalSales.toLocaleString()}
+                ₱ {formattedTotal(totalSales)}
               </h3>
             </div>
           </MDBCard>
@@ -111,7 +112,7 @@ const Sales = () => {
             <MDBCardHeader color="info-color">Total Income</MDBCardHeader>
             <div className="d-flex  align-items-center justify-content-between">
               <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
-                ₱ {totalIncome.toLocaleString()}
+                ₱ {formattedTotal(totalIncome)}
               </h3>
             </div>
           </MDBCard>

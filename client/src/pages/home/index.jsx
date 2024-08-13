@@ -55,7 +55,9 @@ export default class Home extends React.Component {
             >
               <MDBNavbarNav right>
                 <MDBNavItem>
-                  <MDBNavLink to="/login">Login</MDBNavLink>
+                  <MDBNavLink to="/login">
+                    <h5 className="login-txt">Login</h5>
+                  </MDBNavLink>
                 </MDBNavItem>
               </MDBNavbarNav>
             </MDBCollapse>

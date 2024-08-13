@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MDBRow, MDBCol, MDBCard, MDBBtn, MDBIcon } from "mdbreact";
 import GET from "../report/header/GET";
 import arrangeBy from "../report/header/arrangeBy";
+import formattedTotal from "../../../../services/utilities/forattedTotal";
 const Total = ({ sales: collections }) => {
   const [total, setTotal] = useState([]);
 
@@ -50,8 +51,8 @@ const Total = ({ sales: collections }) => {
                 </MDBBtn>
               </MDBCol>
               <MDBCol md="7" col="7" className="text-right pr-5">
-                <h5 className="ml-4 mt-4 mb-2 font-weight-bold">
-                  ₱ {total?.sales?.toLocaleString() || 0}{" "}
+                <h5 className="ml-4 mt-4 mb-2 font-weight-bold text-nowrap">
+                  ₱ {formattedTotal(total?.sales || 0)}{" "}
                 </h5>
                 <p className="font-small grey-text">Total Sales</p>
               </MDBCol>
@@ -75,9 +76,9 @@ const Total = ({ sales: collections }) => {
                 </MDBBtn>
               </MDBCol>
               <MDBCol md="7" col="7" className="text-right pr-5">
-                <h5 className="ml-4 mt-4 mb-2 font-weight-bold">
+                <h5 className="ml-4 mt-4 mb-2 font-weight-bold text-nowrap">
                   {" "}
-                  ₱ {total?.income?.toLocaleString() || 0}
+                  ₱ {formattedTotal(total?.income || 0)}
                 </h5>
                 <p className="font-small grey-text">Total Income</p>
               </MDBCol>

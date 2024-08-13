@@ -26,7 +26,10 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
   useEffect(() => {
     const productWihtSubtotal = checkOutProducts?.map((obj) => ({
       ...obj,
-      subtotal: variation.getTheSubTotal("srp", obj, obj.product),
+      _subtotal: variation.getTheSubTotal("srp", obj, obj.product),
+      subtotal: formattedTotal(
+        variation.getTheSubTotal("srp", obj, obj.product)
+      ),
       srp: variation.getTheCapitalOrSrp("srp", obj, obj.product),
       hasVariant: obj.product?.hasVariant,
       variant: variation.getTheVariant(
@@ -43,7 +46,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
 
   useEffect(() => {
     const _total = cart.reduce((accumulator, currentValue) => {
-      return (accumulator += currentValue.subtotal);
+      return (accumulator += currentValue._subtotal);
     }, 0);
 
     setTotal(_total);

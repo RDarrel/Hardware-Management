@@ -101,9 +101,11 @@ const handleRemoveCart = async (products) => {
 };
 const handleFormattedTotal = (total) => {
   if (total % 1 !== 0) {
-    return `${total}`;
+    const arrTotal = String(total).split(".");
+    const decimalLength = arrTotal[1].length;
+    return `${total.toLocaleString()}${decimalLength === 1 ? "0" : ""}`;
   } else {
-    return `${total.toFixed(2)}`;
+    return `${total.toLocaleString()}.00`;
   }
 };
 exports.receipt = (req, res) => {
@@ -119,7 +121,6 @@ exports.receipt = (req, res) => {
       date,
     };
     let htmlToSend = template(replacements);
-
     let msg = {
       from: `${process.env.APP_NAME}  <${process.env.EMAIL_USER}>`,
       to,

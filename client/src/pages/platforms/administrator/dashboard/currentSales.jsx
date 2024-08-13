@@ -8,6 +8,7 @@ import {
   MDBIcon,
   MDBProgress,
 } from "mdbreact";
+import formattedTotal from "../../../../services/utilities/forattedTotal";
 
 function CurrentSales({ sales }) {
   const [totalYearlySales, setTotalYearlySales] = useState(0),
@@ -215,7 +216,7 @@ function CurrentSales({ sales }) {
                 icon={`long-arrow-alt-${currentYearIsBetter ? "up" : "down"}`}
                 className="blue-text mr-3"
               />
-              ₱{totalYearlySales?.toLocaleString()}
+              ₱{formattedTotal(totalYearlySales || 0)}
             </h6>
             <MDBCardBody>
               <MDBProgress
@@ -237,8 +238,8 @@ function CurrentSales({ sales }) {
               <MDBIcon
                 icon={`long-arrow-alt-${currentMonthIsBetter ? "up" : "down"}`}
                 className="blue-text mr-3"
-              />{" "}
-              ₱{totalMonthlySales?.toLocaleString()}
+              />
+              ₱{formattedTotal(totalMonthlySales || 0)}
             </h6>
             <MDBCardBody>
               <MDBProgress
@@ -261,7 +262,7 @@ function CurrentSales({ sales }) {
                 icon={`long-arrow-alt-${currentWeekIsBetter ? "up" : "down"}`}
                 className="red-text mr-3"
               />
-              ₱{totalWeeklySales?.toLocaleString()}
+              ₱{formattedTotal(totalWeeklySales || 0)}
             </h6>
             <MDBCardBody>
               <MDBProgress
@@ -284,7 +285,7 @@ function CurrentSales({ sales }) {
                 icon={`long-arrow-alt-${currentDayISBetter ? "up" : "down"}`}
                 className="red-text mr-3"
               />{" "}
-              ₱{totalDailySales?.toLocaleString()}
+              ₱{formattedTotal(totalDailySales || 0)}
             </h6>
             <MDBCardBody>
               <MDBProgress

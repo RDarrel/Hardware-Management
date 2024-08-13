@@ -14,6 +14,7 @@ import {
 import Table from "./table";
 import { useDispatch } from "react-redux";
 import { transaction, variation } from "../../../services/utilities";
+import formattedTotal from "../../../services/utilities/forattedTotal";
 
 const Cart = ({
   show,
@@ -33,8 +34,14 @@ const Cart = ({
 
   useEffect(() => {
     setCart(collections);
-    setCheckOutProducts(isCustomer ? [] : collections);
+    setCheckOutProducts((prevProducts) =>
+      isCustomer && prevProducts.length === 0 ? [] : collections
+    );
   }, [collections, isCustomer]);
+
+  useEffect(() => {
+    setCheckOutProducts([]);
+  }, [show]);
 
   useEffect(() => {
     if (cart.length > 0) {
@@ -140,16 +147,22 @@ const Cart = ({
               <h6>Total ({checkOutProducts.length} item): </h6>
               <h4 className="text-danger ml-1 ">
                 ₱
-                {Number(
-                  transaction.getTotal(
-                    checkOutProducts.map((c) => {
-                      return {
-                        ...c,
-                        srp: variation.getTheCapitalOrSrp("srp", c, c.product),
-                      };
-                    })
+                {formattedTotal(
+                  Number(
+                    transaction.getTotal(
+                      checkOutProducts.map((c) => {
+                        return {
+                          ...c,
+                          srp: variation.getTheCapitalOrSrp(
+                            "srp",
+                            c,
+                            c.product
+                          ),
+                        };
+                      })
+                    )
                   )
-                ).toLocaleString() || 0}
+                )}
               </h4>
             </div>
           )}

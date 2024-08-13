@@ -12,6 +12,7 @@ import Variations from "../variations";
 import CustomSelect from "../../../components/customSelect";
 import Kilo from "../orderType/kilo";
 import { Quantity } from "../orderType/quantity";
+import formattedTotal from "../../../services/utilities/forattedTotal";
 
 export const Tbody = ({
   isCustomer,
@@ -224,9 +225,9 @@ export const Tbody = ({
               {isCustomer && (
                 <td className="text-danger font-weight-bold">
                   ₱
-                  {variation
-                    .getTheSubTotal("srp", obj, product)
-                    .toLocaleString()}
+                  {formattedTotal(
+                    variation.getTheSubTotal("srp", obj, product)
+                  )}
                 </td>
               )}
               <td>

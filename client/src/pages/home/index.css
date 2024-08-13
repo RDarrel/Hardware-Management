@@ -7,19 +7,21 @@
 }
 
 #landing #home .view {
-  background: url("https://mdbootstrap.com/img/Photos/Others/img%20(40).jpg")
-    no-repeat center center;
+  background: url("../../assets//Cover\ Photo.jpg") no-repeat center center;
   background-size: cover;
   height: 100vh;
 }
+.login-txt {
+  font-weight: 400;
+}
 
-#landing .rgba-gradient {
+/* #landing .rgba-gradient {
   background: -webkit-linear-gradient(
     45deg,
     rgba(83, 125, 210, 0.4),
     rgba(178, 30, 123, 0.4) 100%
   );
-}
+} */
 
 #landing h6 {
   line-height: 1.7;

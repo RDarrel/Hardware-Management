@@ -11,6 +11,7 @@ import "./employee.css";
 import getTotalSales from "../getTotalSales";
 import Processed from "./processed";
 import Spinner from "../../../../widgets/spinner";
+import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 export const EmployeesReport = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
@@ -180,7 +181,8 @@ export const EmployeesReport = () => {
               <div className="d-flex justify-content-end mt-3">
                 <MDBBadge color="info">
                   <h6 className="font-weight-bolder text-white  mx-1 my-1">
-                    Grand Total Sales: ₱{getTotalSales(transactions)}.00
+                    Grand Total Sales: ₱
+                    {formattedTotal(getTotalSales(transactions))}.00
                   </h6>
                 </MDBBadge>
               </div>
