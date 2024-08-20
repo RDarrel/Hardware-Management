@@ -10,6 +10,7 @@ import Request from "../../widgets/purchases/request";
 import PurchasesDefective from "../../widgets/purchases/purchasesDefective";
 import Categories from "./productMangement/category";
 import Materials from "./productMangement/materials";
+import { Stocks } from "../stockman/stocks";
 // import Category from "./productMangement/category";
 
 const access = [
@@ -18,6 +19,12 @@ const access = [
     component: Dashboard,
     name: "Dashboard",
     icon: "tachometer-alt",
+  },
+  {
+    path: "/stocks",
+    name: "Stocks",
+    icon: "warehouse",
+    component: Stocks,
   },
   {
     name: "Employees",

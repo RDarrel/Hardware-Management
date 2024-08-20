@@ -22,7 +22,8 @@ exports.browse = async (req, res) => {
       .select("-__v")
       .sort({
         ...(status === "pending" ? { expected: 1 } : { expectedDelivered: 1 }),
-      });
+      })
+      .sort({ createdAt: 1 });
     const container = [];
 
     for (const element of purchases) {

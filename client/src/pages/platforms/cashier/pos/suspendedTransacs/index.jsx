@@ -89,7 +89,7 @@ export default function SuspendedTransacs({
       title: "Are you sure ?",
       text: isQuotation
         ? "you want to place order this quotation?"
-        : "you want to resume this suspended transaction?",
+        : "you want to resume this hold transaction?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -140,7 +140,7 @@ export default function SuspendedTransacs({
       title: "Are you sure?",
       text: isQuotation
         ? "You want to delete this quotation"
-        : "You want to delete this suspended transaction!",
+        : "You want to delete this hold transaction!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -153,7 +153,7 @@ export default function SuspendedTransacs({
         Swal.fire({
           title: "Deleted!",
           text: `Your ${
-            isQuotation ? "quotation" : "suspended transaction"
+            isQuotation ? "quotation" : "hold transaction"
           } has been deleted.`,
           icon: "success",
         });
@@ -179,7 +179,7 @@ export default function SuspendedTransacs({
               icon={!isQuotation ? "pause-circle" : "walking"}
               className="mr-2"
             />
-            {!isQuotation ? "Suspended Transactions" : "Walkin Quotations"}
+            {!isQuotation ? "Hold Transactions" : "Walkin Quotations"}
           </MDBModalHeader>
         )}
         <MDBModalBody className={`mb-0 ${showInvoice ? "m-0 p-0" : ""}`}>

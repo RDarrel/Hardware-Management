@@ -14,11 +14,11 @@ import {
 const GUIDES = [
   { shorcut: "F", func: "SEARCH PRODUCT", laptop: "F" },
   { shorcut: "F1", func: "ENTER CASH", laptop: "FN + F1" },
-  { shorcut: "F2", func: "PAID", laptop: "FN + F1" },
-  { shorcut: "F3", func: "SUSPEND TRANSACTION", laptop: "FN + F2" },
-  { shorcut: "F4", func: "VIEW SUSPENDED TRANSACTIONS", laptop: "FN + F3" },
-  { shorcut: "F5", func: "FIND TRANSACTION", laptop: "FN + F4" },
-  { shorcut: "F6", func: "VIEW GUIDE", laptop: "FN + F5" },
+  { shorcut: "F2", func: "PAID", laptop: "FN + F2" },
+  { shorcut: "F3", func: "HOLD TRANSACTION", laptop: "FN + F3" },
+  { shorcut: "F4", func: "VIEW HOLD TRANSACTIONS", laptop: "FN + F4" },
+  { shorcut: "F5", func: "FIND TRANSACTION", laptop: "FN + F5" },
+  { shorcut: "F6", func: "VIEW GUIDE", laptop: "FN + F6" },
 ];
 
 export default function Guide({ show, toggle }) {

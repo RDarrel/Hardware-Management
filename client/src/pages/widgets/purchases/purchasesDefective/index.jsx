@@ -37,7 +37,10 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
   }, [token, dispatch, activeTab, isAdmin, auth, isDefective]);
 
   useEffect(() => {
-    setPurchases(collections || []);
+    const sorted = [...collections].sort((a, b) => {
+      return new Date(b.received) - new Date(a.received);
+    });
+    setPurchases(sorted);
   }, [collections]);
 
   return (

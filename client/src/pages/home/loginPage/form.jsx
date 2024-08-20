@@ -14,7 +14,7 @@ const _form = { email: "", confirmPassword: "", password: "" };
 
 const Form = ({ isLogin, setIsLogin }) => {
   const { message: baseMessage = "" } = useSelector(({ auth }) => auth),
-    { message: userMessage, isSuccess: isSuccessRegister } = useSelector(
+    { message: userMessage = "", isSuccess: isSuccessRegister } = useSelector(
       ({ users }) => users
     ),
     [form, setForm] = useState({}),

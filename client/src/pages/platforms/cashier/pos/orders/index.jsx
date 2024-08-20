@@ -129,12 +129,12 @@ const Orders = ({
       title: "Are you sure?",
       text: isWalkin
         ? "You want to send this receipt in cashier"
-        : "This transaction will be suspended and can be resumed later.",
+        : "This transaction will be hold and can be resumed later.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: `Yes, ${!isWalkin ? "suspend" : "send"} it!`,
+      confirmButtonText: `Yes, ${!isWalkin ? "hold" : "send"} it!`,
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(
@@ -143,7 +143,7 @@ const Orders = ({
             data: {
               cashier: auth._id,
               total,
-              customer,
+              ...(isWalkin && { customer }),
               orders: orderDetails,
               invoice_no,
               type: !isWalkin ? "suspend" : "quotation",
@@ -158,9 +158,9 @@ const Orders = ({
           setIsCheckOut(false);
         }
         Swal.fire({
-          title: !isWalkin ? "Suspended!" : "Send",
+          title: !isWalkin ? "Hold!" : "Send",
           text: !isWalkin
-            ? "The transaction has been successfully suspended."
+            ? "The transaction has been successfully hold."
             : "Receipt successfully Sent",
           icon: "success",
         });
@@ -223,9 +223,9 @@ const Orders = ({
                   color="info"
                   id="suspend"
                   disabled={!invoice_no}
-                  onClick={handleSuspend}
+                  onClick={() => handleSuspend("")}
                 >
-                  <MDBIcon far icon="pause-circle" className="mr-1" /> Suspend
+                  <MDBIcon far icon="pause-circle" className="mr-1" /> Hold
                 </MDBBtn>
               )}
             </div>

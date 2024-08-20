@@ -1,5 +1,5 @@
 import { MDBBtn, MDBIcon, MDBTable } from "mdbreact";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formattedDate, fullName } from "../../../../../services/utilities";
 import Modal from "./modal";
 
@@ -9,10 +9,19 @@ const Table = ({ purchases, isAdmin, isRefund = false, isDefective }) => {
     [expectedDelivered, setExpectedDelivered] = useState(""),
     [supplier, setSupplier] = useState({}),
     [purchase, setPurchase] = useState({}),
+    [sortedPurchases, setSortedPurchases] = useState([]),
     [total, setTotal] = useState(""),
     [merchandises, setMerchandises] = useState("");
 
-  console.log(isRefund);
+  useEffect(() => {
+    if (!!purchases) {
+      const sorted = [...purchases].sort((a, b) => {
+        return new Date(b.received) - new Date(a.received);
+      });
+      setSortedPurchases(sorted);
+    }
+  }, [purchases]);
+
   const toggle = () => setShow(!show);
   return (
     <>
@@ -29,8 +38,8 @@ const Table = ({ purchases, isAdmin, isRefund = false, isDefective }) => {
           </tr>
         </thead>
         <tbody>
-          {!!purchases ? (
-            purchases.map((purchase, index) => (
+          {!!sortedPurchases ? (
+            sortedPurchases.map((purchase, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
                 {!isRefund && (

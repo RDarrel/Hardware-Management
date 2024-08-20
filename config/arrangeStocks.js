@@ -26,11 +26,13 @@ const arrangeStocks = async () => {
         if (currentValue?.product?.isPerKilo) {
           accumulator[index].available += kiloStock > 0 ? kiloStock : 0;
           accumulator[index].beginning += kilo + kiloGrams;
+          accumulator[index].totalExpired += expiredKilo;
           accumulator[index].sold +=
             kilo + kiloGrams - Math.abs(kiloStock - expiredKilo) || 0;
         } else {
           accumulator[index].available += quantityStock > 0 ? quantityStock : 0;
           accumulator[index].beginning += quantity;
+          accumulator[index].totalExpired += expiredQuantity;
           accumulator[index].sold +=
             quantity - Math.abs(quantityStock - expiredQuantity) || 0;
         }
@@ -39,6 +41,7 @@ const arrangeStocks = async () => {
         const sold = isPerKilo
           ? kilo + kiloGrams - Math.abs(kiloStock - expiredKilo) || 0
           : quantity - Math.abs(quantityStock - expiredQuantity) || 0;
+        const totalExpired = isPerKilo ? expiredKilo : expiredQuantity;
         accumulator.push({
           ...currentValue._doc,
           key,
@@ -51,6 +54,7 @@ const arrangeStocks = async () => {
             : 0,
           beginning: isPerKilo ? kilo + kiloGrams : quantity,
           sold,
+          totalExpired,
         });
       }
 

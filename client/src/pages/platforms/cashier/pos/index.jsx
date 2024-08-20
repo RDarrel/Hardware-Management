@@ -29,6 +29,7 @@ const POS = ({ isWalkin = false }) => {
     [showGuide, setShowGuide] = useState(false),
     [showFindTransac, setShowFindTransac] = useState(false),
     [invoice_no, setInvoice_no] = useState(""),
+    [showSuggested, setShowSuggested] = useState(true), // suggested search results
     [search, setSearch] = useState(""),
     [customerQuotation, setCustomerQuotation] = useState(""),
     [showVariant, setShowVariant] = useState(false),
@@ -95,7 +96,7 @@ const POS = ({ isWalkin = false }) => {
           break;
         case "F4":
           if (!showFindTransac && !isCheckOut && !isWalkin) {
-            toggleSuspended();
+            toggleSuspended(true);
           }
           break;
         case "9":
@@ -154,8 +155,9 @@ const POS = ({ isWalkin = false }) => {
         appearance: "error",
       });
       setProducts(collections);
-      // } else if (results.length > 1) {
-      //   setProducts(results);
+    } else if (results.length > 1) {
+      setShowSuggested(false);
+      setProducts(results);
     } else if (results.length === 1) {
       const product = results[0];
 
@@ -164,6 +166,7 @@ const POS = ({ isWalkin = false }) => {
         setSelectedProduct(results[0]);
       } else {
         handleAddOrder(product);
+        setSearch("");
       }
     }
 
@@ -307,7 +310,9 @@ const POS = ({ isWalkin = false }) => {
             collections={collections}
             setPage={setPage}
             isLoading={isLoading}
+            showSuggested={showSuggested}
             isCheckOut={isCheckOut}
+            setShowSuggested={setShowSuggested}
           />
           <Products
             products={products}

@@ -78,6 +78,8 @@ export const Stocks = () => {
                   <th>Beginning</th>
                   <th>Available</th>
                   <th>Sold</th>
+                  <th>Expired</th>
+
                   <th>Unit</th>
                 </tr>
               </thead>
@@ -112,7 +114,7 @@ export const Stocks = () => {
                             <h6
                               className="text-truncate"
                               style={{
-                                maxWidth: "400px",
+                                maxWidth: "350px",
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
                                 marginBottom: "-15px",
@@ -145,6 +147,12 @@ export const Stocks = () => {
                       <td>
                         <MDBBadge pill className="p-2" color="red">
                           <h6> {obj.sold}</h6>
+                        </MDBBadge>
+                      </td>
+
+                      <td>
+                        <MDBBadge pill className="p-2" color="info">
+                          <h6> {obj.totalExpired}</h6>
                         </MDBBadge>
                       </td>
                       <td>{obj.product.isPerKilo ? "kg" : "Pcs"}</td>

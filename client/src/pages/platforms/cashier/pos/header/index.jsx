@@ -30,7 +30,7 @@ const Header = ({
   toggleFindTransac,
   isLoading = false,
   isWalkin,
-  isQuotation,
+  isQuotation = false,
   setCustomerQuotation = () => {},
 }) => {
   const { auth, token } = useSelector(({ auth }) => auth),
@@ -90,7 +90,7 @@ const Header = ({
                 onClick={() => toggleSuspended(true)}
               >
                 <MDBIcon far icon="pause-circle" className="mr-1" />
-                Suspended Transactions
+                Hold Transactions
               </MDBBtn>
             </div>
 

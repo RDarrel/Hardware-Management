@@ -126,7 +126,7 @@ const Footer = ({
           className="d-flex justify-content-center btn-paid mt-3"
         >
           <div className="d-flex ">
-            <h5 className="text-white mr-2 font-weight-bold "> Paid</h5>
+            <h5 className="text-white mr-2 font-weight-bold "> Pay</h5>
             <MDBIcon icon="cash-register" className="paid-icon" size="2x" />
           </div>
         </MDBBtn>

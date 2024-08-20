@@ -44,8 +44,8 @@ const Sales = () => {
 
   const handleExport = () => {
     const options = {
-      sheet: "SHSF-8",
-      filename: "SF-Form-8",
+      sheet: "Sales-Report",
+      filename: "Sales-Report",
       title: "Sales Report",
       from: formattedDate(baseFrom),
       to: formattedDate(baseTo),

@@ -23,6 +23,7 @@ import getTotalSales from "../getTotalSales";
 import Receipt from "../../../../widgets/receipt";
 import Spinner from "../../../../widgets/spinner";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
+import transactionsExcel from "../../../../../services/utilities/downloadExcel/transactions";
 
 export const Transactions = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
@@ -33,6 +34,8 @@ export const Transactions = () => {
     [orderDetails, setOrderDetails] = useState([]),
     [selected, setSelected] = useState({}),
     [show, setShow] = useState(false),
+    [baseFrom, setBaseFrom] = useState(""),
+    [baseTo, setBaseTo] = useState(""),
     [page, setPage] = useState(1),
     dispatch = useDispatch();
 
@@ -47,20 +50,56 @@ export const Transactions = () => {
     setSelected({ ..._transaction, products: _transaction.purchases });
     toggle();
   };
-  console.log(selected);
+
+  const handleExport = () => {
+    const options = {
+      sheet: "Sales-Report",
+      filename: "Sales-Report",
+      title: "Transactions Report",
+      from: formattedDate(baseFrom),
+      to: formattedDate(baseTo),
+      totalSales: `₱${formattedTotal(getTotalSales(transactions))}`,
+    };
+
+    const formatSales = transactions.map((transaction) => {
+      const { invoice_no = "", total, cash, cashier, createdAt } = transaction;
+      return {
+        cashier: fullName(cashier.fullName),
+        invoice: invoice_no,
+        date: formattedDate(createdAt),
+        totalAmount: `₱ ${formattedTotal(total)}`,
+        cash: `₱ ${formattedTotal(cash)}`,
+        change: `₱ ${formattedTotal(cash - total)}`,
+      };
+    });
+
+    transactionsExcel({ options, array: formatSales });
+  };
 
   return (
     <>
       <MDBCard>
-        <div className="ml-4 mt-2">
-          <Header
-            setFilteredData={setTransactions}
-            collections={collections}
-            isTransaction={true}
-            title="Transactions"
-            mb="0"
-          />
-        </div>
+        <MDBRow className="align-items-center">
+          <MDBCol md="10">
+            <div className="ml-4 mt-2">
+              <Header
+                setFilteredData={setTransactions}
+                collections={collections}
+                isTransaction={true}
+                title="Transactions"
+                mb="0"
+                setBaseFrom={setBaseFrom}
+                setBaseTo={setBaseTo}
+              />
+            </div>
+          </MDBCol>
+          <MDBCol>
+            <MDBBtn size="sm" onClick={handleExport}>
+              <MDBIcon icon="file-excel" className="mr-2" />
+              Export In Excel
+            </MDBBtn>
+          </MDBCol>
+        </MDBRow>
         <MDBCardBody>
           {!isLoading ? (
             <>

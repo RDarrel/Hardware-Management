@@ -174,7 +174,7 @@ const Cart = ({
             disabled={checkOutProducts.length === 0}
           >
             <span>
-              Check Out
+              {!isCustomer ? "Request" : "Check Out"}
               <i className="fas fa-long-arrow-alt-right ms-2 ml-2"></i>
             </span>
           </MDBBtn>

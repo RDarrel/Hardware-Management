@@ -15,6 +15,8 @@ const Search = ({
   setPage,
   isLoading = false,
   isCheckOut = false,
+  showSuggested = true,
+  setShowSuggested = () => {},
 }) => {
   const inputRef = useRef(null);
 
@@ -56,7 +58,14 @@ const Search = ({
               autoComplete="off"
               ref={inputRef}
               readOnly={isLoading}
-              onChange={({ target }) => setSearch(target.value)}
+              onChange={({ target }) => {
+                const searchValue = target.value;
+
+                if (searchValue !== search) {
+                  setShowSuggested(true);
+                }
+                setSearch(target.value);
+              }}
               name="search"
             />
             <MDBBtn
@@ -69,13 +78,13 @@ const Search = ({
                 setSearch("");
                 setProducts(collections);
               }}
-              type={!didSearch ? "button" : "submit"}
+              type={didSearch ? "button" : "submit"}
               className="search-btn"
             >
               <MDBIcon icon={didSearch ? "times" : "search"} />
             </MDBBtn>
           </form>
-          {search && (
+          {search && showSuggested && (
             <SuggestedProducts
               products={collections}
               setDidSearch={setDidSearch}

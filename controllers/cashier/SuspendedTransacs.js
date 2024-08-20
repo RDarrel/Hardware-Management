@@ -52,7 +52,7 @@ exports.save = async (req, res) => {
       total,
       type,
       assistBy,
-      customer,
+      ...(customer && { customer }),
     });
     const populateProduct = await Entity.findOne({
       _id: newSuspendTransac._id,
