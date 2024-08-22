@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MDBNavbar,
   MDBNavbarBrand,
@@ -8,103 +8,119 @@ import {
   MDBDropdownToggle,
   MDBDropdownMenu,
   MDBDropdownItem,
+  MDBBadge,
 } from "mdbreact";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
 
-class TopNavigation extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      collapse: false,
-    };
-    this.onClick = this.onClick.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.handleToggleClickA = this.handleToggleClickA.bind(this);
-  }
+import { BROWSE } from "../../services/redux/slices/notifications";
+import { fullName } from "../../services/utilities";
+import TimeSince from "./timeSince";
 
-  onClick() {
-    this.setState({
-      collapse: !this.state.collapse,
-    });
-  }
+const message = {
+  REQUEST: "sent a purchase request.",
+  DEFECTIVE: "has received defective products.",
+  DISCREPANCY: "has received products with discrepancies.",
+};
+const TopNavigation = ({ onSideNavToggleClick }) => {
+  const { auth, token } = useSelector(({ auth }) => auth),
+    { collections } = useSelector(({ notifications }) => notifications),
+    [notifications, setNotifications] = useState([]),
+    history = useHistory(),
+    dispatch = useDispatch();
 
-  toggle() {
-    this.setState({
-      dropdownOpen: !this.state.dropdownOpen,
-    });
-  }
+  useEffect(() => {
+    dispatch(BROWSE({ token }));
+  }, [token, dispatch]);
 
-  handleToggleClickA() {
-    this.props.onSideNavToggleClick();
-  }
+  useEffect(() => {
+    setNotifications(collections);
+  }, [collections]);
 
-  render() {
-    const navStyle = {
-      paddingLeft: this.props.toggle ? "16px" : "240px",
-      transition: "padding-left .3s",
-    };
-
-    const { auth } = this.props;
-    return (
-      <MDBNavbar
-        // className="flexible-MDBNavbar"
-        light
-        expand="md"
-        // scrolling
-        fixed="top"
-        style={{ zIndex: 3 }}
-      >
-        <div
-          onClick={this.handleToggleClickA}
-          key="sideNavToggleA"
-          style={{
-            lineHeight: "32px",
-            marginleft: "1em",
-            verticalAlign: "middle",
-            cursor: "pointer",
-          }}
-        >
-          <MDBIcon icon="bars" color="white" size="lg" />
-        </div>
-
-        <MDBNavbarBrand href="#" style={navStyle}>
-          {/* <strong>{route}</strong> */}
-        </MDBNavbarBrand>
-        <MDBNavbarNav expand="sm" right style={{ flexDirection: "row" }}>
-          <MDBDropdown>
-            <MDBDropdownToggle nav>
-              <MDBIcon icon="user" />
-              &nbsp;
-              <span className="d-none d-md-inline">Profile</span>
-            </MDBDropdownToggle>
-            <MDBDropdownMenu right style={{ minWidth: "200px" }}>
-              <MDBDropdownItem disabled={!auth._id} href="/profile">
-                My Account
-              </MDBDropdownItem>
-              <MDBDropdownItem
-                onClick={() => {
-                  if (auth._id) {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("email");
-                  }
-                  window.location.href = "/";
-                }}
-              >
-                Log Out
-              </MDBDropdownItem>
-            </MDBDropdownMenu>
-          </MDBDropdown>
-        </MDBNavbarNav>
-      </MDBNavbar>
-    );
-  }
-}
-
-const mapStateToProps = (state) => {
-  return {
-    auth: state.auth.auth, // Replace with your actual state property
-    route: state.auth.route,
+  const handleToggleClickA = () => {
+    onSideNavToggleClick();
   };
+
+  const navStyle = {
+    paddingLeft: onSideNavToggleClick ? "16px" : "240px",
+    transition: "padding-left .3s",
+  };
+
+  const handleNotification = (_id, type) => {
+    const url = type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+    history.push(`/purchases${url}`);
+  };
+
+  return (
+    <MDBNavbar light expand="md" fixed="top" style={{ zIndex: 3 }}>
+      <div
+        onClick={handleToggleClickA}
+        key="sideNavToggleA"
+        style={{
+          lineHeight: "32px",
+          marginLeft: "1em",
+          verticalAlign: "middle",
+          cursor: "pointer",
+        }}
+      >
+        <MDBIcon icon="bars" color="white" size="lg" />
+      </div>
+
+      <MDBNavbarBrand href="#" style={navStyle}>
+        {/* <strong>{route}</strong> */}
+      </MDBNavbarBrand>
+      <MDBNavbarNav expand="sm" right style={{ flexDirection: "row" }}>
+        <MDBDropdown>
+          <MDBDropdownToggle nav caret>
+            <MDBBadge color="red" className="mr-2">
+              {notifications.length}
+            </MDBBadge>
+            <MDBIcon icon="bell" />
+            <span className="d-none d-md-inline">Notifications</span>
+          </MDBDropdownToggle>
+          <MDBDropdownMenu right style={{ minWidth: "515px" }}>
+            {!!notifications &&
+              notifications.map(({ user, type, createdAt, _id }, index) => (
+                <MDBDropdownItem
+                  onClick={() => handleNotification(_id, type)}
+                  key={index}
+                >
+                  <MDBIcon icon="money-bill-alt" className="mr-2" />
+                  {fullName(user.fullName)} {message[type]}
+                  <span className="float-right">
+                    <MDBIcon icon="clock" />{" "}
+                    {<TimeSince createdAt={createdAt} />}
+                  </span>
+                </MDBDropdownItem>
+              ))}
+          </MDBDropdownMenu>
+        </MDBDropdown>
+        <MDBDropdown>
+          <MDBDropdownToggle nav>
+            <MDBIcon icon="user" />
+            &nbsp;
+            <span className="d-none d-md-inline">Profile</span>
+          </MDBDropdownToggle>
+          <MDBDropdownMenu right style={{ minWidth: "200px" }}>
+            <MDBDropdownItem disabled={!auth._id} href="/profile">
+              My Account
+            </MDBDropdownItem>
+            <MDBDropdownItem
+              onClick={() => {
+                if (auth._id) {
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("email");
+                }
+                window.location.href = "/";
+              }}
+            >
+              Log Out
+            </MDBDropdownItem>
+          </MDBDropdownMenu>
+        </MDBDropdown>
+      </MDBNavbarNav>
+    </MDBNavbar>
+  );
 };
 
-export default connect(mapStateToProps)(TopNavigation);
+export default TopNavigation;

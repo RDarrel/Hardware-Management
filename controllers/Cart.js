@@ -1,5 +1,6 @@
 const Entity = require("../models/Cart"),
   Purchase = require("../models/stockman/Purchases"),
+  Notifications = require("../models/Notifications"),
   Merchandises = require("../models/stockman/Merchandises"),
   Suppliers = require("../models/administrator/Supplier"),
   handleDuplicate = require("../config/duplicate");
@@ -207,7 +208,7 @@ exports.suppliers = (_, res) => {
 exports.buy = async (req, res) => {
   try {
     // const { purchase, cart } = req.body;
-    const purchases = req.body;
+    const { purchases, user } = req.body;
 
     for (const purchase of purchases) {
       const createdPurchase = await Purchase.create({
@@ -228,6 +229,7 @@ exports.buy = async (req, res) => {
       await Merchandises.insertMany(merchandisesWithPurchase);
       await Entity.deleteMany({ _id: { $in: idsToDelete } });
     }
+    await Notifications.create({ user, type: "REQUEST" });
 
     // const createdPurchase = await Purchase.create(purchase);
     // const cartWithPurchaseID = cart.map((obj) => ({

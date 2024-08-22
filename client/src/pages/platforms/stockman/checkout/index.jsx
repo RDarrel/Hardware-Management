@@ -177,7 +177,7 @@ const Checkout = () => {
         dispatch(
           BUY({
             token,
-            data: purchases,
+            data: { purchases, user: auth._id },
           })
         );
         history.push("/store");

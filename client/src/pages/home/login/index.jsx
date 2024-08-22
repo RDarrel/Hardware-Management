@@ -37,7 +37,6 @@ export default function Login({ show, toggle = null }) {
   useEffect(() => {
     if (auth._id && isSuccess) {
       if (role === "CASHIER") {
-        console.log("nag login");
         history.push("/pos");
         dispatch(RESET());
       } else if (role === "CUSTOMER") {
