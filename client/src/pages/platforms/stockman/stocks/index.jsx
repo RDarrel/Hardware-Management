@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { BROWSE } from "../../../../services/redux/slices/stockman/stocks";
-import { MDBBadge, MDBCard, MDBCardBody, MDBTable } from "mdbreact";
+import { MDBCard, MDBCardBody, MDBTable } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
 import {
   ENDPOINT,
@@ -75,10 +75,10 @@ export const Stocks = () => {
                 <tr>
                   <th>#</th>
                   <th>Product Name</th>
-                  <th>Beginning</th>
-                  <th>Available</th>
-                  <th>Sold</th>
-                  <th>Expired</th>
+                  <th className="text-center">Beginning</th>
+                  <th className="text-center">Available</th>
+                  <th className="text-center">Sold</th>
+                  <th className="text-center">Expired</th>
 
                   <th>Unit</th>
                 </tr>
@@ -134,28 +134,30 @@ export const Stocks = () => {
                           </div>
                         </div>
                       </td>
-                      <td>
-                        <MDBBadge pill className="p-2" color="blue">
-                          <h6>{obj.beginning}</h6>
-                        </MDBBadge>
+                      <td className="text-center font-weight-bold ">
+                        {/* <MDBBadge pill className="p-2" color="blue"> */}
+                        {obj.beginning}
+                        {/* </MDBBadge> */}
                       </td>
-                      <td>
-                        <MDBBadge pill className="p-2" color="green">
-                          <h6> {obj.available}</h6>
-                        </MDBBadge>
+                      <td className="text-center font-weight-bold ">
+                        {/* <MDBBadge pill className="p-2" color="green"> */}
+                        {obj.available}
+                        {/* </MDBBadge> */}
                       </td>
-                      <td>
-                        <MDBBadge pill className="p-2" color="red">
-                          <h6> {obj.sold}</h6>
-                        </MDBBadge>
+                      <td className="text-center font-weight-bold">
+                        {/* <MDBBadge pill className="p-2" color="red"> */}
+                        {obj.sold}
+                        {/* </MDBBadge> */}
                       </td>
 
-                      <td>
-                        <MDBBadge pill className="p-2" color="info">
-                          <h6> {obj.totalExpired}</h6>
-                        </MDBBadge>
+                      <td className="text-center font-weight-bold">
+                        {/* <MDBBadge pill className="p-2" color="info"> */}
+                        {obj.totalExpired}
+                        {/* </MDBBadge> */}
                       </td>
-                      <td>{obj.product.isPerKilo ? "kg" : "Pcs"}</td>
+                      <td className="text-center">
+                        {obj.product.isPerKilo ? "kg" : "Pcs"}
+                      </td>
                     </tr>
                   );
                 })}

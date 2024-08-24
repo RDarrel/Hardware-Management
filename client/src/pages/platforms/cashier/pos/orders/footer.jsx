@@ -1,16 +1,25 @@
 import React, { useEffect, useRef } from "react";
-import { MDBBtn, MDBCard, MDBCardBody, MDBIcon, MDBInputGroup } from "mdbreact";
+import {
+  MDBBtn,
+  MDBCard,
+  MDBCardBody,
+  MDBCol,
+  MDBIcon,
+  MDBInputGroup,
+  MDBRow,
+} from "mdbreact";
 import Swal from "sweetalert2";
 
 const Footer = ({
   invoice_no,
   total,
-  setCheckout,
+  // setCheckout,
   isWalkin,
   orderDetails,
   cash,
   toggle,
   setCash,
+  setIsWalkInQuotation,
 }) => {
   const change = Number(cash) - Number(total);
   const cashDivRef = useRef(null);
@@ -29,6 +38,10 @@ const Footer = ({
       });
 
     toggle();
+  };
+  const handleQuotation = () => {
+    toggle();
+    setIsWalkInQuotation(true);
   };
 
   useEffect(() => {
@@ -116,20 +129,41 @@ const Footer = ({
             </div>
           </MDBCardBody>
         </MDBCard>
-        <MDBBtn
-          color="primary"
-          size="sm"
-          id="paid"
-          type="submit"
-          block
-          disabled={orderDetails.length === 0}
-          className="d-flex justify-content-center btn-paid mt-3"
-        >
-          <div className="d-flex ">
-            <h5 className="text-white mr-2 font-weight-bold "> Pay</h5>
-            <MDBIcon icon="cash-register" className="paid-icon" size="2x" />
-          </div>
-        </MDBBtn>
+        <MDBRow>
+          <MDBCol>
+            <MDBBtn
+              color="primary"
+              size="sm"
+              id="paid"
+              type="submit"
+              block
+              disabled={orderDetails.length === 0}
+              className="d-flex justify-content-center btn-paid "
+            >
+              <div className="d-flex ">
+                <h5 className="text-white mr-2 font-weight-bold "> Pay</h5>
+                <MDBIcon icon="cash-register" className="paid-icon" size="2x" />
+              </div>
+            </MDBBtn>
+          </MDBCol>
+          <MDBCol>
+            <MDBBtn
+              color="danger"
+              size="sm"
+              id="paid"
+              type="button"
+              onClick={handleQuotation}
+              block
+              disabled={orderDetails.length === 0}
+              className="d-flex justify-content-center btn-paid "
+            >
+              <div className="d-flex ">
+                <h5 className="text-white mr-2 font-weight-bold ">Quotation</h5>
+                <MDBIcon icon="cash-register" className="paid-icon" size="2x" />
+              </div>
+            </MDBBtn>
+          </MDBCol>
+        </MDBRow>
       </form>
     </>
   );

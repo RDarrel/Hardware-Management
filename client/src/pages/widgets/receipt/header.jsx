@@ -15,6 +15,7 @@ const Header = ({
   setCustomer,
   reason,
   isWalkin,
+  isWalkInQuotation = false,
 }) => {
   return (
     <>
@@ -35,11 +36,11 @@ const Header = ({
                 className="font-weight-bold mb-1"
                 style={{ letterSpacing: "2px" }}
               >
-                {!isWalkin ? " INVOICE" : "QOUTATION"}
+                {!isWalkin && !isWalkInQuotation ? " INVOICE" : "QOUTATION"}
               </h4>
               <div className="d-flex  justify-content-between  ">
                 <span className="text-nowrap mr-3">
-                  {!isWalkin ? "Invoice" : "Quotation"} #:{" "}
+                  {!isWalkin && !isWalkInQuotation ? "Invoice" : "Quotation"} #:{" "}
                 </span>
                 <span className="text-nowrap">{invoice_no}</span>
               </div>

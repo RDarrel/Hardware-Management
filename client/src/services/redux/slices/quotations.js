@@ -1,16 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axioKit, bulkPayload } from "../../utilities";
 
-const name = "cart";
+const name = "quotations";
 
 const initialState = {
   collections: [],
-  checkOutProducts: [],
-  suppliers: [],
+  quotations: [],
   progress: 0,
   isSuccess: false,
   isLoading: false,
-  isLimit: false,
   message: "",
 };
 
@@ -32,11 +30,11 @@ export const BROWSE = createAsyncThunk(
   }
 );
 
-export const SUPPLIERS = createAsyncThunk(
-  `SUPPLIERS`,
+export const QUOTATIONS = createAsyncThunk(
+  `${name}/QUOTATIONS`,
   ({ token }, thunkAPI) => {
     try {
-      return axioKit.universal("cart/suppliers", token);
+      return axioKit.universal(`${name}/quotations`, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -76,68 +74,6 @@ export const SAVE = createAsyncThunk(`${name}/save`, (form, thunkAPI) => {
   }
 });
 
-export const PRE_ORDER = createAsyncThunk(
-  `${name}/pre_order`,
-  (form, thunkAPI) => {
-    try {
-      return axioKit.save(`${name}`, form.data, form.token, "pre_order");
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
-
-export const GENERATE_RECEIPT = createAsyncThunk(
-  `${name}/GENERATE_RECEIPT`,
-  (form, thunkAPI) => {
-    try {
-      return axioKit.save("mailer", form.data, form.token, "generateReceipt");
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
-
-export const POS = createAsyncThunk(`${name}/pos`, (form, thunkAPI) => {
-  try {
-    return axioKit.save(name, form.data, form.token, "pos");
-  } catch (error) {
-    const message =
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString();
-
-    return thunkAPI.rejectWithValue(message);
-  }
-});
-
-export const BUY = createAsyncThunk(`${name}/BUY`, (form, thunkAPI) => {
-  try {
-    return axioKit.save(name, form.data, form.token, "buy");
-  } catch (error) {
-    const message =
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString();
-
-    return thunkAPI.rejectWithValue(message);
-  }
-});
-
 export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   try {
     return axioKit.update(name, form.data, form.token);
@@ -151,23 +87,18 @@ export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   }
 });
 
-export const changeVariant = createAsyncThunk(
-  `${name}/changeVariant`,
-  (form, thunkAPI) => {
-    try {
-      return axioKit.update(name, form.data, form.token, "changeVariant");
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+export const STATUS = createAsyncThunk(`${name}/status`, (form, thunkAPI) => {
+  try {
+    return axioKit.update(name, form.data, form.token, "status");
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
 
-      return thunkAPI.rejectWithValue(message);
-    }
+    return thunkAPI.rejectWithValue(message);
   }
-);
+});
 
 export const VARIATION_UPDATE = createAsyncThunk(
   `${name}/variation`,
@@ -205,6 +136,24 @@ export const DESTROY = createAsyncThunk(
   }
 );
 
+export const DESTROY_QOUTATION = createAsyncThunk(
+  `${name}/destroy_quotation`,
+  ({ token, data }, thunkAPI) => {
+    try {
+      return axioKit.destroy(name, data, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const reduxSlice = createSlice({
   name,
   initialState,
@@ -212,11 +161,6 @@ export const reduxSlice = createSlice({
     CUSTOMALERT: (state, data) => {
       state.message = data.payload;
     },
-
-    CHECKOUT: (state, data) => {
-      state.checkOutProducts = data.payload;
-    },
-
     RESET: (state, data) => {
       state.isSuccess = false;
       state.message = "";
@@ -240,17 +184,17 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
 
-      .addCase(SUPPLIERS.pending, (state) => {
+      .addCase(QUOTATIONS.pending, (state) => {
         state.isLoading = true;
         state.isSuccess = false;
         state.message = "";
       })
-      .addCase(SUPPLIERS.fulfilled, (state, action) => {
+      .addCase(QUOTATIONS.fulfilled, (state, action) => {
         const { payload } = action.payload;
-        state.suppliers = payload;
+        state.quotations = payload;
         state.isLoading = false;
       })
-      .addCase(SUPPLIERS.rejected, (state, action) => {
+      .addCase(QUOTATIONS.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;
@@ -272,24 +216,6 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
 
-      .addCase(changeVariant.pending, (state) => {
-        state.isLoading = true;
-        state.isSuccess = false;
-        state.message = "";
-      })
-      .addCase(changeVariant.fulfilled, (state, action) => {
-        const { success, payload } = action.payload;
-        bulkPayload(state, payload);
-        state.message = success;
-        state.isSuccess = true;
-        state.isLoading = false;
-      })
-      .addCase(changeVariant.rejected, (state, action) => {
-        const { error } = action;
-        state.message = error.message;
-        state.isLoading = false;
-      })
-
       .addCase(UPDATE.pending, (state) => {
         state.isLoading = true;
         state.isSuccess = false;
@@ -303,6 +229,24 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(UPDATE.rejected, (state, action) => {
+        const { error } = action;
+        state.message = error.message;
+        state.isLoading = false;
+      })
+
+      .addCase(STATUS.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.message = "";
+      })
+      .addCase(STATUS.fulfilled, (state, action) => {
+        const { success, payload } = action.payload;
+        bulkPayload(state, payload);
+        state.message = success;
+        state.isSuccess = true;
+        state.isLoading = false;
+      })
+      .addCase(STATUS.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;
@@ -334,14 +278,20 @@ export const reduxSlice = createSlice({
       .addCase(SAVE.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
         const _collections = [...state.collections];
-        const index = _collections.findIndex(({ _id }) => payload._id === _id);
-        if (index > -1) {
-          _collections[index] = payload;
-        } else {
-          _collections.unshift(payload);
-        }
-        state.message = success;
+        // const index = _collections.findIndex(
+        //   ({ invoice_no }) => invoice_no === payload.invoice_no
+        // );
+
+        // if (index > -1) {
+        //   _collections[index] = {
+        //     ..._collections[index],
+        //     orders: payload.orders,
+        //   };
+        // } else {
+        _collections.unshift(payload);
+        // }
         state.collections = _collections;
+        state.message = success;
         state.isSuccess = true;
         state.isLoading = false;
       })
@@ -350,104 +300,10 @@ export const reduxSlice = createSlice({
         state.message = error.message;
         state.isLoading = false;
       })
-
-      .addCase(BUY.pending, (state) => {
-        state.isLoading = true;
-        state.isSuccess = false;
-        state.message = "";
-      })
-      .addCase(BUY.fulfilled, (state, action) => {
-        const { success, payload } = action.payload;
-        state.collections = state.collections.filter(
-          (collection) => !payload.includes(collection._id)
-        );
-        state.message = success;
-        state.isSuccess = true;
-        state.isLoading = false;
-      })
-      .addCase(BUY.rejected, (state, action) => {
-        const { error } = action;
-        state.message = error.message;
-        state.isLoading = false;
-      })
-
-      .addCase(GENERATE_RECEIPT.pending, (state) => {
-        state.isLoading = true;
-        state.isSuccess = false;
-        state.message = "";
-      })
-
-      .addCase(GENERATE_RECEIPT.fulfilled, (state, action) => {
-        const { success, payload } = action.payload;
-
-        const _collections = [...state.collections];
-        const newCollectionns = _collections.filter(
-          (collection) => !payload.some(({ _id }) => collection._id === _id)
-        );
-        state.collections = newCollectionns;
-
-        state.message = success;
-        state.isSuccess = true;
-        state.isLoading = false;
-      })
-      .addCase(GENERATE_RECEIPT.rejected, (state, action) => {
-        const { error } = action;
-        state.message = error.message;
-        state.isLoading = false;
-      })
-
-      .addCase(PRE_ORDER.pending, (state) => {
-        state.isLoading = true;
-        state.isSuccess = false;
-        state.message = "";
-      })
-
-      .addCase(PRE_ORDER.fulfilled, (state, action) => {
-        const { success, payload } = action.payload;
-        const { isLimit = false, orders = [] } = payload;
-
-        if (!isLimit) {
-          console.log("is not limit");
-          const _collections = [...state.collections];
-          const newCollectionns = _collections.filter(
-            (collection) => !orders.includes(collection._id)
-          );
-          state.collections = newCollectionns;
-        }
-
-        state.isLimit = isLimit;
-        state.message = success;
-        state.isSuccess = true;
-        state.isLoading = false;
-      })
-      .addCase(PRE_ORDER.rejected, (state, action) => {
-        const { error } = action;
-        state.message = error.message;
-        state.isLoading = false;
-      })
-
-      .addCase(POS.pending, (state) => {
-        state.isLoading = true;
-        state.isSuccess = false;
-        state.message = "";
-      })
-      .addCase(POS.fulfilled, (state, action) => {
-        const { success } = action.payload;
-
-        state.message = success;
-        state.isSuccess = true;
-        state.isLoading = false;
-      })
-      .addCase(POS.rejected, (state, action) => {
-        const { error } = action;
-        state.message = error.message;
-        state.isLoading = false;
-      })
-
       .addCase(DESTROY.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
         const index = state.collections.findIndex(
-          ({ _id }) => _id === payload._id
+          ({ _id }) => _id === payload?._id
         );
         state.collections.splice(index, 1);
         state.showModal = false;
@@ -460,10 +316,28 @@ export const reduxSlice = createSlice({
         state.showModal = false;
         state.message = error.message;
         state.isLoading = false;
+      })
+
+      .addCase(DESTROY_QOUTATION.fulfilled, (state, action) => {
+        const { success, payload } = action.payload;
+        const index = state.quotations.findIndex(
+          ({ _id }) => _id === payload?._id
+        );
+        state.quotations.splice(index, 1);
+        state.showModal = false;
+        state.message = success;
+        state.isSuccess = true;
+        state.isLoading = false;
+      })
+      .addCase(DESTROY_QOUTATION.rejected, (state, action) => {
+        const { error } = action;
+        state.showModal = false;
+        state.message = error.message;
+        state.isLoading = false;
       });
   },
 });
 
-export const { RESET, CUSTOMALERT, CHECKOUT } = reduxSlice.actions;
+export const { RESET, CUSTOMALERT } = reduxSlice.actions;
 
 export default reduxSlice.reducer;

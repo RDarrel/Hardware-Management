@@ -93,7 +93,8 @@ const PrintOut = () => {
       </div>
       <div className="sub-header">
         <h6 className="m-0 p-0">
-          Invoice No: <span className="invoice">{obj?.invoice_no}</span>
+          {obj.isQuotation ? "Quotation" : "Invoice"} No:
+          <span className="invoice">{obj?.invoice_no}</span>
         </h6>
         <div className="d-flex justify-content-between align-items-center">
           <div>
@@ -157,36 +158,38 @@ const PrintOut = () => {
             </span>
           </div>
         </div>
-        <div className="footer-receipt">
-          <MDBRow>
-            <MDBCol
-              md="5"
-              sm="3"
-              className="d-flex justify-content-end  cash-label"
-            >
-              <span className="mr-2 font-weight-bold ">Cash</span>
-            </MDBCol>
-            <MDBCol className="mr-4  d-flex justify-content-end">
-              <span className="font-weight-bold ml-4  mr-3 cash-value">
-                {obj.cash?.toLocaleString()}.00
-              </span>
-            </MDBCol>
-          </MDBRow>
-          <MDBRow>
-            <MDBCol
-              md="5"
-              sm="3"
-              className="d-flex justify-content-end  cash-label"
-            >
-              <span className="mr-2 font-weight-bold ">Change</span>
-            </MDBCol>
-            <MDBCol className="mr-4 d-flex justify-content-end">
-              <span className="font-weight-bold ml-4  mr-3 cash-value">
-                {Number(obj.cash - obj.total || 0)?.toLocaleString()}.00
-              </span>
-            </MDBCol>
-          </MDBRow>
-        </div>
+        {!obj.isQuotation && (
+          <div className="footer-receipt">
+            <MDBRow>
+              <MDBCol
+                md="5"
+                sm="3"
+                className="d-flex justify-content-end  cash-label"
+              >
+                <span className="mr-2 font-weight-bold ">Cash</span>
+              </MDBCol>
+              <MDBCol className="mr-4  d-flex justify-content-end">
+                <span className="font-weight-bold ml-4  mr-3 cash-value">
+                  {obj.cash?.toLocaleString()}.00
+                </span>
+              </MDBCol>
+            </MDBRow>
+            <MDBRow>
+              <MDBCol
+                md="5"
+                sm="3"
+                className="d-flex justify-content-end  cash-label"
+              >
+                <span className="mr-2 font-weight-bold ">Change</span>
+              </MDBCol>
+              <MDBCol className="mr-4 d-flex justify-content-end">
+                <span className="font-weight-bold ml-4  mr-3 cash-value">
+                  {Number(obj.cash - obj.total || 0)?.toLocaleString()}.00
+                </span>
+              </MDBCol>
+            </MDBRow>
+          </div>
+        )}
         <div className="text-center d-flex flex-column">
           <small>THIS SERVERVE AS YOUR</small>
           <small>SALES INVOICE</small>

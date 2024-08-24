@@ -13,7 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
-import { BROWSE } from "../../services/redux/slices/notifications";
+import { BROWSE, DESTROY } from "../../services/redux/slices/notifications";
 import { fullName } from "../../services/utilities";
 import TimeSince from "./timeSince";
 
@@ -23,7 +23,7 @@ const message = {
   DISCREPANCY: "has received products with discrepancies.",
 };
 const TopNavigation = ({ onSideNavToggleClick }) => {
-  const { auth, token } = useSelector(({ auth }) => auth),
+  const { auth, token, role } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ notifications }) => notifications),
     [notifications, setNotifications] = useState([]),
     history = useHistory(),
@@ -47,6 +47,7 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
   };
 
   const handleNotification = (_id, type) => {
+    dispatch(DESTROY({ token, data: { _id } }));
     const url = type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
     history.push(`/purchases${url}`);
   };
@@ -70,31 +71,33 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
         {/* <strong>{route}</strong> */}
       </MDBNavbarBrand>
       <MDBNavbarNav expand="sm" right style={{ flexDirection: "row" }}>
-        <MDBDropdown>
-          <MDBDropdownToggle nav caret>
-            <MDBBadge color="red" className="mr-2">
-              {notifications.length}
-            </MDBBadge>
-            <MDBIcon icon="bell" />
-            <span className="d-none d-md-inline">Notifications</span>
-          </MDBDropdownToggle>
-          <MDBDropdownMenu right style={{ minWidth: "515px" }}>
-            {!!notifications &&
-              notifications.map(({ user, type, createdAt, _id }, index) => (
-                <MDBDropdownItem
-                  onClick={() => handleNotification(_id, type)}
-                  key={index}
-                >
-                  <MDBIcon icon="money-bill-alt" className="mr-2" />
-                  {fullName(user.fullName)} {message[type]}
-                  <span className="float-right">
-                    <MDBIcon icon="clock" />{" "}
-                    {<TimeSince createdAt={createdAt} />}
-                  </span>
-                </MDBDropdownItem>
-              ))}
-          </MDBDropdownMenu>
-        </MDBDropdown>
+        {role === "ADMINISTRATOR" && (
+          <MDBDropdown>
+            <MDBDropdownToggle nav caret>
+              <MDBBadge color="red" className="mr-2">
+                {notifications.length}
+              </MDBBadge>
+              <MDBIcon icon="bell" />
+              <span className="d-none d-md-inline">Notifications</span>
+            </MDBDropdownToggle>
+            <MDBDropdownMenu right style={{ minWidth: "515px" }}>
+              {!!notifications &&
+                notifications.map(({ user, type, createdAt, _id }, index) => (
+                  <MDBDropdownItem
+                    onClick={() => handleNotification(_id, type)}
+                    key={index}
+                  >
+                    <MDBIcon icon="user" className="mr-2" />
+                    {fullName(user.fullName)} {message[type]}
+                    <span className="float-right">
+                      <MDBIcon icon="clock" />{" "}
+                      {<TimeSince createdAt={createdAt} />}
+                    </span>
+                  </MDBDropdownItem>
+                ))}
+            </MDBDropdownMenu>
+          </MDBDropdown>
+        )}
         <MDBDropdown>
           <MDBDropdownToggle nav>
             <MDBIcon icon="user" />

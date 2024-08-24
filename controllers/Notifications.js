@@ -10,3 +10,11 @@ exports.browse = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+exports.destroy = (req, res) => {
+  Notifications.findByIdAndDelete(req.body._id)
+    .then((item) => {
+      res.json({ success: "Successfuly Deleted Product", payload: item });
+    })
+    .catch((error) => res.status(400).json({ error: error.message }));
+};

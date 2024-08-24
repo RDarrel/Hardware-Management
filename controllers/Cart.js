@@ -1,5 +1,6 @@
 const Entity = require("../models/Cart"),
   Purchase = require("../models/stockman/Purchases"),
+  Quotations = require("../models/Quotations"),
   Notifications = require("../models/Notifications"),
   Merchandises = require("../models/stockman/Merchandises"),
   Suppliers = require("../models/administrator/Supplier"),
@@ -247,6 +248,42 @@ exports.buy = async (req, res) => {
     res.status(201).json({
       success: "Purchase is successful",
       payload: purchases,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.pre_order = async (req, res) => {
+  try {
+    const maxPreOrder = 3;
+    const currentDate = new Date();
+    const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999));
+    const { orderBy = "", orders = [] } = req.body;
+    var isLimit = false;
+    const cartToDelete = orders.map(({ _id }) => _id).filter(Boolean);
+
+    const quotations = await Quotations.find({
+      orderBy,
+      createdAt: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    if (quotations.length >= maxPreOrder) {
+      isLimit = true;
+    } else {
+      isLimit = false;
+      await Quotations.create(req.body);
+      await Entity.deleteMany({ _id: { $in: cartToDelete } });
+    }
+    return res.json({
+      payload: {
+        message: isLimit
+          ? "Sorry, but the maximum pre-order limit is 3 per day."
+          : "Pre-order placed successfully.",
+        isLimit,
+        orders: cartToDelete,
+      },
     });
   } catch (error) {
     res.status(400).json({ error: error.message });

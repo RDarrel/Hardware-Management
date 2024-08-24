@@ -10,6 +10,7 @@ import Receipt from "../../../../widgets/receipt";
 import seperateKiloAndGrams from "../../../../../services/utilities/seperateKiloAndGrams";
 import { useDispatch, useSelector } from "react-redux";
 import { SAVE } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
+import { SAVE as QUOTATION } from "../../../../../services/redux/slices/quotations";
 
 const Orders = ({
   isCheckOut,
@@ -27,6 +28,7 @@ const Orders = ({
     [total, setTotal] = useState(0),
     [cash, setCash] = useState(0),
     [orderDetails, setOrderDetails] = useState([]),
+    [isWalkInQuotation, setIsWalkInQuotation] = useState(false),
     [variant1, setVariant1] = useState(null),
     [variant2, setVariant2] = useState(""),
     [popoverKey, setPopOverKey] = useState(1),
@@ -124,7 +126,7 @@ const Orders = ({
     setOrders(_orders);
     handleClose();
   };
-  const handleSuspend = (customer = "") => {
+  const handleAction = (customer = "") => {
     Swal.fire({
       title: "Are you sure?",
       text: isWalkin
@@ -137,8 +139,9 @@ const Orders = ({
       confirmButtonText: `Yes, ${!isWalkin ? "hold" : "send"} it!`,
     }).then((result) => {
       if (result.isConfirmed) {
+        const baseDisPatch = !isWalkin ? SAVE : QUOTATION;
         dispatch(
-          SAVE({
+          baseDisPatch({
             token,
             data: {
               cashier: auth._id,
@@ -204,6 +207,8 @@ const Orders = ({
     };
   }, [isCheckOut, isWalkin]);
 
+  const handleQuotation = () => {};
+
   return (
     <MDBCol md="6">
       <MDBCard
@@ -223,7 +228,7 @@ const Orders = ({
                   color="info"
                   id="suspend"
                   disabled={!invoice_no}
-                  onClick={() => handleSuspend("")}
+                  onClick={() => handleAction("")}
                 >
                   <MDBIcon far icon="pause-circle" className="mr-1" /> Hold
                 </MDBBtn>
@@ -263,7 +268,11 @@ const Orders = ({
               setCash={setCash}
               isWalkin={isWalkin}
               total={total}
-              toggle={() => setIsCheckOut(!isCheckOut)}
+              setIsWalkInQuotation={setIsWalkInQuotation}
+              toggle={() => {
+                setIsCheckOut(!isCheckOut);
+                setIsWalkInQuotation(false);
+              }}
               orderDetails={orderDetails}
             />
           </div>
@@ -279,9 +288,10 @@ const Orders = ({
         cash={cash}
         setOrders={setOrders}
         isWalkin={isWalkin}
+        isWalkInQuotation={isWalkInQuotation}
         customerQuotation={customerQuotation}
         setCustomerQuotation={setCustomerQuotation}
-        handleSuspend={handleSuspend}
+        handleAction={handleAction}
       />
     </MDBCol>
   );

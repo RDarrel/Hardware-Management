@@ -14,12 +14,16 @@ import Table from "./table";
 import Swal from "sweetalert2";
 import truncateString from "../../../services/utilities/truncateString";
 import capitalize from "../../../services/utilities/capitalize";
-import { GENERATE_RECEIPT } from "../../../services/redux/slices/cart";
+import {
+  GENERATE_RECEIPT,
+  PRE_ORDER,
+} from "../../../services/redux/slices/cart";
 import formattedTotal from "../../../services/utilities/forattedTotal";
 const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
   const { token, auth } = useSelector(({ auth }) => auth),
-    // { checkOutProducts } = useSelector(({ cart }) => cart),
+    { isLimit = false } = useSelector(({ cart }) => cart),
     [cart, setCart] = useState([]),
+    [isPreOrder, setIsPreOrder] = useState(false),
     [total, setTotal] = useState(0),
     dispatch = useDispatch();
 
@@ -51,6 +55,29 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
 
     setTotal(_total);
   }, [cart]);
+
+  useEffect(() => {
+    if (isPreOrder) {
+      if (isLimit) {
+        Swal.fire({
+          icon: "warning",
+          title: "Pre-order Limit Reached",
+          text: "You have reached the maximum limit of 3 pre-orders allowed per day.",
+          confirmButtonText: "Okay",
+        });
+        setIsPreOrder(false);
+      } else {
+        Swal.fire({
+          title: "Quotation successfully submitted",
+          text: "Your pre-order has been sent to the cashier. You can now proceed to the cashier to finalize your order.",
+          icon: "success",
+        }).then(() => {
+          toggleCart(false);
+          setIsCheckout(false);
+        });
+      }
+    }
+  }, [isLimit, isPreOrder]);
 
   const handleBuy = async () => {
     Swal.fire({
@@ -87,6 +114,29 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
         });
       }
     });
+  };
+
+  const handlePreOrder = () => {
+    const timestamp = Date.now(); // Get the current timestamp
+    const orders = cart.map((c) => ({
+      ...c,
+      product: c.product?._id,
+    }));
+
+    console.log(orders);
+
+    dispatch(
+      PRE_ORDER({
+        token,
+        data: {
+          orders,
+          orderBy: auth._id,
+          total: Number(total),
+          invoice_no: timestamp,
+        },
+      })
+    );
+    setIsPreOrder(true);
   };
 
   return (
@@ -172,13 +222,15 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
                   </h3>
                 </MDBCol>
               </MDBRow>
-              <MDBRow className="mt-3 mr-1 mb-3">
-                <MDBCol md="12" className="text-right">
-                  <MDBBtn color="primary" type="button" onClick={handleBuy}>
-                    Generate Receipt
-                  </MDBBtn>
-                </MDBCol>
-              </MDBRow>
+              <div className="mt-3 mr-1 mb-3 d-flex justify-content-end">
+                <MDBBtn color="primary" type="button" onClick={handleBuy}>
+                  Generate Receipt
+                </MDBBtn>
+
+                <MDBBtn color="success" type="button" onClick={handlePreOrder}>
+                  Pre order
+                </MDBBtn>
+              </div>
             </MDBCardBody>
           </MDBCard>
         </MDBCol>

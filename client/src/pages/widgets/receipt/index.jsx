@@ -25,7 +25,8 @@ export default function Receipt({
   cash = 0,
   isWalkin,
   customerQuotation = "",
-  handleSuspend = () => {},
+  isWalkInQuotation = false,
+  handleAction = () => {},
   setCustomerQuotation = () => {},
   setOrders = () => {},
 }) {
@@ -57,6 +58,7 @@ export default function Receipt({
     const printData = {
       invoice_no,
       customer,
+      isQuotation: isWalkInQuotation,
       total,
       cash,
       purchases,
@@ -64,23 +66,27 @@ export default function Receipt({
 
     localStorage.setItem("collection", JSON.stringify(printData));
 
-    dispatch(
-      POS({
-        token,
-        data: {
-          customer,
-          invoice_no,
-          cashier: auth._id,
-          total,
-          cash,
-          purchases: orderDetails,
-        },
-      })
-    );
+    if (!isWalkInQuotation) {
+      dispatch(
+        POS({
+          token,
+          data: {
+            customer,
+            invoice_no,
+            cashier: auth._id,
+            total,
+            cash,
+            purchases: orderDetails,
+          },
+        })
+      );
 
-    dispatch(UPDATE_MAX({ purchases: orderDetails }));
+      dispatch(UPDATE_MAX({ purchases: orderDetails }));
+    }
     Swal.fire({
-      title: "Successfully Paid",
+      title: !isWalkInQuotation
+        ? "Successfully Paid"
+        : "Successfully Quotation",
       icon: "success",
     });
     setInvoice_no("");
@@ -90,11 +96,8 @@ export default function Receipt({
   };
   const handleSend = (e) => {
     e.preventDefault();
-    handleSuspend(customer);
+    handleAction(customer);
     setCustomerQuotation("");
-    // setInvoice_no("");
-    // setOrders([]);
-    // toggle();
   };
   const change = cash - total || 0;
 
@@ -114,6 +117,7 @@ export default function Receipt({
             customerView={customerView}
             reason={reason}
             isWalkin={isWalkin}
+            isWalkInQuotation={isWalkInQuotation}
           />
           <div className={`mx-2 mt-${isAdmin ? "2" : "4"}`}>
             <table className="invoice-table">
@@ -184,7 +188,7 @@ export default function Receipt({
                     >
                       Total Amount
                     </p>
-                    {!isWalkin && (
+                    {!isWalkin && !isWalkInQuotation && (
                       <>
                         <p className="ml-3 paragraph"> Cash</p>
                         <p className="ml-3 paragraph  mb-2">Change</p>
@@ -199,7 +203,7 @@ export default function Receipt({
                     >
                       ₱{formattedTotal(total)}
                     </p>
-                    {!isWalkin && (
+                    {!isWalkin && !isWalkInQuotation && (
                       <>
                         <p className="ml-4 paragraph">
                           ₱{formattedTotal(cash)}

@@ -23,6 +23,7 @@ import materials from "./slices/administrator/productManagement/materials";
 import suspendedTransacs from "./slices/cashier/suspendedTransacs";
 import adminDashboard from "./slices/administrator/adminDashboard";
 import notifications from "./slices/notifications";
+import quotations from "./slices/quotations";
 const store = configureStore({
   reducer: {
     auth,
@@ -49,6 +50,7 @@ const store = configureStore({
     adminDashboard,
     StockmanDashboard,
     notifications,
+    quotations,
   },
 });
 

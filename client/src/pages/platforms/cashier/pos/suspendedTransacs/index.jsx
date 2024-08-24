@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MDBBtn,
   MDBModal,
@@ -13,10 +13,11 @@ import { useDispatch, useSelector } from "react-redux";
 import View from "./view";
 import Swal from "sweetalert2";
 import seperateKiloAndGrams from "../../../../../services/utilities/seperateKiloAndGrams";
+import { DESTROY } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
 import {
-  DESTROY,
-  DESTROY_QOUTATION,
-} from "../../../../../services/redux/slices/cashier/suspendedTransacs";
+  DESTROY as DESTROY_QOUTATION,
+  UPDATE,
+} from "../../../../../services/redux/slices/quotations";
 import { formattedDate, fullName } from "../../../../../services/utilities";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
@@ -38,6 +39,18 @@ export default function SuspendedTransacs({
   const handleClose = () => {
     toggle();
   };
+
+  useEffect(() => {
+    if (isQuotation) {
+      const notSeenQuotations = [...collections]
+        .filter(({ isSeen }) => !isSeen)
+        .map(({ _id = "" }) => _id)
+        .filter(Boolean);
+      if (!!notSeenQuotations) {
+        dispatch(UPDATE({ token, data: notSeenQuotations }));
+      }
+    }
+  }, [isQuotation]);
 
   const handleGetMax = (selected) => {
     const _products = [...products];
@@ -110,7 +123,10 @@ export default function SuspendedTransacs({
         toggle();
         setShowInvoice(false);
         if (isQuotation) {
-          setCustomerQuotation(_selected.customer);
+          const { isWalkIn = false, customer, orderBy } = _selected;
+          setCustomerQuotation(
+            isWalkIn ? customer : fullName(orderBy.fullName)
+          );
         }
 
         if (productsWithNewMax.length === 0) {
@@ -192,6 +208,7 @@ export default function SuspendedTransacs({
                     {isQuotation && <th className="text-center">Assist By</th>}
                     <th className="text-center">Time</th>
                     {isQuotation && <th className="text-center">Customer</th>}
+                    {isQuotation && <th className="text-center">Status</th>}
                     <th className="text-center">
                       {!isQuotation ? "Invoice No." : "Quotation No."}
                     </th>
@@ -206,7 +223,9 @@ export default function SuspendedTransacs({
                         <td>{index + 1}</td>
                         {isQuotation && (
                           <td className="text-center font-weight-bold">
-                            {fullName(order?.assistBy?.fullName)}
+                            {order.isWalkIn
+                              ? fullName(order?.assistBy?.fullName)
+                              : "--"}
                           </td>
                         )}
 
@@ -215,9 +234,16 @@ export default function SuspendedTransacs({
                         </td>
 
                         {isQuotation && (
-                          <td className="text-center font-weight-bold">
-                            {order.customer}
-                          </td>
+                          <>
+                            <td className="text-center font-weight-bold">
+                              {order.isWalkIn
+                                ? order.customer
+                                : fullName(order.orderBy?.fullName)}
+                            </td>
+                            <td className="text-center font-weight-bold">
+                              {order.isWalkIn ? "walkin" : "online"}
+                            </td>
+                          </>
                         )}
                         <td className="text-center font-weight-bold">
                           {order.invoice_no}

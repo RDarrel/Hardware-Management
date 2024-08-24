@@ -45,6 +45,7 @@ exports.save = async (req, res) => {
       assistBy = "",
       customer = "",
     } = req.body;
+
     const newSuspendTransac = await Entity.create({
       invoice_no,
       cashier,
@@ -54,6 +55,7 @@ exports.save = async (req, res) => {
       assistBy,
       ...(customer && { customer }),
     });
+
     const populateProduct = await Entity.findOne({
       _id: newSuspendTransac._id,
     }).populate("orders.product");

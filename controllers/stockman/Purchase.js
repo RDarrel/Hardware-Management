@@ -1,6 +1,7 @@
 const bulkWrite = require("../../config/bulkWrite");
 const Entity = require("../../models/stockman/Purchases"),
   Cart = require("../../models/Cart"),
+  Notifications = require("../../models/Notifications"),
   Stocks = require("../../models/stockman/Stocks"),
   Merchandises = require("../../models/stockman/Merchandises"),
   handleDuplicate = require("../../config/duplicate");
@@ -104,6 +105,11 @@ const defectiveCheckpoint = async (_purchase, merchandises) => {
           };
         })
       );
+
+      await Notifications.create({
+        user: _purchase.requestBy,
+        type: "DEFECTIVE",
+      });
     }
   } catch (error) {
     console.log("Error for defective checkpoint", error.message);
@@ -199,6 +205,11 @@ const discrepancyCheckPoint = async (_purchase, merchandises) => {
       });
 
       await Merchandises.insertMany(merchandisesWithPurchase);
+
+      await Notifications.create({
+        user: _purchase.requestBy,
+        type: "DISCREPANCY",
+      });
     }
   } catch (error) {
     console.log("Error for discrepancy Checkpoint", error.message);

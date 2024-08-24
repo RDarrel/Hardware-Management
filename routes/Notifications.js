@@ -1,7 +1,7 @@
 const router = require("express").Router(),
-  { browse } = require("../controllers/Notifications"),
+  { browse, destroy } = require("../controllers/Notifications"),
   { validate } = require("../middleware/jwt");
 
-router.get("/", validate, browse);
+router.get("/", validate, browse).delete("/destroy", destroy, validate);
 
 module.exports = router;

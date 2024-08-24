@@ -6,6 +6,7 @@ import {
   MDBPopover,
   MDBPopoverBody,
   MDBBtn,
+  MDBBadge,
 } from "mdbreact";
 import { fullName } from "../../../../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +16,8 @@ import {
   BROWSE,
   QUOTATIONS,
 } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
+
+import { BROWSE as BROWSE_QUOTATIONS } from "../../../../../services/redux/slices/quotations";
 import SuspendedTransacs from "../suspendedTransacs";
 import Guide from "../guide";
 
@@ -34,10 +37,12 @@ const Header = ({
   setCustomerQuotation = () => {},
 }) => {
   const { auth, token } = useSelector(({ auth }) => auth),
-    { collections, quotations: quotationCollections = [] } = useSelector(
-      ({ suspendedTransacs }) => suspendedTransacs
+    { collections } = useSelector(({ suspendedTransacs }) => suspendedTransacs),
+    { collections: quotationCollections } = useSelector(
+      ({ quotations }) => quotations
     ),
     [suspendedTransacs, setSuspendedTransacs] = useState([]),
+    [notSeenQuotations, setNotSeenQuotations] = useState([]),
     [quotations, setQuotations] = useState([]),
     [id, setId] = useState(0),
     dispatch = useDispatch();
@@ -50,7 +55,7 @@ const Header = ({
 
   useEffect(() => {
     if (auth._id) {
-      dispatch(QUOTATIONS({ token }));
+      dispatch(BROWSE_QUOTATIONS({ token }));
     }
   }, [dispatch, token, auth]);
 
@@ -59,6 +64,9 @@ const Header = ({
   }, [collections]);
 
   useEffect(() => {
+    setNotSeenQuotations(
+      quotationCollections.filter(({ isSeen = false }) => !isSeen) || []
+    );
     setQuotations(quotationCollections);
   }, [quotationCollections]);
 
@@ -103,8 +111,11 @@ const Header = ({
                 onClick={() => toggleSuspended(false)}
               >
                 <MDBIcon icon="walking" className="mr-1" />
-                Walkin Quotation
+                Quotations
               </MDBBtn>
+              {notSeenQuotations.length > 0 && (
+                <span className="counter mt-4">{notSeenQuotations.length}</span>
+              )}
             </div>
           </div>
         )}
