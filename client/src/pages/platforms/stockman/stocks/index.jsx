@@ -11,19 +11,32 @@ import {
 import PaginationButtons from "../../../widgets/pagination/buttons";
 import { Search } from "../../../widgets/search";
 import Spinner from "../../../widgets/spinner";
+import Expired from "./expired";
 
 export const Stocks = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
-    { collections, isLoading } = useSelector(({ stocks }) => stocks),
+    {
+      collections,
+      isLoading,
+      expiredProducts: expiredCollections,
+    } = useSelector(({ stocks }) => stocks),
     [stocks, setStocks] = useState([]),
     [page, setPage] = useState(1),
     [didSearch, setDidSearch] = useState(false),
+    [show, setShow] = useState(false),
+    [expiredProducts, setExpiredProducts] = useState([]),
     [search, setSearch] = useState(""),
     dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(BROWSE({ token }));
   }, [dispatch, token]);
+
+  useEffect(() => {
+    setExpiredProducts(expiredCollections);
+  }, [expiredCollections]);
+
+  const toggle = () => setShow(!show);
 
   const handleSortStocks = useCallback((array) => {
     const sortedCollections = [...array].sort(
@@ -60,7 +73,10 @@ export const Stocks = () => {
           disable={{ create: true }}
           icon="warehouse"
           search={search}
+          showExpiredProducts={true}
+          expiredProducts={expiredProducts}
           didSearch={didSearch}
+          toggleExpiredProducts={toggle}
           setDidSearch={setDidSearch}
           setSearch={setSearch}
           setContainer={setStocks}
@@ -175,6 +191,12 @@ export const Stocks = () => {
           <Spinner />
         )}
       </MDBCardBody>
+      <Expired
+        show={show}
+        toggle={toggle}
+        expiredProducts={expiredProducts}
+        setExpiredProducts={setExpiredProducts}
+      />
     </MDBCard>
   );
 };

@@ -11,6 +11,7 @@ import PurchasesDefective from "../../widgets/purchases/purchasesDefective";
 import Categories from "./productMangement/category";
 import Materials from "./productMangement/materials";
 import { Stocks } from "../stockman/stocks";
+import ExpiredProducts from "./report/expiredProducts";
 // import Category from "./productMangement/category";
 
 const access = [
@@ -112,6 +113,11 @@ const access = [
         name: "Transactions",
         path: "/Transaction",
         component: Transactions,
+      },
+      {
+        name: "Expired Products",
+        path: "/expiredProducts",
+        component: ExpiredProducts,
       },
       {
         name: "Employees",

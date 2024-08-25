@@ -2,7 +2,7 @@
 import PurchasesDefective from "../../widgets/purchases/purchasesDefective";
 import Request from "../../widgets/purchases/request";
 import Dashboard from "./dashboard";
-import ExpiredProducts from "./expiredProducts";
+// import ExpiredProducts from "./expiredProducts";
 
 import { Stocks } from "./stocks";
 import Store from "./store";
@@ -22,12 +22,12 @@ const access = [
     component: Stocks,
   },
 
-  {
-    path: "/expiredProducts",
-    name: "Expired Products",
-    icon: "exclamation-circle",
-    component: ExpiredProducts,
-  },
+  // {
+  //   path: "/expiredProducts",
+  //   name: "Expired Products",
+  //   icon: "exclamation-circle",
+  //   component: ExpiredProducts,
+  // },
 
   {
     path: "/store",

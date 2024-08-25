@@ -9,6 +9,9 @@ export const Search = ({
   collections = [],
   didSearch = false,
   search,
+  showExpiredProducts = false,
+  expiredProducts = [],
+  toggleExpiredProducts = () => {},
   handleSearch = () => {},
   setContainer = () => {},
   setDidSearch = () => {},
@@ -29,7 +32,8 @@ export const Search = ({
           {title}
         </h4>
       </MDBCol>
-      <MDBCol className="d-flex justify-content-end align-items-center" md="8">
+
+      <MDBCol className="d-flex justify-content-end align-items-center">
         <div className="cashier-search-cotaniner ">
           <form className="cashier-search" onSubmit={handleSearch}>
             <input
@@ -56,6 +60,25 @@ export const Search = ({
             </button>
           </form>
         </div>
+        {showExpiredProducts && (
+          <>
+            <MDBBtn
+              size="sm"
+              rounded
+              color="info"
+              title="Expired Products  List"
+              onClick={toggleExpiredProducts}
+            >
+              <MDBIcon icon="clipboard-list" size="2x" />
+            </MDBBtn>
+            <span
+              className="counter"
+              style={{ marginBottom: "-20px", marginRight: "-5px" }}
+            >
+              {expiredProducts.length}
+            </span>
+          </>
+        )}
         {!create && (
           <MDBBtn
             size="sm"

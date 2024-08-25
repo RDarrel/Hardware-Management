@@ -187,7 +187,7 @@ const Sales = () => {
                                     className="d-flex align-items-center"
                                     style={{ marginTop: "-20px" }}
                                   >
-                                    <span className="mr-1">Variations:</span>
+                                    <span className="mr-1">Variant:</span>
                                     <span>
                                       {variation.name(sale, product.variations)}
                                     </span>

@@ -1,12 +1,39 @@
 const arrangeStocks = require("../../config/arrangeStocks");
 const Entity = require("../../models/stockman/Stocks"),
+  ExpiredProducts = require("../../models/administrator/report/ExpiredProducts"),
   RemoveExpiredProducts = require("../../config/removeExpiredProducts"),
   handleDuplicate = require("../../config/duplicate");
+
+const getExpiredProducts = async () => {
+  const currentDate = new Date();
+  const expiredProducts = await Entity.find({
+    expirationDate: { $lte: currentDate },
+    hasExpiration: true,
+    hasExpired: false,
+  }).populate("product");
+  return expiredProducts;
+};
+
+const handleFormatedExpired = (product, stock) => {
+  if (product.isPerKilo) {
+    return {
+      hasExpired: true,
+      expiredKilo: stock.quantity,
+      kiloStock: stock.quantity < 0 ? stock.quantity : 0,
+    };
+  }
+  return {
+    hasExpired: true,
+    expiredQuantity: stock.quantity,
+    quantityStock: stock.quantity < 0 ? stock.quantity : 0,
+  };
+};
 
 exports.browse = async (_, res) => {
   try {
     const stocks = await arrangeStocks();
-    res.json({ payload: stocks });
+    const expiredProducts = await getExpiredProducts();
+    res.json({ payload: { stocks, expiredProducts } });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -66,10 +93,30 @@ exports.destroy = (req, res) => {
     .catch((error) => res.status(400).json({ error: error.message }));
 };
 
+exports.removeExpired = async (req, res) => {
+  try {
+    const expired = req.body;
+    const { _id, ...rest } = expired;
+    await ExpiredProducts.create({
+      ...rest,
+      product: expired?.product?._id,
+    });
+
+    const updatedStock = await Entity.findByIdAndUpdate(
+      expired._id,
+      handleFormatedExpired(expired.product, expired),
+      { new: true }
+    );
+
+    res.json({ payload: updatedStock });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 exports.expiredProducts = async (_, res) => {
   try {
-    await RemoveExpiredProducts();
-
+    // await RemoveExpiredProducts();
     const expiredProducts = await Entity.find({ hasExpired: true }).populate(
       "product"
     );

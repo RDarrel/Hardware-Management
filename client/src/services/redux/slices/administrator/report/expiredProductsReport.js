@@ -1,13 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axioKit, bulkPayload } from "../../../utilities";
+import { axioKit, bulkPayload } from "../../../../utilities";
 
-const name = "stockman/stocks";
+const name = "administrator/ExpiredProducts";
 
 const initialState = {
   collections: [],
   progress: 0,
   isSuccess: false,
-  expiredProducts: [],
   isLoading: false,
   message: "",
 };
@@ -50,24 +49,6 @@ export const SAVE = createAsyncThunk(`${name}/save`, (form, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
-
-export const REMOVE_EXPIRED = createAsyncThunk(
-  `${name}/REMOVE_EXPIRED`,
-  (form, thunkAPI) => {
-    try {
-      return axioKit.save(name, form.data, form.token, "removeExpired");
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
 
 export const UPDATE = createAsyncThunk(`${name}/update`, (form, thunkAPI) => {
   try {
@@ -152,9 +133,7 @@ export const reduxSlice = createSlice({
       })
       .addCase(BROWSE.fulfilled, (state, action) => {
         const { payload } = action.payload;
-        const { stocks, expiredProducts } = payload;
-        state.collections = stocks;
-        state.expiredProducts = expiredProducts;
+        state.collections = payload;
         state.isLoading = false;
       })
       .addCase(BROWSE.rejected, (state, action) => {
@@ -246,40 +225,6 @@ export const reduxSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(SAVE.rejected, (state, action) => {
-        const { error } = action;
-        state.message = error.message;
-        state.isLoading = false;
-      })
-
-      .addCase(REMOVE_EXPIRED.pending, (state) => {
-        state.isSuccess = false;
-        state.message = "";
-      })
-      .addCase(REMOVE_EXPIRED.fulfilled, (state, action) => {
-        const { payload } = action.payload;
-        const collections = [...state.collections];
-        const index = collections.findIndex(({ _id }) => _id === payload._id);
-        const existingStock = { ...collections[index] };
-        const { product = {}, available = 0, totalExpired = 0 } = existingStock;
-        console.log(product);
-        const newAvailable = product?.isPerKilo
-          ? available - payload.expiredKilo
-          : available - payload.expiredQuantity;
-
-        const newTotalExpired = product?.isPerKilo
-          ? totalExpired + payload.expiredKilo
-          : totalExpired + payload.expiredQuantity;
-        const newStock = {
-          ...existingStock,
-          available: newAvailable,
-          totalExpired: newTotalExpired,
-        };
-        collections[index] = newStock;
-        state.collections = collections;
-        state.isSuccess = true;
-        state.isLoading = false;
-      })
-      .addCase(REMOVE_EXPIRED.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
         state.isLoading = false;

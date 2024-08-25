@@ -25,12 +25,13 @@ const RemoveExpiredProducts = async () => {
     });
 
     if (expiredProducts.length > 0) {
-      for (const expiredProduct of expiredProducts) {
-        await Stocks.findByIdAndUpdate(
-          expiredProduct._id,
-          handleFormatedData(expiredProduct.product, expiredProduct)
-        );
-      }
+      return true;
+      // for (const expiredProduct of expiredProducts) {
+      //   await Stocks.findByIdAndUpdate(
+      //     expiredProduct._id,
+      //     handleFormatedData(expiredProduct.product, expiredProduct)
+      //   );
+      // }
     }
   } catch (error) {
     console.log("Remove Expired Products Error:", error.message);
