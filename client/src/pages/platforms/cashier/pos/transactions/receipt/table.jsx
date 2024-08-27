@@ -23,63 +23,71 @@ const Table = ({ handleAction, orderDetails = [], total, cash }) => {
       </thead>
       <tbody>
         {purchases?.length > 0 &&
-          purchases.map((order, index) => (
-            <tr key={`${order._id}-${index}`}>
-              <td width={"400px"}>
-                <div className="d-flex flex-column">
-                  <span
-                    style={{
-                      maxWidth: `400px`,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                    className="font-weight-bold "
-                  >
-                    {order.product.name.toUpperCase()}
-                  </span>
-                  {order.product.hasVariant && (
-                    <span style={{ marginTop: "-30px" }}>
-                      Variation: &nbsp;
-                      {variation.getTheVariant(
-                        order.variant1,
-                        order.variant2 || "",
-                        order.product.variations
-                      )}
+          purchases.map((order, index) => {
+            const {
+              product,
+              quantityReturn,
+              kiloReturn,
+              quantity,
+              kilo,
+              kiloGrams,
+            } = order;
+            const { isPerKilo = false } = product;
+            const allProductIsReplace = isPerKilo
+              ? kilo + kiloGrams === kiloReturn
+              : quantity === quantityReturn;
+            return (
+              <tr key={`${order._id}-${index}`}>
+                <td width={"400px"}>
+                  <div className="d-flex flex-column">
+                    <span
+                      style={{
+                        maxWidth: `400px`,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                      className="font-weight-bold "
+                    >
+                      {order.product.name.toUpperCase()}
                     </span>
-                  )}
-                </div>
-              </td>
-              <td className="text-center">
-                {variation.qtyOrKilo(order, order.product.isPerKilo)}
-              </td>
+                    {order.product.hasVariant && (
+                      <span style={{ marginTop: "-30px" }}>
+                        Variation: &nbsp;
+                        {variation.getTheVariant(
+                          order.variant1,
+                          order.variant2 || "",
+                          order.product.variations
+                        )}
+                      </span>
+                    )}
+                  </div>
+                </td>
+                <td className="text-center">
+                  {variation.qtyOrKilo(order, order.product.isPerKilo)}
+                </td>
 
-              <td className="text-center">₱{order.srp}</td>
-              <td className="text-center">
-                ₱{order.subtotal.toLocaleString()}
-              </td>
-              <td className="text-center">
-                <MDBBtnGroup>
-                  <MDBBtn
-                    onClick={() => handleAction(order, index, true)}
-                    size="sm"
-                    color="primary"
-                    title="Replacement Product"
-                  >
-                    <MDBIcon icon="reply" size="1x" />
-                  </MDBBtn>
-                  {/* <MDBBtn
-                    onClick={() => handleAction(order, index, false)}
-                    size="sm"
-                    color="danger"
-                    title="Refund Product"
-                  >
-                    <MDBIcon icon="share" size="1x" />
-                  </MDBBtn> */}
-                </MDBBtnGroup>
-              </td>
-            </tr>
-          ))}
+                <td className="text-center">₱{order.srp}</td>
+                <td className="text-center">
+                  ₱{order.subtotal.toLocaleString()}
+                </td>
+                <td className="text-center">
+                  {!allProductIsReplace ? (
+                    <MDBBtn
+                      onClick={() => handleAction(order, index, true)}
+                      size="sm"
+                      color="primary"
+                      title="Replacement Product"
+                    >
+                      <MDBIcon icon="reply" size="1x" />
+                    </MDBBtn>
+                  ) : (
+                    <p className="text-danger">Replacement Limit Reached</p>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         <tr className="p-2 ">
           <td
             colSpan="2"

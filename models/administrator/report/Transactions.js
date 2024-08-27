@@ -84,6 +84,14 @@ const modelSchema = new mongoose.Schema(
             type: Number,
             default: 0,
           },
+          quantityReturn: {
+            type: Number,
+            default: 0,
+          },
+          kiloReturn: {
+            type: Number,
+            default: 0,
+          },
           srp: {
             type: Number,
           },

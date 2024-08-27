@@ -54,7 +54,6 @@ exports.browse = async (req, res) => {
             .filter(({ stock }) => stock <= 20)
             .sort((a, b) => a.stock - b.stock)
         : [];
-
     res.json({ payload: { nearlyExpired, outOfStocks: productOutOfStocks } });
   } catch (error) {
     res.status(400).json({ error: error.message });

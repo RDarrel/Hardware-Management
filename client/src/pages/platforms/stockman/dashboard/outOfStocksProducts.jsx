@@ -16,7 +16,7 @@ const OutOfStocksProducts = ({ outOfStocks = [], isLoading }) => {
             <Table
               products={outOfStocks}
               isStock={true}
-              title={"Nearly out of stock"}
+              title={"Out of Stock Product"}
             />
           ) : (
             <Spinner />

@@ -207,7 +207,7 @@ const Orders = ({
     };
   }, [isCheckOut, isWalkin]);
 
-  const handleQuotation = () => {};
+  // const handleQuotation = () => {};
 
   return (
     <MDBCol md="6">

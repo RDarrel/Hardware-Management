@@ -2,8 +2,7 @@ const RemoveExpiredProducts = require("../../config/removeExpiredProducts");
 const Sales = require("../../models/administrator/report/Sales"),
   Stocks = require("../../models/stockman/Stocks"),
   Transactions = require("../../models/administrator/report/Transactions"),
-  ReturnRefund = require("../../models/administrator/ReturnRefund"),
-  handleDuplicate = require("../../config/duplicate");
+  ReturnRefund = require("../../models/administrator/ReturnRefund");
 
 const checkerOfLastStock = async (productID, currentStock) => {
   try {
@@ -230,8 +229,26 @@ exports.find_transaction = async (req, res) => {
       invoice_no: req.query.invoice_no,
     }).populate("purchases.product");
 
+    const { purchases = [] } = transaction || {};
+    const purchasesWithMax = [];
+    for (const purchase of purchases) {
+      const { product, variant1, variant2 } = purchase;
+      const { hasVariant, has2Variant, isPerKilo } = product;
+      const query = {
+        product: product._id,
+        ...(hasVariant && { variant1: variant1 }),
+        ...(has2Variant && { variant2: variant2 }),
+      };
+      const stocks = await Stocks.find(query);
+      const max = stocks.reduce(
+        (acc, curr) => (acc += curr[isPerKilo ? "kiloStock" : "quantityStock"]),
+        0
+      );
+      purchasesWithMax.push({ ...purchase._doc, max });
+    }
+
     res.json({
-      payload: transaction || {},
+      payload: { ...transaction._doc, purchases: purchasesWithMax } || {},
       success: "Successfully Find Transaction",
     });
   } catch (error) {
@@ -268,18 +285,54 @@ exports.returnProducts = async (req, res) => {
     } = req.body;
 
     const transaction = await Transactions.findOne({ invoice_no });
-
     if (transaction?._id) {
+      const purchases = [...transaction.purchases];
+      const returnProduct = { ...returnProducts[0] };
+      const {
+        product,
+        variant1 = "",
+        variant2 = "",
+
+        kilo = 0,
+        kiloGrams = 0,
+        quantity = 0,
+      } = returnProduct;
+      const indexOfReturnProduct = purchases.findIndex((purchase) => {
+        if (product.hasVariant) {
+          if (product.has2Variant) {
+            return (
+              String(purchase.product) === product._id &&
+              purchase.variant1 === variant1 &&
+              purchase.variant2 === variant2
+            );
+          } else {
+            return (
+              String(purchase.product) === product._id &&
+              purchase.variant1 === variant1
+            );
+          }
+        } else {
+          return String(purchase.product) === product._id;
+        }
+      });
+      const existingPurchase = { ...purchases[indexOfReturnProduct]._doc };
+      const totalKiloReturn = kilo + kiloGrams;
+      purchases[indexOfReturnProduct] = {
+        ...existingPurchase,
+        ...(product.isPerKilo
+          ? { kiloReturn: (existingPurchase.kiloReturn += totalKiloReturn) }
+          : { quantityReturn: (existingPurchase.quantityReturn += quantity) }),
+      };
       await Transactions.findByIdAndUpdate(transaction._id, {
         totalReturnSales:
           (transaction?.totalReturnSales || 0) +
           getTotalReturnRefund(returnProducts),
+        purchases,
         returnItemCount: (transaction?.returnItemCount || 0) + 1,
       });
     } else {
       console.log("no have transaction for this invoice_no", invoice_no);
     }
-
     await stocks(returnProducts, invoice_no);
     await ReturnRefund.create({
       cashier: returnBy,

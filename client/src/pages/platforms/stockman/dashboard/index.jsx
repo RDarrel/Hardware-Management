@@ -23,7 +23,7 @@ export default function Dashboard() {
 
   const handleFilter = useCallback((_collections, isOutOfStock) => {
     return _collections.filter(({ stock }) => {
-      return isOutOfStock ? stock === 0 : stock > 0;
+      return isOutOfStock ? stock <= 0 : stock > 0;
     });
   }, []);
 

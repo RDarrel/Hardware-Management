@@ -10,6 +10,7 @@ import {
 import Table from "./table";
 import "./receipt.css";
 import Header from "./header";
+import productOrder from "../../../../../../services/utilities/product";
 export default function Receipt({
   toggle,
   setPurchases,
@@ -50,35 +51,52 @@ export default function Receipt({
     );
   };
   const handleAction = (order, index, isReturn) => {
-    const { product } = order;
-
+    var {
+      product,
+      kiloReturn = 0,
+      kilo = 0,
+      kiloGrams = 0,
+      quantityReturn = 0,
+      quantity = 0,
+      max = 0,
+    } = order;
     if (product.isPerKilo) {
+      const availableReturn = kilo + kiloGrams - kiloReturn;
+      const arrayAvail = String(availableReturn).split(".");
+      const availReturnKilo = Number(arrayAvail[0] || 0);
+      const availReturnGrams = Number(arrayAvail[1] || 0);
+
       Swal.fire({
         title: `${isReturn ? "Replacement" : "Refund"} Kilo`,
         html: `
            <div>
+            ${
+              kiloReturn
+                ? `<p style="font-weight:bold">
+                  Your available replacement is 
+                  ${productOrder.kiloText(availableReturn)} because you have
+                  already replaced ${productOrder.kiloText(kiloReturn)}.
+                </p>`
+                : ""
+            }
 
             <p >Please enter the kilo you want to ${
               isReturn ? "replacement" : "refund"
             }:</p>
           <div style="display: flex; align-items: center;">
-            <input class="form-control" id="kilo-input" type="number" min="1"  value=${
-              order.kilo
-            } placeholder="Enter Kilo">
-            <select id="weight-select" class="form-control w-25" value=${
-              order.kiloGrams
-            }>
+            <input class="form-control" id="kilo-input" type="number" min="0"  value=${availReturnKilo} placeholder="Enter Kilo">
+            <select id="weight-select" class="form-control w-25" value=${availReturnGrams}>
               <option value="0" ${
-                order.kiloGrams === 0 ? "selected" : ""
+                availReturnGrams === 0 ? "selected" : ""
               }>Kl</option>
               <option value="0.25"  ${
-                order.kiloGrams === 0.25 ? "selected" : ""
+                availReturnGrams === 25 ? "selected" : ""
               }>1/4</option>
               <option value="0.50"  ${
-                order.kiloGrams === 0.5 ? "selected" : ""
+                availReturnGrams === 5 ? "selected" : ""
               }>1/2</option>
               <option value="0.75"  ${
-                order.kiloGrams === 0.75 ? "selected" : ""
+                availReturnGrams === 75 ? "selected" : ""
               }>3/4</option>
             </select>
           </div>
@@ -109,20 +127,20 @@ export default function Receipt({
 
           const reason = document.getElementById("return-reason").value.trim();
 
-          const totalPurchase = (order?.kilo || 0) + (order?.kiloGrams || 0);
-          const purchaseGrams = order.kiloGrams || 0;
+          // const totalPurchase = (order?.kilo || 0) + (order?.kiloGrams || 0);
+          // const purchaseGrams = order.kiloGrams || 0;
           const totalReturn = kilo + kiloGrams;
           var gramsMessage = "";
 
-          switch (purchaseGrams) {
-            case 0.25:
+          switch (availReturnGrams) {
+            case 25:
               gramsMessage = "1/4";
               break;
-            case 0.5:
+            case 5:
               gramsMessage = "1/2";
               break;
 
-            case 0.75:
+            case 75:
               gramsMessage = "3/4";
               break;
             default:
@@ -135,11 +153,15 @@ export default function Receipt({
             );
           }
 
-          if (totalReturn > totalPurchase) {
+          if (totalReturn > availableReturn) {
             Swal.showValidationMessage(
-              `Maximum kg you can ${isReturn ? "return" : "refund"} is ${
-                order.kilo
-              } kg ${purchaseGrams !== 0 ? `and ${gramsMessage}` : ""}`
+              `Maximum you can ${isReturn ? "return" : "refund"} is ${
+                availReturnKilo ? `${availReturnKilo} kg` : ""
+              }  ${
+                availReturnGrams !== 0
+                  ? `${availReturnKilo ? "and" : ""} ${gramsMessage}`
+                  : ""
+              }`
             );
           }
 
@@ -155,6 +177,14 @@ export default function Receipt({
       }).then((result) => {
         if (result.isConfirmed) {
           const { kilo, kiloGrams = 0, reason } = result.value;
+          const _purchases = [
+            ...orderDetails.filter(({ isRefundAll }) => !isRefundAll),
+          ];
+
+          const totalReturn = kilo + kiloGrams;
+          const stockIsEnough = totalReturn >= max;
+          const refundPurchase = totalReturn - max;
+          const sufficientStock = max <= 0 ? 0 : max;
 
           if (isReturn) {
             dispatch(
@@ -169,10 +199,12 @@ export default function Receipt({
                 },
               })
             );
+            _purchases[index] = {
+              ..._purchases[index],
+              kiloReturn: (kiloReturn += kilo + kiloGrams),
+            };
+            setPurchases(_purchases);
           } else {
-            const _purchases = [
-              ...orderDetails.filter(({ isRefundAll }) => !isRefundAll),
-            ];
             const purchaseTotalKg =
               (_purchases[index].kilo || 0) +
               (_purchases[index]?.kiloGrams || 0);
@@ -233,16 +265,24 @@ export default function Receipt({
         }
       });
     } else {
+      const availableReturn = quantity - quantityReturn;
       Swal.fire({
         title: `${isReturn ? "Replacement" : "Refound"} Quantity`,
         html: `
         <div class="w-100 m-0 p-0">
+              ${
+                quantityReturn
+                  ? `<p style="font-weight:bold">
+                                Your available replacement is  
+                               ${availableReturn} quantity because you have
+                        already replaced ${quantityReturn} quantity.
+                      </p>`
+                  : ""
+              }
           <label for="quantity-input">Please enter the quantity you want to ${
             isReturn ? "replacement" : "refund"
           }:</label>
-          <input id="quantity-input" type="number" class="swal2-input form-control m-0 p-0 mb-2 text-center" value="${
-            order.quantity
-          }">
+          <input id="quantity-input" type="number" class="swal2-input form-control m-0 p-0 mb-2 text-center" value="${availableReturn}">
           <label for="return-reason">Reason for ${
             isReturn ? "replacement" : "refund"
           }:</label>
@@ -271,11 +311,11 @@ export default function Receipt({
             return false;
           }
 
-          if (quantity > order.quantity) {
+          if (quantity > availableReturn) {
             Swal.showValidationMessage(
-              `Maximum quantity you can ${isReturn ? "return" : "refund"} is ${
-                order.quantity
-              }`
+              `Maximum quantity you can ${
+                isReturn ? "return" : "refund"
+              } is ${availableReturn} quantity`
             );
             return false;
           }
@@ -297,7 +337,9 @@ export default function Receipt({
       }).then((result) => {
         if (result.isConfirmed) {
           const { quantity, reason } = result.value;
-
+          const _purchases = [
+            ...orderDetails.filter(({ isRefundAll }) => !isRefundAll),
+          ];
           if (isReturn) {
             dispatch(
               RETURN_PRODUCTS({
@@ -311,10 +353,12 @@ export default function Receipt({
                 },
               })
             );
+            _purchases[index] = {
+              ..._purchases[index],
+              quantityReturn: (quantityReturn += quantity),
+            };
+            setPurchases(_purchases);
           } else {
-            const _purchases = [
-              ...orderDetails.filter(({ isRefundAll }) => !isRefundAll),
-            ];
             const _purchaseQty = _purchases[index].quantity;
             const totalQty = _purchaseQty - quantity;
 
