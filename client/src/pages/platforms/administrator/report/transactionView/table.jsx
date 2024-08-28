@@ -2,75 +2,9 @@ import React from "react";
 import { variation } from "../../../../../services/utilities";
 import getTotalRefundAmount from "../getTotalRefund";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
+import productOrder from "../../../../../services/utilities/product";
 
 const Table = ({ orderDetails, transaction }) => {
-  const handleRefundView = (order) => {
-    const {
-      product,
-      quantityRefund = 0,
-      kiloGramsRefund = 0,
-      kiloRefund = 0,
-    } = order;
-
-    const { isPerKilo } = product;
-
-    if (quantityRefund > 0 || kiloGramsRefund > 0 || kiloRefund > 0) {
-      return variation.qtyOrKilo(
-        {
-          quantity: quantityRefund,
-          kilo: kiloRefund,
-          kiloGrams: kiloGramsRefund,
-        },
-        isPerKilo
-      );
-    } else {
-      return "--";
-    }
-  };
-
-  const gramsConverter = (grams) => {
-    switch (grams) {
-      case 5:
-        return 0.5;
-      case 75:
-        return 0.75;
-      case 25:
-        return 0.25;
-      default:
-        return grams;
-    }
-  };
-
-  const handleViewOriginalQtyKilo = (order) => {
-    const {
-      product,
-      quantity = 0,
-      quantityRefund = 0,
-      kilo = 0,
-      kiloRefund = 0,
-      kiloGrams,
-      kiloGramsRefund = 0,
-    } = order;
-    if (product.isPerKilo) {
-      const totalNet = kilo + kiloGrams;
-      const totalRefund = kiloRefund + kiloGramsRefund;
-      const total = totalNet + totalRefund;
-      const totalInArray = String(total).split(".");
-      var totalKilo = Number(totalInArray[0] || 0);
-      var totalGrams = Number(totalInArray[1] || 0);
-      return variation.qtyOrKilo(
-        { ...order, kilo: totalKilo, kiloGrams: gramsConverter(totalGrams) },
-        product.isPerKilo
-      );
-    } else {
-      const total = quantity + quantityRefund;
-      return variation.qtyOrKilo(
-        { ...order, quantity: total },
-        product.isPerKilo
-      );
-    }
-  };
-
   return (
     <table className="invoice-report-table">
       <thead>
@@ -113,10 +47,10 @@ const Table = ({ orderDetails, transaction }) => {
                 </div>
               </td>
               <td className="text-center">
-                {handleViewOriginalQtyKilo(order)}
+                {productOrder.originalQtyKilo(order)}
               </td>
 
-              <td className="text-center">{handleRefundView(order)}</td>
+              <td className="text-center">{productOrder.refund(order)}</td>
               <td className="text-center">
                 {variation.qtyOrKilo(order, order.product.isPerKilo)}
               </td>
@@ -139,19 +73,30 @@ const Table = ({ orderDetails, transaction }) => {
             className="pl-1 "
             style={{ borderRight: "none", fontSize: "1rem" }}
           >
-            <p className="ml-3 paragraph mt-1">Total Products Amount</p>
+            <p className="ml-3 paragraph mt-1">Total Sale</p>
             <p className="ml-3 paragraph">Total Refund Amount</p>
-            <p className="ml-3 paragraph  mb-2">Total Sales</p>
+            <p className="ml-3 paragraph  ">Total Amount</p>
+            <p className="ml-3 paragraph  ">Cash</p>
+            <p className="ml-3 paragraph  mb-2">Change</p>
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
             <p className="ml-4 paragraph  mt-1">
-              ₱{formattedTotal(transaction?.totalWithoutDeduc)}
+              ₱{formattedTotal(transaction?.total)}
             </p>
             <p className="ml-4 paragraph">
               ₱{formattedTotal(getTotalRefundAmount(transaction.products))}
             </p>
+            <p className="ml-4 paragraph ">
+              ₱{formattedTotal(transaction?.totalWithoutDeduc)}
+            </p>
+            <p className="ml-4 paragraph ">
+              ₱{formattedTotal(transaction?.cash)}
+            </p>
             <p className="ml-4 paragraph mb-2">
-              ₱{formattedTotal(transaction?.total)}.00
+              ₱
+              {formattedTotal(
+                transaction?.totalWithoutDeduc - transaction.cash
+              )}
             </p>
           </td>
         </tr>

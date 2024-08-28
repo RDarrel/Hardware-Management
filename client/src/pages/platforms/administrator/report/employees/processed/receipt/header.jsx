@@ -41,7 +41,8 @@ const Header = ({
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span className="mr-2 text-nowrap">
-                  {isTransaction ? "Transaction" : "Replacement"} Date:
+                  {/* {isTransaction ? "Transaction" : "Replacement"} Date: */}
+                  Date:
                 </span>
                 <span className="text-nowrap">{formattedDate(createdAt)}</span>
               </div>

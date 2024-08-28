@@ -1,3 +1,5 @@
+import variation from "../variation/variation";
+
 const getGramsTxt = (_grams) => {
   const grams = Number(_grams);
   if (grams === 0.75 || grams === 75) {
@@ -8,6 +10,19 @@ const getGramsTxt = (_grams) => {
     return "1/4";
   } else {
     return "";
+  }
+};
+
+const gramsConverter = (grams) => {
+  switch (grams) {
+    case 5:
+      return 0.5;
+    case 75:
+      return 0.75;
+    case 25:
+      return 0.25;
+    default:
+      return grams;
   }
 };
 
@@ -51,6 +66,60 @@ const productOrder = {
       return `${kilo} kilo${kilo > 1 ? "s" : ""}`;
     } else {
       return getGramsTxt(grams);
+    }
+  },
+
+  refund: (order) => {
+    const {
+      product,
+      quantityRefund = 0,
+      kiloGramsRefund = 0,
+      kiloRefund = 0,
+    } = order;
+
+    const { isPerKilo } = product;
+
+    if (quantityRefund > 0 || kiloGramsRefund > 0 || kiloRefund > 0) {
+      return variation.qtyOrKilo(
+        {
+          quantity: quantityRefund,
+          kilo: kiloRefund,
+          kiloGrams: kiloGramsRefund,
+        },
+        isPerKilo
+      );
+    } else {
+      return "--";
+    }
+  },
+
+  originalQtyKilo: (order) => {
+    const {
+      product,
+      quantity = 0,
+      quantityRefund = 0,
+      kilo = 0,
+      kiloRefund = 0,
+      kiloGrams,
+      kiloGramsRefund = 0,
+    } = order;
+    if (product.isPerKilo) {
+      const totalNet = kilo + kiloGrams;
+      const totalRefund = kiloRefund + kiloGramsRefund;
+      const total = totalNet + totalRefund;
+      const totalInArray = String(total).split(".");
+      var totalKilo = Number(totalInArray[0] || 0);
+      var totalGrams = Number(totalInArray[1] || 0);
+      return variation.qtyOrKilo(
+        { ...order, kilo: totalKilo, kiloGrams: gramsConverter(totalGrams) },
+        product.isPerKilo
+      );
+    } else {
+      const total = quantity + quantityRefund;
+      return variation.qtyOrKilo(
+        { ...order, quantity: total },
+        product.isPerKilo
+      );
     }
   },
 };

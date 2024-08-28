@@ -68,19 +68,38 @@ export const EmployeesReport = () => {
                     <th className="text-center th-lg" rowSpan="2">
                       Cashier
                     </th>
-
-                    <th className=" th-lg text-center text-nowrap">
+                    <th className="text-center" colSpan={3}>
+                      Processed
+                    </th>
+                    <th className="text-center" colSpan={3}>
+                      Total Amount
+                    </th>
+                    {/* <th className=" th-lg text-center text-nowrap">
                       Transactions Processed
                     </th>
                     <th className="text-center th-lg text-nowrap">
+                      Refund Processed
+                    </th>
+                    <th className="text-center th-lg text-nowrap">
                       Replacement Processed
+                    </th> */}
+                    {/* <th className="th-lg text-center text-nowrap" rowSpan="2">
+                      Total Refund Amount
                     </th>
                     <th className="th-lg text-center text-nowrap" rowSpan="2">
                       Total Replacement Amount
                     </th>
                     <th className="text-center th-lg text-nowrap" rowSpan="2">
                       Total Sales Amount
-                    </th>
+                    </th> */}
+                  </tr>
+                  <tr>
+                    <th className="text-center">Transactions</th>
+                    <th className="text-center">Refund</th>
+                    <th className="text-center">Replacement</th>
+                    <th className="text-center">Refund</th>
+                    <th className="text-center">Replacement</th>
+                    <th className="text-center">Sale</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -90,8 +109,8 @@ export const EmployeesReport = () => {
                         cashier,
                         transactionsHandle,
                         total,
-                        // refundItemCount = 0,
-                        // totalRefundSales = 0,
+                        refundItemCount = 0,
+                        totalRefundSales = 0,
                         returnItemCount = 0,
                         totalReturnSales = 0,
                       } = transaction;
@@ -119,29 +138,29 @@ export const EmployeesReport = () => {
                               {transactionsHandle}
                             </span>
                           </td>
-                          {/* <td
-                        className="text-center font-weight-bold cursor-pointer"
-                        onClick={() => {
-                          if (refundItemCount === 0) {
-                            setShowToast(true);
-                            setWarningMsg("Refund");
-                          } else {
-                            setIsTransaction(false);
-                            setCashier(cashier);
-                            setStatus("refund");
-                            toggle();
-                          }
-                        }}
-                      >
-                        <MDBIcon
-                          icon="hand-holding"
-                          size="2x"
-                          style={{ color: "red" }}
-                        />
-                        <span className="counter text-center">
-                          {refundItemCount || 0}
-                        </span>
-                      </td> */}
+                          <td
+                            className="text-center font-weight-bold cursor-pointer"
+                            onClick={() => {
+                              if (refundItemCount === 0) {
+                                setShowToast(true);
+                                setWarningMsg("Refund");
+                              } else {
+                                setIsTransaction(false);
+                                setCashier(cashier);
+                                setStatus("refund");
+                                toggle();
+                              }
+                            }}
+                          >
+                            <MDBIcon
+                              icon="hand-holding"
+                              size="2x"
+                              style={{ color: "red" }}
+                            />
+                            <span className="counter text-center">
+                              {refundItemCount || 0}
+                            </span>
+                          </td>
                           <td
                             className="text-center font-weight-bold cursor-pointer"
                             onClick={() => {
@@ -159,18 +178,24 @@ export const EmployeesReport = () => {
                             <MDBIcon
                               icon="hand-holding"
                               size="2x"
-                              style={{ color: "red" }}
+                              style={{ color: "orange" }}
                             />
-                            <span className="counter text-center bg-danger">
+                            <span
+                              className="counter text-center"
+                              style={{ backgroundColor: "orange" }}
+                            >
                               {returnItemCount || 0}
                             </span>
                           </td>
 
                           <td className="text-center text-danger font-weight-bold">
-                            ₱{totalReturnSales.toLocaleString()}.00
+                            ₱{formattedTotal(totalRefundSales)}
                           </td>
                           <td className="text-center text-danger font-weight-bold">
-                            ₱{total.toLocaleString()}.00
+                            ₱{formattedTotal(totalReturnSales)}
+                          </td>
+                          <td className="text-center text-danger font-weight-bold">
+                            ₱{formattedTotal(total)}
                           </td>
                         </tr>
                       );

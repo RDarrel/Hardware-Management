@@ -55,7 +55,7 @@ const OrderType = ({
             } else if (newKilo >= maxKilo) {
               handleChange(index, maxKilo, true);
             } else {
-              handleChange(index, target.value, true);
+              handleChange(index, newKilo, true);
             }
           }}
           min={0}

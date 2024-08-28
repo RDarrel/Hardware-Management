@@ -58,7 +58,7 @@ const Orders = ({
 
     if (isPerkilo) {
       const kilo = _orders[index].kilo + 1;
-      if (value >= kilo - 1 && max <= kilo)
+      if (value >= kilo - 1 && max < kilo)
         return handleMaxSaleMessage(max, true);
       _orders[index] = { ..._orders[index], kilo: Number(value) };
     } else {

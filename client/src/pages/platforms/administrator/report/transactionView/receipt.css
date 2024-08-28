@@ -85,7 +85,7 @@
 
 /* Row Styles */
 .invoice-report-table tr {
-  border: 2px solid black;
+  border: 1px solid black;
 }
 
 /* Cell Styles */

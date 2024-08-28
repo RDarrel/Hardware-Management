@@ -260,7 +260,7 @@ const getTotalReturnRefund = (products) => {
   const getTheSubtotal = products.map((obj) => {
     const { product, kilo = 0, kiloGrams = 0, quantity = 0, srp } = obj;
     if (product.isPerKilo) {
-      return { ...obj, subtotal: kilo + kiloGrams * srp };
+      return { ...obj, subtotal: (kilo + kiloGrams) * srp };
     } else {
       return { ...obj, subtotal: quantity * srp };
     }

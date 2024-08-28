@@ -10,7 +10,7 @@ const getTotalRefundAmount = (purchases) => {
     } = purchase;
 
     if (product.isPerKilo) {
-      return kiloRefund + kiloGramsRefund * srp;
+      return (kiloRefund + kiloGramsRefund) * srp;
     } else {
       return quantityRefund * srp;
     }

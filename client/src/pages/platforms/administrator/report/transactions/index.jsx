@@ -24,6 +24,7 @@ import Receipt from "../../../../widgets/receipt";
 import Spinner from "../../../../widgets/spinner";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
 import transactionsExcel from "../../../../../services/utilities/downloadExcel/transactions";
+import Modal from "./modal";
 
 export const Transactions = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
@@ -131,14 +132,16 @@ export const Transactions = () => {
                           {formattedDate(transaction.createdAt)}
                         </td>
                         <td className="text-danger text-center font-weight-bolder">
-                          ₱{formattedTotal(transaction.total)}
+                          ₱{formattedTotal(transaction.totalWithoutDeduc)}
                         </td>
                         <td className="text-danger text-center font-weight-bold">
                           ₱{formattedTotal(transaction.cash)}
                         </td>
                         <td className="text-danger text-center font-weight-bold">
                           ₱
-                          {formattedTotal(transaction.cash - transaction.total)}
+                          {formattedTotal(
+                            transaction.cash - transaction.totalWithoutDeduc
+                          )}
                         </td>
                         <td className="text-center">
                           <MDBBtn
@@ -183,15 +186,16 @@ export const Transactions = () => {
           )}
         </MDBCardBody>
       </MDBCard>
-      <Receipt
+      <Modal
         toggle={toggle}
         isAdmin={true}
         createdAt={selected?.createdAt}
         invoice_no={selected?.invoice_no}
         orderDetails={orderDetails}
         show={show}
+        transaction={selected}
         customerView={selected?.customer || "--"}
-        cashier={fullName(selected?.cashier?.fullName)}
+        cashier={selected?.cashier}
         total={selected?.total}
         cash={selected?.cash}
       />

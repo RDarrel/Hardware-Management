@@ -50,6 +50,66 @@ export default function Receipt({
       "success"
     );
   };
+
+  const handleReturn = (_purchases, index, reason, order, totalReturn) => {
+    const { product } = order;
+    const { isPerKilo = false } = product;
+    const _return = isPerKilo
+      ? convertedKilo(totalReturn)
+      : { quantity: totalReturn };
+    const baseKey = isPerKilo ? "kiloReturn" : "quantityReturn";
+    dispatch(
+      RETURN_PRODUCTS({
+        token,
+        data: {
+          customer,
+          invoice_no,
+          returnBy: auth._id,
+          products: [{ ...order, ..._return }],
+          reason,
+        },
+      })
+    );
+
+    _purchases[index] = {
+      ..._purchases[index],
+      [baseKey]: (_purchases[index][baseKey] += totalReturn),
+    };
+  };
+
+  const handleRefund = (_purchases, order, reason, refund) => {
+    const newTotal =
+      transaction.getTotal(
+        _purchases?.filter(({ isRefundAll }) => !isRefundAll) || []
+      ) || 0;
+    setTotal(newTotal);
+    setPurchases(
+      transaction.computeSubtotal(
+        _purchases?.filter(({ isRefundAll }) => !isRefundAll) || []
+      )
+    );
+    dispatch(
+      REFUND_PRODUCTS({
+        token,
+        data: {
+          customer,
+          invoice_no,
+          refundBy: auth._id,
+          products: [{ ...order, ...refund }],
+          reason,
+          newTotal,
+        },
+      })
+    );
+  };
+
+  const convertedKilo = (_kilo) => {
+    const numberToArray = String(_kilo).split("."); //kung ilan lang yung sufficient yun lang din marerturn
+    const kilo = Number(numberToArray[0] || 0);
+    const kiloGrams = gramsConverter(Number(numberToArray[1] || 0));
+
+    return { kilo, kiloGrams };
+  };
   const handleAction = (order, index, isReturn) => {
     var {
       product,
@@ -127,8 +187,6 @@ export default function Receipt({
 
           const reason = document.getElementById("return-reason").value.trim();
 
-          // const totalPurchase = (order?.kilo || 0) + (order?.kiloGrams || 0);
-          // const purchaseGrams = order.kiloGrams || 0;
           const totalReturn = kilo + kiloGrams;
           var gramsMessage = "";
 
@@ -182,86 +240,94 @@ export default function Receipt({
           ];
 
           const totalReturn = kilo + kiloGrams;
-          const stockIsEnough = totalReturn >= max;
+          const stockIsNotEnough = totalReturn > max;
           const refundPurchase = totalReturn - max;
           const sufficientStock = max <= 0 ? 0 : max;
-
-          if (isReturn) {
-            dispatch(
-              RETURN_PRODUCTS({
-                token,
-                data: {
-                  customer,
-                  invoice_no,
-                  returnBy: auth._id,
-                  products: [{ ...order, kilo, kiloGrams }],
-                  reason,
-                },
-              })
-            );
-            _purchases[index] = {
-              ..._purchases[index],
-              kiloReturn: (kiloReturn += kilo + kiloGrams),
-            };
-            setPurchases(_purchases);
-          } else {
-            const purchaseTotalKg =
-              (_purchases[index].kilo || 0) +
-              (_purchases[index]?.kiloGrams || 0);
-
-            const refundKg = kilo + kiloGrams;
-            const newTotalKg = purchaseTotalKg - refundKg;
-
-            if (newTotalKg <= 0) {
-              _purchases[index] = { ..._purchases[index], isRefundAll: true };
-            } else {
-              if (newTotalKg >= 1) {
-                const totalKgInArray = String(newTotalKg).split(".");
-                _purchases[index] = {
-                  ..._purchases[index],
-                  kilo: Number(totalKgInArray[0]),
-                  kiloGrams: gramsConverter(Number(totalKgInArray[1] || 0)),
-                };
-              } else {
-                _purchases[index] = {
-                  ..._purchases[index],
-                  kilo: 0,
-                  kiloGrams: gramsConverter(newTotalKg),
-                };
-              }
-            }
-
-            if (noHavePurchases(_purchases)) {
-              toggle();
-              transactionToggle();
-            }
-
-            const newTotal =
-              transaction.getTotal(
-                _purchases?.filter(({ isRefundAll }) => !isRefundAll) || []
-              ) || 0;
-            setTotal(newTotal);
-            setPurchases(
-              transaction.computeSubtotal(
-                _purchases?.filter(({ isRefundAll }) => !isRefundAll) || []
-              )
-            );
-            dispatch(
-              REFUND_PRODUCTS({
-                token,
-                data: {
-                  customer,
-                  invoice_no,
-                  refundBy: auth._id,
-                  products: [{ ...order, kilo, kiloGrams }],
-                  reason,
-                  newTotal,
-                },
-              })
-            );
+          if (!stockIsNotEnough) {
+            handleReturn(_purchases, index, reason, order, totalReturn);
+            handleSwalMessage(isReturn);
           }
+          if (stockIsNotEnough) {
+            Swal.fire({
+              title: "No Stock Available",
+              html: `
+                 ${
+                   sufficientStock
+                     ? `<p>Unfortunately, there is no stock available for the items you want to replace.</p>
+                <p>You can replaced ${productOrder.kiloText(
+                  sufficientStock
+                )}, but the remaining ${productOrder.kiloText(
+                         refundPurchase
+                       )} must be refunded.</p>`
+                     : `You can only refund the ${productOrder.kiloText(
+                         totalReturn
+                       )}`
+                 }
+              `,
+              icon: "warning",
+              confirmButtonText: "Proceed with Refund",
+              showCancelButton: true,
+              cancelButtonText: "Cancel",
+              reverseButtons: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                var totalRefund = totalReturn;
+                if (sufficientStock) {
+                  totalRefund = refundPurchase;
+                  const { kilo: _kilo, kiloGrams: _grams } =
+                    convertedKilo(sufficientStock);
+                  handleReturn(
+                    _purchases,
+                    index,
+                    reason,
+                    order,
+                    sufficientStock
+                  );
+                }
 
-          handleSwalMessage(isReturn);
+                const purchaseTotalKg =
+                  (_purchases[index].kilo || 0) +
+                  (_purchases[index]?.kiloGrams || 0);
+
+                const newTotalKg = purchaseTotalKg - totalRefund;
+
+                if (newTotalKg <= 0) {
+                  _purchases[index] = {
+                    ..._purchases[index],
+                    isRefundAll: true,
+                  };
+                } else {
+                  if (newTotalKg >= 1) {
+                    const totalKgInArray = String(newTotalKg).split(".");
+                    _purchases[index] = {
+                      ..._purchases[index],
+                      kilo: Number(totalKgInArray[0]),
+                      kiloGrams: gramsConverter(Number(totalKgInArray[1] || 0)),
+                    };
+                  } else {
+                    _purchases[index] = {
+                      ..._purchases[index],
+                      kilo: 0,
+                      kiloGrams: gramsConverter(newTotalKg),
+                    };
+                  }
+                }
+
+                if (noHavePurchases(_purchases)) {
+                  toggle();
+                  transactionToggle();
+                }
+                handleRefund(
+                  _purchases,
+                  order,
+                  reason,
+                  convertedKilo(totalRefund)
+                );
+
+                handleSwalMessage(isReturn);
+              }
+            });
+          }
         }
       });
     } else {
@@ -340,64 +406,64 @@ export default function Receipt({
           const _purchases = [
             ...orderDetails.filter(({ isRefundAll }) => !isRefundAll),
           ];
-          if (isReturn) {
-            dispatch(
-              RETURN_PRODUCTS({
-                token,
-                data: {
-                  customer,
-                  invoice_no,
-                  returnBy: auth._id,
-                  products: [{ ...order, quantity: quantity }],
-                  reason: reason,
-                },
-              })
-            );
-            _purchases[index] = {
-              ..._purchases[index],
-              quantityReturn: (quantityReturn += quantity),
-            };
-            setPurchases(_purchases);
-          } else {
-            const _purchaseQty = _purchases[index].quantity;
-            const totalQty = _purchaseQty - quantity;
 
-            if (totalQty <= 0) {
-              _purchases[index] = { ..._purchases[index], isRefundAll: true };
-            } else {
-              _purchases[index].quantity -= quantity;
-            }
-            if (noHavePurchases(_purchases)) {
-              toggle();
-              transactionToggle();
-            }
-            const newTotal =
-              transaction.getTotal(
-                _purchases.filter(({ isRefundAll }) => !isRefundAll)
-              ) || 0;
-
-            setTotal(newTotal);
-            setPurchases(
-              transaction.computeSubtotal(
-                _purchases.filter(({ isRefundAll }) => !isRefundAll)
-              )
-            );
-
-            dispatch(
-              REFUND_PRODUCTS({
-                token,
-                data: {
-                  customer,
-                  invoice_no,
-                  refundBy: auth._id,
-                  products: [{ ...order, quantity: quantity }],
-                  reason: reason,
-                  newTotal,
-                },
-              })
-            );
+          const stockIsNotEnough = quantity > max;
+          const refundPurchase = quantity - max;
+          const sufficientStock = max <= 0 ? 0 : max;
+          if (!stockIsNotEnough) {
+            handleReturn(_purchases, index, reason, order, quantity);
+            handleSwalMessage(isReturn);
           }
-          handleSwalMessage(isReturn);
+
+          if (stockIsNotEnough) {
+            Swal.fire({
+              title: "No Stock Available",
+              html: `
+                 ${
+                   sufficientStock
+                     ? `<p>Unfortunately, there is no stock available for the items you want to replace.</p>
+                <p>You can replaced ${sufficientStock} quantity, but the remaining ${refundPurchase} quantity  must be refunded.</p>`
+                     : `You can only refund the ${quantity} quantity`
+                 }
+              `,
+              icon: "warning",
+              confirmButtonText: "Proceed with Refund",
+              showCancelButton: true,
+              cancelButtonText: "Cancel",
+              reverseButtons: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                var totalRefund = quantity;
+                if (sufficientStock) {
+                  totalRefund = refundPurchase;
+                  handleReturn(
+                    _purchases,
+                    index,
+                    reason,
+                    order,
+                    sufficientStock
+                  );
+                }
+                const _purchaseQty = _purchases[index].quantity;
+                const totalQty = _purchaseQty - totalRefund;
+
+                if (totalQty <= 0) {
+                  _purchases[index] = {
+                    ..._purchases[index],
+                    isRefundAll: true,
+                  };
+                } else {
+                  _purchases[index].quantity -= totalQty;
+                }
+                if (noHavePurchases(_purchases)) {
+                  toggle();
+                  transactionToggle();
+                }
+                handleRefund(_purchases, order, reason, { quantity: totalQty });
+                handleSwalMessage(isReturn);
+              }
+            });
+          }
         }
       });
     }

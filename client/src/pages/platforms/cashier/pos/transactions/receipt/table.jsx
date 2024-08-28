@@ -1,5 +1,5 @@
 import React from "react";
-import { MDBBtn, MDBBtnGroup, MDBIcon } from "mdbreact";
+import { MDBBtn, MDBIcon } from "mdbreact";
 import { variation } from "../../../../../../services/utilities";
 import formattedTotal from "../../../../../../services/utilities/forattedTotal";
 
@@ -15,7 +15,6 @@ const Table = ({ handleAction, orderDetails = [], total, cash }) => {
         <tr>
           <th>Items</th>
           <th className="text-center">Quantity/Kilo</th>
-
           <th className="text-center">SRP</th>
           <th className="text-center">Subtotal</th>
           <th className="text-center">Action</th>

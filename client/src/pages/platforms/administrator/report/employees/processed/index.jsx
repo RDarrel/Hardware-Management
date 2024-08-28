@@ -18,6 +18,7 @@ import {
 } from "../../../../../../services/utilities";
 import Receipt from "./receipt";
 import formattedTotal from "../../../../../../services/utilities/forattedTotal";
+import TransactionView from "../../transactionView";
 
 export default function Processed({
   show,
@@ -57,20 +58,19 @@ export default function Processed({
     toggleReciept();
   };
 
-  console.log(selected);
-
   const title =
     status === "refund"
       ? "Refund"
       : status === "return"
       ? "Replacement"
       : "Transactions";
+
   return (
     <MDBModal
       isOpen={show}
       toggle={toggle}
       backdrop
-      size={isTransaction && !showReceipt ? "xl" : "lg"}
+      size={isTransaction ? "xl" : "lg"}
       disableFocusTrap={false}
     >
       {!showReceipt && (
@@ -125,7 +125,7 @@ export default function Processed({
                     {isTransaction && (
                       <>
                         <td className="text-center font-weight-bolder text-danger">
-                          ₱ {formattedTotal(_transaction?.total)}
+                          ₱ {formattedTotal(_transaction?.totalWithoutDeduc)}
                         </td>
                         <td className="text-center font-weight-bolder text-danger">
                           ₱{formattedTotal(_transaction?.cash || 0)}
@@ -133,7 +133,7 @@ export default function Processed({
                         <td className="text-center font-weight-bolder text-danger">
                           ₱
                           {formattedTotal(
-                            _transaction.cash - _transaction.total
+                            _transaction.cash - _transaction.totalWithoutDeduc
                           )}
                         </td>
                       </>
@@ -163,18 +163,32 @@ export default function Processed({
             </MDBTable>
           </div>
         ) : (
-          <Receipt
-            toggle={toggleReciept}
-            orderDetails={products}
-            total={total}
-            title={title}
-            reason={selected?.reason}
-            isTransaction={isTransaction}
-            cash={selected?.cash}
-            createdAt={selected?.createdAt}
-            cashier={selected?.cashier}
-            invoice_no={selected?.invoice_no}
-          />
+          <>
+            {isTransaction ? (
+              <TransactionView
+                toggle={toggleReciept}
+                cashier={selected.cashier}
+                customer={selected.customer}
+                invoice_no={selected?.invoice_no}
+                orderDetails={products}
+                transaction={selected}
+                createdAt={selected?.createdAt}
+              />
+            ) : (
+              <Receipt
+                toggle={toggleReciept}
+                orderDetails={products}
+                total={total}
+                title={title}
+                reason={selected?.reason}
+                isTransaction={isTransaction}
+                cash={selected?.cash}
+                createdAt={selected?.createdAt}
+                cashier={selected?.cashier}
+                invoice_no={selected?.invoice_no}
+              />
+            )}
+          </>
         )}
         {!showReceipt && (
           <MDBBadge color="ligh">
