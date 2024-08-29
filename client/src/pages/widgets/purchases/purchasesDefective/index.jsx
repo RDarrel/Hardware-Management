@@ -66,7 +66,7 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
           onClick={() => setActiveTab("approved")}
           outline={"approved" !== activeTab}
         >
-          {isDefective ? "Replacement" : "Replenishment "}
+          {isDefective ? "Replacement" : "Acknowledge "}
         </MDBBtn>
         <MDBBtn
           className="m-0 rounded-top"

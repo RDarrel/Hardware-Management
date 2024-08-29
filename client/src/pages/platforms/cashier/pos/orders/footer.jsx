@@ -132,7 +132,7 @@ const Footer = ({
         <MDBRow>
           <MDBCol>
             <MDBBtn
-              color="primary"
+              color={isWalkin ? "danger" : "primary"}
               size="sm"
               id="paid"
               type="submit"
@@ -141,28 +141,38 @@ const Footer = ({
               className="d-flex justify-content-center btn-paid "
             >
               <div className="d-flex ">
-                <h5 className="text-white mr-2 font-weight-bold "> Pay</h5>
-                <MDBIcon icon="cash-register" className="paid-icon" size="2x" />
+                <h5 className="text-white mr-2 font-weight-bold ">
+                  {isWalkin ? "Quotation" : "Pay"}
+                </h5>
+                <MDBIcon
+                  icon={isWalkin ? "walking" : "cash-register"}
+                  className="paid-icon"
+                  size="2x"
+                />
               </div>
             </MDBBtn>
           </MDBCol>
-          <MDBCol>
-            <MDBBtn
-              color="danger"
-              size="sm"
-              id="paid"
-              type="button"
-              onClick={handleQuotation}
-              block
-              disabled={orderDetails.length === 0}
-              className="d-flex justify-content-center btn-paid "
-            >
-              <div className="d-flex ">
-                <h5 className="text-white mr-2 font-weight-bold ">Quotation</h5>
-                <MDBIcon icon="walking" className="paid-icon" size="2x" />
-              </div>
-            </MDBBtn>
-          </MDBCol>
+          {!isWalkin && (
+            <MDBCol>
+              <MDBBtn
+                color="danger"
+                size="sm"
+                id="paid"
+                type="button"
+                onClick={handleQuotation}
+                block
+                disabled={orderDetails.length === 0}
+                className="d-flex justify-content-center btn-paid "
+              >
+                <div className="d-flex ">
+                  <h5 className="text-white mr-2 font-weight-bold ">
+                    Quotation
+                  </h5>
+                  <MDBIcon icon="walking" className="paid-icon" size="2x" />
+                </div>
+              </MDBBtn>
+            </MDBCol>
+          )}
         </MDBRow>
       </form>
     </>
