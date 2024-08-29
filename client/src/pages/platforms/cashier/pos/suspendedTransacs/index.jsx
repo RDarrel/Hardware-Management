@@ -50,7 +50,7 @@ export default function SuspendedTransacs({
         dispatch(UPDATE({ token, data: notSeenQuotations }));
       }
     }
-  }, [isQuotation]);
+  }, [isQuotation, dispatch, token, collections]);
 
   const handleGetMax = (selected) => {
     const _products = [...products];

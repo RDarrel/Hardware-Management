@@ -23,6 +23,7 @@ function Informations({
   setVariationsWithPrice,
   setHasDuplicateVariant,
   setHasDuplicateOption,
+  setIsSubmit,
 }) {
   const handleEnableVariation = () => {
     const optionID = uuidv4();
@@ -97,6 +98,25 @@ function Informations({
                     />
                   </MDBCol>
                 </MDBRow>
+
+                {/* <MDBRow className="mt-2">
+                  <MDBCol
+                    md="2"
+                    className="d-flex justify-content-end align-items-center"
+                  >
+                    <h6>Barcode:</h6>
+                  </MDBCol>
+                  <MDBCol md="10">
+                    <MDBInput
+                      label="Barcode"
+                      value={form.barcode}
+                      onChange={({ target }) => {
+                        setIsSubmit(false);
+                        setForm({ ...form, barcode: target.value });
+                      }}
+                    />
+                  </MDBCol>
+                </MDBRow> */}
 
                 <MDBRow className="mt-5">
                   <MDBCol

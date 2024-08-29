@@ -77,7 +77,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
         });
       }
     }
-  }, [isLimit, isPreOrder]);
+  }, [isLimit, isPreOrder, toggleCart, setIsCheckout]);
 
   const handleBuy = async () => {
     Swal.fire({

@@ -34,6 +34,10 @@ const modelSchema = new mongoose.Schema(
       ref: "Materials",
     },
 
+    barcode: {
+      type: String,
+    },
+
     variations: {
       type: Array,
     },

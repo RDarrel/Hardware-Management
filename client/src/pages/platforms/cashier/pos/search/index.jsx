@@ -45,6 +45,7 @@ const Search = ({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [search, inputRef, setSearch, isCheckOut]);
+
   return (
     <MDBCard className="mb-1">
       <MDBCardBody className="m-0 p-1">
@@ -52,7 +53,7 @@ const Search = ({
           <form id="search-form" onSubmit={handleSearch}>
             <input
               className="form-control search-input"
-              placeholder="Seach.."
+              placeholder="Search.."
               value={search}
               id="search"
               autoComplete="off"
@@ -60,11 +61,11 @@ const Search = ({
               readOnly={isLoading}
               onChange={({ target }) => {
                 const searchValue = target.value;
-
+                console.log(searchValue);
                 if (searchValue !== search) {
                   setShowSuggested(true);
                 }
-                setSearch(target.value);
+                setSearch(searchValue);
               }}
               name="search"
             />

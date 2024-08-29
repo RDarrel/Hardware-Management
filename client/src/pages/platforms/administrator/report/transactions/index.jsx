@@ -20,7 +20,7 @@ import {
   transaction,
 } from "../../../../../services/utilities";
 import getTotalSales from "../getTotalSales";
-import Receipt from "../../../../widgets/receipt";
+// import Receipt from "../../../../widgets/receipt";
 import Spinner from "../../../../widgets/spinner";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
 import transactionsExcel from "../../../../../services/utilities/downloadExcel/transactions";

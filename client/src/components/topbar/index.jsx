@@ -42,7 +42,7 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
   };
 
   const navStyle = {
-    paddingLeft: onSideNavToggleClick ? "16px" : "240px",
+    paddingLeft: onSideNavToggleClick ? "240px" : "16px",
     transition: "padding-left .3s",
   };
 
@@ -66,9 +66,8 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
       >
         <MDBIcon icon="bars" color="white" size="lg" />
       </div>
-
       <MDBNavbarBrand href="#" style={navStyle}>
-        {/* <strong>{route}</strong> */}
+        <strong>{role}</strong>
       </MDBNavbarBrand>
       <MDBNavbarNav expand="sm" right style={{ flexDirection: "row" }}>
         {role === "ADMINISTRATOR" && (

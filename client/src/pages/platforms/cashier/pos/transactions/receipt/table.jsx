@@ -2,8 +2,9 @@ import React from "react";
 import { MDBBtn, MDBIcon } from "mdbreact";
 import { variation } from "../../../../../../services/utilities";
 import formattedTotal from "../../../../../../services/utilities/forattedTotal";
+import productOrder from "../../../../../../services/utilities/product";
 
-const Table = ({ handleAction, orderDetails = [], total, cash }) => {
+const Table = ({ handleAction, orderDetails = [], total, cash, hasRefund }) => {
   const change = cash - total || 0;
   const purchases =
     orderDetails.length > 0
@@ -15,6 +16,12 @@ const Table = ({ handleAction, orderDetails = [], total, cash }) => {
         <tr>
           <th>Items</th>
           <th className="text-center">Quantity/Kilo</th>
+          {hasRefund && (
+            <>
+              <th className="text-center">Refund Quantity/Kilo</th>
+              <th className="text-center">Net Quantity/Kilo</th>
+            </>
+          )}
           <th className="text-center">SRP</th>
           <th className="text-center">Subtotal</th>
           <th className="text-center">Action</th>
@@ -37,7 +44,7 @@ const Table = ({ handleAction, orderDetails = [], total, cash }) => {
               : quantity === quantityReturn;
             return (
               <tr key={`${order._id}-${index}`}>
-                <td width={"400px"}>
+                <td width={hasRefund ? "" : "400px"}>
                   <div className="d-flex flex-column">
                     <span
                       style={{
@@ -63,8 +70,20 @@ const Table = ({ handleAction, orderDetails = [], total, cash }) => {
                   </div>
                 </td>
                 <td className="text-center">
-                  {variation.qtyOrKilo(order, order.product.isPerKilo)}
+                  {!hasRefund
+                    ? variation.qtyOrKilo(order, order.product.isPerKilo)
+                    : productOrder.originalQtyKilo(order)}
                 </td>
+                {hasRefund && (
+                  <>
+                    <td className="text-center">
+                      {productOrder.refund(order)}
+                    </td>
+                    <td className="text-center">
+                      {variation.qtyOrKilo(order, order.product.isPerKilo)}
+                    </td>
+                  </>
+                )}
 
                 <td className="text-center">₱{order.srp}</td>
                 <td className="text-center">
@@ -89,25 +108,35 @@ const Table = ({ handleAction, orderDetails = [], total, cash }) => {
           })}
         <tr className="p-2 ">
           <td
-            colSpan="2"
+            colSpan={hasRefund ? "3" : "2"}
             style={{
               borderBottomColor: "transparent",
               borderLeftColor: "transparent",
             }}
           ></td>
           <td
-            colSpan="1"
+            colSpan={hasRefund ? "2" : "1"}
             className="pl-1 "
             style={{ borderRight: "none", fontSize: "1rem" }}
           >
-            <p className="ml-3 paragraph mt-1">Total Amount</p>
+            {hasRefund && <p className="ml-3 paragraph mt-1">Total Refund</p>}
+            <p className={`ml-3 paragraph ${!hasRefund ? "mt-1" : ""} `}>
+              Total Amount
+            </p>
             <p className="ml-3 paragraph"> Cash</p>
             <p className="ml-3 paragraph  mb-2">Change</p>
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
             <p className="ml-4 paragraph  mt-1">₱{formattedTotal(total)}</p>
             <p className="ml-4 paragraph">₱{cash.toLocaleString()}.00</p>
-            <p className="ml-4 paragraph mb-2">₱{formattedTotal(change)}.00</p>
+            <p className={`ml-4 paragraph ${!hasRefund ? "mb-1" : ""}`}>
+              ₱{formattedTotal(change)}.00
+            </p>
+            {hasRefund && (
+              <p className="ml-4 paragraph mb-2">
+                ₱{formattedTotal(change)}.00
+              </p>
+            )}
           </td>
           <td
             style={{

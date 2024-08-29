@@ -21,6 +21,7 @@ function Media({
   isDuplicateName = false,
   hasDuplicateVariant = false,
   hasDuplicateOption = false,
+  isSubmit = true,
 }) {
   const isDisAble =
     isDuplicateName || hasDuplicateVariant || hasDuplicateOption;
@@ -138,7 +139,11 @@ function Media({
                   <MDBBtn color="white" onClick={handleClearForm}>
                     Cancel
                   </MDBBtn>
-                  <MDBBtn color="primary" type="submit" disabled={isDisAble}>
+                  <MDBBtn
+                    color="primary"
+                    type={isSubmit ? "submit" : "button"}
+                    disabled={isDisAble}
+                  >
                     {willCreate ? "Publish" : "Update"}
                   </MDBBtn>
                 </div>

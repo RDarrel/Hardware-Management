@@ -41,6 +41,7 @@ const ProductInformation = ({
   const { token } = useSelector(({ auth }) => auth);
   const [media, setMedia] = useState(_media);
   const [form, setForm] = useState({ isPerKilo: false, hasExpiration: false });
+  const [isSubmit, setIsSubmit] = useState(true);
   const [variations, setVariations] = useState([]);
   const disptach = useDispatch(),
     [isDuplicateName, setIsDuplicateName] = useState(false),
@@ -348,6 +349,7 @@ const ProductInformation = ({
           media={media}
           setHasDuplicateOption={setHasDuplicateOption}
           setMedia={setMedia}
+          setIsSubmit={setIsSubmit}
         />
         <Media
           dragOver={dragOver}
@@ -360,6 +362,7 @@ const ProductInformation = ({
           isDuplicateName={isDuplicateName}
           willCreate={willCreate}
           hasDuplicateOption={hasDuplicateOption}
+          isSubmit={isSubmit}
         />
       </form>
     </>

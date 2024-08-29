@@ -11,7 +11,7 @@ const name = "auth",
 
 const initialState = {
   auth: {},
-  role: {},
+  role: "",
   route: "",
   token,
   email,

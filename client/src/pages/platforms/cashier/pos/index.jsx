@@ -140,6 +140,37 @@ const POS = ({ isWalkin = false }) => {
 
   const handleSearch = (event) => {
     event.preventDefault();
+    // const findProductsUsingBarcode = collections
+    //   .map((c) => {
+    //     const {
+    //       hasVariant = false,
+    //       has2Variant = false,
+    //       barcode = "",
+    //       variations = [],
+    //     } = c;
+    //     if (!hasVariant && !has2Variant) {
+    //       return String(barcode) === String(search) ? c : false;
+    //     }
+
+    //     if (hasVariant && !has2Variant) {
+    //       const vr1 = variations.find(
+    //         ({ barcode }) => barcode === String(search)
+    //       )?.barcode;
+    //       return vr1.barcode === String(search)
+    //         ? { ...c, variant1: vr1._id }
+    //         : false;
+    //     }
+
+    //     if (has2Variant && hasVariant) {
+    //       const vr1 = variations.find(
+    //         ({ barcode }) => barcode === String(search)
+    //       )?.barcode;
+    //       return vr1.barcode === String(search)
+    //         ? { ...c, variant1: vr1._id }
+    //         : false;
+    //     }
+    //   })
+    //   .filter(Boolean);
 
     const results = collections.filter((product) =>
       product.name

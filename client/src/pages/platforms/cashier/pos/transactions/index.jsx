@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  REFUND_PRODUCTS,
-  RETURN_PRODUCTS,
-} from "../../../../../services/redux/slices/cashier/pos";
+// import {
+//   REFUND_PRODUCTS,
+//   RETURN_PRODUCTS,
+// } from "../../../../../services/redux/slices/cashier/pos";
 import { FIND_TRANSACTION } from "../../../../../services/redux/slices/cashier/pos";
 import {
   MDBBtn,
@@ -24,7 +24,7 @@ import Receipt from "./receipt";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 export default function Transactions({ show, toggle }) {
-  const { token, auth } = useSelector(({ auth }) => auth),
+  const { token } = useSelector(({ auth }) => auth),
     { transaction } = useSelector(({ pos }) => pos),
     [search, setSearch] = useState(""),
     [foundTransaction, setFoundTransaction] = useState({}),
@@ -97,75 +97,77 @@ export default function Transactions({ show, toggle }) {
     toggleTransac();
   };
 
-  const handleAction = (isReturn) => {
-    Swal.fire({
-      title: `<h5 class='font-weight-bolder'>Kindly provide a reason for ${
-        isReturn ? "Replacement" : "Refunding"
-      } the product.</h5>`,
-      html: `
-       <div>
-       <select id="return-reason" class=" text-center w-100 form-control">
-        <option value="Defective or damaged product">Defective or damaged product</option>
-        <option value="Wrong item">Wrong item</option>
-        <option value="Quality issues">Quality issues</option>
-        <option value="Expired items">Expired items</option>
-        <option value="Fitment issues">Fitment issues</option>
-      </select></div>
-    `,
-      showCancelButton: true,
-      cancelButtonText: "Cancel",
-      confirmButtonText: isReturn ? "Replace" : "Refund",
-      reverseButtons: true,
-      focusConfirm: false,
-      preConfirm: () => {
-        const textAreaValue = document.getElementById("return-reason").value;
-        if (!textAreaValue) {
-          Swal.showValidationMessage("You need to write a reason!");
-        } else {
-          return textAreaValue;
-        }
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const reason = result.value;
-        if (isReturn) {
-          dispatch(
-            RETURN_PRODUCTS({
-              token,
-              data: {
-                invoice_no: transaction.invoice_no,
-                returnBy: auth._id,
-                customer: transaction.customer || "",
-                products: transaction.purchases,
-                reason,
-              },
-            })
-          );
-        } else {
-          dispatch(
-            REFUND_PRODUCTS({
-              token,
-              data: {
-                customer: transaction.customer || "",
-                refundAll: true,
-                invoice_no: transaction.invoice_no,
-                refundBy: auth._id,
-                products: transaction.purchases,
-                reason,
-              },
-            })
-          );
+  // const handleAction = (isReturn) => {
+  //   Swal.fire({
+  //     title: `<h5 class='font-weight-bolder'>Kindly provide a reason for ${
+  //       isReturn ? "Replacement" : "Refunding"
+  //     } the product.</h5>`,
+  //     html: `
+  //      <div>
+  //      <select id="return-reason" class=" text-center w-100 form-control">
+  //       <option value="Defective or damaged product">Defective or damaged product</option>
+  //       <option value="Wrong item">Wrong item</option>
+  //       <option value="Quality issues">Quality issues</option>
+  //       <option value="Expired items">Expired items</option>
+  //       <option value="Fitment issues">Fitment issues</option>
+  //     </select></div>
+  //   `,
+  //     showCancelButton: true,
+  //     cancelButtonText: "Cancel",
+  //     confirmButtonText: isReturn ? "Replace" : "Refund",
+  //     reverseButtons: true,
+  //     focusConfirm: false,
+  //     preConfirm: () => {
+  //       const textAreaValue = document.getElementById("return-reason").value;
+  //       if (!textAreaValue) {
+  //         Swal.showValidationMessage("You need to write a reason!");
+  //       } else {
+  //         return textAreaValue;
+  //       }
+  //     },
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       const reason = result.value;
+  //       if (isReturn) {
+  //         dispatch(
+  //           RETURN_PRODUCTS({
+  //             token,
+  //             data: {
+  //               invoice_no: transaction.invoice_no,
+  //               returnBy: auth._id,
+  //               customer: transaction.customer || "",
+  //               products: transaction.purchases,
+  //               reason,
+  //             },
+  //           })
+  //         );
+  //       } else {
+  //         dispatch(
+  //           REFUND_PRODUCTS({
+  //             token,
+  //             data: {
+  //               customer: transaction.customer || "",
+  //               refundAll: true,
+  //               invoice_no: transaction.invoice_no,
+  //               refundBy: auth._id,
+  //               products: transaction.purchases,
+  //               reason,
+  //             },
+  //           })
+  //         );
 
-          toggle();
-        }
-        Swal.fire(
-          "Successfully!",
-          `${isReturn ? "Return" : "Refund"}`,
-          "success"
-        );
-      }
-    });
-  };
+  //         toggle();
+  //       }
+  //       Swal.fire(
+  //         "Successfully!",
+  //         `${isReturn ? "Return" : "Refund"}`,
+  //         "success"
+  //       );
+  //     }
+  //   });
+  // };
+
+  const hasRefund = transaction.totalRefundSales > 0;
 
   return (
     <>
@@ -245,14 +247,14 @@ export default function Transactions({ show, toggle }) {
                             <MDBIcon icon="print" />
                           </MDBBtn>
 
-                          <MDBBtn
+                          {/* <MDBBtn
                             onClick={() => handleAction(true)}
                             size="sm"
                             color="info"
                             title="Replacement All Product"
                           >
                             <MDBIcon icon="reply" size="1x" />
-                          </MDBBtn>
+                          </MDBBtn> */}
                           {/* <MDBBtn
                             onClick={() => handleAction(false)}
                             size="sm"
@@ -299,6 +301,7 @@ export default function Transactions({ show, toggle }) {
               createdAt={date}
               cash={cash}
               transactionToggle={toggle}
+              hasRefund={hasRefund}
             />
           )}
         </MDBModalBody>

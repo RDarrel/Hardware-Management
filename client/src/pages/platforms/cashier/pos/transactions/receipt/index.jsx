@@ -16,6 +16,7 @@ export default function Receipt({
   setPurchases,
   transactionToggle,
   setTotal,
+  hasRefund = false,
   total = 0,
   customer = "",
   invoice_no = "",
@@ -274,8 +275,8 @@ export default function Receipt({
                 var totalRefund = totalReturn;
                 if (sufficientStock) {
                   totalRefund = refundPurchase;
-                  const { kilo: _kilo, kiloGrams: _grams } =
-                    convertedKilo(sufficientStock);
+                  // const { kilo: _kilo, kiloGrams: _grams } =
+                  //   convertedKilo(sufficientStock);
                   handleReturn(
                     _purchases,
                     index,
@@ -481,6 +482,7 @@ export default function Receipt({
           handleAction={handleAction}
           orderDetails={orderDetails}
           total={total}
+          hasRefund={hasRefund}
           cash={cash}
         />
       </div>

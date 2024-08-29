@@ -6,16 +6,12 @@ import {
   MDBPopover,
   MDBPopoverBody,
   MDBBtn,
-  MDBBadge,
 } from "mdbreact";
 import { fullName } from "../../../../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
 import "./header.css";
 import Transactions from "../transactions";
-import {
-  BROWSE,
-  QUOTATIONS,
-} from "../../../../../services/redux/slices/cashier/suspendedTransacs";
+import { BROWSE } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
 
 import { BROWSE as BROWSE_QUOTATIONS } from "../../../../../services/redux/slices/quotations";
 import SuspendedTransacs from "../suspendedTransacs";
