@@ -89,19 +89,21 @@ export default function Receipt({
         _purchases?.filter(({ isRefundAll }) => !isRefundAll) || []
       )
     );
-    dispatch(
-      REFUND_PRODUCTS({
-        token,
-        data: {
-          customer,
-          invoice_no,
-          refundBy: auth._id,
-          products: [{ ...order, ...refund }],
-          reason,
-          newTotal,
-        },
-      })
-    );
+    setTimeout(() => {
+      dispatch(
+        REFUND_PRODUCTS({
+          token,
+          data: {
+            customer,
+            invoice_no,
+            refundBy: auth._id,
+            products: [{ ...order, ...refund }],
+            reason,
+            newTotal,
+          },
+        })
+      );
+    }, 3000);
   };
 
   const convertedKilo = (_kilo) => {
@@ -460,7 +462,9 @@ export default function Receipt({
                   toggle();
                   transactionToggle();
                 }
-                handleRefund(_purchases, order, reason, { quantity: totalQty });
+                handleRefund(_purchases, order, reason, {
+                  quantity: totalRefund,
+                });
                 handleSwalMessage(isReturn);
               }
             });

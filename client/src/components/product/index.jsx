@@ -336,6 +336,12 @@ const ProductInformation = ({
     setSelected({});
   };
 
+  const preventSubmitForm = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+    }
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -350,6 +356,7 @@ const ProductInformation = ({
           setHasDuplicateOption={setHasDuplicateOption}
           setMedia={setMedia}
           setIsSubmit={setIsSubmit}
+          preventSubmitForm={preventSubmitForm}
         />
         <Media
           dragOver={dragOver}

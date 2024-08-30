@@ -316,18 +316,20 @@ exports.returnProducts = async (req, res) => {
         }
       });
       const existingPurchase = { ...purchases[indexOfReturnProduct]._doc };
+      var { quantityReturn = 0, kiloReturn = 0 } = existingPurchase;
       const totalKiloReturn = kilo + kiloGrams;
       purchases[indexOfReturnProduct] = {
         ...existingPurchase,
         ...(product.isPerKilo
-          ? { kiloReturn: (existingPurchase.kiloReturn += totalKiloReturn) }
-          : { quantityReturn: (existingPurchase.quantityReturn += quantity) }),
+          ? { kiloReturn: (kiloReturn += totalKiloReturn) }
+          : { quantityReturn: (quantityReturn += quantity) }),
       };
+
       await Transactions.findByIdAndUpdate(transaction._id, {
+        purchases: purchases,
         totalReturnSales:
           (transaction?.totalReturnSales || 0) +
           getTotalReturnRefund(returnProducts),
-        purchases,
         returnItemCount: (transaction?.returnItemCount || 0) + 1,
       });
     } else {
@@ -529,7 +531,6 @@ exports.refund = async (req, res) => {
           } else {
             const totalDeducConvertInArray =
               String(totalDeductionRes).split(".");
-            console.log(totalDeducConvertInArray);
             newKilo = Number(totalDeducConvertInArray[0] || 0);
             newKiloGrams = Number(totalDeducConvertInArray[1] || 0);
           }

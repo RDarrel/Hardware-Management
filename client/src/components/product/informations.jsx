@@ -9,6 +9,7 @@ import {
   MDBBtn,
   MDBIcon,
   MDBInputGroup,
+  MDBInput,
 } from "mdbreact";
 import Variations from "./variations";
 
@@ -23,7 +24,7 @@ function Informations({
   setVariationsWithPrice,
   setHasDuplicateVariant,
   setHasDuplicateOption,
-  setIsSubmit,
+  preventSubmitForm,
 }) {
   const handleEnableVariation = () => {
     const optionID = uuidv4();
@@ -99,7 +100,7 @@ function Informations({
                   </MDBCol>
                 </MDBRow>
 
-                {/* <MDBRow className="mt-2">
+                <MDBRow className="mt-2">
                   <MDBCol
                     md="2"
                     className="d-flex justify-content-end align-items-center"
@@ -110,13 +111,13 @@ function Informations({
                     <MDBInput
                       label="Barcode"
                       value={form.barcode}
+                      onKeyDown={preventSubmitForm}
                       onChange={({ target }) => {
-                        setIsSubmit(false);
                         setForm({ ...form, barcode: target.value });
                       }}
                     />
                   </MDBCol>
-                </MDBRow> */}
+                </MDBRow>
 
                 <MDBRow className="mt-5">
                   <MDBCol
@@ -147,6 +148,7 @@ function Informations({
                 setVariationsWithPrice={setVariationsWithPrice}
                 setMedia={setMedia}
                 setHasDuplicateVariant={setHasDuplicateVariant}
+                preventSubmitForm={preventSubmitForm}
                 setHasDuplicateOption={setHasDuplicateOption}
               />
             )}

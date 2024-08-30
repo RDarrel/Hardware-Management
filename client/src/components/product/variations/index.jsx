@@ -19,6 +19,7 @@ function Variations({
   setMedia,
   setHasDuplicateVariant,
   setHasDuplicateOption,
+  preventSubmitForm,
 }) {
   const [capital, setCapital] = useState(0),
     [srp, setSrp] = useState(0);
