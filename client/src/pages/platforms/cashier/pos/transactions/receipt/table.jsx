@@ -4,8 +4,15 @@ import { variation } from "../../../../../../services/utilities";
 import formattedTotal from "../../../../../../services/utilities/forattedTotal";
 import productOrder from "../../../../../../services/utilities/product";
 
-const Table = ({ handleAction, orderDetails = [], total, cash, hasRefund }) => {
-  const change = cash - total || 0;
+const Table = ({
+  handleAction,
+  orderDetails = [],
+  total,
+  cash,
+  hasRefund,
+  foundTransaction,
+}) => {
+  const change = cash - foundTransaction.totalWithoutDeduc || 0;
   const purchases =
     orderDetails.length > 0
       ? orderDetails?.filter(({ isRefundAll }) => !isRefundAll)
@@ -127,16 +134,18 @@ const Table = ({ handleAction, orderDetails = [], total, cash, hasRefund }) => {
             <p className="ml-3 paragraph  mb-2">Change</p>
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
-            <p className="ml-4 paragraph  mt-1">₱{formattedTotal(total)}</p>
-            <p className="ml-4 paragraph">₱{cash.toLocaleString()}.00</p>
-            <p className={`ml-4 paragraph ${!hasRefund ? "mb-1" : ""}`}>
-              ₱{formattedTotal(change)}.00
-            </p>
             {hasRefund && (
-              <p className="ml-4 paragraph mb-2">
-                ₱{formattedTotal(change)}.00
+              <p className="ml-4 paragraph ">
+                ₱{formattedTotal(foundTransaction.totalRefundSales)}
               </p>
             )}
+            <p className={`ml-4 paragraph  ${hasRefund ? "" : "mt-1"}`}>
+              ₱{formattedTotal(foundTransaction.totalWithoutDeduc)}
+            </p>
+            <p className="ml-4 paragraph">₱{cash.toLocaleString()}.00</p>
+            <p className={`ml-4 paragraph ${!hasRefund ? "mb-1" : ""}`}>
+              ₱{formattedTotal(change)}
+            </p>
           </td>
           <td
             style={{

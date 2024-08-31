@@ -231,7 +231,7 @@ export default function Transactions({ show, toggle }) {
                         {foundTransaction.invoice_no}
                       </td>
                       <td className="font-weight-bold text-danger text-center">
-                        ₱{formattedTotal(foundTransaction.total)}
+                        ₱{formattedTotal(foundTransaction.totalWithoutDeduc)}
                       </td>
                       <td className="text-center font-weight-bold">
                         {formattedDate(foundTransaction.createdAt)}
@@ -299,8 +299,10 @@ export default function Transactions({ show, toggle }) {
               setPurchases={setPurchases}
               orderDetails={purchases}
               createdAt={date}
+              foundTransaction={foundTransaction}
               cash={cash}
               transactionToggle={toggle}
+              setTransaction={setFoundTransaction}
               hasRefund={hasRefund}
             />
           )}

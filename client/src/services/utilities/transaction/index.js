@@ -16,14 +16,36 @@ const transaction = {
     return total;
   },
 
-  computeSubtotal: (purchases = []) => {
+  computeSubtotal: (purchases = [], isRefund = false) => {
     if (purchases.length === 0) return [];
     return purchases.map((purchase) => {
-      const { product, kilo = 0, kiloGrams = 0, quantity = 0, srp } = purchase;
+      const {
+        product,
+        kilo = 0,
+        kiloGrams = 0,
+        quantity = 0,
+        srp,
+        kiloRefund,
+        quantityRefund,
+      } = purchase;
 
-      var totalPurchase = product.isPerKilo ? kilo + kiloGrams : quantity;
+      var totalPurchase = product.isPerKilo
+        ? isRefund
+          ? kiloRefund
+          : kilo + kiloGrams
+        : isRefund
+        ? quantityRefund
+        : quantity;
       return { ...purchase, subtotal: totalPurchase * srp };
     });
+  },
+
+  totalRefund: (purchases = []) => {
+    const purchasesWithSubtotal = transaction.computeSubtotal(purchases, true);
+    return purchasesWithSubtotal.reduce(
+      (acc, curr) => (acc += curr.subtotal),
+      0
+    );
   },
 };
 

@@ -20,9 +20,11 @@ export default function Receipt({
   total = 0,
   customer = "",
   invoice_no = "",
+  foundTransaction,
   orderDetails = [],
   createdAt = "",
   cash = 0,
+  setTransaction = () => {},
 }) {
   const { token, auth } = useSelector(({ auth }) => auth),
     dispatch = useDispatch();
@@ -76,19 +78,42 @@ export default function Receipt({
       ..._purchases[index],
       [baseKey]: (_purchases[index][baseKey] += totalReturn),
     };
+
+    return _purchases;
   };
 
-  const handleRefund = (_purchases, order, reason, refund) => {
+  const handleRefund = (_purchases, order, reason, index, refund) => {
+    const { product } = order;
+    const { isPerKilo = false } = product;
+    const totalRefund = isPerKilo
+      ? refund.kilo + refund.kiloGrams
+      : refund?.quantity;
+
+    const baseKey = isPerKilo ? "kiloRefund" : "quantityRefund";
+
+    _purchases[index] = {
+      ..._purchases[index],
+      [baseKey]: (_purchases[index][baseKey] += totalRefund),
+    };
+
     const newTotal =
       transaction.getTotal(
         _purchases?.filter(({ isRefundAll }) => !isRefundAll) || []
       ) || 0;
+
     setTotal(newTotal);
+
     setPurchases(
       transaction.computeSubtotal(
         _purchases?.filter(({ isRefundAll }) => !isRefundAll) || []
       )
     );
+    setTransaction((prev) => ({
+      ...prev,
+      purchases: _purchases,
+      totalRefundSales: transaction.totalRefund(_purchases),
+    }));
+
     setTimeout(() => {
       dispatch(
         REFUND_PRODUCTS({
@@ -103,7 +128,7 @@ export default function Receipt({
           },
         })
       );
-    }, 3000);
+    }, 1000);
   };
 
   const convertedKilo = (_kilo) => {
@@ -113,6 +138,7 @@ export default function Receipt({
 
     return { kilo, kiloGrams };
   };
+
   const handleAction = (order, index, isReturn) => {
     var {
       product,
@@ -238,7 +264,7 @@ export default function Receipt({
       }).then((result) => {
         if (result.isConfirmed) {
           const { kilo, kiloGrams = 0, reason } = result.value;
-          const _purchases = [
+          var _purchases = [
             ...orderDetails.filter(({ isRefundAll }) => !isRefundAll),
           ];
 
@@ -247,7 +273,9 @@ export default function Receipt({
           const refundPurchase = totalReturn - max;
           const sufficientStock = max <= 0 ? 0 : max;
           if (!stockIsNotEnough) {
-            handleReturn(_purchases, index, reason, order, totalReturn);
+            setPurchases(
+              handleReturn(_purchases, index, reason, order, totalReturn)
+            );
             handleSwalMessage(isReturn);
           }
           if (stockIsNotEnough) {
@@ -279,7 +307,7 @@ export default function Receipt({
                   totalRefund = refundPurchase;
                   // const { kilo: _kilo, kiloGrams: _grams } =
                   //   convertedKilo(sufficientStock);
-                  handleReturn(
+                  _purchases = handleReturn(
                     _purchases,
                     index,
                     reason,
@@ -324,6 +352,7 @@ export default function Receipt({
                   _purchases,
                   order,
                   reason,
+                  index,
                   convertedKilo(totalRefund)
                 );
 
@@ -406,7 +435,7 @@ export default function Receipt({
       }).then((result) => {
         if (result.isConfirmed) {
           const { quantity, reason } = result.value;
-          const _purchases = [
+          var _purchases = [
             ...orderDetails.filter(({ isRefundAll }) => !isRefundAll),
           ];
 
@@ -414,7 +443,9 @@ export default function Receipt({
           const refundPurchase = quantity - max;
           const sufficientStock = max <= 0 ? 0 : max;
           if (!stockIsNotEnough) {
-            handleReturn(_purchases, index, reason, order, quantity);
+            setPurchases(
+              handleReturn(_purchases, index, reason, order, quantity)
+            );
             handleSwalMessage(isReturn);
           }
 
@@ -439,7 +470,7 @@ export default function Receipt({
                 var totalRefund = quantity;
                 if (sufficientStock) {
                   totalRefund = refundPurchase;
-                  handleReturn(
+                  _purchases = handleReturn(
                     _purchases,
                     index,
                     reason,
@@ -456,13 +487,14 @@ export default function Receipt({
                     isRefundAll: true,
                   };
                 } else {
-                  _purchases[index].quantity -= totalQty;
+                  _purchases[index].quantity = totalQty;
                 }
+
                 if (noHavePurchases(_purchases)) {
                   toggle();
                   transactionToggle();
                 }
-                handleRefund(_purchases, order, reason, {
+                handleRefund(_purchases, order, reason, index, {
                   quantity: totalRefund,
                 });
                 handleSwalMessage(isReturn);
@@ -486,6 +518,7 @@ export default function Receipt({
           handleAction={handleAction}
           orderDetails={orderDetails}
           total={total}
+          foundTransaction={foundTransaction}
           hasRefund={hasRefund}
           cash={cash}
         />
