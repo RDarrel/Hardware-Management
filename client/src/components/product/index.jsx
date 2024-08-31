@@ -267,7 +267,6 @@ const ProductInformation = ({
     ) {
       return handleSweetAlert("Capital and SRP ");
     }
-    console.log(newForm.variations);
     if (newForm.hasVariant) {
       const { variations = [], has2Variant = false } = newForm;
       const options = variations[0].options;
@@ -355,6 +354,7 @@ const ProductInformation = ({
           media={media}
           setHasDuplicateOption={setHasDuplicateOption}
           setMedia={setMedia}
+          collections={collections}
           setIsSubmit={setIsSubmit}
           preventSubmitForm={preventSubmitForm}
         />

@@ -26,14 +26,15 @@ import formattedTotal from "../../../../../services/utilities/forattedTotal";
 export default function Transactions({ show, toggle }) {
   const { token } = useSelector(({ auth }) => auth),
     { transaction } = useSelector(({ pos }) => pos),
-    [search, setSearch] = useState(""),
     [foundTransaction, setFoundTransaction] = useState({}),
-    [didSearch, setDidSearch] = useState(false),
     [purchases, setPurchases] = useState([]),
+    [search, setSearch] = useState(""),
     [total, setTotal] = useState(0),
     [date, setDate] = useState(""),
     [cash, setCash] = useState(""),
     [invoice_no, setInvoice_no] = useState(""),
+    [didSearch, setDidSearch] = useState(false),
+    [hasRefund, setHasRefund] = useState(false),
     [showTransac, setShowTransac] = useState(false),
     dispatch = useDispatch();
 
@@ -49,6 +50,7 @@ export default function Transactions({ show, toggle }) {
   }, [show]);
 
   useEffect(() => {
+    setHasRefund(transaction.totalRefundSales > 0);
     setFoundTransaction(transaction);
   }, [transaction]);
   // 17189090546125366
@@ -166,8 +168,6 @@ export default function Transactions({ show, toggle }) {
   //     }
   //   });
   // };
-
-  const hasRefund = transaction.totalRefundSales > 0;
 
   return (
     <>
@@ -303,6 +303,7 @@ export default function Transactions({ show, toggle }) {
               cash={cash}
               transactionToggle={toggle}
               setTransaction={setFoundTransaction}
+              setHasRefund={setHasRefund}
               hasRefund={hasRefund}
             />
           )}

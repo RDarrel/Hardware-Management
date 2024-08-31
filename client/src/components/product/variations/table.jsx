@@ -1,13 +1,15 @@
 import React from "react";
 import { MDBCol, MDBInput, MDBInputGroup, MDBRow, MDBTable } from "mdbreact";
+import validate from "../validate";
 
-function Table({ variations, setVariations }) {
-  const handleChangePriceHaveVr2 = (
+function Table({ variations, setVariations, collections }) {
+  const handleChangePriceHaveVr2 = ({
     value,
-    name,
+    key: name,
+    isBarcode = false,
     optionIndex,
-    priceIndex = -1
-  ) => {
+    priceIndex = -1,
+  }) => {
     const updatedVariations = [...variations];
     const vr1 = { ...variations[0] };
     const vr1Options = [...vr1.options];
@@ -22,6 +24,18 @@ function Table({ variations, setVariations }) {
       vr1Options[optionIndex] = option;
     }
     vr1.options = vr1Options;
+
+    var product = {
+      hasVariant: true,
+      has2Variant: priceIndex > -1,
+      variations: [vr1],
+    };
+    if (isBarcode) {
+      console.log(
+        "duplicate barcode",
+        validate.barcode([...collections, product], value)
+      );
+    }
     updatedVariations[0] = vr1;
     setVariations(updatedVariations);
   };
@@ -87,12 +101,12 @@ function Table({ variations, setVariations }) {
                           <MDBInputGroup
                             prepend="₱"
                             onChange={({ target }) =>
-                              handleChangePriceHaveVr2(
-                                Number(target.value),
-                                "capital",
+                              handleChangePriceHaveVr2({
+                                value: Number(target.value),
+                                key: "capital",
                                 optionIndex,
-                                priceIndex
-                              )
+                                priceIndex,
+                              })
                             }
                             value={String(price?.capital)}
                             required
@@ -106,12 +120,12 @@ function Table({ variations, setVariations }) {
                           <MDBInputGroup
                             prepend="₱"
                             onChange={({ target }) =>
-                              handleChangePriceHaveVr2(
-                                Number(target.value),
-                                "srp",
+                              handleChangePriceHaveVr2({
+                                value: Number(target.value),
+                                key: "srp",
                                 optionIndex,
-                                priceIndex
-                              )
+                                priceIndex,
+                              })
                             }
                             value={String(price?.srp)}
                             required
@@ -124,9 +138,22 @@ function Table({ variations, setVariations }) {
                           width={250}
                         >
                           <input
-                            className="form-control"
+                            className="form-control m-0 p-0"
                             placeholder="Barcode"
+                            onChange={({ target }) =>
+                              handleChangePriceHaveVr2({
+                                value: Number(target.value),
+                                key: "barcode",
+                                optionIndex,
+                                priceIndex,
+                                isBarcode: true,
+                              })
+                            }
+                            value={price?.barcode}
                           />
+                          <span className="text-danger text-nowrap m-0 p-0">
+                            This barcode is already exist!
+                          </span>
                         </td>
                       </tr>
                     );
@@ -140,11 +167,11 @@ function Table({ variations, setVariations }) {
                       <MDBInputGroup
                         prepend="₱"
                         onChange={({ target }) =>
-                          handleChangePriceHaveVr2(
-                            Number(target.value),
-                            "capital",
-                            optionIndex
-                          )
+                          handleChangePriceHaveVr2({
+                            name: Number(target.value),
+                            key: "capital",
+                            optionIndex,
+                          })
                         }
                         value={String(option?.capital)}
                         required
@@ -155,11 +182,11 @@ function Table({ variations, setVariations }) {
                       <MDBInputGroup
                         prepend="₱"
                         onChange={({ target }) =>
-                          handleChangePriceHaveVr2(
-                            Number(target.value),
-                            "srp",
-                            optionIndex
-                          )
+                          handleChangePriceHaveVr2({
+                            value: Number(target.value),
+                            key: "srp",
+                            optionIndex,
+                          })
                         }
                         value={String(option?.srp)}
                         required
@@ -168,7 +195,19 @@ function Table({ variations, setVariations }) {
                     </td>
 
                     <td className="text-center border border-black" width={250}>
-                      <input className="form-control" placeholder="Barcode" />
+                      <input
+                        className="form-control"
+                        placeholder="Barcode"
+                        onChange={({ target }) =>
+                          handleChangePriceHaveVr2({
+                            value: target.value,
+                            key: "barcode",
+                            optionIndex,
+                            isBarcode: true,
+                          })
+                        }
+                        value={option?.barcode}
+                      />
                     </td>
                   </tr>
                 )

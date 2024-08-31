@@ -100,12 +100,12 @@ const productOrder = {
       quantityRefund = 0,
       kilo = 0,
       kiloRefund = 0,
-      kiloGrams,
+      kiloGrams = 0,
       kiloGramsRefund = 0,
     } = order;
     if (product.isPerKilo) {
-      const totalNet = kilo + kiloGrams;
-      const totalRefund = kiloRefund + kiloGramsRefund;
+      const totalNet = kilo + gramsConverter(kiloGrams);
+      const totalRefund = kiloRefund + gramsConverter(kiloGramsRefund);
       const total = totalNet + totalRefund;
       const totalInArray = String(total).split(".");
       var totalKilo = Number(totalInArray[0] || 0);

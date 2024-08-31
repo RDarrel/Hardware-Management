@@ -20,6 +20,7 @@ function Variations({
   setHasDuplicateVariant,
   setHasDuplicateOption,
   preventSubmitForm,
+  collections,
 }) {
   const [capital, setCapital] = useState(0),
     [srp, setSrp] = useState(0);
@@ -485,7 +486,11 @@ function Variations({
         </MDBCol>
       </MDBRow>
 
-      <Table variations={variations} setVariations={setVariations} />
+      <Table
+        variations={variations}
+        setVariations={setVariations}
+        collections={collections}
+      />
     </>
   );
 }

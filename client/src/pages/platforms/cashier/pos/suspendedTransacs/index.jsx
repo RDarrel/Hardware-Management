@@ -176,7 +176,6 @@ export default function SuspendedTransacs({
       }
     });
   };
-
   return (
     <>
       <MDBModal
@@ -195,7 +194,7 @@ export default function SuspendedTransacs({
               icon={!isQuotation ? "pause-circle" : "walking"}
               className="mr-2"
             />
-            {!isQuotation ? "Hold Transactions" : "Walkin Quotations"}
+            {!isQuotation ? "Hold Transactions" : "Quotations"}
           </MDBModalHeader>
         )}
         <MDBModalBody className={`mb-0 ${showInvoice ? "m-0 p-0" : ""}`}>
@@ -238,7 +237,7 @@ export default function SuspendedTransacs({
                             <td className="text-center font-weight-bold">
                               {order.isWalkIn
                                 ? order.customer
-                                : fullName(order.orderBy?.fullName)}
+                                : order.orderBy?.email}
                             </td>
                             <td className="text-center font-weight-bold">
                               {order.isWalkIn ? "walkin" : "online"}
@@ -303,7 +302,11 @@ export default function SuspendedTransacs({
               show={show}
               selectedTransac={selectedTransac}
               total={selectedTransac?.total}
-              customer={selectedTransac?.customer || ""}
+              customer={
+                !selectedTransac.isWalkIn
+                  ? selectedTransac?.orderBy?.email || ""
+                  : selectedTransac?.customer || ""
+              }
               toggle={() => setShowInvoice(false)}
               isQuotation={isQuotation}
             />

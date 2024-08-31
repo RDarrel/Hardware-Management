@@ -17,6 +17,7 @@ const Table = ({
     orderDetails.length > 0
       ? orderDetails?.filter(({ isRefundAll }) => !isRefundAll)
       : [];
+
   return (
     <table className="invoice-table">
       <thead>
@@ -131,11 +132,11 @@ const Table = ({
               Total Amount
             </p>
             <p className="ml-3 paragraph"> Cash</p>
-            <p className="ml-3 paragraph  mb-2">Change</p>
+            <p className="ml-3 paragraph  mb-1">Change</p>
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
             {hasRefund && (
-              <p className="ml-4 paragraph ">
+              <p className="ml-4 paragraph mt-1">
                 ₱{formattedTotal(foundTransaction.totalRefundSales)}
               </p>
             )}
@@ -143,9 +144,7 @@ const Table = ({
               ₱{formattedTotal(foundTransaction.totalWithoutDeduc)}
             </p>
             <p className="ml-4 paragraph">₱{cash.toLocaleString()}.00</p>
-            <p className={`ml-4 paragraph ${!hasRefund ? "mb-1" : ""}`}>
-              ₱{formattedTotal(change)}
-            </p>
+            <p className={`ml-4 paragraph mb-1`}>₱{formattedTotal(change)}</p>
           </td>
           <td
             style={{

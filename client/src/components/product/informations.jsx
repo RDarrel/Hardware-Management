@@ -25,6 +25,7 @@ function Informations({
   setHasDuplicateVariant,
   setHasDuplicateOption,
   preventSubmitForm,
+  collections = [],
 }) {
   const handleEnableVariation = () => {
     const optionID = uuidv4();
@@ -149,6 +150,7 @@ function Informations({
                 setMedia={setMedia}
                 setHasDuplicateVariant={setHasDuplicateVariant}
                 preventSubmitForm={preventSubmitForm}
+                collections={collections}
                 setHasDuplicateOption={setHasDuplicateOption}
               />
             )}

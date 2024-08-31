@@ -1,10 +1,11 @@
 const getTheGrams = (grams) => {
   switch (grams) {
     case 0.25:
+    case 25:
       return "1/4";
     case 0.5:
+    case 5:
       return "1/2";
-
     default:
       return "3/4";
   }

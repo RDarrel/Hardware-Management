@@ -15,15 +15,16 @@ export default function Receipt({
   toggle,
   setPurchases,
   transactionToggle,
-  setTotal,
   hasRefund = false,
-  total = 0,
   customer = "",
   invoice_no = "",
   foundTransaction,
-  orderDetails = [],
   createdAt = "",
+  total = 0,
   cash = 0,
+  orderDetails = [],
+  setTotal = () => {},
+  setHasRefund = () => {},
   setTransaction = () => {},
 }) {
   const { token, auth } = useSelector(({ auth }) => auth),
@@ -91,10 +92,24 @@ export default function Receipt({
 
     const baseKey = isPerKilo ? "kiloRefund" : "quantityRefund";
 
-    _purchases[index] = {
-      ..._purchases[index],
-      [baseKey]: (_purchases[index][baseKey] += totalRefund),
-    };
+    if (isPerKilo) {
+      const { kiloRefund = 0, kiloGramsRefund = 0 } = _purchases[index];
+      const existingRefund = kiloRefund + kiloGramsRefund;
+      const overAllRefund = existingRefund + totalRefund;
+      const arrayRefund = String(overAllRefund).split(".");
+      const _kilo = Number(arrayRefund[0] || 0);
+      const _kiloGrams = Number(arrayRefund[1] || 0);
+      _purchases[index] = {
+        ..._purchases[index],
+        kiloRefund: _kilo,
+        kiloGramsRefund: _kiloGrams,
+      };
+    } else {
+      _purchases[index] = {
+        ..._purchases[index],
+        [baseKey]: (_purchases[index][baseKey] += totalRefund),
+      };
+    }
 
     const newTotal =
       transaction.getTotal(
@@ -113,6 +128,7 @@ export default function Receipt({
       purchases: _purchases,
       totalRefundSales: transaction.totalRefund(_purchases),
     }));
+    setHasRefund(true);
 
     setTimeout(() => {
       dispatch(
