@@ -13,6 +13,8 @@ export const Table = ({
 }) => {
   const { maxPage } = useSelector(({ auth }) => auth),
     [page, setPage] = useState(1);
+
+  console.log(products);
   return (
     <>
       <table>
@@ -20,8 +22,9 @@ export const Table = ({
           <tr>
             <th className="th-lg ">Product Name</th>
             <th>Variation</th>
-            <th className="th-sm">Capital</th>
+            <th>Capital</th>
             <th>SRP</th>
+            <th>Markup</th>
             <th className="text-center">Action</th>
           </tr>
         </thead>
@@ -69,7 +72,7 @@ export const Table = ({
                         <h6
                           className="text-truncate"
                           style={{
-                            maxWidth: "400px",
+                            maxWidth: "250px",
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
@@ -81,13 +84,17 @@ export const Table = ({
                     </td>
                     <td>{null} </td>
                     <td>
-                      <h6 className="text-danger font-weight-bold">
-                        ₱{product?.capital?.toLocaleString()}
-                      </h6>
+                      <h6>₱{product?.capital?.toLocaleString()}</h6>
                     </td>
                     <td>
-                      <h6 className="text-danger font-weight-bold">
-                        ₱{product?.srp?.toLocaleString()}
+                      <h6>₱{product?.srp?.toLocaleString()}</h6>
+                    </td>
+                    <td>
+                      <h6>
+                        ₱
+                        {Number(
+                          product?.srp - product?.capital
+                        ).toLocaleString()}
                       </h6>
                     </td>
                     <td className="text-center">

@@ -120,6 +120,7 @@ function Variations({
                 capital: 0,
                 srp: 0,
                 disable: false,
+                barcode: "",
               })),
             },
           ],
@@ -136,6 +137,7 @@ function Variations({
             disable: false,
             srp: 0,
             capital: 0,
+            barcode: "",
           });
 
           return {
@@ -156,8 +158,6 @@ function Variations({
             { name: "", _id: priceID }, // Generate a new ID for the new option
           ],
         };
-        // updatedVariations[0].options = newVr1Options;
-        // updatedVariations[index].options.push({ name: "", _id: priceID });
       }
     } else {
       const newVr = { ...updatedVariations[index] };
@@ -167,6 +167,7 @@ function Variations({
         capital: 0,
         srp: 0,
         disable: false,
+        barcode: "",
       });
 
       updatedVariations[index] = { ...newVr, options: newOptions };
@@ -490,6 +491,7 @@ function Variations({
         variations={variations}
         setVariations={setVariations}
         collections={collections}
+        preventSubmitForm={preventSubmitForm}
       />
     </>
   );

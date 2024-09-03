@@ -153,7 +153,7 @@ const Products = () => {
                 <h6
                   className="text-truncate"
                   style={{
-                    maxWidth: "400px",
+                    maxWidth: "200px",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -177,7 +177,7 @@ const Products = () => {
           <h6> {variantName}</h6>
         </td>
         <td>
-          <h6 className="text-danger font-weight-bold">
+          <h6>
             ₱
             {has2Variant
               ? price?.capital?.toLocaleString()
@@ -185,11 +185,20 @@ const Products = () => {
           </h6>
         </td>
         <td>
-          <h6 className="text-danger font-weight-bold">
+          <h6>
             ₱
             {has2Variant
               ? price?.srp?.toLocaleString()
               : option?.srp?.toLocaleString()}
+          </h6>
+        </td>
+
+        <td>
+          <h6>
+            ₱
+            {has2Variant
+              ? Number(price.srp - price.capital).toLocaleString()
+              : Number(option.srp - option.capital).toLocaleString()}
           </h6>
         </td>
 

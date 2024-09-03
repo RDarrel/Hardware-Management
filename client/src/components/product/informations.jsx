@@ -12,6 +12,7 @@ import {
   MDBInput,
 } from "mdbreact";
 import Variations from "./variations";
+import validate from "./validate";
 
 function Informations({
   variations,
@@ -47,10 +48,19 @@ function Informations({
         title: "Variation 1",
         name: "",
         options: [
-          { name: "", _id: optionID, disable: false, srp: 0, capital: 0 },
+          {
+            name: "",
+            _id: optionID,
+            disable: false,
+            srp: 0,
+            capital: 0,
+            barcode: "",
+          },
         ],
       },
     ]);
+
+    setForm({ ...form, barcode: "", isDuplicateBarcode: false });
   };
 
   return (
@@ -106,17 +116,54 @@ function Informations({
                     md="2"
                     className="d-flex justify-content-end align-items-center"
                   >
+                    <h6>Markup:</h6>
+                  </MDBCol>
+                  <MDBCol md="10">
+                    <MDBInputGroup
+                      prepend="₱"
+                      className="readonly-input"
+                      type="number"
+                      value={String((form.srp || 0) - (form.capital || 0))}
+                      readOnly
+                      onChange={({ target }) =>
+                        setForm({ ...form, srp: Number(target.value) })
+                      }
+                    />
+                  </MDBCol>
+                </MDBRow>
+
+                <MDBRow className="mt-2">
+                  <MDBCol
+                    md="2"
+                    className="d-flex justify-content-end align-items-center"
+                  >
                     <h6>Barcode:</h6>
                   </MDBCol>
                   <MDBCol md="10">
                     <MDBInput
-                      label="Barcode"
+                      label="Barcode (Optional)"
                       value={form.barcode}
                       onKeyDown={preventSubmitForm}
                       onChange={({ target }) => {
-                        setForm({ ...form, barcode: target.value });
+                        setForm({
+                          ...form,
+                          barcode: target.value,
+                          isDuplicateBarcode: validate.barcode(
+                            [...collections, { ...form }],
+                            {
+                              newBarcode: target.value,
+                              currentID: form?._id || "",
+                            }
+                          ),
+                        });
                       }}
                     />
+
+                    {form.isDuplicateBarcode && (
+                      <span className="text-danger text-nowrap ">
+                        This barcode is already exist!
+                      </span>
+                    )}
                   </MDBCol>
                 </MDBRow>
 

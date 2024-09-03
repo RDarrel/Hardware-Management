@@ -1,8 +1,15 @@
 import React from "react";
-import { MDBCol, MDBInput, MDBInputGroup, MDBRow, MDBTable } from "mdbreact";
+import { MDBCol, MDBInputGroup, MDBRow, MDBTable } from "mdbreact";
 import validate from "../validate";
 
-function Table({ variations, setVariations, collections }) {
+function Table({ variations, setVariations, collections, preventSubmitForm }) {
+  const hasDuplicateBarcode = (product, newBarcode, currentID) => {
+    console.log(product);
+    return validate.barcode([...collections, product], {
+      newBarcode,
+      currentID,
+    });
+  };
   const handleChangePriceHaveVr2 = ({
     value,
     key: name,
@@ -13,29 +20,41 @@ function Table({ variations, setVariations, collections }) {
     const updatedVariations = [...variations];
     const vr1 = { ...variations[0] };
     const vr1Options = [...vr1.options];
-    if (priceIndex > -1) {
-      const prices = [...vr1Options[optionIndex].prices];
-      const price = { ...prices[priceIndex], [name]: value };
-      const option = { ...vr1Options[optionIndex] };
-      prices[priceIndex] = price;
-      vr1Options[optionIndex] = { ...option, prices };
-    } else {
-      const option = { ...vr1Options[optionIndex], [name]: value };
-      vr1Options[optionIndex] = option;
-    }
-    vr1.options = vr1Options;
 
     var product = {
       hasVariant: true,
       has2Variant: priceIndex > -1,
       variations: [vr1],
     };
-    if (isBarcode) {
-      console.log(
-        "duplicate barcode",
-        validate.barcode([...collections, product], value)
-      );
+    if (priceIndex > -1) {
+      const prices = [...vr1Options[optionIndex].prices];
+      const price = {
+        ...prices[priceIndex],
+        [name]: value,
+      };
+      const option = { ...vr1Options[optionIndex], [name]: value };
+      prices[priceIndex] = {
+        ...price,
+        ...(isBarcode && {
+          isDuplicateBarcode: hasDuplicateBarcode(product, value, price?._id),
+        }),
+      };
+      vr1Options[optionIndex] = { ...option, prices };
+    } else {
+      const option = {
+        ...vr1Options[optionIndex],
+        [name]: value,
+      };
+
+      vr1Options[optionIndex] = {
+        ...option,
+        ...(isBarcode && {
+          isDuplicateBarcode: hasDuplicateBarcode(product, value, option._id),
+        }),
+      };
     }
+    vr1.options = vr1Options;
+
     updatedVariations[0] = vr1;
     setVariations(updatedVariations);
   };
@@ -69,6 +88,9 @@ function Table({ variations, setVariations, collections }) {
                   SRP
                 </th>
                 <th className="text-center border border-black bg-light">
+                  Markup
+                </th>
+                <th className="text-center border border-black bg-light">
                   Barcode
                 </th>
               </tr>
@@ -96,7 +118,7 @@ function Table({ variations, setVariations, collections }) {
                         </td>
                         <td
                           className="text-center border border-black"
-                          width={250}
+                          width={200}
                         >
                           <MDBInputGroup
                             prepend="₱"
@@ -115,7 +137,7 @@ function Table({ variations, setVariations, collections }) {
                         </td>
                         <td
                           className="text-center border border-black"
-                          width={250}
+                          width={200}
                         >
                           <MDBInputGroup
                             prepend="₱"
@@ -135,25 +157,51 @@ function Table({ variations, setVariations, collections }) {
 
                         <td
                           className="text-center border border-black"
+                          width={200}
+                        >
+                          <MDBInputGroup
+                            prepend="₱"
+                            className="readonly-input"
+                            onChange={({ target }) =>
+                              handleChangePriceHaveVr2({
+                                value: Number(target.value),
+                                key: "srp",
+                                optionIndex,
+                              })
+                            }
+                            value={String(price?.srp - price?.capital)}
+                            required
+                            type="number"
+                          ></MDBInputGroup>
+                        </td>
+
+                        <td
+                          className="text-center border border-black"
                           width={250}
                         >
                           <input
                             className="form-control m-0 p-0"
-                            placeholder="Barcode"
+                            placeholder="Barcode (Optional)"
                             onChange={({ target }) =>
                               handleChangePriceHaveVr2({
-                                value: Number(target.value),
+                                value: target.value,
                                 key: "barcode",
                                 optionIndex,
                                 priceIndex,
                                 isBarcode: true,
                               })
                             }
+                            onKeyDown={preventSubmitForm}
                             value={price?.barcode}
                           />
-                          <span className="text-danger text-nowrap m-0 p-0">
-                            This barcode is already exist!
-                          </span>
+                          {price.isDuplicateBarcode && (
+                            <span
+                              className="text-danger text-nowrap m-0 p-0"
+                              id={`option2-barcode-${priceIndex}`}
+                            >
+                              This barcode is already exist!
+                            </span>
+                          )}
                         </td>
                       </tr>
                     );
@@ -163,12 +211,12 @@ function Table({ variations, setVariations, collections }) {
                     <td className="text-center border border-black">
                       {option?.name || "Option"}
                     </td>
-                    <td className="text-center border border-black" width={250}>
+                    <td className="text-center border border-black" width={200}>
                       <MDBInputGroup
                         prepend="₱"
                         onChange={({ target }) =>
                           handleChangePriceHaveVr2({
-                            name: Number(target.value),
+                            value: Number(target.value),
                             key: "capital",
                             optionIndex,
                           })
@@ -178,7 +226,7 @@ function Table({ variations, setVariations, collections }) {
                         type="number"
                       ></MDBInputGroup>
                     </td>
-                    <td className="text-center border border-black" width={250}>
+                    <td className="text-center border border-black" width={200}>
                       <MDBInputGroup
                         prepend="₱"
                         onChange={({ target }) =>
@@ -194,10 +242,28 @@ function Table({ variations, setVariations, collections }) {
                       ></MDBInputGroup>
                     </td>
 
+                    <td className="text-center border border-black" width={200}>
+                      <MDBInputGroup
+                        prepend="₱"
+                        className="readonly-input"
+                        onChange={({ target }) =>
+                          handleChangePriceHaveVr2({
+                            value: Number(target.value),
+                            key: "srp",
+                            optionIndex,
+                          })
+                        }
+                        value={String(option?.srp - option?.capital)}
+                        required
+                        type="number"
+                      ></MDBInputGroup>
+                    </td>
+
                     <td className="text-center border border-black" width={250}>
                       <input
                         className="form-control"
-                        placeholder="Barcode"
+                        onKeyDown={preventSubmitForm}
+                        placeholder="Barcode (Optional)"
                         onChange={({ target }) =>
                           handleChangePriceHaveVr2({
                             value: target.value,
@@ -208,6 +274,15 @@ function Table({ variations, setVariations, collections }) {
                         }
                         value={option?.barcode}
                       />
+
+                      {option.isDuplicateBarcode && (
+                        <span
+                          className="text-danger text-nowrap m-0 p-0"
+                          id={`option1-barcode-${optionIndex}`}
+                        >
+                          This barcode is already exist
+                        </span>
+                      )}
                     </td>
                   </tr>
                 )

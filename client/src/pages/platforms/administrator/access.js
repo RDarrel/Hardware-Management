@@ -12,6 +12,7 @@ import Categories from "./productMangement/category";
 import Materials from "./productMangement/materials";
 import { Stocks } from "../stockman/stocks";
 import ExpiredProducts from "./report/expiredProducts";
+import Store from "../stockman/store";
 // import Category from "./productMangement/category";
 
 const access = [
@@ -27,6 +28,13 @@ const access = [
     icon: "warehouse",
     component: Stocks,
   },
+  {
+    path: "/store",
+    name: "Store",
+    icon: "store-alt",
+    component: Store,
+  },
+
   {
     name: "Employees",
     path: "/employees",

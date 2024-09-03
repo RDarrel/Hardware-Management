@@ -4,11 +4,14 @@ import {
   formattedDate,
   fullName,
   handlePagination,
+  variation,
 } from "../../../../../services/utilities";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
 import Modal from "../modal";
 import Received from "./Received";
 import GET from "../../GET";
+import PendingOrders from "../../../../../services/utilities/downloadExcel/pendingOrders";
+import productOrder from "../../../../../services/utilities/product";
 
 const Table = ({ stockmans = [], isAdmin, isReceived }) => {
   const [show, setShow] = useState(false),
@@ -51,6 +54,74 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
   };
 
   const hasBordered = isAdmin && isReceived;
+
+  const handleExport = (purchase) => {
+    const { total, expectedDelivered, supplier, merchandises } = purchase;
+    const products = merchandises.map((merchandise) => {
+      const {
+        product,
+        variant1 = "",
+        variant2 = "",
+        capital = 0,
+        kilo,
+        kiloGrams,
+        quantity,
+      } = merchandise;
+
+      console.log(merchandise);
+      return {
+        product: product.name,
+        hasVariant: true,
+        quantity: {
+          request: variation.qtyOrKilo(
+            {
+              ...merchandise,
+              kilo: kilo.request,
+              kiloGrams: kiloGrams.request,
+              quantity: quantity.request,
+            },
+            product.isPerKilo
+          ),
+          approved: variation.qtyOrKilo(
+            {
+              ...merchandise,
+              kilo: kilo.approved,
+              kiloGrams: kiloGrams.approved,
+              quantity: quantity.approved,
+            },
+            product.isPerKilo
+          ),
+        },
+        capital,
+        subtotal: productOrder.subtotal({
+          ...merchandise,
+          kilo: kilo?.approved,
+          kiloGrams: kiloGrams?.approved,
+          quantity: quantity?.approved,
+        }),
+      };
+    });
+    const options = {
+      sheet: "SHSF-8",
+      filename: "SF-Form-8",
+      title:
+        "School Form 8 Learner's Basic Health and Nutrition Report for Senior  High School (SF8-SHS)",
+      "School Name": "",
+      "School ID": "",
+      District: "",
+      Division: "",
+      Region: "",
+
+      Semester: "",
+      "School Year": "",
+
+      "Grade Level": "",
+      Section: "",
+      "Track and Strand": "",
+      "Course/s (only for TVL)": "",
+    };
+    PendingOrders({ options, array: products });
+  };
   return (
     <>
       <MDBTable responsive hover bordered={hasBordered}>
@@ -167,6 +238,16 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
                     <span className="counter mb-0">
                       {stockman?.merchandises?.length}
                     </span>
+                  </td>
+                  <td>
+                    <MDBBtn
+                      color="info"
+                      size="sm"
+                      title="Export to excel"
+                      onClick={() => handleExport(stockman)}
+                    >
+                      <MDBIcon icon="file-excel" />
+                    </MDBBtn>
                   </td>
                 </tr>
               )

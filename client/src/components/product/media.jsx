@@ -21,10 +21,29 @@ function Media({
   isDuplicateName = false,
   hasDuplicateVariant = false,
   hasDuplicateOption = false,
+  hasDuplicateBarcode = false,
   isSubmit = true,
 }) {
   const isDisAble =
-    isDuplicateName || hasDuplicateVariant || hasDuplicateOption;
+    isDuplicateName ||
+    hasDuplicateVariant ||
+    hasDuplicateOption ||
+    hasDuplicateBarcode;
+
+  const handleWarningMessage = (msg) => {
+    return (
+      <MDBTypography
+        variant="h2"
+        bqColor="primary"
+        className="mb-0 text-black-50"
+        noteColor="danger"
+        note
+        noteTitle="Warning: "
+      >
+        {msg}
+      </MDBTypography>
+    );
+  };
   return (
     <MDBRow className="mt-3">
       <MDBCol md="12">
@@ -109,32 +128,17 @@ function Media({
                   isDisAble ? "between" : "end"
                 } align-items-center mt-3 mr-5`}
               >
-                {isDuplicateName ? (
-                  <MDBTypography
-                    variant="h2"
-                    bqColor="primary"
-                    className="mb-0 text-black-50"
-                    noteColor="danger"
-                    note
-                    noteTitle="Warning: "
-                  >
-                    Sorry But this product is Already Exist
-                  </MDBTypography>
-                ) : (
-                  (hasDuplicateVariant || hasDuplicateOption) && (
-                    <MDBTypography
-                      variant="h2"
-                      bqColor="primary"
-                      className="mb-0 text-black-50"
-                      noteColor="danger"
-                      note
-                      noteTitle="Warning: "
-                    >
-                      Sorry but you have a duplicate{" "}
-                      {hasDuplicateVariant ? "variant" : "option"}
-                    </MDBTypography>
-                  )
-                )}
+                {isDuplicateName
+                  ? handleWarningMessage(
+                      "Sorry But this product is Already Exist"
+                    )
+                  : hasDuplicateBarcode
+                  ? handleWarningMessage(
+                      "Sorry, but this barcode is either a duplicate or already associated with another product. Please double-check your barcode."
+                    )
+                  : (hasDuplicateVariant || hasDuplicateOption) &&
+                    handleWarningMessage(` Sorry but you have a duplicate
+                        ${hasDuplicateVariant ? "variant" : "option"}`)}
                 <div>
                   <MDBBtn color="white" onClick={handleClearForm}>
                     Cancel

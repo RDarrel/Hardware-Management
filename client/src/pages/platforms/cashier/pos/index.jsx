@@ -79,7 +79,7 @@ const POS = ({ isWalkin = false }) => {
         case "F4":
           event.preventDefault();
           break;
-        case "9":
+        case "F6":
           event.preventDefault();
           break;
         default:
@@ -99,7 +99,7 @@ const POS = ({ isWalkin = false }) => {
             toggleSuspended(true);
           }
           break;
-        case "9":
+        case "F6":
           if (!showFindTransac && !isCheckOut && !showSuspend) {
             toggleGuide();
           }
@@ -140,69 +140,90 @@ const POS = ({ isWalkin = false }) => {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    // const findProductsUsingBarcode = collections
-    //   .map((c) => {
-    //     const {
-    //       hasVariant = false,
-    //       has2Variant = false,
-    //       barcode = "",
-    //       variations = [],
-    //     } = c;
-    //     if (!hasVariant && !has2Variant) {
-    //       return String(barcode) === String(search) ? c : false;
-    //     }
+    if (!search) return false;
+    var results = [];
+    const findProductsUsingBarcode = collections
+      .map((c) => {
+        const {
+          hasVariant = false,
+          has2Variant = false,
+          barcode = "",
+          variations = [],
+        } = c;
+        const vr1 = variations[0] || {};
+        const options = vr1?.options || [];
 
-    //     if (hasVariant && !has2Variant) {
-    //       const vr1 = variations.find(
-    //         ({ barcode }) => barcode === String(search)
-    //       )?.barcode;
-    //       return vr1.barcode === String(search)
-    //         ? { ...c, variant1: vr1._id }
-    //         : false;
-    //     }
+        if (!hasVariant && !has2Variant) {
+          return String(barcode) === String(search) ? c : false;
+        }
 
-    //     if (has2Variant && hasVariant) {
-    //       const vr1 = variations.find(
-    //         ({ barcode }) => barcode === String(search)
-    //       )?.barcode;
-    //       return vr1.barcode === String(search)
-    //         ? { ...c, variant1: vr1._id }
-    //         : false;
-    //     }
-    //   })
-    //   .filter(Boolean);
+        if (hasVariant && !has2Variant) {
+          const option = options.find(
+            ({ barcode }) => barcode === String(search)
+          );
+          return option?._id ? { ...c, variant1: option?._id } : false;
+        }
 
-    const results = collections.filter((product) =>
-      product.name
-        .toLowerCase()
-        .replace(/\s/g, "")
-        .includes(search.toLocaleLowerCase().replace(/\s/g, ""))
-    );
+        if (has2Variant && hasVariant) {
+          const result = options
+            .map((option) => {
+              const matchedPrice = option.prices?.find(
+                ({ barcode }) => String(barcode) === String(search)
+              );
+              if (matchedPrice) {
+                return { variant1: option._id, variant2: matchedPrice._id };
+              }
+              return null;
+            })
+            .find(Boolean);
 
-    if (results.length === 0) {
+          return result?.variant1 ? { ...c, ...result } : false;
+        }
+
+        return false;
+      })
+      .filter(Boolean);
+
+    const isUsingBarcode = findProductsUsingBarcode.length > 0;
+
+    if (isUsingBarcode) {
+      const productResult = findProductsUsingBarcode[0];
+      handleAddOrder(productResult);
+      setSearch("");
       setDidSearch(false);
+    } else {
+      results = collections.filter((product) =>
+        product.name
+          .toLowerCase()
+          .replace(/\s/g, "")
+          .includes(search.toLocaleLowerCase().replace(/\s/g, ""))
+      );
 
-      addToast(`No results Found for ${search}`, {
-        appearance: "error",
-      });
-      setProducts(collections);
-    } else if (results.length > 1) {
-      setShowSuggested(false);
-      setProducts(results);
-    } else if (results.length === 1) {
-      const product = results[0];
+      if (results.length === 0) {
+        setDidSearch(false);
 
-      if (product.hasVariant) {
-        setShowVariant(true);
-        setSelectedProduct(results[0]);
-      } else {
-        handleAddOrder(product);
-        setSearch("");
+        addToast(`No results Found for ${search}`, {
+          appearance: "error",
+        });
+        setProducts(collections);
+      } else if (results.length > 1) {
+        setShowSuggested(false);
+        setProducts(results);
+      } else if (results.length === 1) {
+        const product = results[0];
+
+        if (product.hasVariant) {
+          setShowVariant(true);
+          setSelectedProduct(results[0]);
+        } else {
+          handleAddOrder(product);
+          setSearch("");
+        }
       }
-    }
 
-    if (search) {
-      setDidSearch(true);
+      if (search) {
+        setDidSearch(true);
+      }
     }
   };
 
@@ -240,8 +261,10 @@ const POS = ({ isWalkin = false }) => {
         : { quantity: 1 }),
     };
   };
+  console.log(selectedProduct);
 
   const handleAddOrder = (product) => {
+    console.log(product);
     setDidSearch(false);
     const _orders = [...orders];
     let index = _orders.findIndex((item) => {

@@ -40,7 +40,7 @@ export const Search = ({
               placeholder="Search..."
               autoCorrect="off"
               spellCheck={false}
-              required
+              required={didSearch ? false : true}
               value={search}
               onChange={({ target }) => setSearch(target.value.toUpperCase())}
             />

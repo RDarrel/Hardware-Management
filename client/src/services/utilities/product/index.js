@@ -122,6 +122,24 @@ const productOrder = {
       );
     }
   },
+  subtotal: (order) => {
+    if (!order) return console.log("order is undefined!");
+    const {
+      product,
+      capital = 0,
+      kilo = 0,
+      kiloGrams = 0,
+      quantity = 0,
+    } = order;
+    const { isPerKilo } = product;
+
+    if (isPerKilo) {
+      const totalPurchaseKg = kilo + kiloGrams;
+      return totalPurchaseKg * capital;
+    } else {
+      return quantity * capital;
+    }
+  },
 };
 
 export default productOrder;

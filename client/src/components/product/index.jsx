@@ -10,6 +10,7 @@ import {
 } from "../../services/redux/slices/administrator/productManagement/products";
 import { useDispatch, useSelector } from "react-redux";
 import { ENDPOINT, isValid } from "../../services/utilities";
+import validate from "./validate";
 
 const _media = {
   product: [
@@ -45,6 +46,7 @@ const ProductInformation = ({
   const [variations, setVariations] = useState([]);
   const disptach = useDispatch(),
     [isDuplicateName, setIsDuplicateName] = useState(false),
+    [hasDuplicateBarcode, setHasDuplicateBarcode] = useState(false),
     [hasDuplicateOption, setHasDuplicateOption] = useState(false),
     [hasDuplicateVariant, setHasDuplicateVariant] = useState(false);
 
@@ -161,6 +163,16 @@ const ProductInformation = ({
     e.preventDefault();
   };
 
+  useEffect(() => {
+    setHasDuplicateBarcode(
+      validate.hasDuplicateBarcode({
+        ...form,
+        hasVariant: variations.length > 0,
+        has2Variant: variations.length > 1,
+        variations,
+      })
+    );
+  }, [variations, form]);
   const handleDrop = (e, transferIndex) => {
     e.preventDefault();
 
@@ -369,6 +381,7 @@ const ProductInformation = ({
           isDuplicateName={isDuplicateName}
           willCreate={willCreate}
           hasDuplicateOption={hasDuplicateOption}
+          hasDuplicateBarcode={hasDuplicateBarcode}
           isSubmit={isSubmit}
         />
       </form>
