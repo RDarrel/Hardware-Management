@@ -24,7 +24,12 @@ const ExpiredProducts = () => {
   }, [dispatch, token]);
 
   useEffect(() => {
-    setExpireds(collections);
+    if (!!collections) {
+      const sorted = [...collections].sort(
+        (a, b) => new Date(b.expirationDate) - new Date(a.expirationDate)
+      );
+      setExpireds(sorted);
+    }
   }, [collections]);
 
   return (
@@ -67,7 +72,7 @@ const ExpiredProducts = () => {
                             src={img}
                             alt={product.name}
                             className=" mr-2"
-                            style={{ height: "45px", width: "60px" }}
+                            style={{ height: "50px", width: "50px" }}
                           />
                           <div>
                             <h6 className="product-name mt-3">

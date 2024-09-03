@@ -12,6 +12,7 @@ import Received from "./Received";
 import GET from "../../GET";
 import PendingOrders from "../../../../../services/utilities/downloadExcel/pendingOrders";
 import productOrder from "../../../../../services/utilities/product";
+import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 const Table = ({ stockmans = [], isAdmin, isReceived }) => {
   const [show, setShow] = useState(false),
@@ -55,6 +56,19 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
 
   const hasBordered = isAdmin && isReceived;
 
+  const getQtyKiloText = (key, merchandise) => {
+    const { kilo, kiloGrams, quantity, product } = merchandise;
+    return variation.qtyOrKilo(
+      {
+        ...merchandise,
+        kilo: kilo[key],
+        kiloGrams: kiloGrams[key],
+        quantity: quantity[key],
+      },
+      product.isPerKilo
+    );
+  };
+
   const handleExport = (purchase) => {
     const { total, expectedDelivered, supplier, merchandises } = purchase;
     const products = merchandises.map((merchandise) => {
@@ -67,58 +81,39 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
         kiloGrams,
         quantity,
       } = merchandise;
+      const { name, hasVariant = false, variations = [] } = product;
 
-      console.log(merchandise);
       return {
-        product: product.name,
-        hasVariant: true,
-        quantity: {
-          request: variation.qtyOrKilo(
-            {
-              ...merchandise,
-              kilo: kilo.request,
-              kiloGrams: kiloGrams.request,
-              quantity: quantity.request,
-            },
-            product.isPerKilo
-          ),
-          approved: variation.qtyOrKilo(
-            {
-              ...merchandise,
-              kilo: kilo.approved,
-              kiloGrams: kiloGrams.approved,
-              quantity: quantity.approved,
-            },
-            product.isPerKilo
-          ),
+        product: {
+          hasVariant,
+          name: name,
+          variant: variation.getTheVariant(variant1, variant2, variations),
         },
-        capital,
-        subtotal: productOrder.subtotal({
-          ...merchandise,
-          kilo: kilo?.approved,
-          kiloGrams: kiloGrams?.approved,
-          quantity: quantity?.approved,
+        quantity: {
+          request: getQtyKiloText("request", merchandise),
+          approved: getQtyKiloText("approved", merchandise),
+        },
+        ...(isAdmin && {
+          capital: `₱${formattedTotal(capital)}`,
+          subtotal: `₱${formattedTotal(
+            productOrder.subtotal({
+              ...merchandise,
+              kilo: kilo?.approved,
+              kiloGrams: kiloGrams?.approved,
+              quantity: quantity?.approved,
+            })
+          )}`,
         }),
       };
     });
     const options = {
-      sheet: "SHSF-8",
-      filename: "SF-Form-8",
-      title:
-        "School Form 8 Learner's Basic Health and Nutrition Report for Senior  High School (SF8-SHS)",
-      "School Name": "",
-      "School ID": "",
-      District: "",
-      Division: "",
-      Region: "",
-
-      Semester: "",
-      "School Year": "",
-
-      "Grade Level": "",
-      Section: "",
-      "Track and Strand": "",
-      "Course/s (only for TVL)": "",
+      sheet: "PO",
+      filename: "Pending Orders",
+      title: "Pending Orders",
+      supplier: supplier.company,
+      expected: formattedDate(expectedDelivered),
+      total: `₱${formattedTotal(total)}`,
+      isAdmin,
     };
     PendingOrders({ options, array: products });
   };

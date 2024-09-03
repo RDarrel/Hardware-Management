@@ -2,13 +2,20 @@ import * as ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import formattedDate from "../formattedDate";
 
+const truncateTextWithEllipsis = (text, maxLength = 50) => {
+  const ellipsis = "...";
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength - ellipsis.length) + ellipsis;
+  }
+  return text;
+};
 const flattenArray = (array) => {
   const products = [],
     head = [{ text: "No.", space: 1 }];
 
   for (const key in array[0]) {
     const settings = new Map([
-      ["product", { text: "Product", space: 4 }],
+      ["product", { text: "Product", space: 5 }],
 
       [
         "quantity",
@@ -57,112 +64,81 @@ const set = {
     // worksheet.mergeCells("A1", "Z8");
   },
   banner: ({ worksheet, options }) => {
-    const {
-      title: file,
-      school,
-      schoolID,
-      region,
-      level,
-      section,
-      division,
-      schoolYear,
-    } = options;
+    const { title: file, supplier, expected, total, isAdmin = true } = options;
 
-    worksheet.mergeCells("D1:U1");
-    const title = worksheet.getCell("D1");
+    worksheet.mergeCells(isAdmin ? "E1:J1" : "D1:G1");
+    const title = worksheet.getCell(isAdmin ? "E1" : "D1");
     title.value = file;
     title.font = { bold: true, size: 22, name: "SansSerif" };
     title.alignment = { horizontal: "center" };
 
-    // worksheet.mergeCells("I2:P2");
-    // const description = worksheet.getCell("I2");
-    // const rowHead = worksheet.getRow(2);
-    // rowHead.height = 25;
-    // description.value =
-    //   "(This replaces  Form 1, Master List & STS Form 2-Family Background and Profile)";
-    // description.font = { name: "SansSerif", size: 8, italic: true };
-    // description.alignment = { horizontal: "center", vertical: "top" };
+    const handlePopulateCell = ({
+      value,
+      isLabel = false,
+      start,
+      end,
+      textColor = "",
+    }) => {
+      worksheet.mergeCells(`${start}:${end}`);
+      const supplierLabel = worksheet.getCell(start);
+      supplierLabel.value = value;
+      supplierLabel.font = {
+        bold: !isLabel,
+        size: !isLabel ? 13 : 10,
+        name: "SansSerif",
+        color: { argb: textColor },
+      };
+      supplierLabel.alignment = {
+        horizontal: isLabel ? "right" : "left",
+        vertical: "middle",
+      };
+    };
 
-    // const generateStaticCell = ({
-    //   prevCol,
-    //   startPos,
-    //   title,
-    //   space,
-    //   isLabel = false,
-    // }) => {
-    //   const borderStyle = {
-    //     top: { style: "thin" },
-    //     left: { style: "thin" },
-    //     bottom: { style: "thin" },
-    //     right: { style: "thin" },
-    //   };
-    //   const font = { size: 7, name: "SansSerif" };
-    //   const cellPos = `${getAlpha(prevCol)}${startPos}`;
-    //   const range = `${cellPos}:${getAlpha(prevCol + space - 1)}${startPos}`;
-    //   worksheet.mergeCells(range);
-
-    //   const cell = worksheet.getCell(cellPos);
-    //   cell.value = title;
-    //   cell.alignment = {
-    //     horizontal: isLabel ? "right" : "center",
-    //     vertical: "middle",
-    //     wrapText: true,
-    //   };
-    //   cell.font = font;
-
-    //   if (!isLabel) {
-    //     cell.border = borderStyle;
-    //   }
-
-    //   worksheet.getRow(startPos).height = 20;
-    // };
-
-    // const staticCellsData = [
-    //   //ROW 3
-    //   {
-    //     prevCol: 4,
-    //     space: 2,
-    //     title: "School ID",
-    //     startPos: 3,
-    //     isLabel: true,
-    //   },
-    //   { prevCol: 6, space: 2, title: schoolID, startPos: 3 },
-    //   { prevCol: 9, space: 2, title: region, startPos: 3 },
-    //   { prevCol: 11, space: 2, title: "Division", startPos: 3, isLabel: true },
-    //   { prevCol: 13, space: 6, title: division, startPos: 3 },
-
-    //   //ROW 4
-    //   {
-    //     prevCol: 4,
-    //     space: 2,
-    //     title: "School Name",
-    //     startPos: 4,
-    //     isLabel: true,
-    //   },
-    //   { prevCol: 6, space: 5, title: school, startPos: 4 },
-
-    //   {
-    //     prevCol: 11,
-    //     space: 2,
-    //     title: "School Year",
-    //     startPos: 4,
-    //     isLabel: true,
-    //   },
-    //   { prevCol: 13, space: 2, title: schoolYear, startPos: 4 },
-
-    //   { prevCol: 15, space: 2, title: "Grade Level", startPos: 4 },
-    //   { prevCol: 17, space: 2, title: level, startPos: 4 },
-    //   { prevCol: 19, space: 2, title: "Section", startPos: 4, isLabel: true },
-    //   { prevCol: 21, space: 4, title: section, startPos: 4 },
-    // ];
-
-    // staticCellsData.forEach(generateStaticCell);
+    handlePopulateCell({
+      value: "Supplier:",
+      isLabel: true,
+      start: "A3",
+      end: "A3",
+    });
+    handlePopulateCell({
+      value: supplier,
+      isLabel: false,
+      start: "B3",
+      end: "C3",
+    });
+    handlePopulateCell({
+      value: "Expected Delivered:",
+      isLabel: true,
+      start: isAdmin ? "D3" : "E3",
+      end: isAdmin ? "F3" : "G3",
+    });
+    handlePopulateCell({
+      value: expected,
+      isLabel: false,
+      start: isAdmin ? "G3" : "H3",
+      end: isAdmin ? "I3" : "J3",
+    });
+    if (isAdmin) {
+      handlePopulateCell({
+        value: "Total Amount:",
+        isLabel: true,
+        start: "J3",
+        end: "K3",
+      });
+      handlePopulateCell({
+        value: total,
+        isLabel: false,
+        start: "L3",
+        end: "N3",
+        textColor: "FFFF0000",
+      });
+    }
   },
   main: ({ worksheet, head = [], products }) => {
     worksheet.addRow([]);
     worksheet.addRow([]);
 
-    const startingRow = 5;
+    const startingRow = 4;
 
     let prevCol = 0;
 
@@ -183,18 +159,14 @@ const set = {
         vertical: "middle",
         wrapText: true,
       };
-      head.font = { bold: true, size: 7, name: "SansSerif" };
+      head.font = { bold: true, size: 10, name: "SansSerif" };
       head.border = {
         top: { style: "thin" },
         left: { style: "thin" },
         right: { style: "thin" },
         bottom: { style: "thin" },
       };
-      console.log(
-        `${headPos}:${getAlpha(prevCol + space - 1)}${
-          hasSubheader ? startingRow : startingRow + 1
-        }`
-      );
+
       worksheet.mergeCells(
         `${headPos}:${getAlpha(prevCol + space - 1)}${
           hasSubheader ? startingRow : startingRow + 1
@@ -212,7 +184,7 @@ const set = {
             wrapText: true,
           };
 
-          subHeadCell.font = { bold: true, size: 7, name: "SansSerif" };
+          subHeadCell.font = { bold: true, size: 8, name: "SansSerif" };
           subHeadCell.border = {
             top: { style: "thin" },
             left: { style: "thin" },
@@ -244,8 +216,6 @@ const set = {
         const element = [i + 1, ...array[i]]; // parent array element
         let _prevCol = 0;
 
-        console.log(element);
-
         // child array
         for (let j = 0; j < element.length; j++) {
           const value = element[j]; // child array value
@@ -258,12 +228,37 @@ const set = {
             const cellPos = `${getAlpha(_prevCol)}${startPos}`;
             const cell = worksheet.getCell(cellPos);
             cell.font = { size: 7, name: "SansSerif" };
-            cell.value = value;
-            cell.alignment = {
-              horizontal: "center",
+            const alignment = {
+              horizontal: "left",
               vertical: "middle",
               wrapText: true,
             };
+            if (j === 1) {
+              const { name = "", hasVariant = false, variant = "" } = value;
+              if (hasVariant) {
+                cell.value = {
+                  richText: [
+                    {
+                      text: truncateTextWithEllipsis(name),
+                      font: { bold: true },
+                    },
+                    {
+                      text: `\nVariant:${truncateTextWithEllipsis(variant)}`,
+                      font: { size: 10 },
+                    },
+                  ],
+                };
+                cell.alignment = alignment;
+              } else {
+                cell.value = truncateTextWithEllipsis(name);
+                cell.alignment = alignment;
+              }
+            } else {
+              cell.value = value;
+              cell.alignment = { ...alignment, horizontal: "center" };
+            }
+            cell.font = { bold: j === 1 };
+
             cell.border = {
               top: { style: "thin" },
               left: { style: "thin" },
@@ -278,7 +273,6 @@ const set = {
           //has Subheader
           if (hasSubheader) {
             const subHeaders = Object.values(value);
-            console.log(subHeaders);
 
             for (let subIndex = 0; subIndex < subHeaders.length; subIndex++) {
               const subHeader = subHeaders[subIndex];
@@ -297,7 +291,7 @@ const set = {
               };
 
               subHeaderCell.font = {
-                size: 7,
+                size: 9,
                 name: "SansSerif",
               };
 
@@ -653,7 +647,12 @@ const PendingOrders = async ({ array = [], options = {} }) => {
 
   set.image({ worksheet, workbook, options: rest });
   set.banner({ worksheet, options: rest });
-  set.main({ worksheet, head, products, options: rest });
+  set.main({
+    worksheet,
+    head,
+    products,
+    options: rest,
+  });
 
   // Save the workbook
   await workbook.xlsx.writeBuffer().then((buffer) => {

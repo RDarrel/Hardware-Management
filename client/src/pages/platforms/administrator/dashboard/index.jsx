@@ -6,6 +6,7 @@ import { BROWSE } from "../../../../services/redux/slices/administrator/adminDas
 import TopSellingProducts from "./topSellingProducts";
 import Graph from "./Graph";
 import CurrentSales from "./currentSales";
+import StockmanDashboard from "../../stockman/dashboard";
 
 const Dashboard = () => {
   const { token } = useSelector(({ auth }) => auth),
@@ -24,6 +25,7 @@ const Dashboard = () => {
       <Graph products={sales} />
       <CurrentSales sales={sales} />
       <TopSellingProducts products={topSellingProducts} />
+      <StockmanDashboard isAdmin={true} />
     </MDBContainer>
   );
 };

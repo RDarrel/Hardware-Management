@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { POS } from "../../../services/redux/slices/cart";
 import { UPDATE_MAX } from "../../../services/redux/slices/administrator/productManagement/products";
-import { MDBBtn, MDBModal, MDBModalBody } from "mdbreact";
+import { MDBBtn, MDBIcon, MDBModal, MDBModalBody } from "mdbreact";
 import { variation } from "../../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
 import "./receipt.css";
@@ -30,6 +30,7 @@ export default function Receipt({
   setCustomerQuotation = () => {},
   setOrders = () => {},
 }) {
+  const isQuotation = isWalkInQuotation || isWalkin;
   const { auth, token } = useSelector(({ auth }) => auth),
     [customer, setCustomer] = useState(""),
     dispatch = useDispatch();
@@ -58,7 +59,7 @@ export default function Receipt({
     const printData = {
       invoice_no,
       customer,
-      isQuotation: isWalkInQuotation,
+      isQuotation: isQuotation,
       total,
       cash,
       purchases,
@@ -66,7 +67,7 @@ export default function Receipt({
 
     localStorage.setItem("collection", JSON.stringify(printData));
 
-    if (!isWalkInQuotation) {
+    if (!isQuotation) {
       dispatch(
         POS({
           token,
@@ -84,9 +85,7 @@ export default function Receipt({
       dispatch(UPDATE_MAX({ purchases: orderDetails }));
     }
     Swal.fire({
-      title: !isWalkInQuotation
-        ? "Successfully Paid"
-        : "Successfully Quotation",
+      title: !isQuotation ? "Successfully Paid" : "Successfully Quotation",
       icon: "success",
     });
     setInvoice_no("");
@@ -226,6 +225,16 @@ export default function Receipt({
                 className="mb-2 font-weight-bold float-right"
               >
                 {!isWalkin ? "Proceed" : "Send to cashier"}
+              </MDBBtn>
+            )}
+            {isWalkin && (
+              <MDBBtn
+                type="button"
+                color="info"
+                className="float-right"
+                onClick={handleSubmit}
+              >
+                <MDBIcon icon="print" className="mr-2" /> Print
               </MDBBtn>
             )}
             <MDBBtn

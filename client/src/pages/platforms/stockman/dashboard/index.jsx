@@ -6,7 +6,7 @@ import NearlyExpiredProducts from "./nearlyExpiredProducts";
 import NearlyOutOfStocksProducts from "./nearlyOutOfStocksProducts";
 import OutOfStocksProducts from "./outOfStocksProducts";
 
-export default function Dashboard() {
+export default function StockmanDashboard({ isAdmin = false }) {
   const { token } = useSelector(({ auth }) => auth),
     {
       nearlyExpired,
@@ -39,22 +39,50 @@ export default function Dashboard() {
   }, [stocksCollections, handleFilter]);
 
   return (
-    <MDBContainer fluid id="v6" className="mb-5">
-      <MDBRow>
-        <OutOfStocksProducts outOfStocks={outOfStocks} isLoading={isLoading} />
-      </MDBRow>
-      <MDBRow>
-        <NearlyOutOfStocksProducts
-          outOfStocks={nearlyOutOfStocks}
-          isLoading={isLoading}
-        />
-      </MDBRow>
-      <MDBRow>
-        <NearlyExpiredProducts
-          nearlyExpired={nearlyExpired}
-          isLoading={isLoading}
-        />
-      </MDBRow>
-    </MDBContainer>
+    <>
+      {!isAdmin ? (
+        <MDBContainer fluid id="v6" className="mb-5">
+          <MDBRow>
+            <OutOfStocksProducts
+              outOfStocks={outOfStocks}
+              isLoading={isLoading}
+            />
+          </MDBRow>
+          <MDBRow>
+            <NearlyOutOfStocksProducts
+              outOfStocks={nearlyOutOfStocks}
+              isLoading={isLoading}
+            />
+          </MDBRow>
+          <MDBRow>
+            <NearlyExpiredProducts
+              nearlyExpired={nearlyExpired}
+              isLoading={isLoading}
+            />
+          </MDBRow>
+        </MDBContainer>
+      ) : (
+        <>
+          <MDBRow>
+            <OutOfStocksProducts
+              outOfStocks={outOfStocks}
+              isLoading={isLoading}
+            />
+          </MDBRow>
+          <MDBRow>
+            <NearlyOutOfStocksProducts
+              outOfStocks={nearlyOutOfStocks}
+              isLoading={isLoading}
+            />
+          </MDBRow>
+          <MDBRow>
+            <NearlyExpiredProducts
+              nearlyExpired={nearlyExpired}
+              isLoading={isLoading}
+            />
+          </MDBRow>
+        </>
+      )}
+    </>
   );
 }

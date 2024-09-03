@@ -1,7 +1,7 @@
 import * as ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
-const truncateTextWithEllipsis = (text, maxLength) => {
+const truncateTextWithEllipsis = (text, maxLength = 50) => {
   const ellipsis = "...";
   if (text.length > maxLength) {
     return text.substring(0, maxLength - ellipsis.length) + ellipsis;
