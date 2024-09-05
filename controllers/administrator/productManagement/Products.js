@@ -56,7 +56,7 @@ exports.browse = async (req, res) => {
 
     res.json({
       success: "Roles Fetched Successfully",
-      payload: sortedItems,
+      payload: sortedItems.filter(({ deletedAt = "" }) => !deletedAt),
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -381,7 +381,7 @@ exports.variation_update = async (req, res) => {
 };
 
 exports.destroy = (req, res) => {
-  Entity.findByIdAndDelete(req.body._id)
+  Entity.findByIdAndUpdate(req.body._id, { deletedAt: new Date() })
     .then((item) => {
       res.json({ success: "Successfuly Deleted Product", payload: item });
     })

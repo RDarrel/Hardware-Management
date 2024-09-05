@@ -11,7 +11,9 @@ exports.browse = (req, res) => {
     .then((items) =>
       res.json({
         success: "Suppliers Fetched Successfully",
-        payload: items.filter((item) => item.name !== "ADMINISTRATOR"),
+        payload: items.filter(
+          (item) => item.name !== "ADMINISTRATOR" && !item.deletedAt
+        ),
       })
     )
     .catch((error) => res.status(400).json({ error: error.message }));
@@ -64,7 +66,7 @@ exports.status = (req, res) =>
     .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
 
 exports.destroy = (req, res) => {
-  Entity.findByIdAndDelete(req.body._id)
+  Entity.findByIdAndUpdate(req.body._id, { deletedAt: new Date() })
     .then((item) => {
       res.json({ success: "Successfuly Deleted Product", payload: item });
     })
