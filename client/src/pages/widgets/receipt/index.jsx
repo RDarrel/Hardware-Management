@@ -100,6 +100,18 @@ export default function Receipt({
   };
   const change = cash - total || 0;
 
+  // const btnTxt = !isWalkin
+  //   ? "Proceed"
+  //   : isWalkInQuotation
+  //   ? "Print"
+  //   : "Send to cashier";
+
+  const btnTxt = isWalkin
+    ? "Send to cashier"
+    : isWalkInQuotation
+    ? "Print"
+    : "Proceed";
+
   return (
     <MDBModal isOpen={show} toggle={toggle} backdrop size="lg" centered>
       <MDBModalBody className="mb-0 m-0 p-0">
@@ -224,7 +236,7 @@ export default function Receipt({
                 color="primary"
                 className="mb-2 font-weight-bold float-right"
               >
-                {!isWalkin ? "Proceed" : "Send to cashier"}
+                {btnTxt}
               </MDBBtn>
             )}
             {isWalkin && (

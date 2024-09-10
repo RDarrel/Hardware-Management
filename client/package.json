@@ -10,6 +10,7 @@
     "file-saver": "^2.0.5",
     "google-map-react": "^1.1.0",
     "mdbreact": "./mdbreact-4.25.0.tgz",
+    "mdbreact-admin-pro": "file:",
     "react": "^16.12.0",
     "react-autosuggest": "^10.1.0",
     "react-big-calendar": "^0.20.2",

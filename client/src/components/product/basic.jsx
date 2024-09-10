@@ -1,11 +1,19 @@
 import React, { useEffect } from "react";
-import { MDBRow, MDBCol, MDBCardBody, MDBCard, MDBInput } from "mdbreact";
+import {
+  MDBRow,
+  MDBCol,
+  MDBCardBody,
+  MDBCard,
+  MDBInput,
+  MDBIcon,
+  MDBBtn,
+} from "mdbreact";
 import CustomSelect from "../../components/customSelect";
 import { useDispatch, useSelector } from "react-redux";
 import { BROWSE as BROWSE_CATEGORIES } from "../../services/redux/slices/administrator/productManagement/category";
 import { BROWSE as BROWSE_MATERIALS } from "../../services/redux/slices/administrator/productManagement/materials";
 
-function Basic({ form, setForm, selected }) {
+function Basic({ form, setForm, selected, toggle }) {
   const { token } = useSelector(({ auth }) => auth),
     { collections: Categories } = useSelector(({ category }) => category),
     { collections: Materials } = useSelector(({ materials }) => materials),
@@ -16,13 +24,18 @@ function Basic({ form, setForm, selected }) {
     dispatch(BROWSE_MATERIALS({ token }));
   }, [dispatch, token]);
 
-  console.log(selected);
   return (
     <MDBRow>
       <MDBCol md="12">
         <MDBCard>
           <MDBCardBody>
-            <h5 className="font-weight-bold">Basic Information</h5>
+            <div className="d-flex justify-content-between">
+              <h5 className="font-weight-bold">Basic Information</h5>
+              <MDBBtn color="info" size="sm" title="Close" onClick={toggle}>
+                <MDBIcon icon="times" size="1x" className="cursor-pointer" />
+              </MDBBtn>
+            </div>
+
             <MDBRow className="mt-5">
               <MDBCol
                 md="2"

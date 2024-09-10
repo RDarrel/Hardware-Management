@@ -356,7 +356,12 @@ const ProductInformation = ({
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Basic form={form} setForm={setForm} selected={selected} />
+        <Basic
+          form={form}
+          setForm={setForm}
+          selected={selected}
+          toggle={() => setIsViewProductInformation(false)}
+        />
         <Informations
           variations={variations}
           setVariations={setVariations}

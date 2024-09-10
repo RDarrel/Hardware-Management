@@ -36,7 +36,7 @@ const Header = ({
                 className="font-weight-bold mb-1"
                 style={{ letterSpacing: "2px" }}
               >
-                {!isWalkin && !isWalkInQuotation ? " INVOICE" : "QOUTATION"}
+                {!isWalkin && !isWalkInQuotation ? " INVOICE" : "QUOTATION"}
               </h4>
               <div className="d-flex  justify-content-between  ">
                 <span className="text-nowrap mr-3">

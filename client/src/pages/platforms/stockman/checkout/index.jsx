@@ -215,7 +215,7 @@ const Checkout = () => {
               className="mt-3 font-weight-bold"
               style={{ color: "red", position: "relative" }}
             >
-              Products &nbsp;&nbsp;&nbsp;&nbsp;Checkout
+              Products &nbsp;&nbsp;&nbsp;&nbsp;Request
               <span
                 style={{
                   position: "absolute",
