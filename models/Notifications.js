@@ -7,7 +7,15 @@ const modelSchema = new mongoose.Schema(
       ref: "Users",
       required: true,
     },
+    forStockman: {
+      type: Boolean,
+      default: false,
+    },
     type: "",
+    isSeen: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

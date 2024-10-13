@@ -57,7 +57,18 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
   const hasBordered = isAdmin && isReceived;
 
   const getQtyKiloText = (key, merchandise) => {
-    const { kilo, kiloGrams, quantity, product } = merchandise;
+    const {
+      kilo = {
+        approved: 0,
+      },
+      kiloGrams = {
+        approved: 0,
+      },
+      quantity = {
+        approved: 0,
+      },
+      product,
+    } = merchandise;
     return variation.qtyOrKilo(
       {
         ...merchandise,
@@ -77,9 +88,15 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
         variant1 = "",
         variant2 = "",
         capital = 0,
-        kilo,
-        kiloGrams,
-        quantity,
+        kilo = {
+          approved: 0,
+        },
+        kiloGrams = {
+          approved: 0,
+        },
+        quantity = {
+          approved: 0,
+        },
       } = merchandise;
       const { name, hasVariant = false, variations = [] } = product;
 
@@ -117,6 +134,7 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
     };
     PendingOrders({ options, array: products });
   };
+
   return (
     <>
       <MDBTable responsive hover bordered={hasBordered}>
@@ -234,16 +252,18 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
                       {stockman?.merchandises?.length}
                     </span>
                   </td>
-                  <td>
-                    <MDBBtn
-                      color="info"
-                      size="sm"
-                      title="Export to excel"
-                      onClick={() => handleExport(stockman)}
-                    >
-                      <MDBIcon icon="file-excel" />
-                    </MDBBtn>
-                  </td>
+                  {!isReceived && (
+                    <td>
+                      <MDBBtn
+                        color="info"
+                        size="sm"
+                        title="Export to excel"
+                        onClick={() => handleExport(stockman)}
+                      >
+                        <MDBIcon icon="file-excel" />
+                      </MDBBtn>
+                    </td>
+                  )}
                 </tr>
               )
             )}

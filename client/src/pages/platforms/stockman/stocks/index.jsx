@@ -73,7 +73,7 @@ export const Stocks = () => {
           disable={{ create: true }}
           icon="warehouse"
           search={search}
-          showExpiredProducts={true}
+          showExpiredProducts={expiredProducts.length > 0}
           expiredProducts={expiredProducts}
           didSearch={didSearch}
           toggleExpiredProducts={toggle}

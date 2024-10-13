@@ -15,7 +15,6 @@ import {
   fullName,
   variation,
 } from "../../../../../services/utilities";
-// import CustomSelect from "../../../../../components/customSelect";
 import GET from "../../GET";
 
 export default function Received({
@@ -105,10 +104,16 @@ export default function Received({
                 merchandises.map((merchandise, index) => {
                   const {
                     product,
-                    kilo,
+                    quantity = {
+                      approved: 0,
+                    },
+                    kilo = {
+                      approved: 0,
+                    },
+                    kiloGrams = {
+                      approved: 0,
+                    },
                     capital,
-                    quantity,
-                    kiloGrams,
                     expiration = "",
                   } = merchandise;
                   const { media = {}, hasExpiration = false } = product;

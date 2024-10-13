@@ -3,7 +3,7 @@ const bulkWrite = (
   res,
   Entity,
   array = [],
-  message,
+  message = "",
   action = "updateOne"
 ) => {
   let options = [];

@@ -136,10 +136,18 @@ const ModalBody = ({
               products.map((merchandise, index) => {
                 const {
                   product,
-                  kilo,
                   capital,
-                  quantity,
-                  kiloGrams,
+                  quantity = {
+                    approved: 0,
+                    received: 0,
+                    defective: 0,
+                  },
+                  kilo = { approved: 0, received: 0, defective: 0 },
+                  kiloGrams = {
+                    approved: 0,
+                    received: 0,
+                    defective: 0,
+                  },
                   subtotal = 0,
                   expiration = "",
                 } = merchandise;
@@ -258,13 +266,14 @@ const ModalBody = ({
                                   ...GET.newKiloAndGrams(
                                     kiloGrams?.received,
                                     kilo?.received,
-                                    kiloGrams?.defective,
-                                    kilo?.defective
+                                    kiloGrams?.defective || 0,
+                                    kilo?.defective || 0
                                   ),
                                 }
                               : {
                                   quantity:
-                                    quantity?.received - quantity?.defective,
+                                    quantity?.received -
+                                    (quantity?.defective || 0),
                                 },
                             product.isPerKilo
                           )}

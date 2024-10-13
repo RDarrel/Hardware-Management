@@ -2,7 +2,7 @@ const bulkPayload = (state, payload, isUpdate = true) => {
   if (Array.isArray(payload)) {
     for (const index in payload) {
       const item = { ...payload[index] };
-      const iIndex = state.collections.findIndex(e => e._id === item._id);
+      const iIndex = state.collections.findIndex((e) => e._id === item._id);
 
       if (isUpdate) {
         const payloadKeys = Object.keys(item);
@@ -17,7 +17,10 @@ const bulkPayload = (state, payload, isUpdate = true) => {
       }
     }
   } else {
-    const index = state.collections.findIndex(item => item._id === payload._id);
+    const index = state.collections.findIndex(
+      (item) => item?._id === payload?._id
+    );
+    if (index <= -1) return false;
 
     if (isUpdate) {
       state.collections[index] = payload;

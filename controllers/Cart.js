@@ -209,12 +209,13 @@ exports.suppliers = (_, res) => {
 exports.buy = async (req, res) => {
   try {
     // const { purchase, cart } = req.body;
-    const { purchases, user } = req.body;
+    const { purchases, user, isAdmin = false } = req.body;
 
     for (const purchase of purchases) {
       const createdPurchase = await Purchase.create({
         ...purchase,
         type: "request",
+        ...(isAdmin && { approved: new Date().toDateString() }),
       });
 
       const merchandisesWithPurchase = purchase.merchandises.map((obj) => ({
@@ -222,6 +223,14 @@ exports.buy = async (req, res) => {
         product: obj?.product?._id,
         purchase: createdPurchase._id,
         unitPrice: obj.price,
+        ...(isAdmin && {
+          kilo: { ...obj.kilo, defective: 0 },
+          kiloGrams: { ...obj.kiloGrams, defective: 0 },
+          quantity: {
+            ...obj.quantity,
+            defective: 0,
+          },
+        }),
       }));
       const idsToDelete = purchase.merchandises
         .map(({ _id }) => _id)
@@ -230,20 +239,9 @@ exports.buy = async (req, res) => {
       await Merchandises.insertMany(merchandisesWithPurchase);
       await Entity.deleteMany({ _id: { $in: idsToDelete } });
     }
-    await Notifications.create({ user, type: "REQUEST" });
-
-    // const createdPurchase = await Purchase.create(purchase);
-    // const cartWithPurchaseID = cart.map((obj) => ({
-    //   ...obj,
-    //   product: obj?.product?._id,
-    //   purchase: createdPurchase._id,
-    //   unitPrice: obj.price,
-    // }));
-
-    // const idsToDelete = cart.map(({ _id }) => _id).filter(Boolean);
-
-    // await Merchandises.insertMany(cartWithPurchaseID);
-    // await Entity.deleteMany({ _id: { $in: idsToDelete } });
+    if (!isAdmin) {
+      await Notifications.create({ user, type: "REQUEST" });
+    }
 
     res.status(201).json({
       success: "Purchase is successful",

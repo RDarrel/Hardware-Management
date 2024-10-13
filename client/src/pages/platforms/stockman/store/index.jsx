@@ -13,12 +13,12 @@ import { BROWSE as BROWSECART } from "../../../../services/redux/slices/cart";
 import { SUPPLIERS } from "../../../../services/redux/slices/cart";
 import { Pagination } from "./pagination";
 import { Header } from "./header";
+import { ProducCard } from "./card";
+import { globalSearch } from "../../../../services/utilities";
 import View from "./view/index";
 import "./product.css";
-import { ProducCard } from "./card";
 import Cart from "../../../widgets/cart";
 import ProductsLoading from "../../../widgets/productsLoading";
-import { globalSearch } from "../../../../services/utilities";
 
 const Store = () => {
   const { token, auth } = useSelector(({ auth }) => auth),

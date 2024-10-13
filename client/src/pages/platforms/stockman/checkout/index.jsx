@@ -23,7 +23,7 @@ import Swal from "sweetalert2";
 import CustomSelect from "../../../../components/customSelect";
 
 const Checkout = () => {
-  const { token, auth } = useSelector(({ auth }) => auth),
+  const { token, auth, role } = useSelector(({ auth }) => auth),
     { checkOutProducts, suppliers: supplierCollections } = useSelector(
       ({ cart }) => cart
     ),
@@ -84,6 +84,7 @@ const Checkout = () => {
       cancelButtonText: "No, cancel",
     }).then((result) => {
       if (result.isConfirmed) {
+        const isAdmin = role !== "STOCKMAN";
         const purchases = suppliers.map((supplier) => {
           const merchandises = cart.filter(
             ({ supplier: supp }) => supp === supplier._id
@@ -98,19 +99,22 @@ const Checkout = () => {
                   kilo: {
                     request: obj.kilo,
                     approved: obj.kilo,
-                    received: 0,
+                    received: isAdmin ? obj.kilo : 0,
+                    ...(isAdmin && { defective: 0 }),
                   },
                   kiloGrams: {
                     request: obj.kiloGrams,
                     approved: obj.kiloGrams,
-                    received: 0,
+                    received: isAdmin ? obj.kiloGrams : 0,
+                    ...(isAdmin && { defective: 0 }),
                   },
                 }
               : {
                   quantity: {
                     request: obj.quantity,
                     approved: obj.quantity,
-                    received: 0,
+                    received: isAdmin ? obj.quantity : 0,
+                    ...(isAdmin && { defective: 0 }),
                   },
                 }),
           }));
@@ -127,57 +131,16 @@ const Checkout = () => {
             supplier: supplier._id,
             expected,
             remarks,
-            status: "pending",
+            status: isAdmin ? "approved" : "pending",
             total,
             merchandises: merchandisesWithSubtotal,
           };
         });
 
-        // const cartWithSubtotalAndCapital = cart.map((obj) => ({
-        //   ...obj,
-        //   subtotal: variation.getTheSubTotal("capital", obj, obj.product),
-        //   capital: variation.getTheCapitalOrSrp("capital", obj, obj.product),
-        //   ...(obj.product.isPerKilo
-        //     ? {
-        //         kilo: {
-        //           request: obj.kilo,
-        //           approved: obj.kilo,
-        //           received: 0,
-        //         },
-        //         kiloGrams: {
-        //           request: obj.kiloGrams,
-        //           approved: obj.kiloGrams,
-        //           received: 0,
-        //         },
-        //       }
-        //     : {
-        //         quantity: {
-        //           request: obj.quantity,
-        //           approved: obj.quantity,
-        //           received: 0,
-        //         },
-        //       }),
-        // }));
-
-        // const total = cartWithSubtotalAndCapital.reduce(
-        //   (accumulator, currentValue) => {
-        //     return (accumulator += currentValue.subtotal);
-        //   },
-        //   0
-        // );
-
-        // const purchase = {
-        //   requestBy: auth._id,
-        //   expected,
-        //   remarks,
-        //   status: "pending",
-        //   total,
-        // };
-
         dispatch(
           BUY({
             token,
-            data: { purchases, user: auth._id },
+            data: { purchases, user: auth._id, isAdmin },
           })
         );
         history.push("/store");

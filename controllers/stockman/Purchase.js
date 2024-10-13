@@ -119,7 +119,12 @@ const defectiveCheckpoint = async (_purchase, merchandises) => {
 const getMerchandisesDisrepancy = (merchandises) => {
   try {
     const merchandisesDiscrepancy = merchandises.filter((merchandise) => {
-      const { quantity, kilo, kiloGrams, product } = merchandise;
+      const {
+        quantity = { approved: 0, received: 0 },
+        kilo = { approved: 0, received: 0 },
+        kiloGrams = { approved: 0, received: 0 },
+        product,
+      } = merchandise;
       const { isPerKilo = false } = product;
       const totalKiloRecieved = kilo.received + kiloGrams.received;
       const totalKiloApproved = kilo.approved + kiloGrams.approved;
@@ -136,7 +141,21 @@ const getMerchandisesDisrepancy = (merchandises) => {
 
     //it means the merchandises we have a discrepancy
     return merchandisesDiscrepancy.map((merchandise) => {
-      const { quantity, kilo, kiloGrams, product } = merchandise;
+      const {
+        quantity = {
+          approved: 0,
+          received: 0,
+        },
+        kilo = {
+          approved: 0,
+          received: 0,
+        },
+        kiloGrams = {
+          approved: 0,
+          received: 0,
+        },
+        product,
+      } = merchandise;
       const { isPerKilo = false } = product;
 
       if (isPerKilo) {
@@ -333,6 +352,10 @@ const findSupplierWithMostMerchandises = (suppliers) => {
   }, suppliers[0]);
 };
 
+const handleNotification = async (status = "APPROVED", user) => {
+  await Notifications.create({ forStockman: true, type: status, user });
+};
+
 exports.approved = async (req, res) => {
   try {
     const { suppliers, purchase } = req.body;
@@ -377,6 +400,8 @@ exports.approved = async (req, res) => {
         await Promise.all(updatePromises);
       }
     }
+
+    await handleNotification("APPROVED", purchase.requestBy);
 
     bulkWrite(
       req,
@@ -470,6 +495,7 @@ exports.update = async (req, res) => {
         "Successfully Approved"
       );
     } else {
+      handleNotification("REJECT", purchase.requestBy);
       res.json({ success: "Successfully Rejected", payload: { purchase } });
     }
   } catch (error) {

@@ -65,8 +65,10 @@ require("./config/db")()
       console.log(green(`[Server] running on port: ${port}`));
     });
 
-    server.on("error", error => console.log(red(`[Server] ${error.message}`)));
+    server.on("error", (error) =>
+      console.log(red(`[Server] ${error.message}`))
+    );
   })
-  .catch(err => {
+  .catch((err) => {
     console.log(err);
   });

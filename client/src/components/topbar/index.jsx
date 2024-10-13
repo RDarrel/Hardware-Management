@@ -12,30 +12,51 @@ import {
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
-
-import { BROWSE, DESTROY } from "../../services/redux/slices/notifications";
+import {
+  BROWSE,
+  DESTROY,
+  UPDATE,
+} from "../../services/redux/slices/notifications";
 import { fullName } from "../../services/utilities";
 import TimeSince from "./timeSince";
 
-const message = {
+const notificationForAdmin = {
   REQUEST: "sent a purchase request.",
   DEFECTIVE: "has received defective products.",
   DISCREPANCY: "has received products with discrepancies.",
+};
+
+const notificationForStockman = {
+  APPROVED: "Your Request has been approved.",
+  REJECT: "Your Request has been rejected.",
+  OUTOFSTOCK: "We have products that are out of stock.",
+  NEARLY_OUTOFSTOCK: "We have products that are nearly out of stock.",
+  NEARLY_EXPIRED_PRODUCT: "We have products that are nearly expired.",
+  EXPIRED: "We have expired products",
 };
 const TopNavigation = ({ onSideNavToggleClick }) => {
   const { auth, token, role } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ notifications }) => notifications),
     [notifications, setNotifications] = useState([]),
+    [notificationCount, setNotificationCount] = useState(0),
+    [isSeenAll, setIsSeenAll] = useState(false),
     history = useHistory(),
     dispatch = useDispatch();
+  const isStockman = role === "STOCKMAN";
+  useEffect(() => {
+    if (role && auth._id) {
+      dispatch(BROWSE({ token, key: { role, user: auth._id } }));
+      setIsSeenAll(false);
+    }
+  }, [token, dispatch, role, auth]);
 
   useEffect(() => {
-    dispatch(BROWSE({ token }));
-  }, [token, dispatch]);
-
-  useEffect(() => {
+    const notSeenMessages = collections.filter(
+      ({ isSeen = true, additional = false }) => !isSeen || additional
+    );
+    setNotificationCount(isSeenAll ? 0 : notSeenMessages.length);
     setNotifications(collections);
-  }, [collections]);
+  }, [collections, isSeenAll]);
 
   const handleToggleClickA = () => {
     onSideNavToggleClick();
@@ -46,10 +67,44 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
     transition: "padding-left .3s",
   };
 
-  const handleNotification = (_id, type) => {
-    dispatch(DESTROY({ token, data: { _id } }));
+  const handleNotification = (_id, type, additional) => {
     const url = type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
-    history.push(`/purchases${url}`);
+    const baseUrl = additional
+      ? type === "EXPIRED"
+        ? "stocks"
+        : "dashboard"
+      : isStockman
+      ? "purchasesRequest"
+      : `/purchases${url}`;
+    history.push(baseUrl);
+    if (!additional) {
+      dispatch(DESTROY({ token, data: { _id } }));
+    } else {
+      const _notifications = [...notifications];
+      const index = _notifications.findIndex(({ _id: id }) => _id === id);
+
+      console.log(_notifications, index);
+      _notifications.splice(index, 1);
+      setNotifications(_notifications);
+    }
+  };
+
+  const handleMessage = (type) => {
+    const baseMessage = isStockman
+      ? notificationForStockman
+      : notificationForAdmin;
+    return baseMessage[type];
+  };
+
+  const handleSeen = () => {
+    const _notifications = notifications.filter(
+      ({ additional = false, isSeen = false }) => !isSeen && !additional
+    );
+    if (_notifications.length > 0) {
+      dispatch(UPDATE({ token, data: { notifications: _notifications } }));
+    }
+    setIsSeenAll(true);
+    setNotificationCount(0);
   };
 
   return (
@@ -70,33 +125,44 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
         <strong>{role}</strong>
       </MDBNavbarBrand>
       <MDBNavbarNav expand="sm" right style={{ flexDirection: "row" }}>
-        {role === "ADMINISTRATOR" && (
-          <MDBDropdown>
-            <MDBDropdownToggle nav caret>
+        <MDBDropdown>
+          <MDBDropdownToggle nav caret onClick={() => handleSeen()}>
+            {notificationCount > 0 && (
               <MDBBadge color="red" className="mr-2">
-                {notifications.length}
+                {notificationCount}
               </MDBBadge>
-              <MDBIcon icon="bell" />
-              <span className="d-none d-md-inline">Notifications</span>
-            </MDBDropdownToggle>
-            <MDBDropdownMenu right style={{ minWidth: "515px" }}>
-              {!!notifications &&
-                notifications.map(({ user, type, createdAt, _id }, index) => (
+            )}
+            <MDBIcon icon="bell" />
+            <span className="d-none d-md-inline">Notifications</span>
+          </MDBDropdownToggle>
+          <MDBDropdownMenu right style={{ minWidth: "515px" }}>
+            {notifications.length > 0 ? (
+              notifications.map(
+                ({ user, type, createdAt, _id, additional = false }, index) => (
                   <MDBDropdownItem
-                    onClick={() => handleNotification(_id, type)}
+                    onClick={() => handleNotification(_id, type, additional)}
                     key={index}
                   >
-                    <MDBIcon icon="user" className="mr-2" />
-                    {fullName(user.fullName)} {message[type]}
-                    <span className="float-right">
-                      <MDBIcon icon="clock" />{" "}
-                      {<TimeSince createdAt={createdAt} />}
-                    </span>
+                    <MDBIcon
+                      icon={additional ? "newspaper" : "user"}
+                      className="mr-2"
+                    />
+                    {!additional && !isStockman && fullName(user.fullName)}
+                    {handleMessage(type)}
+                    {!additional && (
+                      <span className="float-right">
+                        <MDBIcon icon="clock" />{" "}
+                        {<TimeSince createdAt={createdAt} />}
+                      </span>
+                    )}
                   </MDBDropdownItem>
-                ))}
-            </MDBDropdownMenu>
-          </MDBDropdown>
-        )}
+                )
+              )
+            ) : (
+              <span className="text-center">No notifications.</span>
+            )}
+          </MDBDropdownMenu>
+        </MDBDropdown>
         <MDBDropdown>
           <MDBDropdownToggle nav>
             <MDBIcon icon="user" />
