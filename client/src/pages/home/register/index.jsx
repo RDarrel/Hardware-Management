@@ -17,7 +17,7 @@ export default function Register() {
       <MDBCol md="6" className="text-center text-md-left mb-5">
         <MDBAnimation type="fadeInLeft">
           <div className="white-text">
-            <h1 className="h1-responsive font-weight-bold">
+            <h1 className="font-weight-bold display-4">
               WHAT <br /> ARE YOU <br /> WAITING FOR?
             </h1>
             <h6>

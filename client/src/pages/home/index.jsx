@@ -79,9 +79,6 @@ export default class Home extends React.Component {
         </section>
         <MDBContainer>
           <Description />
-          {/* <hr className="mb-5" /> */}
-
-          {/* <Pioneers /> */}
 
           <hr className="mb-4" />
 
