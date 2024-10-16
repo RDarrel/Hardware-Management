@@ -1,7 +1,6 @@
 const Notification = require("../models/Notifications"),
   Stocks = require("../models/stockman/Stocks"),
-  statusOfProducts = require("./stockman/statusOfProducts"),
-  mongoose = require("mongoose");
+  statusOfProducts = require("./stockman/statusOfProducts");
 
 const getExpiredProducts = async () => {
   const currentDate = new Date();
@@ -18,22 +17,18 @@ exports.browse = async (req, res) => {
 
   const outOfStocks = nearlyOutOfStocks.filter(({ stock = 0 }) => stock <= 0);
   try {
-    const { role = "", user = "" } = req.query;
+    const { role = "" } = req.query;
     const isStockman = role === "STOCKMAN";
-    const query = {
-      ...(isStockman
-        ? { user: mongoose.Types.ObjectId(user), forStockman: true }
-        : { forStockman: false }),
-    };
 
-    const notifications = await Notification.find(query)
+    const notifications = await Notification.find({ forStockman: isStockman })
       .populate("user")
       .sort({ createdAt: -1 });
 
     if (role === "STOCKMAN") {
       if (nearlyExpired.length > 0) {
         notifications.push({
-          type: "NEARLY_EXPIRED_PRODUCT",
+          type: "REQUEST",
+          status: "NEARLY_EXPIRED_PRODUCT",
           _id: 1,
           additional: true,
         });
@@ -41,18 +36,30 @@ exports.browse = async (req, res) => {
 
       if (nearlyOutOfStocks.length > 0) {
         notifications.push({
-          type: "NEARLY_OUTOFSTOCK",
+          type: "REQUEST",
+
+          status: "NEARLY_OUTOFSTOCK",
           additional: true,
           _id: 2,
         });
       }
 
       if (outOfStocks.length > 0) {
-        notifications.push({ type: "OUTOFSTOCK", additional: true, _id: 3 });
+        notifications.push({
+          type: "REQUEST",
+          status: "OUTOFSTOCK",
+          additional: true,
+          _id: 3,
+        });
       }
 
       if ((await getExpiredProducts()).length > 0) {
-        notifications.push({ type: "EXPIRED", additional: true, _id: 4 });
+        notifications.push({
+          type: "REQUEST",
+          status: "EXPIRED",
+          additional: true,
+          _id: 4,
+        });
       }
     }
     res.json({ payload: notifications });

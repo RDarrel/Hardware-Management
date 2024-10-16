@@ -241,6 +241,13 @@ exports.buy = async (req, res) => {
     }
     if (!isAdmin) {
       await Notifications.create({ user, type: "REQUEST" });
+    } else {
+      await Notifications.create({
+        user,
+        type: "REQUEST",
+        status: "ORDERBY_ADMIN",
+        forStockman: true,
+      });
     }
 
     res.status(201).json({
@@ -261,6 +268,7 @@ exports.pre_order = async (req, res) => {
     const { orderBy = "", orders = [] } = req.body;
     var isLimit = false;
     const cartToDelete = orders.map(({ _id }) => _id).filter(Boolean);
+    var order = {};
 
     const quotations = await Quotations.find({
       orderBy,
@@ -271,7 +279,7 @@ exports.pre_order = async (req, res) => {
       isLimit = true;
     } else {
       isLimit = false;
-      await Quotations.create(req.body);
+      order = await Quotations.create(req.body);
       await Entity.deleteMany({ _id: { $in: cartToDelete } });
     }
     return res.json({
@@ -280,6 +288,7 @@ exports.pre_order = async (req, res) => {
           ? "Sorry, but the maximum pre-order limit is 3 per day."
           : "Pre-order placed successfully.",
         isLimit,
+        order,
         orders: cartToDelete,
       },
     });

@@ -48,6 +48,7 @@ export default function Request({ isAdmin }) {
           color="primary z-depth-0"
           onClick={() => setActiveTab("pending")}
           outline={"pending" !== activeTab}
+          disabled={isLoading && "pending" !== activeTab}
         >
           Pending
         </MDBBtn>
@@ -56,6 +57,7 @@ export default function Request({ isAdmin }) {
           color="primary z-depth-0"
           onClick={() => setActiveTab("approved")}
           outline={"approved" !== activeTab}
+          disabled={isLoading && "approved" !== activeTab}
         >
           Approved
         </MDBBtn>
@@ -65,6 +67,7 @@ export default function Request({ isAdmin }) {
           color="primary z-depth-0"
           onClick={() => setActiveTab("received")}
           outline={"received" !== activeTab}
+          disabled={isLoading && "received" !== activeTab}
         >
           Received
         </MDBBtn>
@@ -74,6 +77,7 @@ export default function Request({ isAdmin }) {
           color="primary z-depth-0"
           onClick={() => setActiveTab("reject")}
           outline={"reject" !== activeTab}
+          disabled={isLoading && "rejected" !== activeTab}
         >
           Rejected
         </MDBBtn>

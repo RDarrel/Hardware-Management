@@ -54,16 +54,18 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
       <MDBBtnGroup>
         <MDBBtn
           className="m-0 rounded-top"
+          disabled={isLoading && "pending" !== activeTab}
           color="primary z-depth-0"
           onClick={() => setActiveTab("pending")}
           outline={"pending" !== activeTab}
         >
-          Defective
+          {isDefective ? "Defective" : "Discrepancy"}
         </MDBBtn>
         <MDBBtn
           className="m-0 rounded-top"
           color="primary z-depth-0"
           onClick={() => setActiveTab("approved")}
+          disabled={isLoading && "approved" !== activeTab}
           outline={"approved" !== activeTab}
         >
           {isDefective ? "Replacement" : "Acknowledge "}
@@ -72,6 +74,7 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
           className="m-0 rounded-top"
           color="primary z-depth-0"
           onClick={() => setActiveTab("received")}
+          disabled={isLoading && "received" !== activeTab}
           outline={"received" !== activeTab}
         >
           Received
@@ -81,6 +84,7 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
             className="m-0 rounded-top"
             color="primary z-depth-0"
             onClick={() => setActiveTab("refund")}
+            disabled={isLoading && "refund" !== activeTab}
             outline={"refund" !== activeTab}
           >
             Refund

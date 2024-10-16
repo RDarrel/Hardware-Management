@@ -6,6 +6,24 @@ const Entity = require("../../models/stockman/Purchases"),
   Merchandises = require("../../models/stockman/Merchandises"),
   handleDuplicate = require("../../config/duplicate");
 
+const handleNotification = async ({
+  type = "REQUEST",
+  status = "APPROVED",
+  user,
+  forStockman = true,
+}) => {
+  const notification = await Notifications.create({
+    forStockman,
+    type,
+    status,
+    user,
+  });
+
+  await Notifications.findOne({
+    _id: notification._id,
+  }).populate("user");
+};
+
 exports.browse = async (req, res) => {
   try {
     const status = req.query.status;
@@ -106,9 +124,11 @@ const defectiveCheckpoint = async (_purchase, merchandises) => {
         })
       );
 
-      await Notifications.create({
-        user: _purchase.requestBy,
+      await handleNotification({
         type: "DEFECTIVE",
+        status: "DEFECTIVE",
+        forStockman: false,
+        user: _purchase.requestBy,
       });
     }
   } catch (error) {
@@ -225,9 +245,11 @@ const discrepancyCheckPoint = async (_purchase, merchandises) => {
 
       await Merchandises.insertMany(merchandisesWithPurchase);
 
-      await Notifications.create({
-        user: _purchase.requestBy,
+      await handleNotification({
         type: "DISCREPANCY",
+        status: "DISCREPANCY",
+        forStockman: false,
+        user: _purchase.requestBy,
       });
     }
   } catch (error) {
@@ -352,10 +374,6 @@ const findSupplierWithMostMerchandises = (suppliers) => {
   }, suppliers[0]);
 };
 
-const handleNotification = async (status = "APPROVED", user) => {
-  await Notifications.create({ forStockman: true, type: status, user });
-};
-
 exports.approved = async (req, res) => {
   try {
     const { suppliers, purchase } = req.body;
@@ -401,7 +419,12 @@ exports.approved = async (req, res) => {
       }
     }
 
-    await handleNotification("APPROVED", purchase.requestBy);
+    await handleNotification({
+      type: "REQUEST",
+      status: "APPROVED",
+      forStockman: true,
+      user: purchase.requestBy,
+    });
 
     bulkWrite(
       req,
@@ -422,6 +445,14 @@ exports.update = async (req, res) => {
     const baseMerchandises = Merchandises;
     await basePurchase.findByIdAndUpdate(purchase._id, purchase);
     if (purchase.status === "approved" || purchase.status === "replacement") {
+      const { status, type } = purchase || {};
+      await handleNotification({
+        user: purchase.requestBy,
+        type: type?.toUpperCase(),
+        status: status.toUpperCase(),
+        forStockman: true,
+      });
+
       bulkWrite(
         req,
         res,
@@ -495,7 +526,12 @@ exports.update = async (req, res) => {
         "Successfully Approved"
       );
     } else {
-      handleNotification("REJECT", purchase.requestBy);
+      await handleNotification({
+        type: "REQUEST",
+        status: "REJECT",
+        forStockman: true,
+        user: purchase.requestBy,
+      });
       res.json({ success: "Successfully Rejected", payload: { purchase } });
     }
   } catch (error) {

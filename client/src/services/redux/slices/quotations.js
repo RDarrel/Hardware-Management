@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axioKit, bulkPayload } from "../../utilities";
+import { axioKit, bulkPayload, socket } from "../../utilities";
 
 const name = "quotations";
 
@@ -165,6 +165,10 @@ export const reduxSlice = createSlice({
       state.isSuccess = false;
       state.message = "";
     },
+
+    UPDATE_COLLETIONS: (state, data) => {
+      state.collections.unshift(data.payload);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -277,20 +281,9 @@ export const reduxSlice = createSlice({
       })
       .addCase(SAVE.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
-        const _collections = [...state.collections];
-        // const index = _collections.findIndex(
-        //   ({ invoice_no }) => invoice_no === payload.invoice_no
-        // );
 
-        // if (index > -1) {
-        //   _collections[index] = {
-        //     ..._collections[index],
-        //     orders: payload.orders,
-        //   };
-        // } else {
-        _collections.unshift(payload);
-        // }
-        state.collections = _collections;
+        socket.emit("send_quotation", payload);
+
         state.message = success;
         state.isSuccess = true;
         state.isLoading = false;
@@ -338,6 +331,6 @@ export const reduxSlice = createSlice({
   },
 });
 
-export const { RESET, CUSTOMALERT } = reduxSlice.actions;
+export const { RESET, CUSTOMALERT, UPDATE_COLLETIONS } = reduxSlice.actions;
 
 export default reduxSlice.reducer;

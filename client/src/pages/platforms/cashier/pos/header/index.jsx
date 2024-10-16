@@ -7,13 +7,16 @@ import {
   MDBPopoverBody,
   MDBBtn,
 } from "mdbreact";
-import { fullName } from "../../../../../services/utilities";
+import { fullName, socket } from "../../../../../services/utilities";
 import { useDispatch, useSelector } from "react-redux";
 import "./header.css";
 import Transactions from "../transactions";
 import { BROWSE } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
 
-import { BROWSE as BROWSE_QUOTATIONS } from "../../../../../services/redux/slices/quotations";
+import {
+  BROWSE as BROWSE_QUOTATIONS,
+  UPDATE_COLLETIONS,
+} from "../../../../../services/redux/slices/quotations";
 import SuspendedTransacs from "../suspendedTransacs";
 import Guide from "../guide";
 
@@ -65,6 +68,16 @@ const Header = ({
     );
     setQuotations(quotationCollections);
   }, [quotationCollections]);
+
+  useEffect(() => {
+    socket.on("receive_quotation", (data) => {
+      dispatch(UPDATE_COLLETIONS(data));
+    });
+
+    return () => {
+      socket.off("receive_quotation");
+    };
+  }, [dispatch]);
 
   return (
     <MDBCard className="w-100 mb-2">

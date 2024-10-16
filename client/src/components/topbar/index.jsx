@@ -20,20 +20,34 @@ import {
 import { fullName } from "../../services/utilities";
 import TimeSince from "./timeSince";
 
-const notificationForAdmin = {
-  REQUEST: "sent a purchase request.",
-  DEFECTIVE: "has received defective products.",
-  DISCREPANCY: "has received products with discrepancies.",
+const notificationRoles = {
+  STOCKMAN: {
+    REQUEST: {
+      APPROVED: "request has been approved.",
+      REJECT: "request has been rejected.",
+      OUTOFSTOCK: "We have products that are out of stock.",
+      NEARLY_OUTOFSTOCK: "We have products that are nearly out of stock.",
+      NEARLY_EXPIRED_PRODUCT: "We have products that are nearly expired.",
+      EXPIRED: "We have expired products.",
+      ORDERBY_ADMIN:
+        "Admin ordered from the supplier. Get ready to receive the items.",
+    },
+
+    DEFECTIVE: {
+      APPROVED: "A replacement product from the supplier is on the way.",
+    },
+    DISCREPANCY: {
+      APPROVED: "A discrepancy product from the supplier is on the way.",
+    },
+  },
+
+  ADMINISTRATOR: {
+    REQUEST: "sent a purchase request.",
+    DEFECTIVE: "has received defective products.",
+    DISCREPANCY: "has received products with discrepancies.",
+  },
 };
 
-const notificationForStockman = {
-  APPROVED: "Your Request has been approved.",
-  REJECT: "Your Request has been rejected.",
-  OUTOFSTOCK: "We have products that are out of stock.",
-  NEARLY_OUTOFSTOCK: "We have products that are nearly out of stock.",
-  NEARLY_EXPIRED_PRODUCT: "We have products that are nearly expired.",
-  EXPIRED: "We have expired products",
-};
 const TopNavigation = ({ onSideNavToggleClick }) => {
   const { auth, token, role } = useSelector(({ auth }) => auth),
     { collections } = useSelector(({ notifications }) => notifications),
@@ -42,7 +56,9 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
     [isSeenAll, setIsSeenAll] = useState(false),
     history = useHistory(),
     dispatch = useDispatch();
+
   const isStockman = role === "STOCKMAN";
+
   useEffect(() => {
     if (role && auth._id) {
       dispatch(BROWSE({ token, key: { role, user: auth._id } }));
@@ -67,33 +83,66 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
     transition: "padding-left .3s",
   };
 
-  const handleNotification = (_id, type, additional) => {
-    const url = type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
-    const baseUrl = additional
-      ? type === "EXPIRED"
-        ? "stocks"
-        : "dashboard"
-      : isStockman
-      ? "purchasesRequest"
-      : `/purchases${url}`;
+  const handleLink = (status, type = "", additional) => {
+    var baseUrl = "";
+    if (additional) {
+      if (status === "EXPIRED") {
+        baseUrl = "stocks";
+      } else {
+        baseUrl = "dashboard";
+      }
+    } else {
+      switch (type) {
+        case "REQUEST":
+          baseUrl = "/purchasesRequest";
+          break;
+        case "DEFECTIVE":
+          baseUrl = "/purchasesDefective";
+          break;
+
+        case "DISCREPANCY":
+          baseUrl = "/purchasesDiscrepancy";
+          break;
+        default:
+          baseUrl = "/purchasesRequest";
+          break;
+      }
+    }
+
     history.push(baseUrl);
+  };
+
+  const handleNotification = (_id, status, type, additional) => {
+    handleLink(status, type, additional);
+
     if (!additional) {
       dispatch(DESTROY({ token, data: { _id } }));
     } else {
       const _notifications = [...notifications];
       const index = _notifications.findIndex(({ _id: id }) => _id === id);
 
-      console.log(_notifications, index);
       _notifications.splice(index, 1);
       setNotifications(_notifications);
     }
   };
 
-  const handleMessage = (type) => {
-    const baseMessage = isStockman
-      ? notificationForStockman
-      : notificationForAdmin;
-    return baseMessage[type];
+  const handleMessage = (user, type, status) => {
+    const baseNotif = notificationRoles[role][type.toUpperCase()] || "";
+
+    if (isStockman) {
+      if (
+        (status === "REJECT" || status === "APPROVED") &&
+        type === "REQUEST"
+      ) {
+        return `${user._id === auth._id ? `Your` : fullName(user.fullName)} ${
+          baseNotif[status]
+        }`;
+      } else {
+        return baseNotif[status];
+      }
+    } else {
+      return `${fullName(user.fullName)} ${baseNotif}`;
+    }
   };
 
   const handleSeen = () => {
@@ -138,17 +187,21 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
           <MDBDropdownMenu right style={{ minWidth: "515px" }}>
             {notifications.length > 0 ? (
               notifications.map(
-                ({ user, type, createdAt, _id, additional = false }, index) => (
+                (
+                  { user, type, status, createdAt, _id, additional = false },
+                  index
+                ) => (
                   <MDBDropdownItem
-                    onClick={() => handleNotification(_id, type, additional)}
+                    onClick={() =>
+                      handleNotification(_id, status, type, additional)
+                    }
                     key={index}
                   >
                     <MDBIcon
                       icon={additional ? "newspaper" : "user"}
                       className="mr-2"
                     />
-                    {!additional && !isStockman && fullName(user.fullName)}
-                    {handleMessage(type)}
+                    {handleMessage(user, type, status) || ""}
                     {!additional && (
                       <span className="float-right">
                         <MDBIcon icon="clock" />{" "}

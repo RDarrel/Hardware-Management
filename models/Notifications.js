@@ -7,11 +7,22 @@ const modelSchema = new mongoose.Schema(
       ref: "Users",
       required: true,
     },
+
     forStockman: {
       type: Boolean,
       default: false,
     },
-    type: "",
+
+    type: {
+      type: String,
+      default: "REQUEST",
+    },
+
+    status: {
+      type: String,
+      default: "REQUEST",
+    },
+
     isSeen: {
       type: Boolean,
       default: false,

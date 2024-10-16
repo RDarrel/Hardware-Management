@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axioKit, bulkPayload } from "../../utilities";
+import { axioKit, bulkPayload, socket } from "../../utilities";
 
 const name = "cart";
 
@@ -404,14 +404,15 @@ export const reduxSlice = createSlice({
 
       .addCase(PRE_ORDER.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
-        const { isLimit = false, orders = [] } = payload;
+        const { isLimit = false, orders = [], order } = payload;
 
         if (!isLimit) {
-          console.log("is not limit");
           const _collections = [...state.collections];
           const newCollectionns = _collections.filter(
             (collection) => !orders.includes(collection._id)
           );
+          socket.emit("send_quotation", order);
+
           state.collections = newCollectionns;
         }
 
