@@ -12,12 +12,16 @@ const handleNotification = async ({
   user,
   forStockman = true,
 }) => {
-  await Notifications.create({
-    forStockman,
-    type,
-    status,
-    user,
-  });
+  try {
+    await Notifications.create({
+      forStockman,
+      type,
+      status,
+      user,
+    });
+  } catch (error) {
+    console.log("Error in notification in purchase:", error.message);
+  }
 };
 
 exports.browse = async (req, res) => {
