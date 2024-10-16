@@ -10,6 +10,7 @@ const truncateTextWithEllipsis = (text, maxLength = 50) => {
 };
 
 const flattenArray = (array) => {
+  console.log(array);
   const male = [],
     female = [],
     head = [{ text: "No.", space: 1 }];
@@ -18,6 +19,7 @@ const flattenArray = (array) => {
     const settings = new Map([
       ["product", { text: "Product", space: 4 }],
       ["hasVariant", { text: "", dnone: true }],
+      ["variant", { text: "", dnone: true }],
       ["sold", { text: "Sold" }],
       ["unit", { text: "Unit" }],
       ["capital", { text: "Capital" }],
@@ -250,6 +252,7 @@ const set = {
     }
 
     function processArray(array, startPos) {
+      console.log(array);
       for (let i = 0; i < array.length; i++) {
         var element = [i + 1, ...array[i]]; // parent array element
         let _prevCol = 0;
