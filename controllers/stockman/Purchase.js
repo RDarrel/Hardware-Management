@@ -12,16 +12,12 @@ const handleNotification = async ({
   user,
   forStockman = true,
 }) => {
-  const notification = await Notifications.create({
+  await Notifications.create({
     forStockman,
     type,
     status,
     user,
   });
-
-  await Notifications.findOne({
-    _id: notification._id,
-  }).populate("user");
 };
 
 exports.browse = async (req, res) => {
