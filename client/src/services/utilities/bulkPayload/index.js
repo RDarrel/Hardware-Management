@@ -3,15 +3,8 @@ const bulkPayload = (state, payload, isUpdate = true) => {
     for (const index in payload) {
       const item = { ...payload[index] };
       const iIndex = state.collections.findIndex((e) => e._id === item._id);
-
       if (isUpdate) {
-        const payloadKeys = Object.keys(item);
-
-        for (const _index in payloadKeys) {
-          const pKeys = payloadKeys[_index];
-
-          state.collections[iIndex][pKeys] = item[pKeys];
-        }
+        state.collections[iIndex] = item;
       } else {
         state.collections.splice(iIndex, 1);
       }

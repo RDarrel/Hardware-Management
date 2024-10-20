@@ -10,7 +10,9 @@ import {
 import {
   BROWSE,
   RESET,
+  UPDATE_COLLECTIONS,
 } from "../../../../services/redux/slices/stockman/purchases";
+import { socket } from "../../../../services/utilities";
 
 import { useDispatch, useSelector } from "react-redux";
 import Collapse from "./collapse";
@@ -42,6 +44,25 @@ export default function PurchasesDefective({ isAdmin, isDefective = true }) {
     });
     setPurchases(sorted);
   }, [collections]);
+
+  useEffect(() => {
+    socket.on("receive_purchases", (data) => {
+      const baseType = isDefective ? "defective" : "discrepancy";
+      const filteredPurchases = data.filter(
+        ({ type, status }) =>
+          status.toLowerCase() === "pending" && type.toLowerCase() === baseType
+      );
+      if (!!filteredPurchases) {
+        dispatch(
+          UPDATE_COLLECTIONS({ purchases: filteredPurchases, isUnshift: true })
+        );
+      }
+    });
+
+    return () => {
+      socket.off("receive_purchases");
+    };
+  }, [dispatch, isDefective]);
 
   return (
     <>

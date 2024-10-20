@@ -13,6 +13,7 @@ import GET from "../GET";
 import DefectiveTable from "./defective/table";
 import ReplacementTable from "./replacement/table";
 import Spinner from "../../spinner";
+
 const Collapse = ({
   collections = [],
   isAdmin,

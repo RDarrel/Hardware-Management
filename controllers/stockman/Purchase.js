@@ -6,6 +6,10 @@ const Entity = require("../../models/stockman/Purchases"),
   Merchandises = require("../../models/stockman/Merchandises"),
   handleDuplicate = require("../../config/duplicate");
 
+var notifications = [];
+
+var purchasesDefectOrDisc = []; //purchases defective,purchases discrepancy
+
 const handleNotification = async ({
   type = "REQUEST",
   status = "APPROVED",
@@ -13,15 +17,49 @@ const handleNotification = async ({
   forStockman = true,
 }) => {
   try {
-    await Notifications.create({
+    const notif = await Notifications.create({
       forStockman,
       type,
       status,
       user,
     });
+
+    const populateNotification = await Notifications.findOne({
+      _id: notif._id,
+    }).populate("user");
+
+    notifications.unshift(populateNotification);
   } catch (error) {
     console.log("Error in notification in purchase:", error.message);
   }
+};
+
+const populateMerchandises = async (merchandises) => {
+  try {
+    return await Merchandises.find({
+      _id: { $in: merchandises.map((m) => m._id) },
+    }).populate("product");
+  } catch (error) {
+    console.log("Error in populate merchandises:", error.message);
+  }
+};
+
+const populatePurchase = async (purchase) => {
+  try {
+    return await Entity.findOne({ _id: purchase._id })
+      .populate("supplier")
+      .populate("requestBy");
+  } catch (error) {
+    console.log("Error in populate purchase:", error.message);
+  }
+};
+
+const resetDefectOrDiscPurchases = () => {
+  purchasesDefectOrDisc = [];
+};
+
+const resetNotifications = () => {
+  notifications = [];
 };
 
 exports.browse = async (req, res) => {
@@ -114,7 +152,7 @@ const defectiveCheckpoint = async (_purchase, merchandises) => {
         total,
       });
 
-      await Merchandises.insertMany(
+      const createdMerchandises = await Merchandises.insertMany(
         defectiveMerchandises.map((merchandise) => {
           delete merchandise._id;
           return {
@@ -123,6 +161,13 @@ const defectiveCheckpoint = async (_purchase, merchandises) => {
           };
         })
       );
+
+      const _populatePurchase = await populatePurchase(defectivePurchase);
+
+      purchasesDefectOrDisc.push({
+        ..._populatePurchase._doc,
+        merchandises: await populateMerchandises(createdMerchandises),
+      });
 
       await handleNotification({
         type: "DEFECTIVE",
@@ -243,7 +288,16 @@ const discrepancyCheckPoint = async (_purchase, merchandises) => {
         total: getTheTotalAmount(merchandisesWithDiscrepancy),
       });
 
-      await Merchandises.insertMany(merchandisesWithPurchase);
+      const createdMerchandises = await Merchandises.insertMany(
+        merchandisesWithPurchase
+      );
+
+      const _populatePurchase = await populatePurchase(newPurchase);
+
+      purchasesDefectOrDisc.push({
+        ..._populatePurchase._doc,
+        merchandises: await populateMerchandises(createdMerchandises),
+      });
 
       await handleNotification({
         type: "DISCREPANCY",
@@ -419,6 +473,8 @@ exports.approved = async (req, res) => {
       }
     }
 
+    resetNotifications();
+
     await handleNotification({
       type: "REQUEST",
       status: "APPROVED",
@@ -426,13 +482,14 @@ exports.approved = async (req, res) => {
       user: purchase.requestBy,
     });
 
-    bulkWrite(
+    bulkWrite({
       req,
       res,
-      Merchandises,
-      supplierWithMostProducts.merchandises,
-      "Successfully Approved"
-    );
+      Entity: Merchandises,
+      array: supplierWithMostProducts.merchandises,
+      notifications,
+      message: "Successfully Approved",
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -444,6 +501,7 @@ exports.update = async (req, res) => {
     const basePurchase = Entity;
     const baseMerchandises = Merchandises;
     await basePurchase.findByIdAndUpdate(purchase._id, purchase);
+
     if (purchase.status === "approved" || purchase.status === "replacement") {
       const { status, type } = purchase || {};
       await handleNotification({
@@ -453,16 +511,19 @@ exports.update = async (req, res) => {
         forStockman: true,
       });
 
-      bulkWrite(
+      bulkWrite({
         req,
         res,
-        baseMerchandises,
-        merchandises,
-        "Successfully Approved"
-      );
+        Entity: baseMerchandises,
+        array: merchandises,
+        message: "Successfully Approved",
+        notifications,
+      });
     } else if (purchase.status === "received") {
-      defectiveCheckpoint(purchase, merchandises);
-      discrepancyCheckPoint(purchase, merchandises);
+      resetNotifications();
+      resetDefectOrDiscPurchases();
+      await defectiveCheckpoint(purchase, merchandises);
+      await discrepancyCheckPoint(purchase, merchandises);
       await Promise.all(
         merchandises.map(async (merchandise) => {
           const {
@@ -518,13 +579,15 @@ exports.update = async (req, res) => {
         })
       );
 
-      bulkWrite(
+      bulkWrite({
         req,
         res,
-        baseMerchandises,
-        mergeDiscrepancyInOriginalPurchase(merchandises),
-        "Successfully Approved"
-      );
+        Entity: baseMerchandises,
+        array: mergeDiscrepancyInOriginalPurchase(merchandises),
+        message: "Successfully Approved",
+        notifications,
+        purchases: purchasesDefectOrDisc,
+      });
     } else {
       await handleNotification({
         type: "REQUEST",

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axioKit, bulkPayload } from "../../../utilities";
+import { axioKit, bulkPayload, socket } from "../../../utilities";
 
 const name = "stockman/Purchase";
 
@@ -147,6 +147,14 @@ export const reduxSlice = createSlice({
       state.isSuccess = false;
       state.message = "";
     },
+    UPDATE_COLLECTIONS: (state, data) => {
+      const { payload = {} } = data;
+      console.log(payload);
+      const { purchases = [], isUnshift = false } = payload;
+      state.collections = isUnshift
+        ? [...purchases, ...state.collections]
+        : [...state.collections, ...purchases];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -189,12 +197,22 @@ export const reduxSlice = createSlice({
       })
       .addCase(UPDATE.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
+        const {
+          purchase: newPurchase,
+          purchases = [],
+          notifications = [],
+        } = payload;
         const _collections = [...state.collections];
         const index = _collections.findIndex(
-          ({ _id }) => _id === payload?.purchase?._id
+          ({ _id }) => _id === newPurchase?.purchase?._id
         );
 
-        console.log(index);
+        if (!!purchases) {
+          socket.emit("send_purchases", purchases);
+        }
+
+        socket.emit("send_notification", notifications);
+
         _collections.splice(index, 1);
         state.collections = _collections;
         state.message = success;
@@ -214,12 +232,15 @@ export const reduxSlice = createSlice({
       })
       .addCase(APPROVED.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
+        const { purchase: newPurchase, notifications = [] } = payload;
         const _collections = [...state.collections];
         const index = _collections.findIndex(
-          ({ _id }) => _id === payload?.purchase?._id
+          ({ _id }) => _id === newPurchase?.purchase?._id
         );
 
         _collections.splice(index, 1);
+        socket.emit("send_notification", notifications);
+
         state.collections = _collections;
         state.message = success;
         state.isSuccess = true;
@@ -304,6 +325,6 @@ export const reduxSlice = createSlice({
   },
 });
 
-export const { RESET, CUSTOMALERT } = reduxSlice.actions;
+export const { RESET, CUSTOMALERT, UPDATE_COLLECTIONS } = reduxSlice.actions;
 
 export default reduxSlice.reducer;

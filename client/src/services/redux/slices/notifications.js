@@ -128,6 +128,11 @@ export const reduxSlice = createSlice({
       state.isSuccess = false;
       state.message = "";
     },
+
+    UPDATE_COLLECTIONS: (state, data) => {
+      const { payload } = data;
+      state.collections = [...payload, ...state.collections].filter(Boolean);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -254,6 +259,6 @@ export const reduxSlice = createSlice({
   },
 });
 
-export const { RESET, CUSTOMALERT } = reduxSlice.actions;
+export const { RESET, CUSTOMALERT, UPDATE_COLLECTIONS } = reduxSlice.actions;
 
 export default reduxSlice.reducer;

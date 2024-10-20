@@ -95,7 +95,7 @@ const Table = ({ orderDetails, transaction }) => {
             <p className="ml-4 paragraph mb-2">
               ₱
               {formattedTotal(
-                transaction?.totalWithoutDeduc - transaction.cash
+                transaction.cash - transaction?.totalWithoutDeduc
               )}
             </p>
           </td>

@@ -10,7 +10,9 @@ import {
 import {
   BROWSE,
   RESET,
+  UPDATE_COLLECTIONS,
 } from "../../../../services/redux/slices/stockman/purchases";
+import { socket } from "../../../../services/utilities";
 
 import { useDispatch, useSelector } from "react-redux";
 import Collapse from "./collapse";
@@ -19,6 +21,7 @@ export default function Request({ isAdmin }) {
   const [activeTab, setActiveTab] = useState("pending");
   const { token, auth } = useSelector(({ auth }) => auth),
     { collections, isLoading } = useSelector(({ purchases }) => purchases),
+    [purchases, setPurchases] = useState([]),
     dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,6 +38,28 @@ export default function Request({ isAdmin }) {
     );
     return () => dispatch(RESET());
   }, [token, dispatch, activeTab, isAdmin, auth]);
+
+  useEffect(() => {
+    setPurchases(collections);
+    console.log(collections);
+    console.log("running again");
+  }, [collections]);
+
+  useEffect(() => {
+    socket.on("receive_purchases", (data) => {
+      const hasRequest = data.every(
+        ({ type, status }) =>
+          status.toLowerCase() === "pending" && type.toLowerCase() === "request"
+      );
+      if (hasRequest) {
+        dispatch(UPDATE_COLLECTIONS({ purchases: data, isUnshift: false }));
+      }
+    });
+
+    return () => {
+      socket.off("receive_purchases");
+    };
+  }, [dispatch]);
 
   return (
     <>
@@ -93,7 +118,7 @@ export default function Request({ isAdmin }) {
         <MDBTabPane tabId="pending">
           <MDBModalBody className="pt-1 p-0 bg-primary">
             <Collapse
-              collections={collections}
+              collections={purchases}
               isAdmin={isAdmin}
               isApproved={false}
               isLoading={isLoading}
@@ -103,7 +128,7 @@ export default function Request({ isAdmin }) {
         <MDBTabPane tabId="approved">
           <MDBModalBody className="pt-1 p-0 bg-primary">
             <Collapse
-              collections={collections}
+              collections={purchases}
               isAdmin={isAdmin}
               isApproved={true}
               isRejected={false}
@@ -114,7 +139,7 @@ export default function Request({ isAdmin }) {
         <MDBTabPane tabId="received">
           <MDBModalBody className="pt-1 p-0 bg-primary">
             <Collapse
-              collections={collections}
+              collections={purchases}
               isAdmin={isAdmin}
               isApproved={true}
               isReceived={true}
@@ -126,7 +151,7 @@ export default function Request({ isAdmin }) {
         <MDBTabPane tabId="reject">
           <MDBModalBody className="pt-1 p-0 bg-primary">
             <Collapse
-              collections={collections}
+              collections={purchases}
               isAdmin={isAdmin}
               isRejected={true}
               isLoading={isLoading}

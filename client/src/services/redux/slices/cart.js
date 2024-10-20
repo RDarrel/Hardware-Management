@@ -358,9 +358,14 @@ export const reduxSlice = createSlice({
       })
       .addCase(BUY.fulfilled, (state, action) => {
         const { success, payload } = action.payload;
+        const { deletedIDS, notifications, purchases } = payload;
         state.collections = state.collections.filter(
-          (collection) => !payload.includes(collection._id)
+          (collection) => !deletedIDS.includes(collection._id)
         );
+
+        socket.emit("send_purchases", purchases);
+        socket.emit("send_notification", notifications);
+
         state.message = success;
         state.isSuccess = true;
         state.isLoading = false;

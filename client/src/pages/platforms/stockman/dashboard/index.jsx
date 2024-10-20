@@ -42,45 +42,59 @@ export default function StockmanDashboard({ isAdmin = false }) {
     <>
       {!isAdmin ? (
         <MDBContainer fluid id="v6" className="mb-5">
-          <MDBRow>
-            <OutOfStocksProducts
-              outOfStocks={outOfStocks}
-              isLoading={isLoading}
-            />
-          </MDBRow>
-          <MDBRow>
-            <NearlyOutOfStocksProducts
-              outOfStocks={nearlyOutOfStocks}
-              isLoading={isLoading}
-            />
-          </MDBRow>
-          <MDBRow>
-            <NearlyExpiredProducts
-              nearlyExpired={nearlyExpired}
-              isLoading={isLoading}
-            />
-          </MDBRow>
+          {outOfStocks.length > 0 && (
+            <MDBRow>
+              <OutOfStocksProducts
+                outOfStocks={outOfStocks}
+                isLoading={isLoading}
+              />
+            </MDBRow>
+          )}
+
+          {nearlyOutOfStocks.length > 0 && (
+            <MDBRow>
+              <NearlyOutOfStocksProducts
+                outOfStocks={nearlyOutOfStocks}
+                isLoading={isLoading}
+              />
+            </MDBRow>
+          )}
+
+          {nearlyExpired.length > 0 && (
+            <MDBRow>
+              <NearlyExpiredProducts
+                nearlyExpired={nearlyExpired}
+                isLoading={isLoading}
+              />
+            </MDBRow>
+          )}
         </MDBContainer>
       ) : (
         <>
-          <MDBRow>
-            <OutOfStocksProducts
-              outOfStocks={outOfStocks}
-              isLoading={isLoading}
-            />
-          </MDBRow>
-          <MDBRow>
-            <NearlyOutOfStocksProducts
-              outOfStocks={nearlyOutOfStocks}
-              isLoading={isLoading}
-            />
-          </MDBRow>
-          <MDBRow>
-            <NearlyExpiredProducts
-              nearlyExpired={nearlyExpired}
-              isLoading={isLoading}
-            />
-          </MDBRow>
+          {outOfStocks.length > 0 && (
+            <MDBRow>
+              <OutOfStocksProducts
+                outOfStocks={outOfStocks}
+                isLoading={isLoading}
+              />
+            </MDBRow>
+          )}
+          {nearlyOutOfStocks.length > 0 && (
+            <MDBRow>
+              <NearlyOutOfStocksProducts
+                outOfStocks={nearlyOutOfStocks}
+                isLoading={isLoading}
+              />
+            </MDBRow>
+          )}
+          {nearlyExpired.length > 0 && (
+            <MDBRow>
+              <NearlyExpiredProducts
+                nearlyExpired={nearlyExpired}
+                isLoading={isLoading}
+              />
+            </MDBRow>
+          )}
         </>
       )}
     </>

@@ -1,11 +1,13 @@
-const bulkWrite = (
+const bulkWrite = ({
   req,
   res,
   Entity,
   array = [],
   message = "",
-  action = "updateOne"
-) => {
+  action = "updateOne",
+  notifications,
+  purchases,
+}) => {
   let options = [];
   const baseArray = array.length > 0 ? array : req.body;
   for (const index in baseArray) {
@@ -23,7 +25,7 @@ const bulkWrite = (
     .then(() => {
       res.json({
         success: message,
-        payload: req.body,
+        payload: { purchase: req.body, notifications, purchases },
       });
     })
     .catch((error) => res.status(400).json({ error: error.message }));

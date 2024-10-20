@@ -16,8 +16,9 @@ import {
   BROWSE,
   DESTROY,
   UPDATE,
+  UPDATE_COLLECTIONS,
 } from "../../services/redux/slices/notifications";
-import { fullName } from "../../services/utilities";
+import { fullName, socket } from "../../services/utilities";
 import TimeSince from "./timeSince";
 
 const notificationRoles = {
@@ -53,7 +54,6 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
     { collections } = useSelector(({ notifications }) => notifications),
     [notifications, setNotifications] = useState([]),
     [notificationCount, setNotificationCount] = useState(0),
-    [isSeenAll, setIsSeenAll] = useState(false),
     history = useHistory(),
     dispatch = useDispatch();
 
@@ -62,17 +62,30 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
   useEffect(() => {
     if (role && auth._id) {
       dispatch(BROWSE({ token, key: { role, user: auth._id } }));
-      setIsSeenAll(false);
     }
   }, [token, dispatch, role, auth]);
 
   useEffect(() => {
-    const notSeenMessages = collections.filter(
+    const myMessages = collections.filter(
+      ({ forStockman = true }) => forStockman === isStockman
+    );
+
+    const notSeenMessages = myMessages.filter(
       ({ isSeen = true, additional = false }) => !isSeen || additional
     );
-    setNotificationCount(isSeenAll ? 0 : notSeenMessages.length);
-    setNotifications(collections);
-  }, [collections, isSeenAll]);
+    setNotificationCount(notSeenMessages.length);
+    setNotifications(myMessages);
+  }, [collections, isStockman]);
+
+  useEffect(() => {
+    socket.on("receive_notification", (data) => {
+      dispatch(UPDATE_COLLECTIONS(data));
+    });
+
+    return () => {
+      socket.off("receive_notification");
+    };
+  }, [dispatch]);
 
   const handleToggleClickA = () => {
     onSideNavToggleClick();
@@ -152,7 +165,6 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
     if (_notifications.length > 0) {
       dispatch(UPDATE({ token, data: { notifications: _notifications } }));
     }
-    setIsSeenAll(true);
     setNotificationCount(0);
   };
 

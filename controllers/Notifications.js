@@ -92,7 +92,7 @@ exports.update = async (req, res) => {
       _id: { $in: notificationIds },
     }).populate("user");
 
-    res.status(200).json({ success: true, data: updatedNotifications });
+    res.status(200).json({ success: true, payload: updatedNotifications });
   } catch (error) {
     res
       .status(500)

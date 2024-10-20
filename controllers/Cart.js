@@ -206,11 +206,17 @@ exports.suppliers = (_, res) => {
     .catch((error) => res.status(400).json({ error: error.message }));
 };
 
+const populateNotification = async (notification) => {
+  return await Notifications.findOne({ _id: notification._id }).populate(
+    "user"
+  );
+};
+
 exports.buy = async (req, res) => {
   try {
-    // const { purchase, cart } = req.body;
     const { purchases, user, isAdmin = false } = req.body;
-
+    const purchasesCreated = [];
+    var deletedIDS = [];
     for (const purchase of purchases) {
       const createdPurchase = await Purchase.create({
         ...purchase,
@@ -218,41 +224,75 @@ exports.buy = async (req, res) => {
         ...(isAdmin && { approved: new Date().toDateString() }),
       });
 
-      const merchandisesWithPurchase = purchase.merchandises.map((obj) => ({
-        ...obj,
-        product: obj?.product?._id,
-        purchase: createdPurchase._id,
-        unitPrice: obj.price,
-        ...(isAdmin && {
-          kilo: { ...obj.kilo, defective: 0 },
-          kiloGrams: { ...obj.kiloGrams, defective: 0 },
-          quantity: {
-            ...obj.quantity,
-            defective: 0,
-          },
-        }),
-      }));
+      const merchandisesWithPurchase = purchase.merchandises.map((obj) => {
+        const { _id, ...rest } = obj;
+        return {
+          ...rest,
+          product: obj?.product?._id,
+          purchase: createdPurchase._id,
+          unitPrice: obj.price,
+          ...(isAdmin && {
+            kilo: { ...obj.kilo, defective: 0 },
+            kiloGrams: { ...obj.kiloGrams, defective: 0 },
+            quantity: {
+              ...obj.quantity,
+              defective: 0,
+            },
+          }),
+        };
+      });
       const idsToDelete = purchase.merchandises
         .map(({ _id }) => _id)
         .filter(Boolean);
 
-      await Merchandises.insertMany(merchandisesWithPurchase);
+      deletedIDS = [...idsToDelete, ...deletedIDS];
+
+      const merchandisesCreated = await Merchandises.insertMany(
+        merchandisesWithPurchase
+      );
+
+      const populatedMerchandises = await Merchandises.find({
+        _id: { $in: merchandisesCreated.map((m) => m._id) },
+      }).populate("product");
+
+      const populatePurchase = await Purchase.findOne({
+        _id: createdPurchase._id,
+      })
+        .populate("requestBy")
+        .populate("supplier");
+
+      purchasesCreated.push({
+        ...populatePurchase._doc,
+        merchandises: populatedMerchandises,
+      });
+
       await Entity.deleteMany({ _id: { $in: idsToDelete } });
     }
+
+    var notification = {};
     if (!isAdmin) {
-      await Notifications.create({ user, type: "REQUEST" });
+      notification = await populateNotification(
+        await Notifications.create({ user, type: "REQUEST" })
+      );
     } else {
-      await Notifications.create({
-        user,
-        type: "REQUEST",
-        status: "ORDERBY_ADMIN",
-        forStockman: true,
-      });
+      notification = await populateNotification(
+        await Notifications.create({
+          user,
+          type: "REQUEST",
+          status: "ORDERBY_ADMIN",
+          forStockman: true,
+        })
+      );
     }
 
     res.status(201).json({
       success: "Purchase is successful",
-      payload: purchases,
+      payload: {
+        deletedIDS,
+        notifications: [notification],
+        purchases: purchasesCreated,
+      },
+      notifications: [notification],
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
