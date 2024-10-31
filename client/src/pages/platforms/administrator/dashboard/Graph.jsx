@@ -179,7 +179,7 @@ const Graph = ({ products }) => {
               cascade
               className="gradient-card-header light-blue lighten-1"
             >
-              <h4 className="h4-responsive mb-0 font-weight-bold">Traffic</h4>
+              <h4 className="h4-responsive mb-0 font-weight-bold">Sales</h4>
             </MDBView>
             <MDBCardBody cascade className="pb-3">
               <MDBRow className="pt-3 card-body">

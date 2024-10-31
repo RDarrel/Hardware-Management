@@ -9,38 +9,53 @@ import {
   MDBCol,
   MDBIcon,
   MDBRow,
-  MDBTable,
 } from "mdbreact";
+
 import {
-  ENDPOINT,
   formattedDate,
+  globalSearch,
   variation,
 } from "../../../../../services/utilities";
-import handlePagination from "../../../../widgets/pagination";
-import PaginationButtons from "../../../../widgets/pagination/buttons";
 import { Header } from "../header";
 import excel from "../../../../../services/utilities/downloadExcel/excel";
 import Spinner from "../../../../widgets/spinner";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
+import Table from "./table";
 
 const Sales = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth);
   const { collections, isLoading } = useSelector(
     ({ salesReport }) => salesReport
   );
+  const [filteredSales, setFilteredSales] = useState([]);
+  const [sales, setSales] = useState([]);
   const [baseFrom, setBaseFrom] = useState("");
   const [baseTo, setBaseTo] = useState("");
   const [totalSales, setTotalSales] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [soldQty, setSoldQty] = useState(0);
   const [soldKilo, setSoldKilo] = useState(0);
-  const [filteredSales, setFilteredSales] = useState([]);
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(BROWSE({ token }));
   }, [dispatch, token]);
+
+  useEffect(() => {
+    if (search && filteredSales.length > 0) {
+      const _products = [...filteredSales];
+      const searchProducts = globalSearch(_products, search);
+      setSales(searchProducts);
+    } else {
+      setSales(filteredSales);
+    }
+  }, [search, filteredSales]);
+
+  useEffect(() => {
+    setSales(filteredSales);
+  }, [filteredSales]);
 
   const handleExport = () => {
     const options = {
@@ -95,6 +110,7 @@ const Sales = () => {
           </MDBBtn>
         </MDBCol>
       </MDBRow>
+
       <MDBRow>
         <MDBCol md="3" className="mb-3">
           <MDBCard>
@@ -148,96 +164,23 @@ const Sales = () => {
         <MDBCardBody>
           {!isLoading ? (
             <>
-              <MDBTable responsive bordered striped>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Product</th>
-                    <th className=" text-center">Sold</th>
-                    <th className="text-center">Unit</th>
-                    <th className="text-center">Capital</th>
-                    <th className="text-center">SRP</th>
-                    <th className="text-center">Sales</th>
-                    <th className="text-center">INCOME</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {handlePagination(filteredSales, page, maxPage).map(
-                    (sale, index) => {
-                      const { product } = sale;
-                      const { media } = product;
-                      const img = `${ENDPOINT}/assets/products/${product._id}/${media.product[0].label}.jpg`;
-
-                      return (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <img
-                                src={img}
-                                alt={product.name}
-                                className="product-image mr-2"
-                              />
-                              <div>
-                                <h6 className="product-name mt-1">
-                                  {product.name}
-                                </h6>
-                                {product.hasVariant && (
-                                  <div
-                                    className="d-flex align-items-center"
-                                    style={{ marginTop: "-20px" }}
-                                  >
-                                    <span className="mr-1">Variant:</span>
-                                    <span>
-                                      {variation.name(sale, product.variations)}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="text-center">{sale?.sold}</td>
-                          <td className="text-center">
-                            {product.isPerKilo ? "Kg" : "Pcs"}
-                          </td>
-                          <td className="text-center">
-                            <span className="font-weight-bold text-danger ">
-                              ₱{sale.capital}
-                            </span>
-                          </td>
-                          <td className="text-center">
-                            <span className="font-weight-bold text-danger">
-                              ₱{sale.srp.toLocaleString()}
-                            </span>
-                          </td>
-                          <td className="text-center">
-                            <span className="font-weight-bold text-danger">
-                              ₱{(sale.srp * sale.sold).toLocaleString()}
-                            </span>
-                          </td>
-                          <td className="text-center">
-                            <span className="font-weight-bold text-danger">
-                              ₱{sale.income.toLocaleString()}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    }
-                  )}
-                </tbody>
-              </MDBTable>
-              <MDBRow className="m-0 p-0">
-                <MDBCol md="12 m-2">
-                  <PaginationButtons
-                    page={page}
-                    max={maxPage}
-                    mt={1}
-                    setPage={setPage}
-                    array={filteredSales}
-                    title={"Product"}
+              <MDBRow className="d-flex justify-content-end mb-2">
+                <MDBCol md="3">
+                  <input
+                    type="search"
+                    placeholder="Search a product.."
+                    className="form-control"
+                    value={search}
+                    onChange={({ target }) => setSearch(target.value)}
                   />
                 </MDBCol>
               </MDBRow>
+              <Table
+                sales={sales}
+                page={page}
+                setPage={setPage}
+                maxPage={maxPage}
+              />
             </>
           ) : (
             <Spinner />

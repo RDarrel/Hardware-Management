@@ -183,7 +183,7 @@ const TopNavigation = ({ onSideNavToggleClick }) => {
         <MDBIcon icon="bars" color="white" size="lg" />
       </div>
       <MDBNavbarBrand href="#" style={navStyle}>
-        <strong>{role}</strong>
+        <span className="font-weight-bold">{role}</span>
       </MDBNavbarBrand>
       <MDBNavbarNav expand="sm" right style={{ flexDirection: "row" }}>
         <MDBDropdown>

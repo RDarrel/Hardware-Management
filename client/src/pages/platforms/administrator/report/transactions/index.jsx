@@ -155,7 +155,7 @@ export const Transactions = () => {
                               )
                             }
                           >
-                            <MDBIcon icon="eye" />
+                            View
                           </MDBBtn>
                         </td>
                       </tr>

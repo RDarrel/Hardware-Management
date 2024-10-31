@@ -14,11 +14,12 @@ export default function Register() {
 
   return (
     <MDBRow className=" pt-5 mt-3">
-      <MDBCol md="6" className="text-center text-md-left mb-5">
+      <MDBCol md="6" className="text-center text-lg-left mb-5 mt-5">
         <MDBAnimation type="fadeInLeft">
           <div className="white-text">
-            <h1 className="font-weight-bold display-4">
-              WHAT <br /> ARE YOU <br /> WAITING FOR?
+            <h1 className="font-weight-bold display-4">Where Quality Meets</h1>
+            <h1 className="font-weight-bold display-4 text-nowrap">
+              Reliability in Building.
             </h1>
             <h6>
               Give your future a boost at Liberty! We're committed to providing

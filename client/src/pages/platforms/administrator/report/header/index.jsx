@@ -90,7 +90,7 @@ export const Header = ({
         return { ...sale, income: handleIncome(sale, sale.product?.isPerKilo) };
       })
     );
-    setFrom(getTheCreatedAt() || new Date());
+    setFrom(getTheCreatedAt(true) || new Date());
     setTo(getTheCreatedAt(true) || new Date());
     setMinDate(getTheCreatedAt() || new Date());
     setMaxDate(getTheCreatedAt(true) || new Date());
@@ -104,6 +104,7 @@ export const Header = ({
   };
 
   const isSales = !isEmployees && !isTransaction;
+
   useEffect(() => {
     if (from && to) {
       const fromDate = new Date(from);

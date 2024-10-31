@@ -5,7 +5,10 @@ const globalSearch = (objects, key) =>
       return nestedResults.length > 0;
     } else if (
       typeof obj === "string" &&
-      obj.toUpperCase().includes(key.replace(/\s+/g, "").toUpperCase())
+      obj
+        .replace(/\s+/g, "")
+        .toUpperCase()
+        .includes(key.replace(/\s+/g, "").toUpperCase())
     ) {
       return true;
     }

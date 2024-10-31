@@ -8,9 +8,9 @@ import {
   MDBIcon,
 } from "mdbreact";
 import { useDispatch, useSelector } from "react-redux";
+import { SETROUTE } from "../../services/redux/slices/auth";
 import ACCESS from "../../pages/platforms/access";
 import navbarLogo from "../../assets/logo/navbar1.jpg";
-import { SETROUTE } from "../../services/redux/slices/auth";
 
 export default function SideNavigation({
   triggerOpening,
@@ -81,6 +81,7 @@ export default function SideNavigation({
     <div className="white-skin">
       <MDBSideNav
         logo={navbarLogo}
+        responsive
         bg="https://mdbootstrap.com/img/Photos/Others/sidenav2.jpg"
         // className="bg-danger"
         mask="strong"
