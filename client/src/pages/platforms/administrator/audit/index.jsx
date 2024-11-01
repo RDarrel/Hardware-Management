@@ -13,10 +13,12 @@ const Audit = () => {
           <thead>
             <tr>
               <th>#</th>
+              <th>Invoice No.</th>
               <th>Date & Time</th>
               <th>Employee</th>
               <th>Action Type</th>
               <th>Amount</th>
+              <th>Description</th>
             </tr>
           </thead>
         </MDBTable>

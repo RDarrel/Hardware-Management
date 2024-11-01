@@ -2,6 +2,7 @@ const RemoveExpiredProducts = require("../../config/removeExpiredProducts");
 const Sales = require("../../models/administrator/report/Sales"),
   Stocks = require("../../models/stockman/Stocks"),
   Transactions = require("../../models/administrator/report/Transactions"),
+  Audit = require("../../models/administrator/Audit"),
   ReturnRefund = require("../../models/administrator/ReturnRefund");
 
 const checkerOfLastStock = async (productID, currentStock) => {
@@ -215,6 +216,14 @@ exports.pos = async (req, res) => {
       totalWithoutDeduc: total,
       purchases,
       customer,
+    });
+
+    await Audit.create({
+      invoice_no,
+      employee: cashier,
+      action: "SALE",
+      amount: total,
+      description: customer ? `Sale to ${customer}` : "",
     });
 
     res.json({ success: "Successfully Buy" });
