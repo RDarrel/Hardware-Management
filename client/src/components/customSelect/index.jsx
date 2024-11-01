@@ -11,7 +11,7 @@ export default function CustomSelect({
   preValue = "",
   onChange = () => {},
   getObject = false,
-  label,
+  label = "",
   values = "",
   texts = "",
   className = "",
@@ -21,6 +21,7 @@ export default function CustomSelect({
   disabledAllExceptSelected = false,
   disableByKey = {}, // { key: ['disabled', 'values'] }
   allowSearch = true,
+  _key = "",
 }) {
   const handleDisabling = (value, obj) => {
     if (disableAll) return true;
@@ -36,6 +37,7 @@ export default function CustomSelect({
   };
   return (
     <MDBSelect
+      key={_key}
       label={label}
       getValue={(array) => {
         if (multiple)

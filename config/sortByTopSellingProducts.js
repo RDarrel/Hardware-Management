@@ -1,7 +1,8 @@
 const arrangeStocks = require("./arrangeStocks");
 
-const sortByTopSellingProducts = async (products) => {
+const sortByTopSellingProducts = async (_products) => {
   try {
+    const products = [..._products];
     const stocks = await arrangeStocks();
     const uniqueProductStocks = stocks.reduce((acc, curr) => {
       const { product = {}, sold = 0 } = curr;
@@ -24,7 +25,7 @@ const sortByTopSellingProducts = async (products) => {
       };
     });
 
-    return containerWithSold.sort((a, b) => b.sold - a.sold) || [];
+    return [...containerWithSold].sort((a, b) => b.sold - a.sold) || [];
   } catch (error) {
     console.log("Error in sortby Top Selling Products", error.message);
   }

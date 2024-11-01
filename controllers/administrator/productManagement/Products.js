@@ -150,7 +150,7 @@ const ensureAllOptionsHaveHighest = (_options, highestOptions) => {
   }
 };
 
-const mergePricesToLowestOptions = (options, highestVrOptions, product) => {
+const mergePricesToLowestOptions = (options, highestVrOptions) => {
   try {
     if (!highestVrOptions?._id) return false;
     const highestOptions = filterValidPrices(highestVrOptions.prices);
@@ -183,27 +183,25 @@ exports.sellingProducts = async (_, res) => {
     const products = await Entity.find()
       .populate("category")
       .populate("material");
-    const container = [];
 
-    for (const product of products) {
+    const productPromises = products.map(async (product) => {
       const { has2Variant, hasVariant } = product;
 
       if (hasVariant) {
         const { variations = [] } = product;
         const options = [...variations[0]?.options];
 
-        var filteredOptions = await filteredVariations(
+        let filteredOptions = await filteredVariations(
           product,
           options,
           has2Variant
         );
 
-        var choices = [];
+        let choices = [];
         if (has2Variant) {
-          //para kunin yung pinaka maraming choices na prices para yun yung isoshow na available sa variant2
-          var optionsInVariant2 = filteredOptions.reduce(
+          // Get the variant with the most prices
+          const optionsInVariant2 = filteredOptions.reduce(
             (maxObj, currentObj) => {
-              // Default condition
               return currentObj?.prices?.length > (maxObj.prices?.length || 0)
                 ? currentObj
                 : maxObj;
@@ -223,7 +221,7 @@ exports.sellingProducts = async (_, res) => {
         }
 
         if (filteredOptions.length > 0) {
-          container.push({
+          return {
             ...product._doc,
             variations: [
               { ...variations[0], options: filteredOptions },
@@ -232,18 +230,20 @@ exports.sellingProducts = async (_, res) => {
                 options: choices,
               },
             ],
-          });
+          };
         }
       } else {
         const isExist = await Stocks.find({ product: product._id });
         if (isExist.length > 0) {
           const max = getTheTotalMax(product, isExist);
           if (max > 0) {
-            container.push({ ...product._doc, max });
+            return { ...product._doc, max };
           }
         }
       }
-    }
+      return null; // Return null for products that don't meet criteria
+    });
+    const container = (await Promise.all(productPromises)).filter(Boolean);
 
     const sortedContainer = await sortByTopSellingProducts(container);
     res.status(200).json({

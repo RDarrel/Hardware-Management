@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { MDBBtn } from "mdbreact";
@@ -28,7 +28,24 @@ export default function Receipt({
   setTransaction = () => {},
 }) {
   const { token, auth } = useSelector(({ auth }) => auth),
+    [is3daysLeft, setIs3DaysLeft] = useState(false),
     dispatch = useDispatch();
+
+  const daysLeftChecker = useCallback((createdAt) => {
+    const currentDate = new Date();
+
+    const createdDate = new Date(createdAt);
+
+    const diffInMilliseconds = currentDate - createdDate;
+
+    const diffInDays = diffInMilliseconds / (1000 * 60 * 60 * 24);
+
+    return diffInDays >= 3;
+  }, []);
+
+  useEffect(() => {
+    setIs3DaysLeft(daysLeftChecker(createdAt));
+  }, [createdAt, daysLeftChecker]);
 
   const gramsConverter = (grams) => {
     switch (grams) {
@@ -165,6 +182,16 @@ export default function Receipt({
       quantity = 0,
       max = 0,
     } = order;
+
+    if (is3daysLeft) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Return Not Allowed",
+        text: "Returns are no longer accepted as it has been 3 days since the purchase.",
+        confirmButtonText: "OK",
+      });
+    }
+
     if (product.isPerKilo) {
       const availableReturn = kilo + kiloGrams - kiloReturn;
       const arrayAvail = String(availableReturn).split(".");

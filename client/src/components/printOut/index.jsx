@@ -110,6 +110,22 @@ const PrintOut = () => {
             </span>
           </div>
         </div>
+
+        <h6
+          className={`m-0 p-0 cashier-name ${
+            obj.customer ? "cashier-name-mb" : ""
+          }`}
+        >
+          Cashier:
+          <span className="invoice "> {obj?.cashier}</span>
+        </h6>
+
+        {obj.customer && (
+          <h6 className="m-0 p-0 customer-name">
+            Customer:
+            <span className="invoice"> {obj?.customer}</span>
+          </h6>
+        )}
       </div>
 
       <div className="receipt-table">
@@ -178,7 +194,7 @@ const PrintOut = () => {
               <MDBCol
                 md="5"
                 sm="3"
-                className="d-flex justify-content-end  cash-label"
+                className="d-flex justify-content-end cash-label"
               >
                 <span className="mr-2 font-weight-bold ">Change</span>
               </MDBCol>
@@ -191,7 +207,7 @@ const PrintOut = () => {
           </div>
         )}
         <div className="text-center d-flex flex-column">
-          <small>THIS SERVERVE AS YOUR</small>
+          <small>THIS SERVE AS YOUR</small>
           <small>SALES INVOICE</small>
           <small>THANK YOU AND COME AGAIN.</small>
         </div>

@@ -11,6 +11,7 @@ import seperateKiloAndGrams from "../../../../../services/utilities/seperateKilo
 import { useDispatch, useSelector } from "react-redux";
 import { SAVE } from "../../../../../services/redux/slices/cashier/suspendedTransacs";
 import { SAVE as QUOTATION } from "../../../../../services/redux/slices/quotations";
+import Payment from "./payment";
 
 const Orders = ({
   isCheckOut,
@@ -278,7 +279,18 @@ const Orders = ({
           </div>
         </MDBCardBody>
       </MDBCard>
-      <Receipt
+      <Payment
+        show={isCheckOut}
+        total={total}
+        setOrders={setOrders}
+        invoice_no={invoice_no}
+        orderDetails={orderDetails}
+        isWalkInQuotation={isWalkInQuotation}
+        isWalkin={isWalkin}
+        handleAction={handleAction}
+        toggle={() => setIsCheckOut(!isCheckOut)}
+      />
+      {/* <Receipt
         show={isCheckOut}
         toggle={() => setIsCheckOut(!isCheckOut)}
         invoice_no={invoice_no}
@@ -292,7 +304,7 @@ const Orders = ({
         customerQuotation={customerQuotation}
         setCustomerQuotation={setCustomerQuotation}
         handleAction={handleAction}
-      />
+      /> */}
     </MDBCol>
   );
 };

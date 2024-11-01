@@ -14,6 +14,15 @@
   font-weight: bold;
 }
 
+.cashier-name {
+  margin-top: -1.8px !important;
+}
+
+.customer-name {
+  margin-top: 0.1px !important;
+  margin-bottom: -10px !important;
+}
+
 .address {
   margin-left: 17px !important;
   margin-top: -8px !important;
@@ -54,7 +63,7 @@
 }
 
 .change {
-  margin-left: 44px;
+  margin-left: 45px;
 }
 
 .receipt-product-container {
@@ -101,8 +110,11 @@
 
 .subtotal {
   font-stretch: condensed;
-
   font-weight: 550 !important;
+}
+
+.cash-value {
+  margin-right: -23px !important;
 }
 
 @media print {
@@ -159,6 +171,15 @@
   }
   .cash-value {
     margin-right: 35px !important;
+  }
+
+  .customer-name {
+    margin-top: 0.1px !important;
+    margin-bottom: -17px !important;
+  }
+
+  .cashier-name-mb {
+    margin-bottom: -7px !important;
   }
 
   .cash-label {

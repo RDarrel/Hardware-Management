@@ -92,7 +92,7 @@ const Footer = ({
                     : ""}
                 </h5>
               </div>
-              {!isWalkin && (
+              {/* {!isWalkin && (
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <span className=" m-0">Cash</span>
                   {invoice_no ? (
@@ -125,7 +125,7 @@ const Footer = ({
                       : ""}
                   </h5>
                 </div>
-              )}
+              )} */}
             </div>
           </MDBCardBody>
         </MDBCard>
