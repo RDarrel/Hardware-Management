@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   MDBBtn,
   MDBModal,
   MDBModalBody,
   MDBIcon,
   MDBModalHeader,
-  MDBInput,
 } from "mdbreact";
 import { POS } from "../../../../../services/redux/slices/cart";
 import { UPDATE_MAX } from "../../../../../services/redux/slices/administrator/productManagement/products";
@@ -31,6 +30,9 @@ export default function Payment({
   const { auth, token } = useSelector(({ auth }) => auth),
     [cash, setCash] = useState(0),
     [customer, setCustomer] = useState(""),
+    [totalDiscount, setTotalDiscount] = useState(0),
+    [totalVat, setTotalVat] = useState(0),
+    [totalDue, setTotalDue] = useState(0),
     [change, setChange] = useState(0),
     dispatch = useDispatch();
 
@@ -39,6 +41,38 @@ export default function Payment({
   useEffect(() => {
     setChange(cash - total);
   }, [total, cash]);
+
+  const getTotal = useCallback((key, _purchases) => {
+    return _purchases.reduce((acc, curr) => (acc += curr[key]), 0);
+  }, []);
+
+  useEffect(() => {
+    const _purchases = orderDetails.map((purchase) => {
+      const {
+        subtotal,
+        quantity = 0,
+        kilo = 0,
+        kiloGrams = 0,
+        product,
+      } = purchase;
+      const { isPerKilo = false } = product;
+      const totalOrder = isPerKilo ? kilo + kiloGrams : quantity;
+
+      const haveDiscount = totalOrder >= 15;
+
+      return {
+        ...purchase,
+        vat: subtotal * 0.12,
+        discount: haveDiscount ? subtotal * 0.1 : 0,
+      };
+    });
+
+    const _totalDiscount = getTotal("discount", _purchases);
+    const _totalVat = getTotal("vat", _purchases);
+    setTotalDiscount(_totalDiscount);
+    setTotalVat(_totalVat);
+    setTotalDue(total + _totalVat - _totalDiscount);
+  }, [orderDetails, getTotal, total]);
 
   const handleClose = () => {
     toggle();
@@ -67,6 +101,8 @@ export default function Payment({
       customer,
       isQuotation: isQuotation,
       total,
+      totalDiscount,
+      totalDue,
       cash,
       purchases,
     };
@@ -106,10 +142,9 @@ export default function Payment({
     setCustomerQuotation("");
   };
 
-  const disableByCash = cash < total;
+  const disableByCash = totalDue;
   const disableByCustomer = isWalkin ? (customer ? false : true) : false;
 
-  console.log(customer);
   const btnTxt = isWalkin
     ? "Send to cashier"
     : isWalkInQuotation
@@ -139,9 +174,27 @@ export default function Payment({
             />
           </div>
           <div className="d-flex align-items-center">
-            <h6 className="mt-3 mb-2">Total:</h6>
-            <h5 className="mt-3 ml-5">
+            <h6 className="mt-3 mb-2">Total Amount:</h6>
+            <h5 className="mt-3 " style={{ marginLeft: "27px" }}>
               <strong> ₱{formattedTotal(total)}</strong>
+            </h5>
+          </div>
+          <div className="d-flex align-items-center">
+            <h6 className="mt-3 mb-2">Total Discount: </h6>
+            <h5 className="mt-3 " style={{ marginLeft: "1.3rem" }}>
+              <strong> ₱{formattedTotal(totalDiscount)}</strong>
+            </h5>
+          </div>
+          <div className="d-flex align-items-center">
+            <h6 className="mt-3 mb-2">Total VAT (12%): </h6>
+            <h5 className="mt-3 " style={{ marginLeft: "0.7rem" }}>
+              <strong> ₱{formattedTotal(totalVat)}</strong>
+            </h5>
+          </div>
+          <div className="d-flex align-items-center">
+            <h6 className="mt-3 mb-2">Total Due: </h6>
+            <h5 className="mt-3" style={{ marginLeft: "3.4rem" }}>
+              <strong>₱{formattedTotal(totalDue)}</strong>
             </h5>
           </div>
           {!isQuotation && (
@@ -159,7 +212,7 @@ export default function Payment({
           {!isQuotation && (
             <div className="d-flex align-items-center">
               <h6 className="mt-3 mb-2">Change:</h6>
-              <h5 className="mt-3 ml-4">
+              <h5 className="mt-3 " style={{ marginLeft: "26px" }}>
                 &nbsp;
                 <strong>₱{change > 0 ? formattedTotal(change) : 0}</strong>
               </h5>
