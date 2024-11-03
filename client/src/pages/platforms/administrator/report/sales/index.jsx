@@ -32,6 +32,8 @@ const Sales = () => {
   const [baseFrom, setBaseFrom] = useState("");
   const [baseTo, setBaseTo] = useState("");
   const [totalSales, setTotalSales] = useState(0);
+  const [totalNetSales, setTotalNetSales] = useState(0);
+  const [totalVat, setTotalVat] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [soldQty, setSoldQty] = useState(0);
   const [soldKilo, setSoldKilo] = useState(0);
@@ -101,6 +103,8 @@ const Sales = () => {
             setTotalSales={setTotalSales}
             setBaseFrom={setBaseFrom}
             setBaseTo={setBaseTo}
+            setTotalNetSales={setTotalNetSales}
+            setTotalVat={setTotalVat}
           />
         </MDBCol>
         <MDBCol>
@@ -114,10 +118,34 @@ const Sales = () => {
       <MDBRow>
         <MDBCol md="3" className="mb-3">
           <MDBCard>
-            <MDBCardHeader color="warning-color">Total Sales</MDBCardHeader>
+            <MDBCardHeader color="warning-color">
+              Total Gross Sales
+            </MDBCardHeader>
             <div className="d-flex  align-items-center justify-content-between">
               <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
                 ₱ {formattedTotal(totalSales)}
+              </h3>
+            </div>
+          </MDBCard>
+        </MDBCol>
+
+        <MDBCol md="3" className="mb-3">
+          <MDBCard>
+            <MDBCardHeader color="primary-color">Total Net Sales</MDBCardHeader>
+            <div className="d-flex  align-items-center justify-content-between">
+              <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
+                ₱ {formattedTotal(totalNetSales)}
+              </h3>
+            </div>
+          </MDBCard>
+        </MDBCol>
+
+        <MDBCol md="3" className="mb-3">
+          <MDBCard>
+            <MDBCardHeader color="danger-color">Total VAT(12%)</MDBCardHeader>
+            <div className="d-flex  align-items-center justify-content-between">
+              <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
+                ₱ {formattedTotal(totalVat)}
               </h3>
             </div>
           </MDBCard>
@@ -133,7 +161,7 @@ const Sales = () => {
             </div>
           </MDBCard>
         </MDBCol>
-
+        {/* 
         <MDBCol md="3" className="mb-3">
           <MDBCard>
             <MDBCardHeader color="danger-color">
@@ -158,7 +186,7 @@ const Sales = () => {
               </h3>
             </div>
           </MDBCard>
-        </MDBCol>
+        </MDBCol> */}
       </MDBRow>
       <MDBCard>
         <MDBCardBody>

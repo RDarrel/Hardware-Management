@@ -47,13 +47,24 @@ const arrangeBy = {
           quantity,
           kilo,
           income,
+          refund = 0,
+          discount = 0,
           capital,
           srp,
         } = currentValue;
         const key = `${product._id}-${variant1}-${variant2}-${capital}-${srp}`;
         const index = accumulator?.findIndex((accu) => accu.key === key);
+        const totalRefund = refund;
+        const totalDiscount = discount;
+        const sold = quantity || kilo;
+        const netSales = sold * srp - (discount + refund);
+        const vat = netSales * 0.12;
         if (index > -1) {
-          accumulator[index].sold += quantity || kilo;
+          accumulator[index].sold += sold;
+          accumulator[index].totalRefund += totalRefund; // new added
+          accumulator[index].netSales += netSales; // new added
+          accumulator[index].vat += vat; // new added
+          accumulator[index].totalDiscount += totalDiscount; // new added
           accumulator[index].income += income;
           accumulator[index].soldKilo += kilo || 0;
           accumulator[index].soldQty += quantity || 0;
@@ -62,7 +73,10 @@ const arrangeBy = {
             ...currentValue,
             key,
             income,
-            sold: quantity || kilo,
+            netSales,
+            totalDiscount,
+            vat,
+            sold,
             soldQty: quantity || 0,
             soldKilo: kilo || 0,
           });

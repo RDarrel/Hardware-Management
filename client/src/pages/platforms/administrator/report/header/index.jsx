@@ -15,8 +15,10 @@ export const Header = ({
   setSoldKilo = () => {},
   setTotalIncome = () => {},
   setTotalSales = () => {},
+  setTotalNetSales = () => {},
   setUsingDateRange = () => {},
   setBaseFrom = () => {},
+  setTotalVat = () => {},
   setBaseTo = () => {},
   isDashBoard = false,
   usingDateRange = false,
@@ -26,7 +28,9 @@ export const Header = ({
   const [soldKiloState, setSoldKiloState] = useState(0);
   const [soldQtyState, setSoldQtyState] = useState(0);
   const [totalIncomeState, setTotalIncomeState] = useState(0);
+  const [totalVatState, setTotalVatState] = useState(0);
   const [totalSalesState, setTotalSalesState] = useState(0);
+  const [totalNetSalesState, setTotalNetSalesState] = useState(0);
   const [from, setFrom] = useState(new Date()),
     [sales, setSales] = useState([]),
     [to, setTo] = useState(new Date()),
@@ -46,19 +50,24 @@ export const Header = ({
     setSoldQty(soldQtyState);
     setTotalIncome(totalIncomeState);
     setTotalSales(totalSalesState);
+    setTotalNetSales(totalNetSalesState);
+    setTotalVat(totalVatState);
     setBaseFrom(from);
     setBaseTo(to);
   }, [
     soldKiloState,
     totalIncomeState,
     totalSalesState,
+    totalNetSalesState,
     soldQtyState,
+    totalVatState,
     from,
     to,
     setSoldKilo,
     setSoldQty,
     setTotalIncome,
     setTotalSales,
+    setTotalNetSales,
     setBaseFrom,
     setBaseTo,
   ]);
@@ -97,11 +106,19 @@ export const Header = ({
   }, [collections, getTheCreatedAt]);
 
   const handleIncome = (sale, isPerKilo) => {
-    const { kilo, quantity, capital, srp } = sale;
-    return isPerKilo
-      ? srp * kilo - capital * kilo
-      : srp * quantity - capital * quantity;
+    const { kilo, quantity, capital, srp, refund = 0, discount = 0 } = sale;
+    const totalSales = isPerKilo ? srp * kilo : srp * quantity; // Total Sales
+    const salesAfterDiscount = totalSales - discount; // Bawasan ang discount
+    const netSales = salesAfterDiscount - refund; // Bawasan ang refund
+    return netSales - (isPerKilo ? capital * kilo : capital * quantity); // Income
   };
+
+  // const handleIncome = (sale, isPerKilo) => {
+  //   const { kilo, quantity, capital, srp } = sale;
+  //   return isPerKilo
+  //     ? srp * kilo - capital * kilo
+  //     : srp * quantity - capital * quantity;
+  // };
 
   const isSales = !isEmployees && !isTransaction;
 
@@ -132,13 +149,19 @@ export const Header = ({
         setFilteredData(filteredCollections);
 
         if (!isEmployees || !isTransaction) {
-          const { sales: totalSales, income: totalIncome } =
-            GET.salesAndIncome(filteredCollections);
+          const {
+            sales: totalSales,
+            income: totalIncome,
+            totalVat = 0,
+            netSales = 0,
+          } = GET.salesAndIncome(filteredCollections);
           const { _soldKilo = 0, _soldQty = 0 } = GET.sold(filteredCollections);
           setSoldKiloState(_soldKilo);
           setSoldQtyState(_soldQty);
           setTotalSalesState(totalSales);
           setTotalIncomeState(totalIncome);
+          setTotalVatState(totalVat);
+          setTotalNetSalesState(netSales);
         }
       }
     }

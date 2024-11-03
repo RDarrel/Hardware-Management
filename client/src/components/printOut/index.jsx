@@ -111,13 +111,9 @@ const PrintOut = () => {
           </div>
         </div>
 
-        <h6
-          className={`m-0 p-0 cashier-name ${
-            obj.customer ? "cashier-name-mb" : ""
-          }`}
-        >
+        <h6 className={`m-0 p-0  ${obj.customer ? "cashier-name-mb" : ""}`}>
           Cashier:
-          <span className="invoice "> {obj?.cashier}</span>
+          <span className="invoice cashier-name"> {obj?.cashier}</span>
         </h6>
 
         {obj.customer && (
@@ -166,17 +162,52 @@ const PrintOut = () => {
             </div>
           );
         })}
-        <div className="d-flex justify-content-end mt-2 mb-2 ">
-          <div>
-            <span>Total:</span>
-            <span className="font-weight-bold ml-4">
-              {obj.total?.toLocaleString()}.00
-            </span>
-          </div>
+        <div className="d-flex justify-content-between mt-2 ">
+          <span>Total:</span>
+          <span className="font-weight-bold ml-4">
+            {obj.total?.toLocaleString()}.00
+          </span>
+        </div>
+        <div className="d-flex justify-content-between ">
+          <span>Total Discount:</span>
+          <span className="font-weight-bold ml-4">
+            {obj.totalDiscount?.toLocaleString()}.00
+          </span>
+        </div>
+        <div className="d-flex justify-content-between  ">
+          <span>Total Amount:</span>
+          <span className="font-weight-bold ml-4">
+            {(obj.total - obj.totalDiscount).toLocaleString()}.00
+          </span>
+        </div>
+        <div className="d-flex justify-content-between   ">
+          <span>Total VAT(12%):</span>
+          <span className="font-weight-bold ml-4">
+            {obj.totalVat?.toLocaleString()}.00
+          </span>
+        </div>
+        <div className="d-flex justify-content-between mb-2">
+          <span>Total Due:</span>
+          <span className="font-weight-bold ml-4">
+            {obj.totalDue?.toLocaleString()}.00
+          </span>
         </div>
         {!obj.isQuotation && (
           <div className="footer-receipt">
-            <MDBRow>
+            <div className="d-flex justify-content-between mt-1">
+              <span className="font-weight-bold">Cash:</span>
+              <span className="font-weight-bold ml-4">
+                {obj.cash?.toLocaleString()}.00
+              </span>
+            </div>
+
+            <div className="d-flex justify-content-between mb-1">
+              <span className="font-weight-bold">Change:</span>
+              <span className="font-weight-bold ml-4">
+                {Number(obj.cash - obj.totalDue || 0)?.toLocaleString()}.00
+              </span>
+            </div>
+            {/* <MDBRow>
               <MDBCol
                 md="5"
                 sm="3"
@@ -200,10 +231,10 @@ const PrintOut = () => {
               </MDBCol>
               <MDBCol className="mr-4 d-flex justify-content-end">
                 <span className="font-weight-bold ml-4  mr-3 cash-value">
-                  {Number(obj.cash - obj.total || 0)?.toLocaleString()}.00
+                  {Number(obj.cash - obj.totalDue || 0)?.toLocaleString()}.00
                 </span>
               </MDBCol>
-            </MDBRow>
+            </MDBRow> */}
           </div>
         )}
         <div className="text-center d-flex flex-column">

@@ -16,7 +16,10 @@ const Table = ({ sales = [], page, maxPage, setPage = () => {} }) => {
             <th className="text-center">Unit</th>
             <th className="text-center">Capital</th>
             <th className="text-center">SRP</th>
-            <th className="text-center">Sales</th>
+            <th className="text-center">Gross Sales</th>
+            <th className="text-center">Discount</th>
+            <th className="text-center">Net Sales</th>
+            <th className="text-center">VAT(12%)</th>
             <th className="text-center">INCOME</th>
           </tr>
         </thead>
@@ -38,7 +41,19 @@ const Table = ({ sales = [], page, maxPage, setPage = () => {} }) => {
                         className="product-image mr-2"
                       />
                       <div>
-                        <h6 className="product-name mt-1">{product.name}</h6>
+                        <h6
+                          className="mt-1"
+                          style={{
+                            marginBottom: "-5px",
+                            fontWeight: "500",
+                            maxWidth: "200px",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {product.name}
+                        </h6>
                         {product.hasVariant && (
                           <div
                             className="d-flex align-items-center"
@@ -74,6 +89,21 @@ const Table = ({ sales = [], page, maxPage, setPage = () => {} }) => {
                   </td>
                   <td className="text-center">
                     <span className="font-weight-bold text-danger">
+                      ₱{sale.totalDiscount.toLocaleString()}
+                    </span>
+                  </td>
+                  <td className="text-center">
+                    <span className="font-weight-bold text-danger">
+                      ₱{sale.netSales.toLocaleString()}
+                    </span>
+                  </td>
+                  <td className="text-center">
+                    <span className="font-weight-bold text-danger">
+                      ₱{sale.vat.toLocaleString()}
+                    </span>
+                  </td>
+                  <td className="text-center">
+                    <span className="font-weight-bold text-danger">
                       ₱{sale.income.toLocaleString()}
                     </span>
                   </td>
@@ -82,7 +112,7 @@ const Table = ({ sales = [], page, maxPage, setPage = () => {} }) => {
             })
           ) : (
             <tr>
-              <td colSpan={8} className="text-center">
+              <td colSpan={11} className="text-center">
                 No Record.
               </td>
             </tr>

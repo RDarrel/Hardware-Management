@@ -11,7 +11,16 @@ const GET = {
       }
       return (accumulator += currentValue.srp * currentValue.sold);
     }, 0);
-    return { income: totalIncome, sales: totalSales };
+
+    const totalVat = sales.reduce((acc, curr) => (acc += curr.vat), 0);
+
+    const netSales = sales.reduce((acc, curr) => {
+      const { netSales } = curr || {};
+      acc += netSales;
+      return acc;
+    }, 0);
+
+    return { income: totalIncome, sales: totalSales, netSales, totalVat };
   },
 
   sold: (sales) => {

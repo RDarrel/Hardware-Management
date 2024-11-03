@@ -163,7 +163,6 @@
   .footer-receipt {
     border-top: 2px dashed black;
     border-bottom: 2px dashed black;
-    width: 330px;
   }
 
   .cash {
@@ -179,7 +178,7 @@
   }
 
   .cashier-name-mb {
-    margin-bottom: -7px !important;
+    margin-bottom: 1px !important;
   }
 
   .cash-label {

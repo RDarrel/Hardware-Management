@@ -31,6 +31,10 @@ const modelSchema = new mongoose.Schema(
       type: Number,
     },
 
+    discount: {
+      type: Number,
+    },
+
     quantity: {
       type: Number,
     },

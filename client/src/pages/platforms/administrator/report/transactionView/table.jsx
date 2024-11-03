@@ -1,10 +1,10 @@
 import React from "react";
-import { variation } from "../../../../../services/utilities";
+import { transaction, variation } from "../../../../../services/utilities";
 import getTotalRefundAmount from "../getTotalRefund";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
 import productOrder from "../../../../../services/utilities/product";
 
-const Table = ({ orderDetails, transaction }) => {
+const Table = ({ orderDetails, transaction: transac }) => {
   return (
     <table className="invoice-report-table">
       <thead>
@@ -74,29 +74,37 @@ const Table = ({ orderDetails, transaction }) => {
             style={{ borderRight: "none", fontSize: "1rem" }}
           >
             <p className="ml-3 paragraph mt-1">Total Sale</p>
+            <p className="ml-3 paragraph  ">Total Discount</p>
             <p className="ml-3 paragraph">Total Refund Amount</p>
             <p className="ml-3 paragraph  ">Total Amount</p>
+            <p className="ml-3 paragraph  ">Total VAT(12%)</p>
+            <p className="ml-3 paragraph  ">Total Due</p>
             <p className="ml-3 paragraph  ">Cash</p>
             <p className="ml-3 paragraph  mb-2">Change</p>
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
             <p className="ml-4 paragraph  mt-1">
-              ₱{formattedTotal(transaction?.total)}
+              ₱{formattedTotal(transac?.total)}
+            </p>
+            <p className="ml-4 paragraph ">
+              ₱{formattedTotal(transac?.totalDiscount || 0)}
             </p>
             <p className="ml-4 paragraph">
-              ₱{formattedTotal(getTotalRefundAmount(transaction.products))}
+              ₱{formattedTotal(getTotalRefundAmount(transac.products))}
             </p>
             <p className="ml-4 paragraph ">
-              ₱{formattedTotal(transaction?.totalWithoutDeduc)}
+              ₱{formattedTotal(transac?.total - (transac.totalDiscount || 0))}
+            </p>
+
+            <p className="ml-4 paragraph ">
+              ₱{formattedTotal(transaction?.totalVat(orderDetails))}
             </p>
             <p className="ml-4 paragraph ">
-              ₱{formattedTotal(transaction?.cash)}
+              ₱{formattedTotal(transac?.totalDue)}
             </p>
+            <p className="ml-4 paragraph ">₱{formattedTotal(transac?.cash)}</p>
             <p className="ml-4 paragraph mb-2">
-              ₱
-              {formattedTotal(
-                transaction.cash - transaction?.totalWithoutDeduc
-              )}
+              ₱{formattedTotal(transac.cash - transac?.totalDue)}
             </p>
           </td>
         </tr>

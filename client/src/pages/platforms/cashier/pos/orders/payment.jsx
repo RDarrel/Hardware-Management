@@ -30,6 +30,7 @@ export default function Payment({
   const { auth, token } = useSelector(({ auth }) => auth),
     [cash, setCash] = useState(0),
     [customer, setCustomer] = useState(""),
+    [ordersWithDiscount, setOrdersWithDiscount] = useState([]),
     [totalDiscount, setTotalDiscount] = useState(0),
     [totalVat, setTotalVat] = useState(0),
     [totalDue, setTotalDue] = useState(0),
@@ -39,8 +40,8 @@ export default function Payment({
   const isQuotation = isWalkInQuotation || isWalkin;
 
   useEffect(() => {
-    setChange(cash - total);
-  }, [total, cash]);
+    setChange(cash - totalDue);
+  }, [totalDue, cash]);
 
   const getTotal = useCallback((key, _purchases) => {
     return _purchases.reduce((acc, curr) => (acc += curr[key]), 0);
@@ -60,15 +61,18 @@ export default function Payment({
 
       const haveDiscount = totalOrder >= 15;
 
+      const discount = haveDiscount ? subtotal * 0.1 : 0;
+
       return {
         ...purchase,
-        vat: subtotal * 0.12,
-        discount: haveDiscount ? subtotal * 0.1 : 0,
+        vat: (subtotal - discount) * 0.12,
+        discount,
       };
     });
 
     const _totalDiscount = getTotal("discount", _purchases);
     const _totalVat = getTotal("vat", _purchases);
+    setOrdersWithDiscount(_purchases);
     setTotalDiscount(_totalDiscount);
     setTotalVat(_totalVat);
     setTotalDue(total + _totalVat - _totalDiscount);
@@ -102,6 +106,7 @@ export default function Payment({
       isQuotation: isQuotation,
       total,
       totalDiscount,
+      totalVat,
       totalDue,
       cash,
       purchases,
@@ -118,8 +123,11 @@ export default function Payment({
             invoice_no,
             cashier: auth._id,
             total,
+            totalDiscount,
+            totalVat,
+            totalDue,
             cash,
-            purchases: orderDetails,
+            purchases: ordersWithDiscount,
           },
         })
       );
@@ -142,7 +150,7 @@ export default function Payment({
     setCustomerQuotation("");
   };
 
-  const disableByCash = totalDue;
+  const disableByCash = cash <= totalDue;
   const disableByCustomer = isWalkin ? (customer ? false : true) : false;
 
   const btnTxt = isWalkin
@@ -174,15 +182,23 @@ export default function Payment({
             />
           </div>
           <div className="d-flex align-items-center">
-            <h6 className="mt-3 mb-2">Total Amount:</h6>
-            <h5 className="mt-3 " style={{ marginLeft: "27px" }}>
+            <h6 className="mt-3 mb-2">Total:</h6>
+            <h5 className="mt-3 " style={{ marginLeft: "86px" }}>
               <strong> ₱{formattedTotal(total)}</strong>
             </h5>
           </div>
+
           <div className="d-flex align-items-center">
             <h6 className="mt-3 mb-2">Total Discount: </h6>
             <h5 className="mt-3 " style={{ marginLeft: "1.3rem" }}>
               <strong> ₱{formattedTotal(totalDiscount)}</strong>
+            </h5>
+          </div>
+
+          <div className="d-flex align-items-center">
+            <h6 className="mt-3 mb-2">Total Amount:</h6>
+            <h5 className="mt-3 " style={{ marginLeft: "27px" }}>
+              <strong> ₱{formattedTotal(total - totalDiscount)}</strong>
             </h5>
           </div>
           <div className="d-flex align-items-center">

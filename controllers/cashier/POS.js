@@ -89,7 +89,7 @@ const stocksPerQuantity = async (
         capital: stock.capital,
         [basePurchaseKey]: Number(
           shouldAdjustPurchase
-            ? basePurchase - Math.abs(remainingStock) //cinoconvert ko siya sa positive kapag -2 magiging 2
+            ? basePurchase - Math.abs(remainingStock) //kinoconvert ko siya sa positive kapag -2 magiging 2
             : basePurchase
         ).toFixed(2),
         product: _id,
@@ -203,6 +203,8 @@ exports.pos = async (req, res) => {
       invoice_no,
       cashier,
       total,
+      totalDue,
+      totalDiscount,
       customer = "",
       cash,
     } = req.body;
@@ -212,6 +214,8 @@ exports.pos = async (req, res) => {
       cashier,
       invoice_no,
       total,
+      totalDue,
+      totalDiscount,
       cash,
       totalWithoutDeduc: total,
       purchases,
@@ -395,7 +399,7 @@ const deductionForSales = async ({
       ...(has2Variant && { variant2: variant2 }),
     };
     var sale = await Sales.findOne(query).sort({ createdAt: 1 });
-
+    const totalRefund = baseRefound * sale.srp;
     while (isLoopAgain) {
       const saleIsNotEnogh = sale[baseKey] >= baseRefound;
       var remainingRefound = sale[baseKey] - baseRefound;
@@ -404,6 +408,7 @@ const deductionForSales = async ({
       } else {
         await Sales.findByIdAndUpdate(sale._id, {
           [baseKey]: remainingRefound,
+          refund: totalRefund + totalRefund * 0.12, // add vat (12%)
         });
       }
 
@@ -469,7 +474,6 @@ const handleKiloGramsRefund = (currentRefund, newRefund) => {
   } else {
     newRefundGrams = gramsConverter(Number(totalNewRefund[1] || 0));
   }
-  console.log(totalNewRefund);
 
   return { kiloRefund: newRefundKilo, kiloGramsRefund: newRefundGrams };
 };
@@ -614,13 +618,14 @@ exports.refund = async (req, res) => {
           getTotalReturnRefund(refundProducts),
       });
     } else {
+      const total = Number(newTotal || 0);
       await Transactions.findByIdAndUpdate(transaction._id, {
         purchases,
         totalRefundSales:
           (transaction.totalRefundSales || 0) +
           getTotalReturnRefund(refundProducts),
         refundItemCount: (transaction.refundItemCount || 0) + 1,
-        total: Number(newTotal || 0),
+        total: total - total * 0.12,
       });
     }
 
