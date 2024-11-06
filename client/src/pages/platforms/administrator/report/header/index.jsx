@@ -5,32 +5,35 @@ import GET from "./GET";
 import arrangeBy from "./arrangeBy";
 
 export const Header = ({
+  type: salesType = "Detailed",
+  mb = "3",
+  frequency = "Daily",
+  title = "Sales",
   collections,
   isTransaction = false,
   isEmployees = false,
-  mb = "3",
-  title = "Sales",
+  isSalesReport = false,
+  isDashBoard = false,
+  usingDateRange = false,
+  fromRange = new Date(),
+  toRange = new Date(),
   setFilteredData = () => {},
   setSoldQty = () => {},
   setSoldKilo = () => {},
   setTotalIncome = () => {},
   setTotalSales = () => {},
-  setTotalNetSales = () => {},
+  setTotalRefund = () => {},
   setUsingDateRange = () => {},
   setBaseFrom = () => {},
-  setTotalVat = () => {},
+  setTotalDiscount = () => {},
   setBaseTo = () => {},
-  isDashBoard = false,
-  usingDateRange = false,
-  fromRange = new Date(),
-  toRange = new Date(),
 }) => {
   const [soldKiloState, setSoldKiloState] = useState(0);
   const [soldQtyState, setSoldQtyState] = useState(0);
   const [totalIncomeState, setTotalIncomeState] = useState(0);
-  const [totalVatState, setTotalVatState] = useState(0);
+  const [totalDiscountState, setTotalDiscountState] = useState(0);
   const [totalSalesState, setTotalSalesState] = useState(0);
-  const [totalNetSalesState, setTotalNetSalesState] = useState(0);
+  const [totalRefundState, setTotalRefundState] = useState(0);
   const [from, setFrom] = useState(new Date()),
     [sales, setSales] = useState([]),
     [to, setTo] = useState(new Date()),
@@ -50,24 +53,25 @@ export const Header = ({
     setSoldQty(soldQtyState);
     setTotalIncome(totalIncomeState);
     setTotalSales(totalSalesState);
-    setTotalNetSales(totalNetSalesState);
-    setTotalVat(totalVatState);
+    setTotalRefund(totalRefundState);
+    setTotalDiscount(totalDiscountState);
     setBaseFrom(from);
     setBaseTo(to);
   }, [
     soldKiloState,
     totalIncomeState,
     totalSalesState,
-    totalNetSalesState,
+    totalRefundState,
     soldQtyState,
-    totalVatState,
+    totalDiscountState,
     from,
     to,
     setSoldKilo,
     setSoldQty,
     setTotalIncome,
     setTotalSales,
-    setTotalNetSales,
+    setTotalRefund,
+    setTotalDiscount,
     setBaseFrom,
     setBaseTo,
   ]);
@@ -96,7 +100,7 @@ export const Header = ({
   useEffect(() => {
     setSales(
       collections.map((sale) => {
-        return { ...sale, income: handleIncome(sale, sale.product?.isPerKilo) };
+        return { ...sale, ...handleIncome(sale, sale.product?.isPerKilo) };
       })
     );
     setFrom(getTheCreatedAt(true) || new Date());
@@ -106,11 +110,27 @@ export const Header = ({
   }, [collections, getTheCreatedAt]);
 
   const handleIncome = (sale, isPerKilo) => {
-    const { kilo, quantity, capital, srp, refund = 0, discount = 0 } = sale;
+    const {
+      kilo,
+      quantity,
+      capital,
+      srp,
+      refundQuantity = 0,
+      discount = 0,
+    } = sale;
     const totalSales = isPerKilo ? srp * kilo : srp * quantity; // Total Sales
-    const salesAfterDiscount = totalSales - discount; // Bawasan ang discount
-    const netSales = salesAfterDiscount - refund; // Bawasan ang refund
-    return netSales - (isPerKilo ? capital * kilo : capital * quantity); // Income
+    const salesAfterDiscount = totalSales - (discount || 0); // Bawasan ang discount
+    const refund = srp * (refundQuantity || 0);
+    const netSales = salesAfterDiscount - (refund || 0); // Bawasan ang refund
+    const income = netSales - (isPerKilo ? capital * kilo : capital * quantity); // Income
+    return {
+      netSales,
+      income,
+      grossSales: totalSales,
+      refundAmount: refund,
+      refundQuantity,
+      discount,
+    };
   };
 
   // const handleIncome = (sale, isPerKilo) => {
@@ -143,7 +163,11 @@ export const Header = ({
             ? filteredSales
             : arrangeBy.employees(filteredSales);
         } else {
-          filteredCollections = arrangeBy.sales(filteredSales);
+          filteredCollections = arrangeBy.sales(
+            filteredSales,
+            frequency,
+            salesType
+          );
         }
 
         setFilteredData(filteredCollections);
@@ -152,16 +176,16 @@ export const Header = ({
           const {
             sales: totalSales,
             income: totalIncome,
-            totalVat = 0,
-            netSales = 0,
-          } = GET.salesAndIncome(filteredCollections);
+            totalRefund = 0,
+            totalDiscount = 0,
+          } = GET.salesAndIncome(filteredCollections, frequency);
           const { _soldKilo = 0, _soldQty = 0 } = GET.sold(filteredCollections);
           setSoldKiloState(_soldKilo);
           setSoldQtyState(_soldQty);
           setTotalSalesState(totalSales);
           setTotalIncomeState(totalIncome);
-          setTotalVatState(totalVat);
-          setTotalNetSalesState(netSales);
+          setTotalDiscountState(totalDiscount);
+          setTotalRefundState(totalRefund);
         }
       }
     }
@@ -171,6 +195,8 @@ export const Header = ({
     isEmployees,
     isTransaction,
     sales,
+    frequency,
+    salesType,
     setFilteredData,
     setSoldKiloState,
     setSoldQtyState,
@@ -181,7 +207,7 @@ export const Header = ({
   return (
     <MDBRow className={`d-flex align-items-center mb-${mb}`}>
       <MDBCol md="12" className="d-flex align-items-center">
-        {!isDashBoard && (
+        {!isDashBoard && !isSalesReport && (
           <>
             <MDBIcon
               icon="newspaper"
@@ -195,21 +221,26 @@ export const Header = ({
           </>
         )}
         <div
-          className={`d-flex align-items-center ${
-            !isDashBoard ? "mt-2 ml-5" : ""
+          className={`d-flex align-items-center ${isSalesReport && "mt-1"}  ${
+            !isDashBoard && !isSalesReport ? "mt-2 ml-5" : ""
           }`}
         >
-          <h6 className={`font-weight-bold ${isDashBoard && "grey-text"} mr-3`}>
-            From
-          </h6>
+          {!isSalesReport && (
+            <h6
+              className={`font-weight-bold  ${isDashBoard && "grey-text"} mr-3`}
+            >
+              From
+            </h6>
+          )}
           <MDBDatePicker
             value={new Date(from).toDateString()}
+            className={isSalesReport ? "m-0 p-0" : ""}
             getValue={(value) => setFrom(new Date(value))}
             minDate={new Date(minDate).toDateString()}
             maxDate={new Date(maxDate).toDateString()}
           />
           <h6
-            className={`font-weight-bold ${
+            className={` ${isSalesReport ? "mt-2" : "font-weight-bold"} ${
               isDashBoard && "grey-text"
             } ml-3 mr-4 `}
           >
@@ -218,6 +249,7 @@ export const Header = ({
           <MDBDatePicker
             value={new Date(to).toDateString()}
             maxDate={new Date(maxDate).toDateString()}
+            className={isSalesReport ? "m-0 p-0" : ""}
             getValue={(value) => setTo(new Date(value))}
             minDate={new Date(from).toDateString()}
           />

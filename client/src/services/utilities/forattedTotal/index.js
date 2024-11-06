@@ -1,5 +1,5 @@
 const formattedTotal = (total) => {
-  if (!total) return 0;
+  if (!total) return "0.00";
   if (total % 1 !== 0) {
     const arrTotal = String(total).split(".");
     const decimalLength = arrTotal[1]?.length || 0;

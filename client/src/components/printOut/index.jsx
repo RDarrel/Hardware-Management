@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "./print.css";
 import { MDBCol, MDBRow } from "mdbreact";
+import formattedTotal from "../../services/utilities/forattedTotal";
 
 const PrintOut = () => {
   const [products, setProducts] = useState([]);
@@ -85,6 +86,8 @@ const PrintOut = () => {
     return `${hours}:${minutes} ${ampm}`;
   };
 
+  const vatSales = Number(obj.totalDue / 1.12).toFixed(2);
+  const vat = Number(vatSales * 0.12).toFixed(2);
   return (
     <div className="container-receipt mt-1">
       <div className="header">
@@ -165,31 +168,20 @@ const PrintOut = () => {
         <div className="d-flex justify-content-between mt-2 ">
           <span>Total:</span>
           <span className="font-weight-bold ml-4">
-            {obj.total?.toLocaleString()}.00
+            {formattedTotal(obj.total)}
           </span>
         </div>
         <div className="d-flex justify-content-between ">
           <span>Total Discount:</span>
           <span className="font-weight-bold ml-4">
-            {obj.totalDiscount?.toLocaleString()}.00
+            {formattedTotal(obj.totalDiscount)}
           </span>
         </div>
-        <div className="d-flex justify-content-between  ">
-          <span>Total Amount:</span>
-          <span className="font-weight-bold ml-4">
-            {(obj.total - obj.totalDiscount).toLocaleString()}.00
-          </span>
-        </div>
-        <div className="d-flex justify-content-between   ">
-          <span>Total VAT(12%):</span>
-          <span className="font-weight-bold ml-4">
-            {obj.totalVat?.toLocaleString()}.00
-          </span>
-        </div>
+
         <div className="d-flex justify-content-between mb-2">
           <span>Total Due:</span>
           <span className="font-weight-bold ml-4">
-            {obj.totalDue?.toLocaleString()}.00
+            {formattedTotal(obj.totalDue)}
           </span>
         </div>
         {!obj.isQuotation && (
@@ -197,46 +189,30 @@ const PrintOut = () => {
             <div className="d-flex justify-content-between mt-1">
               <span className="font-weight-bold">Cash:</span>
               <span className="font-weight-bold ml-4">
-                {obj.cash?.toLocaleString()}.00
+                {formattedTotal(obj.cash)}
               </span>
             </div>
 
             <div className="d-flex justify-content-between mb-1">
               <span className="font-weight-bold">Change:</span>
               <span className="font-weight-bold ml-4">
-                {Number(obj.cash - obj.totalDue || 0)?.toLocaleString()}.00
+                {formattedTotal(Number(obj.cash - obj.totalDue || 0))}
               </span>
             </div>
-            {/* <MDBRow>
-              <MDBCol
-                md="5"
-                sm="3"
-                className="d-flex justify-content-end  cash-label"
-              >
-                <span className="mr-2 font-weight-bold ">Cash</span>
-              </MDBCol>
-              <MDBCol className="mr-4  d-flex justify-content-end">
-                <span className="font-weight-bold ml-4  mr-3 cash-value">
-                  {obj.cash?.toLocaleString()}.00
-                </span>
-              </MDBCol>
-            </MDBRow>
-            <MDBRow>
-              <MDBCol
-                md="5"
-                sm="3"
-                className="d-flex justify-content-end cash-label"
-              >
-                <span className="mr-2 font-weight-bold ">Change</span>
-              </MDBCol>
-              <MDBCol className="mr-4 d-flex justify-content-end">
-                <span className="font-weight-bold ml-4  mr-3 cash-value">
-                  {Number(obj.cash - obj.totalDue || 0)?.toLocaleString()}.00
-                </span>
-              </MDBCol>
-            </MDBRow> */}
           </div>
         )}
+        <div className="vat mb-2">
+          <div className="d-flex justify-content-between mt-1 ">
+            <span>Vatable Sale:</span>
+            <span className="font-weight-bold ml-4">
+              {formattedTotal(vatSales)}
+            </span>
+          </div>
+          <div className="d-flex justify-content-between mb-1 ">
+            <span>VAT (12%):</span>
+            <span className="font-weight-bold ml-4">{formattedTotal(vat)}</span>
+          </div>
+        </div>
         <div className="text-center d-flex flex-column">
           <small>THIS SERVE AS YOUR</small>
           <small>SALES INVOICE</small>

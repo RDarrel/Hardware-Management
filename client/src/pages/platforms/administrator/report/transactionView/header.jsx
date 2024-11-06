@@ -39,7 +39,9 @@ const Header = ({ invoice_no, createdAt, customer, cashier }) => {
       <h6 className="ml-3 font-weight-bold">
         Cashier: {fullName(cashier.fullName) || "--"}
       </h6>
-      <h6 className="ml-3 font-weight-bold">Customer: {customer || "--"}</h6>
+      <h6 className="ml-3 font-weight-bold">
+        Customer: {customer ? customer : "--"}
+      </h6>
     </>
   );
 };

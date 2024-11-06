@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import getSalesAndIncome from "./getSalesAndIncome";
-import incomePerSale from "./incomePerSale";
+import netAndIncome from "./netAndIncome";
 import Card from "./card";
 
 const YEARS = [
@@ -13,7 +13,11 @@ const YEARS = [
 const Annually = ({ sales }) => {
   const [filteredSales, setFilteredSales] = useState([]);
   const [selectedYear, setSelectedYear] = useState(2024);
-  const [annually, setAnnually] = useState({ totalSales: 0, totalIncome: 0 });
+  const [annually, setAnnually] = useState({
+    totalSales: 0,
+    totalIncome: 0,
+    totalNetSales: 0,
+  });
 
   useEffect(() => {
     const currentDate = new Date();
@@ -28,7 +32,7 @@ const Annually = ({ sales }) => {
       .map((sale) => {
         return {
           ...sale,
-          income: incomePerSale(sale, sale.product?.isPerKilo),
+          ...netAndIncome(sale, sale.product?.isPerKilo),
         };
       });
 

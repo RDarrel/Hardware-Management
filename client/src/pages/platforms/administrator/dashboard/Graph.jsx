@@ -81,7 +81,7 @@ const Graph = ({ products }) => {
       const monthlySales = {};
 
       filteredData.forEach(
-        ({ createdAt, soldKilo, soldQty, srp, product, income }) => {
+        ({ createdAt, soldKilo, soldQty, srp, product, income, netSales }) => {
           const { isPerKilo = false } = product;
           const saleDate = new Date(createdAt);
           const month = saleDate.toLocaleString("default", { month: "long" });
@@ -92,10 +92,12 @@ const Graph = ({ products }) => {
             monthlySales[month] = {
               totalSales: 0,
               income: 0,
+              netSales: 0,
             };
           }
           monthlySales[month].totalSales += totalSales;
           monthlySales[month].income += income;
+          monthlySales[month].netSales += netSales;
         }
       );
 
@@ -103,6 +105,7 @@ const Graph = ({ products }) => {
         month,
         totalSales: monthlySales[month].totalSales,
         income: monthlySales[month].income,
+        netSales: monthlySales[month].netSales,
       }));
 
       setMonthlyData(monthlyChartData);
@@ -113,10 +116,17 @@ const Graph = ({ products }) => {
     labels: monthlyData.map((data) => data.month),
     datasets: [
       {
-        label: "Total Sales",
+        label: "Gross Sales",
         data: monthlyData.map((data) => data.totalSales),
         backgroundColor: "rgba(75, 192, 192, 0.2)", // Light Green
         borderColor: "rgba(75, 192, 192, 1)", // Dark Green
+        borderWidth: 1,
+      },
+      {
+        label: "Net Sales",
+        data: monthlyData.map((data) => data.netSales),
+        backgroundColor: "rgba(54, 162, 235, 0.2)", // Light Blue
+        borderColor: "rgba(54, 162, 235, 1)", // Dark Blue
         borderWidth: 1,
       },
       {

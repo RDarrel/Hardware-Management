@@ -43,6 +43,56 @@ const updateStock = async (stock, key, newStock) => {
   }
 };
 
+const handleDiscounts = (purchases = []) => {
+  try {
+    const _purchases = [...purchases];
+    const groupPurchases = _purchases.reduce((acc, curr) => {
+      const { product, variant1, variant2 } = curr;
+      const { _id = "" } = product;
+      const key = `${_id}${variant1 || ""}${variant2 || ""}`;
+      const index = acc.findIndex(({ key: _key }) => _key === key);
+      if (index > -1) {
+        acc[index].sales.push({ ...curr });
+      } else {
+        acc.push({ key, sales: [{ ...curr }] });
+      }
+      return acc;
+    }, []);
+
+    const applyDiscount = groupPurchases.map(({ sales = [] }) => {
+      if (sales.length > 1) {
+        const totalGrossSales = reduce((acc, curr) => {
+          const { product, srp } = curr;
+          const { isPerKilo } = product;
+          const baseKey = isPerKilo ? "kilo" : "quantity";
+          return (acc += srp * curr[baseKey]);
+        }, 0);
+
+        sales.forEach((sale) => {
+          const { product, srp = 0, discount = 0 } = sale;
+          const { isPerKilo = false } = product;
+
+          if (discount <= 0) return sale;
+          const baseKey = isPerKilo ? "kilo" : "quantity";
+          const grossSales = srp * sale[baseKey];
+          const discountPercentage = grossSales / totalGrossSales;
+          return {
+            ...sale,
+            discount: discount * discountPercentage,
+            product: product._id,
+          };
+        });
+      } else {
+        return { ...sales[0], product: sales[0]?.product?._id };
+      }
+    });
+
+    return applyDiscount;
+  } catch (error) {
+    console.log("Error in discount:", error.message);
+  }
+};
+
 const stocksPerQuantity = async (
   stock,
   purchase,
@@ -92,7 +142,7 @@ const stocksPerQuantity = async (
             ? basePurchase - Math.abs(remainingStock) //kinoconvert ko siya sa positive kapag -2 magiging 2
             : basePurchase
         ).toFixed(2),
-        product: _id,
+        // product: _id,
         invoice_no,
       });
 
@@ -116,7 +166,7 @@ const stocksPerQuantity = async (
               ? nextStock[baseStockKey]
               : Math.abs(remainingStock)
           ).toFixed(2),
-          product: _id,
+          // product: _id,
           invoice_no,
         });
 
@@ -209,26 +259,31 @@ exports.pos = async (req, res) => {
       cash,
     } = req.body;
     const purchasesWithCapital = await stocks(purchases, String(invoice_no));
-    await Sales.insertMany(purchasesWithCapital);
-    await Transactions.create({
-      cashier,
-      invoice_no,
-      total,
-      totalDue,
-      totalDiscount,
-      cash,
-      totalWithoutDeduc: total,
-      purchases,
-      customer,
-    });
 
-    await Audit.create({
-      invoice_no,
-      employee: cashier,
-      action: "SALE",
-      amount: total,
-      description: customer ? `Sale to ${customer}` : "",
-    });
+    if (purchasesWithCapital.length > 0) {
+      const purchasesWithDiscount = handleDiscounts(purchasesWithCapital);
+
+      await Sales.insertMany(purchasesWithDiscount);
+      await Transactions.create({
+        cashier,
+        invoice_no,
+        total,
+        totalDue,
+        totalDiscount,
+        cash,
+        totalWithoutDeduc: total,
+        purchases,
+        customer,
+      });
+
+      await Audit.create({
+        invoice_no,
+        employee: cashier,
+        action: "SALE",
+        amount: total,
+        description: customer ? `Sale to ${customer}` : "",
+      });
+    }
 
     res.json({ success: "Successfully Buy" });
   } catch (error) {
@@ -328,6 +383,7 @@ exports.returnProducts = async (req, res) => {
           return String(purchase.product) === product._id;
         }
       });
+
       const existingPurchase = { ...purchases[indexOfReturnProduct]._doc };
       var { quantityReturn = 0, kiloReturn = 0 } = existingPurchase;
       const totalKiloReturn = kilo + kiloGrams;
@@ -399,30 +455,40 @@ const deductionForSales = async ({
       ...(has2Variant && { variant2: variant2 }),
     };
     var sale = await Sales.findOne(query).sort({ createdAt: 1 });
-    const totalRefund = baseRefound * sale.srp;
+
     while (isLoopAgain) {
+      //3-4 = -1 remaingRefund
       const saleIsNotEnogh = sale[baseKey] >= baseRefound;
       var remainingRefound = sale[baseKey] - baseRefound;
-      if (saleIsNotEnogh && remainingRefound === 0) {
-        await Sales.findByIdAndDelete(sale._id);
-      } else {
-        await Sales.findByIdAndUpdate(sale._id, {
-          [baseKey]: remainingRefound,
-          refund: totalRefund + totalRefund * 0.12, // add vat (12%)
-        });
-      }
+      // if (saleIsNotEnogh && remainingRefound === 0) {
+      //   await Sales.findByIdAndDelete(sale._id);
+      // } else { comment muna dahil sa refund
+      const refundQuantity = saleIsNotEnogh ? baseRefound : sale[baseKey];
+      await Sales.findByIdAndUpdate(sale._id, {
+        [baseKey]: remainingRefound,
+        refundQuantity,
+      });
+      // }
 
       if (!saleIsNotEnogh) {
         await Sales.findByIdAndDelete(sale._id);
+        //2  - 1
         var nextSale = await findAnotherSale(query, sale);
         const nextSaleIsEnough =
           nextSale[baseKey] >= Math.abs(remainingRefound);
+        //refund 4 si sale 3
 
         const nextRemainingRefound =
           nextSale[baseKey] - Math.abs(remainingRefound);
 
+        const refundQuantity = nextSaleIsEnough
+          ? Math.abs(remainingRefound)
+          : nextSale[baseKey];
+
         await Sales.findByIdAndUpdate(sale._id, {
           [baseKey]: nextRemainingRefound,
+          refundAmount: nextSale.srp * refund,
+          refundQuantity,
         });
 
         if (!nextSaleIsEnough) {
@@ -625,7 +691,7 @@ exports.refund = async (req, res) => {
           (transaction.totalRefundSales || 0) +
           getTotalReturnRefund(refundProducts),
         refundItemCount: (transaction.refundItemCount || 0) + 1,
-        total: total - total * 0.12,
+        total,
       });
     }
 

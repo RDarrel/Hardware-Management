@@ -5,22 +5,21 @@ import {
   MDBBtn,
   MDBCard,
   MDBCardBody,
-  MDBCardHeader,
   MDBCol,
   MDBIcon,
   MDBRow,
 } from "mdbreact";
 
+import CustomSelect from "../../../../../components/customSelect";
 import {
-  formattedDate,
-  globalSearch,
+  // globalSearch,
   variation,
 } from "../../../../../services/utilities";
 import { Header } from "../header";
 import excel from "../../../../../services/utilities/downloadExcel/excel";
 import Spinner from "../../../../widgets/spinner";
-import formattedTotal from "../../../../../services/utilities/forattedTotal";
 import Table from "./table";
+import Overview from "./overview";
 
 const Sales = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth);
@@ -29,15 +28,17 @@ const Sales = () => {
   );
   const [filteredSales, setFilteredSales] = useState([]);
   const [sales, setSales] = useState([]);
-  const [baseFrom, setBaseFrom] = useState("");
-  const [baseTo, setBaseTo] = useState("");
+  const [from, setFrom] = useState(new Date());
+  const [to, setTo] = useState(new Date());
+  const [frequency, setFrequency] = useState("Daily");
+  const [type, setType] = useState("Detailed");
   const [totalSales, setTotalSales] = useState(0);
-  const [totalNetSales, setTotalNetSales] = useState(0);
-  const [totalVat, setTotalVat] = useState(0);
+  const [totalRefund, setTotalRefund] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [soldQty, setSoldQty] = useState(0);
   const [soldKilo, setSoldKilo] = useState(0);
-  const [search, setSearch] = useState("");
+  // const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const dispatch = useDispatch();
 
@@ -45,15 +46,15 @@ const Sales = () => {
     dispatch(BROWSE({ token }));
   }, [dispatch, token]);
 
-  useEffect(() => {
-    if (search && filteredSales.length > 0) {
-      const _products = [...filteredSales];
-      const searchProducts = globalSearch(_products, search);
-      setSales(searchProducts);
-    } else {
-      setSales(filteredSales);
-    }
-  }, [search, filteredSales]);
+  // useEffect(() => {
+  //   if (search && filteredSales.length > 0) {
+  //     const _products = [...filteredSales];
+  //     const searchProducts = globalSearch(_products, search);
+  //     setSales(searchProducts);
+  //   } else {
+  //     setSales(filteredSales);
+  //   }
+  // }, [search, filteredSales]);
 
   useEffect(() => {
     setSales(filteredSales);
@@ -64,8 +65,8 @@ const Sales = () => {
       sheet: "Sales-Report",
       filename: "Sales-Report",
       title: "Sales Report",
-      from: formattedDate(baseFrom),
-      to: formattedDate(baseTo),
+      // from: formattedDate(baseFrom),
+      // to: formattedDate(baseTo),
       income: `₱${totalIncome.toLocaleString()}`,
       sales: `₱${totalSales.toLocaleString()}`,
       pcs: soldQty,
@@ -90,22 +91,27 @@ const Sales = () => {
     });
     excel({ options, array: formatSales });
   };
+
+  const netSales = totalSales - (totalDiscount + totalRefund);
+  const totalVatSales = Number(netSales / 1.12).toFixed(2);
+
+  console.log(filteredSales);
+
   return (
     <>
       <MDBRow className="d-flex align-items-center">
         <MDBCol md="10">
-          <Header
-            setFilteredData={setFilteredSales}
-            collections={collections}
-            setSoldKilo={setSoldKilo}
-            setSoldQty={setSoldQty}
-            setTotalIncome={setTotalIncome}
-            setTotalSales={setTotalSales}
-            setBaseFrom={setBaseFrom}
-            setBaseTo={setBaseTo}
-            setTotalNetSales={setTotalNetSales}
-            setTotalVat={setTotalVat}
-          />
+          <MDBRow className={`d-flex align-items-center `}>
+            <MDBCol md="12" className="d-flex align-items-center">
+              <MDBIcon
+                icon="newspaper"
+                size="2x"
+                className="mt-2 mr-2"
+                style={{ color: "blue" }}
+              />
+              <h4 className={`mt-3  font-weight-bolder`}>Sales Report</h4>
+            </MDBCol>
+          </MDBRow>
         </MDBCol>
         <MDBCol>
           <MDBBtn size="sm" onClick={handleExport}>
@@ -115,84 +121,63 @@ const Sales = () => {
         </MDBCol>
       </MDBRow>
 
-      <MDBRow>
-        <MDBCol md="3" className="mb-3">
-          <MDBCard>
-            <MDBCardHeader color="warning-color">
-              Total Gross Sales
-            </MDBCardHeader>
-            <div className="d-flex  align-items-center justify-content-between">
-              <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
-                ₱ {formattedTotal(totalSales)}
-              </h3>
-            </div>
-          </MDBCard>
-        </MDBCol>
-
-        <MDBCol md="3" className="mb-3">
-          <MDBCard>
-            <MDBCardHeader color="primary-color">Total Net Sales</MDBCardHeader>
-            <div className="d-flex  align-items-center justify-content-between">
-              <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
-                ₱ {formattedTotal(totalNetSales)}
-              </h3>
-            </div>
-          </MDBCard>
-        </MDBCol>
-
-        <MDBCol md="3" className="mb-3">
-          <MDBCard>
-            <MDBCardHeader color="danger-color">Total VAT(12%)</MDBCardHeader>
-            <div className="d-flex  align-items-center justify-content-between">
-              <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
-                ₱ {formattedTotal(totalVat)}
-              </h3>
-            </div>
-          </MDBCard>
-        </MDBCol>
-
-        <MDBCol md="3" className="mb-3">
-          <MDBCard>
-            <MDBCardHeader color="info-color">Total Income</MDBCardHeader>
-            <div className="d-flex  align-items-center justify-content-between">
-              <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
-                ₱ {formattedTotal(totalIncome)}
-              </h3>
-            </div>
-          </MDBCard>
-        </MDBCol>
-        {/* 
-        <MDBCol md="3" className="mb-3">
-          <MDBCard>
-            <MDBCardHeader color="danger-color">
-              Total sold in pcs
-            </MDBCardHeader>
-            <div className="d-flex  align-items-center justify-content-between">
-              <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
-                {soldQty}
-              </h3>
-            </div>
-          </MDBCard>
-        </MDBCol>
-
-        <MDBCol md="3" className="mb-3">
-          <MDBCard>
-            <MDBCardHeader color="primary-color">
-              Total sold in kg
-            </MDBCardHeader>
-            <div className="d-flex  align-items-center justify-content-between">
-              <h3 className="ml-4 mt-3 dark-grey-text font-weight-bold">
-                {soldKilo}
-              </h3>
-            </div>
-          </MDBCard>
-        </MDBCol> */}
-      </MDBRow>
       <MDBCard>
         <MDBCardBody>
+          <MDBRow className="d-flex justify-content-center">
+            <MDBCol md="3" className="text-center font-weight-bold">
+              <span>Type</span>
+            </MDBCol>
+            <MDBCol md="4" className="text-center font-weight-bold">
+              <span>Date Range</span>
+            </MDBCol>
+            <MDBCol md="3" className="text-center font-weight-bold">
+              <span>Frequency</span>
+            </MDBCol>
+          </MDBRow>
+
+          <MDBRow className=" d-flex justify-content-center">
+            <MDBCol md="2">
+              <CustomSelect
+                className="m-0 p-0"
+                choices={["Detailed", "Summary"]}
+                preValue={type}
+                onChange={(value) => setType(value)}
+              />
+            </MDBCol>
+            <MDBCol
+              md="5"
+              className="d-flex align-items-center justify-content-center"
+            >
+              <Header
+                setFilteredData={setFilteredSales}
+                collections={collections}
+                setSoldKilo={setSoldKilo}
+                setSoldQty={setSoldQty}
+                setTotalIncome={setTotalIncome}
+                setTotalSales={setTotalSales}
+                setBaseFrom={setFrom}
+                isSalesReport={true}
+                setBaseTo={setTo}
+                setTotalDiscount={setTotalDiscount}
+                setTotalRefund={setTotalRefund}
+                frequency={frequency}
+                type={type}
+              />
+            </MDBCol>
+            <MDBCol md="2">
+              <CustomSelect
+                className="m-0 p-0"
+                choices={["Daily", "Weekly", "Monthly", "Yearly"]}
+                onChange={(value) => setFrequency(value)}
+                preValue={frequency}
+              />
+            </MDBCol>
+          </MDBRow>
+
+          {/* <hr /> */}
           {!isLoading ? (
             <>
-              <MDBRow className="d-flex justify-content-end mb-2">
+              {/* <MDBRow className="d-flex justify-content-end mb-2">
                 <MDBCol md="3">
                   <input
                     type="search"
@@ -202,12 +187,24 @@ const Sales = () => {
                     onChange={({ target }) => setSearch(target.value)}
                   />
                 </MDBCol>
-              </MDBRow>
+              </MDBRow> */}
+              <Overview
+                totalIncome={totalIncome}
+                totalRefund={totalRefund}
+                totalSales={totalSales}
+                totalVatSales={totalVatSales}
+                from={from}
+                to={to}
+                netSales={netSales}
+                totalDiscount={totalDiscount}
+              />
+
               <Table
                 sales={sales}
                 page={page}
                 setPage={setPage}
                 maxPage={maxPage}
+                isDetailedType={type === "Detailed"}
               />
             </>
           ) : (

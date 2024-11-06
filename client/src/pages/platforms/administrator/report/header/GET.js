@@ -1,26 +1,35 @@
 const GET = {
-  salesAndIncome: (sales, isTransaction, isEmployees) => {
+  salesAndIncome: (sales, frequency = "Detailed") => {
+    const isDetailedType = frequency === "Detailed";
     const totalIncome = sales.reduce(
       (accumulator, currentValue) => accumulator + currentValue?.income,
       0
     );
 
     const totalSales = sales.reduce((accumulator, currentValue) => {
-      if (isTransaction || isEmployees) {
-        return (accumulator += currentValue.total);
-      }
-      return (accumulator += currentValue.srp * currentValue.sold);
+      // if (isTransaction || isEmployees) {
+      //   return (accumulator += currentValue.total);
+      // }
+      return (accumulator += isDetailedType
+        ? currentValue.srp * currentValue.sold
+        : currentValue.grossSales);
     }, 0);
 
-    const totalVat = sales.reduce((acc, curr) => (acc += curr.vat), 0);
+    const totalRefund = sales.reduce(
+      (acc, curr) => (acc += curr.refundAmount || 0),
+      0
+    );
+    const totalDiscount = sales.reduce(
+      (acc, curr) => (acc += curr.totalDiscount || 0),
+      0
+    );
 
-    const netSales = sales.reduce((acc, curr) => {
-      const { netSales } = curr || {};
-      acc += netSales;
-      return acc;
-    }, 0);
-
-    return { income: totalIncome, sales: totalSales, netSales, totalVat };
+    return {
+      income: totalIncome,
+      sales: totalSales,
+      totalRefund,
+      totalDiscount,
+    };
   },
 
   sold: (sales) => {

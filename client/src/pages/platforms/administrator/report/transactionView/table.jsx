@@ -1,10 +1,16 @@
 import React from "react";
-import { transaction, variation } from "../../../../../services/utilities";
+import { variation } from "../../../../../services/utilities";
 import getTotalRefundAmount from "../getTotalRefund";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
 import productOrder from "../../../../../services/utilities/product";
 
 const Table = ({ orderDetails, transaction: transac }) => {
+  const grossSales = transac.total;
+  const refund = getTotalRefundAmount(transac.products);
+  const netSales = grossSales - transac?.totalDiscount;
+  const vatSales = Number(netSales / 1.12).toFixed(2);
+  const vat = Number(vatSales * 0.12).toFixed(2);
+
   return (
     <table className="invoice-report-table">
       <thead>
@@ -73,38 +79,43 @@ const Table = ({ orderDetails, transaction: transac }) => {
             className="pl-1 "
             style={{ borderRight: "none", fontSize: "1rem" }}
           >
-            <p className="ml-3 paragraph mt-1">Total Sale</p>
-            <p className="ml-3 paragraph  ">Total Discount</p>
-            <p className="ml-3 paragraph">Total Refund Amount</p>
-            <p className="ml-3 paragraph  ">Total Amount</p>
-            <p className="ml-3 paragraph  ">Total VAT(12%)</p>
-            <p className="ml-3 paragraph  ">Total Due</p>
-            <p className="ml-3 paragraph  ">Cash</p>
-            <p className="ml-3 paragraph  mb-2">Change</p>
+            <p className="ml-1 paragraph mt-1">Gross Sales</p>
+            <p className="ml-1 paragraph  ">Total Discount</p>
+            <p className="ml-1 paragraph">Refund Amount</p>
+            <p className="ml-1 paragraph  ">Net Sales</p>
+            <p className="ml-1 paragraph  ">Total Due</p>
+            <p className="ml-1 paragraph  ">Cash</p>
+            <p className="ml-1 paragraph  ">Change</p>
+            <p className="ml-1 paragraph  ">Vatable Sales</p>
+            <p className="ml-1 paragraph mb-1 ">VAT(12%)</p>
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
-            <p className="ml-4 paragraph  mt-1">
-              ₱{formattedTotal(transac?.total)}
+            <p className="mr-1 paragraph  mt-1 text-right">
+              ₱{formattedTotal(transac.totalWithoutDeduc)}
             </p>
-            <p className="ml-4 paragraph ">
+            <p className="mr-1 paragraph text-right ">
               ₱{formattedTotal(transac?.totalDiscount || 0)}
             </p>
-            <p className="ml-4 paragraph">
-              ₱{formattedTotal(getTotalRefundAmount(transac.products))}
+            <p className="mr-1 paragraph text-right">
+              ₱{formattedTotal(refund)}
             </p>
-            <p className="ml-4 paragraph ">
-              ₱{formattedTotal(transac?.total - (transac.totalDiscount || 0))}
+            <p className="mr-1 paragraph   text-right">
+              ₱{formattedTotal(netSales)}
             </p>
-
-            <p className="ml-4 paragraph ">
-              ₱{formattedTotal(transaction?.totalVat(orderDetails))}
-            </p>
-            <p className="ml-4 paragraph ">
+            <p className="mr-1 paragraph text-right">
               ₱{formattedTotal(transac?.totalDue)}
             </p>
-            <p className="ml-4 paragraph ">₱{formattedTotal(transac?.cash)}</p>
-            <p className="ml-4 paragraph mb-2">
+            <p className="mr-1 paragraph text-right ">
+              ₱{formattedTotal(transac?.cash)}
+            </p>
+            <p className="mr-1 paragraph text-right">
               ₱{formattedTotal(transac.cash - transac?.totalDue)}
+            </p>
+            <p className="mr-1 paragraph text-right">
+              ₱{formattedTotal(Number(vatSales))}
+            </p>
+            <p className="mr-1 paragraph text-right  mb-1">
+              ₱{formattedTotal(Number(vat))}
             </p>
           </td>
         </tr>

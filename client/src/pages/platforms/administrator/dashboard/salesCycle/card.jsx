@@ -11,6 +11,7 @@ const Card = ({
   label = "",
   color = "info",
 }) => {
+  console.log(params);
   return (
     <MDBCol md="4">
       <MDBCard>
@@ -25,16 +26,26 @@ const Card = ({
             values="value"
             texts="text"
           />
-          <h6>
-            Sales:
-            <strong style={{ marginLeft: "26.2px" }}>
-              ₱{formattedTotal(params.totalSales || 0)}
-            </strong>
-          </h6>
-          <h6>
-            Income:
-            <strong> &nbsp; ₱{formattedTotal(params.totalIncome || 0)}</strong>
-          </h6>
+          <div className="d-flex justify-content-between">
+            <h6>Gross Sales:</h6>
+            <h6>
+              <strong style={{ marginLeft: "26.2px" }}>
+                ₱{formattedTotal(params.totalSales || 0)}
+              </strong>
+            </h6>
+          </div>
+          <div className="d-flex justify-content-between">
+            <h6>Net Sales:</h6>
+            <h6>
+              <strong>₱{formattedTotal(params.totalNetSales || 0)}</strong>
+            </h6>
+          </div>
+          <div className="d-flex justify-content-between">
+            <h6>Income:</h6>
+            <h6>
+              <strong>&nbsp; ₱{formattedTotal(params.totalIncome || 0)}</strong>
+            </h6>
+          </div>
         </MDBCardBody>
       </MDBCard>
     </MDBCol>

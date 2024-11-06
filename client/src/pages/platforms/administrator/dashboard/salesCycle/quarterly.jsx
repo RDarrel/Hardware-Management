@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import incomePerSale from "./incomePerSale";
 import getSalesAndIncome from "./getSalesAndIncome";
 import Card from "./card";
+import netAndIncome from "./netAndIncome";
 
 const QUARTERLY = [
   { value: 1, text: "1st - January to March" },
@@ -13,7 +13,11 @@ const QUARTERLY = [
 const Quarterly = ({ sales }) => {
   const [filteredSales, setFilteredSales] = useState([]);
   const [selectedQuarter, setSelectedQuarter] = useState(0);
-  const [quarterly, setQuarterly] = useState({ totalSales: 0, totalIncome: 0 });
+  const [quarterly, setQuarterly] = useState({
+    totalSales: 0,
+    totalIncome: 0,
+    totalNetSales: 0,
+  });
   useEffect(() => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
@@ -34,7 +38,7 @@ const Quarterly = ({ sales }) => {
       .map((sale) => {
         return {
           ...sale,
-          income: incomePerSale(sale, sale.product?.isPerKilo),
+          ...netAndIncome(sale, sale.product?.isPerKilo),
         };
       });
 

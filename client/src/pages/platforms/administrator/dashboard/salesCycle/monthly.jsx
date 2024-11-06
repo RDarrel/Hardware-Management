@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import incomePerSale from "./incomePerSale";
+import incomePerSale from "./netAndIncome";
 import getSalesAndIncome from "./getSalesAndIncome";
 import Card from "./card";
+import netAndIncome from "./netAndIncome";
 
 const MONTHS = [
   { text: "JANUARY", value: 1 },
@@ -21,7 +22,11 @@ const MONTHS = [
 const Monthly = ({ sales = [] }) => {
   const [filteredSales, setFilteredSales] = useState([]);
   const [latestMonth, setLatestMonth] = useState(-1);
-  const [monthly, setMonthly] = useState({ totalSales: 0, totalIncome: 0 });
+  const [monthly, setMonthly] = useState({
+    totalSales: 0,
+    totalIncome: 0,
+    totalNetSales: 0,
+  });
 
   useEffect(() => {
     const currentDate = new Date();
@@ -38,7 +43,7 @@ const Monthly = ({ sales = [] }) => {
       const saleDate = new Date(sale.createdAt);
       return {
         ...sale,
-        income: incomePerSale(sale, sale.product?.isPerKilo),
+        ...netAndIncome(sale, sale.product?.isPerKilo),
         createdAt: saleDate.toISOString(),
       };
     });

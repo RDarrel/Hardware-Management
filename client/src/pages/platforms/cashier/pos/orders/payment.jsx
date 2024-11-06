@@ -32,7 +32,6 @@ export default function Payment({
     [customer, setCustomer] = useState(""),
     [ordersWithDiscount, setOrdersWithDiscount] = useState([]),
     [totalDiscount, setTotalDiscount] = useState(0),
-    [totalVat, setTotalVat] = useState(0),
     [totalDue, setTotalDue] = useState(0),
     [change, setChange] = useState(0),
     dispatch = useDispatch();
@@ -48,35 +47,41 @@ export default function Payment({
   }, []);
 
   useEffect(() => {
-    const _purchases = orderDetails.map((purchase) => {
-      const {
-        subtotal,
-        quantity = 0,
-        kilo = 0,
-        kiloGrams = 0,
-        product,
-      } = purchase;
-      const { isPerKilo = false } = product;
-      const totalOrder = isPerKilo ? kilo + kiloGrams : quantity;
+    if (show) {
+      setCash(0);
+      setCustomer("");
+      setTotalDue(0);
+      setTotalDiscount(0);
+      setOrdersWithDiscount([]);
+      const _purchases = orderDetails.map((purchase) => {
+        const {
+          subtotal,
+          quantity = 0,
+          kilo = 0,
+          kiloGrams = 0,
+          product,
+        } = purchase;
+        const { isPerKilo = false } = product;
+        const totalOrder = isPerKilo ? kilo + kiloGrams : quantity;
 
-      const haveDiscount = totalOrder >= 15;
+        const haveDiscount = totalOrder >= 3;
 
-      const discount = haveDiscount ? subtotal * 0.1 : 0;
+        const discount = haveDiscount ? subtotal * 0.1 : 0;
 
-      return {
-        ...purchase,
-        vat: (subtotal - discount) * 0.12,
-        discount,
-      };
-    });
+        return {
+          ...purchase,
+          discount,
+        };
+      });
 
-    const _totalDiscount = getTotal("discount", _purchases);
-    const _totalVat = getTotal("vat", _purchases);
-    setOrdersWithDiscount(_purchases);
-    setTotalDiscount(_totalDiscount);
-    setTotalVat(_totalVat);
-    setTotalDue(total + _totalVat - _totalDiscount);
-  }, [orderDetails, getTotal, total]);
+      const _totalDiscount = getTotal("discount", _purchases);
+      const _totalDue = total - _totalDiscount;
+      console.log(_totalDue);
+      setOrdersWithDiscount(_purchases);
+      setTotalDiscount(_totalDiscount);
+      setTotalDue(_totalDue);
+    }
+  }, [orderDetails, getTotal, total, show]);
 
   const handleClose = () => {
     toggle();
@@ -106,7 +111,6 @@ export default function Payment({
       isQuotation: isQuotation,
       total,
       totalDiscount,
-      totalVat,
       totalDue,
       cash,
       purchases,
@@ -124,7 +128,6 @@ export default function Payment({
             cashier: auth._id,
             total,
             totalDiscount,
-            totalVat,
             totalDue,
             cash,
             purchases: ordersWithDiscount,
@@ -181,44 +184,31 @@ export default function Payment({
               onChange={({ target }) => setCustomer(target.value)}
             />
           </div>
-          <div className="d-flex align-items-center">
-            <h6 className="mt-3 mb-2">Total:</h6>
-            <h5 className="mt-3 " style={{ marginLeft: "86px" }}>
+          <div className="d-flex align-items-center justify-content-between mt-3">
+            <h6>Total: </h6>
+            <h5>
               <strong> ₱{formattedTotal(total)}</strong>
             </h5>
           </div>
-
-          <div className="d-flex align-items-center">
-            <h6 className="mt-3 mb-2">Total Discount: </h6>
-            <h5 className="mt-3 " style={{ marginLeft: "1.3rem" }}>
+          <div className="d-flex align-items-center justify-content-between mt-1">
+            <h6>Total Discount: </h6>
+            <h5>
               <strong> ₱{formattedTotal(totalDiscount)}</strong>
             </h5>
           </div>
+          <div className="d-flex align-items-center justify-content-between mt-1">
+            <h6>Total Due:</h6>
+            <h5>
+              <strong> ₱{formattedTotal(totalDue)}</strong>
+            </h5>
+          </div>
 
-          <div className="d-flex align-items-center">
-            <h6 className="mt-3 mb-2">Total Amount:</h6>
-            <h5 className="mt-3 " style={{ marginLeft: "27px" }}>
-              <strong> ₱{formattedTotal(total - totalDiscount)}</strong>
-            </h5>
-          </div>
-          <div className="d-flex align-items-center">
-            <h6 className="mt-3 mb-2">Total VAT (12%): </h6>
-            <h5 className="mt-3 " style={{ marginLeft: "0.7rem" }}>
-              <strong> ₱{formattedTotal(totalVat)}</strong>
-            </h5>
-          </div>
-          <div className="d-flex align-items-center">
-            <h6 className="mt-3 mb-2">Total Due: </h6>
-            <h5 className="mt-3" style={{ marginLeft: "3.4rem" }}>
-              <strong>₱{formattedTotal(totalDue)}</strong>
-            </h5>
-          </div>
           {!isQuotation && (
-            <div className="d-flex">
-              <h6 className="mt-3 mr-5">Cash:</h6>
+            <div className="d-flex justify-content-between align-items-center mt-1 mb-3">
+              <h6 className="mt-2 mr-5">Cash:</h6>
               <input
                 placeholder="Cash"
-                className="form-control mt-2"
+                className="form-control ml-1 "
                 value={String(cash)}
                 onChange={({ target }) => setCash(Number(target.value))}
                 type="number"
@@ -226,11 +216,11 @@ export default function Payment({
             </div>
           )}
           {!isQuotation && (
-            <div className="d-flex align-items-center">
-              <h6 className="mt-3 mb-2">Change:</h6>
-              <h5 className="mt-3 " style={{ marginLeft: "26px" }}>
+            <div className="d-flex align-items-center justify-content-between">
+              <h6>Change:</h6>
+              <h5>
                 &nbsp;
-                <strong>₱{change > 0 ? formattedTotal(change) : 0}</strong>
+                <strong>₱{change > 0 ? formattedTotal(change) : "0.00"}</strong>
               </h5>
             </div>
           )}

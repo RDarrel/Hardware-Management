@@ -3,6 +3,7 @@ const getSalesAndIncome = (sales) => {
   const totalIncome =
     _sales.reduce((acc, curr) => (acc += curr.income), 0) || 0;
 
+  const totalNetSales = _sales.reduce((acc, curr) => (acc += curr.net), 0) || 0;
   const totalSales =
     _sales.reduce((acc, curr) => {
       const { product = {}, kilo = 0, quantity = 0, srp } = curr;
@@ -16,7 +17,7 @@ const getSalesAndIncome = (sales) => {
       return acc;
     }, 0) || 0;
 
-  return { totalIncome, totalSales };
+  return { totalIncome, totalSales, totalNetSales };
 };
 
 export default getSalesAndIncome;

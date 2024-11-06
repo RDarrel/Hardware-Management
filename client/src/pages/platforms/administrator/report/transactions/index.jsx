@@ -111,7 +111,7 @@ export const Transactions = () => {
                     <th className="text-center">Cashier</th>
                     <th className="text-center">Invoice No.</th>
                     <th className="text-center">Date</th>
-                    <th className="text-center">Total Amount</th>
+                    <th className="text-center">Total Due</th>
                     <th className="text-center">Cash</th>
                     <th className="text-center">Change</th>
                     <th className="text-center">Action</th>
@@ -132,7 +132,7 @@ export const Transactions = () => {
                           {formattedDate(transaction.createdAt)}
                         </td>
                         <td className="text-danger text-center font-weight-bolder">
-                          ₱{formattedTotal(transaction.totalWithoutDeduc)}
+                          ₱{formattedTotal(transaction.totalDue)}
                         </td>
                         <td className="text-danger text-center font-weight-bold">
                           ₱{formattedTotal(transaction.cash)}
@@ -140,7 +140,7 @@ export const Transactions = () => {
                         <td className="text-danger text-center font-weight-bold">
                           ₱
                           {formattedTotal(
-                            transaction.cash - transaction.totalWithoutDeduc
+                            transaction.cash - transaction.totalDue
                           )}
                         </td>
                         <td className="text-center">
@@ -167,7 +167,7 @@ export const Transactions = () => {
                 <MDBCol md="12" className="d-flex justify-content-end ">
                   <MDBBadge color="info" className="">
                     <h6 className="font-weight-bolder text-white mx-1 my-1 ">
-                      Grand Total Sales: ₱
+                      Total Gross Sales: ₱
                       {formattedTotal(getTotalSales(transactions))}
                     </h6>
                   </MDBBadge>
@@ -195,6 +195,7 @@ export const Transactions = () => {
         show={show}
         transaction={selected}
         customerView={selected?.customer || "--"}
+        customer={selected?.customer || "--"}
         cashier={selected?.cashier}
         total={selected?.total}
         cash={selected?.cash}
