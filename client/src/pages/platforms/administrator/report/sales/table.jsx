@@ -7,6 +7,7 @@ import {
   formattedDate,
   variation,
 } from "../../../../../services/utilities";
+import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 const Table = ({
   sales = [],
@@ -23,14 +24,14 @@ const Table = ({
             <th>Date (MM,DD,YY)</th>
             {isDetailedType && <th>Product</th>}
             <th className=" text-center">Sold</th>
-            {isDetailedType && <th className=" text-center">Refund</th>}
+            {/* {isDetailedType && <th className=" text-center">Refund</th>} */}
             <th className="text-center">Unit</th>
             <th className="text-center">Gross Sales</th>
             <th className="text-center">Discount</th>
             <th className="text-center">Refund Amount</th>
             <th className="text-center">Net Sales</th>
+            <th className=" text-center">Income</th>
             <th className="text-center">VAT(12%)</th>
-            {!isDetailedType && <th className=" text-center">Income</th>}
           </tr>
         </thead>
         <tbody>
@@ -101,9 +102,9 @@ const Table = ({
                   <td className="text-center">
                     {sale?.sold - (sale.refundQuantity || 0)}
                   </td>
-                  {isDetailedType && (
+                  {/* {isDetailedType && (
                     <td className="text-center">{refundQuantity || 0}</td>
-                  )}
+                  )} */}
 
                   <td className="text-center">
                     {product.isPerKilo ? "Kg" : "Pcs"}
@@ -112,42 +113,45 @@ const Table = ({
                   <td className="text-center">
                     <span className="font-weight-bold ">
                       ₱
-                      {Number(
-                        isDetailedType ? sale.srp * sale.sold : sale.grossSales
-                      ).toLocaleString()}
+                      {formattedTotal(
+                        Number(
+                          isDetailedType
+                            ? sale.srp * sale.sold
+                            : sale.grossSales
+                        )
+                      )}
                     </span>
                   </td>
                   <td className="text-center">
                     <span className="font-weight-bold ">
                       ₱
-                      {Number(
-                        isDetailedType ? sale.totalDiscount : sale.discount
-                      ).toLocaleString()}
+                      {formattedTotal(
+                        Number(
+                          isDetailedType ? sale.totalDiscount : sale.discount
+                        )
+                      )}
                     </span>
                   </td>
                   <td className="text-center">
                     <span className="font-weight-bold ">
-                      ₱{totalRefund.toLocaleString()}
+                      ₱{formattedTotal(totalRefund)}
                     </span>
                   </td>
                   <td className="text-center">
                     <span className="font-weight-bold ">
-                      ₱{netSales.toLocaleString()}
+                      ₱{formattedTotal(netSales)}
                     </span>
                   </td>
-
                   <td className="text-center">
                     <span className="font-weight-bold ">
-                      ₱{totalVat.toLocaleString()}
+                      ₱{formattedTotal(sale.income)}
                     </span>
                   </td>
-                  {!isDetailedType && (
-                    <td className="text-center">
-                      <span className="font-weight-bold ">
-                        ₱{sale.income.toLocaleString()}
-                      </span>
-                    </td>
-                  )}
+                  <td className="text-center">
+                    <span className="font-weight-bold ">
+                      ₱{formattedTotal(totalVat)}
+                    </span>
+                  </td>
                 </tr>
               );
             })

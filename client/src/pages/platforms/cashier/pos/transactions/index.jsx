@@ -25,7 +25,9 @@ import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 export default function Transactions({ show, toggle }) {
   const { token } = useSelector(({ auth }) => auth),
-    { transaction } = useSelector(({ pos }) => pos),
+    { transaction, findTransacIsLoading = false } = useSelector(
+      ({ pos }) => pos
+    ),
     [foundTransaction, setFoundTransaction] = useState({}),
     [purchases, setPurchases] = useState([]),
     [search, setSearch] = useState(""),
@@ -53,9 +55,9 @@ export default function Transactions({ show, toggle }) {
     setHasRefund(transaction.totalRefundSales > 0);
     setFoundTransaction(transaction);
   }, [transaction]);
-  // 17189090546125366
+
   useEffect(() => {
-    if (didSearch) {
+    if (didSearch && !findTransacIsLoading) {
       const timer = setTimeout(() => {
         if (!foundTransaction.invoice_no) {
           Swal.fire({
@@ -71,7 +73,7 @@ export default function Transactions({ show, toggle }) {
 
       return () => clearTimeout(timer);
     }
-  }, [didSearch, foundTransaction, search, setDidSearch]);
+  }, [didSearch, foundTransaction, search, setDidSearch, findTransacIsLoading]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -220,7 +222,7 @@ export default function Transactions({ show, toggle }) {
                   <thead>
                     <tr>
                       <th>Invoice No.</th>
-                      <th className="text-center">Total Amount</th>
+                      <th className="text-center">Total Due</th>
                       <th className="text-center">Date</th>
                       <th className="text-center">Action</th>
                     </tr>
@@ -231,7 +233,7 @@ export default function Transactions({ show, toggle }) {
                         {foundTransaction.invoice_no}
                       </td>
                       <td className="font-weight-bold text-danger text-center">
-                        ₱{formattedTotal(foundTransaction.totalWithoutDeduc)}
+                        ₱{formattedTotal(foundTransaction.totalDue)}
                       </td>
                       <td className="text-center font-weight-bold">
                         {formattedDate(foundTransaction.createdAt)}

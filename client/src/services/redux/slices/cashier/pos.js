@@ -10,6 +10,7 @@ const initialState = {
   progress: 0,
   isSuccess: false,
   isLoading: false,
+  findTransacIsLoading: false,
   message: "",
 };
 
@@ -199,19 +200,19 @@ export const reduxSlice = createSlice({
       })
 
       .addCase(FIND_TRANSACTION.pending, (state) => {
-        state.isLoading = true;
+        state.findTransacIsLoading = true;
         state.isSuccess = false;
         state.message = "";
       })
       .addCase(FIND_TRANSACTION.fulfilled, (state, action) => {
         const { payload } = action.payload;
         state.transaction = payload;
-        state.isLoading = false;
+        state.findTransacIsLoading = false;
       })
       .addCase(FIND_TRANSACTION.rejected, (state, action) => {
         const { error } = action;
         state.message = error.message;
-        state.isLoading = false;
+        state.findTransacIsLoading = false;
       })
 
       .addCase(FIND.pending, (state) => {

@@ -12,7 +12,7 @@ const Table = ({
   hasRefund,
   foundTransaction,
 }) => {
-  const change = cash - foundTransaction.totalWithoutDeduc || 0;
+  const change = cash - foundTransaction.totalDue || 0;
   const purchases =
     orderDetails.length > 0
       ? orderDetails?.filter(({ isRefundAll }) => !isRefundAll)
@@ -127,24 +127,33 @@ const Table = ({
             className="pl-1 "
             style={{ borderRight: "none", fontSize: "1rem" }}
           >
-            {hasRefund && <p className="ml-3 paragraph mt-1">Total Refund</p>}
-            <p className={`ml-3 paragraph ${!hasRefund ? "mt-1" : ""} `}>
-              Total Amount
-            </p>
-            <p className="ml-3 paragraph"> Cash</p>
-            <p className="ml-3 paragraph  mb-1">Change</p>
+            <p className="text-start paragraph mt-1">Total: </p>
+            <p className="text-start paragraph">Total Discount: </p>
+
+            {hasRefund && <p className="ml-3 paragraph ">Total Refund:</p>}
+            <p className={`text-start paragraph`}>Total Due:</p>
+            <p className="text-start paragraph"> Cash:</p>
+            <p className="text-start paragraph  mb-1">Change:</p>
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
+            <p className={`text-right paragraph mt-1`}>
+              ₱{formattedTotal(foundTransaction.totalWithoutDeduc)}
+            </p>
+            <p className={`text-right paragraph `}>
+              ₱{formattedTotal(foundTransaction.totalDiscount)}
+            </p>
             {hasRefund && (
-              <p className="ml-4 paragraph mt-1">
+              <p className="text-right paragraph ">
                 ₱{formattedTotal(foundTransaction.totalRefundSales)}
               </p>
             )}
-            <p className={`ml-4 paragraph  ${hasRefund ? "" : "mt-1"}`}>
-              ₱{formattedTotal(foundTransaction.totalWithoutDeduc)}
+            <p className={`text-right paragraph `}>
+              ₱{formattedTotal(foundTransaction.totalDue)}
             </p>
-            <p className="ml-4 paragraph">₱{cash.toLocaleString()}.00</p>
-            <p className={`ml-4 paragraph mb-1`}>₱{formattedTotal(change)}</p>
+            <p className="text-right paragraph">₱{cash.toLocaleString()}.00</p>
+            <p className={`text-right paragraph mb-1`}>
+              ₱{formattedTotal(change)}
+            </p>
           </td>
           <td
             style={{

@@ -23,10 +23,10 @@ const Overview = ({
         <thead>
           <tr>
             <th> Gross Sales</th>
-            <th> Net Sales</th>
-            <th> Income </th>
             <th> Refund </th>
             <th> Discount </th>
+            <th> Net Sales</th>
+            <th> Income </th>
             <th> Vatable Sales</th>
             <th> Vat(12%)</th>
           </tr>
@@ -34,17 +34,18 @@ const Overview = ({
         <tbody>
           <tr>
             <td className="font-weight-bold">₱{formattedTotal(totalSales)}</td>
-            <td className="font-weight-bold">₱{formattedTotal(netSales)}</td>
-            <td className="font-weight-bold">₱{formattedTotal(totalIncome)}</td>
             <td className="font-weight-bold">₱{formattedTotal(totalRefund)}</td>
             <td className="font-weight-bold">
               ₱{formattedTotal(totalDiscount)}
             </td>
+            <td className="font-weight-bold">₱{formattedTotal(netSales)}</td>
+            <td className="font-weight-bold">₱{formattedTotal(totalIncome)}</td>
+
             <td className="font-weight-bold">
-              ₱{formattedTotal(Number(totalVatSales).toFixed(2))}
+              ₱{formattedTotal(Number(totalVatSales))}
             </td>
             <td className="font-weight-bold">
-              ₱{formattedTotal(Number(totalVatSales * 0.12).toFixed(2))}
+              ₱{formattedTotal(Number(totalVatSales * 0.12))}
             </td>
           </tr>
         </tbody>

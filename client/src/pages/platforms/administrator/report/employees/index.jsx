@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { MDBBadge, MDBCard, MDBCardBody, MDBIcon, MDBTable } from "mdbreact";
+import {
+  MDBBadge,
+  MDBCard,
+  MDBCardBody,
+  MDBCol,
+  MDBIcon,
+  MDBRow,
+  MDBTable,
+} from "mdbreact";
 import { useToasts } from "react-toast-notifications";
 import { BROWSE } from "../../../../../services/redux/slices/administrator/report/transactionsReport";
 import { Header } from "../header";
-import { fullName } from "../../../../../services/utilities";
+import { fullName, globalSearch } from "../../../../../services/utilities";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
 import handlePagination from "../../../../widgets/pagination";
 import "./employee.css";
@@ -20,10 +28,14 @@ export const EmployeesReport = () => {
     ),
     [transactions, setTransactions] = useState([]),
     [cashier, setCashier] = useState(""),
+    [from, setFrom] = useState(new Date()),
+    [to, setTo] = useState(new Date()),
     [status, setStatus] = useState(""),
     [isTransaction, setIsTransaction] = useState(false),
     [show, setShow] = useState(false),
     [warningMsg, setWarningMsg] = useState(""),
+    [search, setSearch] = useState(""),
+    [sales, setSales] = useState([]),
     [page, setPage] = useState(1),
     [showToast, setShowToast] = useState(""),
     { addToast } = useToasts(),
@@ -32,6 +44,16 @@ export const EmployeesReport = () => {
   useEffect(() => {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
+
+  useEffect(() => {
+    if (search && transactions.length > 0) {
+      const _products = [...transactions];
+      const searchProducts = globalSearch(_products, search);
+      setSales(searchProducts);
+    } else {
+      setSales(transactions);
+    }
+  }, [search, transactions]);
 
   useEffect(() => {
     if (showToast) {
@@ -47,18 +69,34 @@ export const EmployeesReport = () => {
   return (
     <>
       <MDBCard className="card-employees">
-        <div className="ml-4">
-          <Header
-            isEmployees={true}
-            collections={collections}
-            setFilteredData={setTransactions}
-            title="Employees"
-            mb="0"
-          />
-        </div>
         <MDBCardBody>
           {!isLoading ? (
             <>
+              <MDBRow
+                className="d-flex align-items-center"
+                style={{ marginTop: "-1rem", marginBottom: "-0.5rem" }}
+              >
+                <MDBCol md="9">
+                  <Header
+                    isEmployees={true}
+                    collections={collections}
+                    setFilteredData={setTransactions}
+                    title="Employees"
+                    setBaseFrom={setFrom}
+                    setBaseTo={setTo}
+                    mb="0"
+                  />
+                </MDBCol>
+                <MDBCol>
+                  <input
+                    type="search"
+                    className="form-control"
+                    value={search}
+                    onChange={({ target }) => setSearch(target.value)}
+                    placeholder="Search employee.."
+                  />
+                </MDBCol>
+              </MDBRow>
               <MDBTable bordered responsive striped>
                 <thead>
                   <tr>
@@ -103,114 +141,124 @@ export const EmployeesReport = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {handlePagination(transactions, page, maxPage).map(
-                    (transaction, index) => {
-                      const {
-                        cashier,
-                        transactionsHandle,
-                        total,
-                        refundItemCount = 0,
-                        totalRefundSales = 0,
-                        returnItemCount = 0,
-                        totalReturnSales = 0,
-                      } = transaction;
-                      return (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td className="text-center text-nowrap">
-                            {fullName(cashier.fullName)}
-                          </td>
-                          <td
-                            className="text-center font-weight-bold cursor-pointer"
-                            onClick={() => {
-                              setCashier(cashier);
-                              setIsTransaction(true);
-                              setStatus("transactions");
-                              toggle();
-                            }}
-                          >
-                            <MDBIcon
-                              icon="hand-holding"
-                              size="2x"
-                              style={{ color: "#5ac461" }}
-                            />
-                            <span className="counter text-center bg-success ">
-                              {transactionsHandle}
-                            </span>
-                          </td>
-                          <td
-                            className="text-center font-weight-bold cursor-pointer"
-                            onClick={() => {
-                              if (refundItemCount === 0) {
-                                setShowToast(true);
-                                setWarningMsg("Refund");
-                              } else {
-                                setIsTransaction(false);
+                  {sales.length > 0 ? (
+                    handlePagination(sales, page, maxPage).map(
+                      (transaction, index) => {
+                        const {
+                          cashier,
+                          transactionsHandle,
+                          total,
+                          refundItemCount = 0,
+                          totalRefundSales = 0,
+                          returnItemCount = 0,
+                          totalReturnSales = 0,
+                        } = transaction;
+                        return (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td className="text-center text-nowrap">
+                              {fullName(cashier.fullName)}
+                            </td>
+                            <td
+                              className="text-center font-weight-bold cursor-pointer"
+                              onClick={() => {
                                 setCashier(cashier);
-                                setStatus("refund");
+                                setIsTransaction(true);
+                                setStatus("transactions");
                                 toggle();
-                              }
-                            }}
-                          >
-                            <MDBIcon
-                              icon="hand-holding"
-                              size="2x"
-                              style={{ color: "red" }}
-                            />
-                            <span className="counter text-center">
-                              {refundItemCount || 0}
-                            </span>
-                          </td>
-                          <td
-                            className="text-center font-weight-bold cursor-pointer"
-                            onClick={() => {
-                              if (returnItemCount === 0) {
-                                setShowToast(true);
-                                setWarningMsg("Return");
-                              } else {
-                                setIsTransaction(false);
-                                setCashier(cashier);
-                                setStatus("return");
-                                toggle();
-                              }
-                            }}
-                          >
-                            <MDBIcon
-                              icon="hand-holding"
-                              size="2x"
-                              style={{ color: "orange" }}
-                            />
-                            <span
-                              className="counter text-center"
-                              style={{ backgroundColor: "orange" }}
+                              }}
                             >
-                              {returnItemCount || 0}
-                            </span>
-                          </td>
+                              <MDBIcon
+                                icon="hand-holding"
+                                size="2x"
+                                style={{ color: "#5ac461" }}
+                              />
+                              <span className="counter text-center bg-success ">
+                                {transactionsHandle}
+                              </span>
+                            </td>
+                            <td
+                              className="text-center font-weight-bold cursor-pointer"
+                              onClick={() => {
+                                if (refundItemCount === 0) {
+                                  setShowToast(true);
+                                  setWarningMsg("Refund");
+                                } else {
+                                  setIsTransaction(false);
+                                  setCashier(cashier);
+                                  setStatus("refund");
+                                  toggle();
+                                }
+                              }}
+                            >
+                              <MDBIcon
+                                icon="hand-holding"
+                                size="2x"
+                                style={{ color: "red" }}
+                              />
+                              <span className="counter text-center">
+                                {refundItemCount || 0}
+                              </span>
+                            </td>
+                            <td
+                              className="text-center font-weight-bold cursor-pointer"
+                              onClick={() => {
+                                if (returnItemCount === 0) {
+                                  setShowToast(true);
+                                  setWarningMsg("Return");
+                                } else {
+                                  setIsTransaction(false);
+                                  setCashier(cashier);
+                                  setStatus("return");
+                                  toggle();
+                                }
+                              }}
+                            >
+                              <MDBIcon
+                                icon="hand-holding"
+                                size="2x"
+                                style={{ color: "orange" }}
+                              />
+                              <span
+                                className="counter text-center"
+                                style={{ backgroundColor: "orange" }}
+                              >
+                                {returnItemCount || 0}
+                              </span>
+                            </td>
 
-                          <td className="text-center text-danger font-weight-bold">
-                            ₱{formattedTotal(totalRefundSales)}
-                          </td>
-                          <td className="text-center text-danger font-weight-bold">
-                            ₱{formattedTotal(totalReturnSales)}
-                          </td>
-                          <td className="text-center text-danger font-weight-bold">
-                            ₱{formattedTotal(total)}
-                          </td>
-                        </tr>
-                      );
-                    }
+                            <td className="text-center font-weight-bold">
+                              ₱{formattedTotal(totalRefundSales)}
+                            </td>
+                            <td className="text-center  font-weight-bold">
+                              ₱{formattedTotal(totalReturnSales)}
+                            </td>
+                            <td className="text-center font-weight-bold">
+                              ₱{formattedTotal(total)}
+                            </td>
+                          </tr>
+                        );
+                      }
+                    )
+                  ) : (
+                    <tr>
+                      <td colSpan={8} className="text-center">
+                        No Record.
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </MDBTable>
-              <div className="d-flex justify-content-end mt-3">
-                <MDBBadge color="info">
-                  <h6 className="font-weight-bolder text-white  mx-1 my-1">
-                    Total Gross Sales: ₱
-                    {formattedTotal(getTotalSales(transactions))}
-                  </h6>
-                </MDBBadge>
-              </div>
+              {!search && (
+                <div className="d-flex justify-content-end mt-3">
+                  <MDBBadge color="info">
+                    <h6 className="font-weight-bolder text-white  mx-1 my-1">
+                      Total Gross Sales: ₱
+                      {formattedTotal(getTotalSales(transactions))}
+                    </h6>
+                  </MDBBadge>
+                </div>
+              )}
             </>
           ) : (
             <Spinner />
@@ -218,11 +266,13 @@ export const EmployeesReport = () => {
           <Processed
             show={show}
             toggle={toggle}
+            from={from}
+            to={to}
             status={status}
             cashier={cashier}
             isTransaction={isTransaction}
           />
-          {!isLoading && (
+          {!isLoading && sales.length > 10 && (
             <PaginationButtons
               array={transactions}
               max={maxPage}

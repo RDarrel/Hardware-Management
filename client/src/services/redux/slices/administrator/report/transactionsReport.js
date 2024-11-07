@@ -9,6 +9,7 @@ const initialState = {
   progress: 0,
   isSuccess: false,
   isLoading: false,
+  isLoadingEmployees: false,
   message: "",
 };
 
@@ -163,11 +164,13 @@ export const reduxSlice = createSlice({
 
       .addCase(GET_RETURN_REFUND.pending, (state) => {
         state.isSuccess = false;
+        state.isLoadingEmployees = true;
         state.message = "";
       })
       .addCase(GET_RETURN_REFUND.fulfilled, (state, action) => {
         const { payload } = action.payload;
         state.returnRefund = payload;
+        state.isLoadingEmployees = false;
       })
       .addCase(GET_RETURN_REFUND.rejected, (state, action) => {
         const { error } = action;

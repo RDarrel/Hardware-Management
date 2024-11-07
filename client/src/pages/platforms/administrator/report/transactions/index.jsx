@@ -16,6 +16,7 @@ import PaginationButtons from "../../../../widgets/pagination/buttons";
 import {
   formattedDate,
   fullName,
+  globalSearch,
   handlePagination,
   transaction,
 } from "../../../../../services/utilities";
@@ -32,10 +33,12 @@ export const Transactions = () => {
       ({ transactionsReport }) => transactionsReport
     ),
     [transactions, setTransactions] = useState([]),
+    [sales, setSales] = useState([]),
     [orderDetails, setOrderDetails] = useState([]),
     [selected, setSelected] = useState({}),
     [show, setShow] = useState(false),
     [baseFrom, setBaseFrom] = useState(""),
+    [search, setSearch] = useState(""),
     [baseTo, setBaseTo] = useState(""),
     [page, setPage] = useState(1),
     dispatch = useDispatch();
@@ -45,6 +48,16 @@ export const Transactions = () => {
   useEffect(() => {
     dispatch(BROWSE({ token }));
   }, [token, dispatch]);
+
+  useEffect(() => {
+    if (search && transactions.length > 0) {
+      const _products = [...transactions];
+      const searchProducts = globalSearch(_products, search);
+      setSales(searchProducts);
+    } else {
+      setSales(transactions);
+    }
+  }, [search, transactions]);
 
   const hanldeShowPurchases = (purchases, _transaction) => {
     setOrderDetails(transaction.computeSubtotal(purchases));
@@ -79,31 +92,55 @@ export const Transactions = () => {
 
   return (
     <>
+      <div className="d-flex justify-content-end">
+        <MDBBtn size="sm" onClick={handleExport}>
+          <MDBIcon icon="file-excel" className="mr-2" />
+          Export In Excel
+        </MDBBtn>
+      </div>
       <MDBCard>
-        <MDBRow className="align-items-center">
-          <MDBCol md="10">
-            <div className="ml-4 mt-2">
-              <Header
-                setFilteredData={setTransactions}
-                collections={collections}
-                isTransaction={true}
-                title="Transactions"
-                mb="0"
-                setBaseFrom={setBaseFrom}
-                setBaseTo={setBaseTo}
+        <MDBCardBody className="m-0">
+          <MDBRow
+            className="d-flex align-items-center"
+            style={{ marginTop: "-1rem", marginBottom: "-0.5rem" }}
+          >
+            <MDBCol md="9">
+              <div>
+                <Header
+                  setFilteredData={setTransactions}
+                  collections={collections}
+                  isTransaction={true}
+                  title="Transactions"
+                  mb="0"
+                  setBaseFrom={setBaseFrom}
+                  setBaseTo={setBaseTo}
+                />
+              </div>
+            </MDBCol>
+
+            <MDBCol md="3">
+              <input
+                type="search"
+                placeholder="Search a transaction.."
+                className="form-control "
+                value={search}
+                onChange={({ target }) => setSearch(target.value)}
               />
-            </div>
-          </MDBCol>
-          <MDBCol>
-            <MDBBtn size="sm" onClick={handleExport}>
-              <MDBIcon icon="file-excel" className="mr-2" />
-              Export In Excel
-            </MDBBtn>
-          </MDBCol>
-        </MDBRow>
-        <MDBCardBody>
+            </MDBCol>
+          </MDBRow>
           {!isLoading ? (
             <>
+              {/* <MDBRow className="d-flex justify-content-end mb-2">
+                <MDBCol md="3">
+                  <input
+                    type="search"
+                    placeholder="Search a transaction.."
+                    className="form-control"
+                    value={search}
+                    onChange={({ target }) => setSearch(target.value)}
+                  />
+                </MDBCol>
+              </MDBRow> */}
               <MDBTable striped bordered>
                 <thead>
                   <tr>
@@ -118,7 +155,7 @@ export const Transactions = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {handlePagination(transactions, page, maxPage).map(
+                  {handlePagination(sales, page, maxPage).map(
                     (transaction, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
@@ -131,13 +168,13 @@ export const Transactions = () => {
                         <td className="text-center">
                           {formattedDate(transaction.createdAt)}
                         </td>
-                        <td className="text-danger text-center font-weight-bolder">
+                        <td className=" text-center font-weight-bolder">
                           ₱{formattedTotal(transaction.totalDue)}
                         </td>
-                        <td className="text-danger text-center font-weight-bold">
+                        <td className=" text-center font-weight-bold">
                           ₱{formattedTotal(transaction.cash)}
                         </td>
-                        <td className="text-danger text-center font-weight-bold">
+                        <td className=" text-center font-weight-bold">
                           ₱
                           {formattedTotal(
                             transaction.cash - transaction.totalDue
@@ -163,23 +200,27 @@ export const Transactions = () => {
                   )}
                 </tbody>
               </MDBTable>
-              <MDBRow>
-                <MDBCol md="12" className="d-flex justify-content-end ">
-                  <MDBBadge color="info" className="">
-                    <h6 className="font-weight-bolder text-white mx-1 my-1 ">
-                      Total Gross Sales: ₱
-                      {formattedTotal(getTotalSales(transactions))}
-                    </h6>
-                  </MDBBadge>
-                </MDBCol>
-              </MDBRow>
-              <PaginationButtons
-                page={page}
-                setPage={setPage}
-                max={maxPage}
-                array={transactions}
-                title={"Transactions"}
-              />
+              {!search && (
+                <MDBRow>
+                  <MDBCol md="12" className="d-flex justify-content-end ">
+                    <MDBBadge color="info" className="">
+                      <h6 className="font-weight-bolder text-white mx-1 my-1 ">
+                        Total Gross Sales: ₱
+                        {formattedTotal(getTotalSales(transactions))}
+                      </h6>
+                    </MDBBadge>
+                  </MDBCol>
+                </MDBRow>
+              )}
+              {sales.length > 10 && (
+                <PaginationButtons
+                  page={page}
+                  setPage={setPage}
+                  max={maxPage}
+                  array={transactions}
+                  title={"Transactions"}
+                />
+              )}
             </>
           ) : (
             <Spinner />

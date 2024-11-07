@@ -19,12 +19,27 @@ exports.browse = (_, res) =>
     .catch((error) => res.status(400).json({ error: error.message }));
 
 exports.return_refund = (req, res) => {
-  const { cashier, status } = req.query || {};
+  const { cashier, status, from, to } = req.query || {};
+
   const populate =
     status === "transactions" ? "purchases.product" : "products.product";
   const baseEntity = status === "transactions" ? Transactions : Return_Refund;
+
+  const query = { status, cashier };
+  if (from && to) {
+    const fromDate = new Date(from);
+    fromDate.setHours(0, 0, 0, 0);
+
+    const toDate = new Date(to);
+    toDate.setHours(23, 59, 59, 999);
+
+    query.createdAt = {
+      $gte: fromDate,
+      $lte: toDate,
+    };
+  }
   baseEntity
-    .find({ status, cashier })
+    .find(query)
     .populate(populate)
 
     .populate("cashier")

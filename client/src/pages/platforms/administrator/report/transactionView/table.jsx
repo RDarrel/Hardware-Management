@@ -84,9 +84,14 @@ const Table = ({ orderDetails, transaction: transac }) => {
             <p className="ml-1 paragraph">Refund Amount</p>
             <p className="ml-1 paragraph  ">Net Sales</p>
             <p className="ml-1 paragraph  ">Total Due</p>
-            <p className="ml-1 paragraph  ">Cash</p>
+            <hr style={{ marginRight: "-0.5rem", marginBottom: "-0.2rem" }} />
+
+            <p className="ml-1 paragraph" style={{ marginTop: "0.1rem" }}>
+              Cash
+            </p>
             <p className="ml-1 paragraph  ">Change</p>
-            <p className="ml-1 paragraph  ">Vatable Sales</p>
+            {/* <hr style={{ marginRight: "-0.5rem", marginBottom: "-0.2rem" }} /> */}
+            <p className="ml-1 paragraph   ">Vatable Sales</p>
             <p className="ml-1 paragraph mb-1 ">VAT(12%)</p>
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
@@ -102,15 +107,23 @@ const Table = ({ orderDetails, transaction: transac }) => {
             <p className="mr-1 paragraph   text-right">
               ₱{formattedTotal(netSales)}
             </p>
+
             <p className="mr-1 paragraph text-right">
               ₱{formattedTotal(transac?.totalDue)}
             </p>
-            <p className="mr-1 paragraph text-right ">
+            <hr style={{ marginBottom: "-0.2rem" }} />
+
+            <p
+              className="mr-1 paragraph text-right "
+              style={{ marginTop: "0.1rem" }}
+            >
               ₱{formattedTotal(transac?.cash)}
             </p>
             <p className="mr-1 paragraph text-right">
               ₱{formattedTotal(transac.cash - transac?.totalDue)}
             </p>
+            {/* <hr style={{ marginBottom: "-0.2rem" }} /> */}
+
             <p className="mr-1 paragraph text-right">
               ₱{formattedTotal(Number(vatSales))}
             </p>

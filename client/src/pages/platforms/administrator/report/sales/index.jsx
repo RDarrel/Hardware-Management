@@ -95,8 +95,6 @@ const Sales = () => {
   const netSales = totalSales - (totalDiscount + totalRefund);
   const totalVatSales = Number(netSales / 1.12).toFixed(2);
 
-  console.log(filteredSales);
-
   return (
     <>
       <MDBRow className="d-flex align-items-center">
@@ -113,7 +111,7 @@ const Sales = () => {
             </MDBCol>
           </MDBRow>
         </MDBCol>
-        <MDBCol>
+        <MDBCol className="d-flex justify-content-end">
           <MDBBtn size="sm" onClick={handleExport}>
             <MDBIcon icon="file-excel" className="mr-2" />
             Export In Excel

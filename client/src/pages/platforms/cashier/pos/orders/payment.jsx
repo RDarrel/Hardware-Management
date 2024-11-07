@@ -153,7 +153,7 @@ export default function Payment({
     setCustomerQuotation("");
   };
 
-  const disableByCash = cash <= totalDue;
+  const disableByCash = cash < totalDue;
   const disableByCustomer = isWalkin ? (customer ? false : true) : false;
 
   const btnTxt = isWalkin
