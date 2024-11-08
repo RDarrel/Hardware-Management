@@ -88,6 +88,12 @@
         border: 1px solid black;
       }
 
+      .justify-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
       .td-bordered {
         border: 1px solid black;
         text-align: left;
@@ -199,15 +205,30 @@
                 style="border-bottom: transparent; border-left: transparent"
               ></td>
               <td
-                style="font-size: 16px; padding-left: 16px"
                 colspan="1"
                 class="td-bordered"
+                style="font-size: 16px; padding-left: 16px"
               >
-                <div style="text-align: center">
-                  <p style="margin: 0; white-space: nowrap">
-                    Total Quote:&nbsp;&nbsp; ₱{{total}}
-                  </p>
-                </div>
+                <table style="width: 100%; border-collapse: collapse">
+                  <tr>
+                    <td style="white-space: nowrap; text-align: left">
+                      Total:
+                    </td>
+                    <td style="text-align: right">₱{{total}}</td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap; text-align: left">
+                      Total Discount:
+                    </td>
+                    <td style="text-align: right">₱{{totalDiscount}}</td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap; text-align: left">
+                      Total Due:
+                    </td>
+                    <td style="text-align: right">₱{{totalDue}}</td>
+                  </tr>
+                </table>
               </td>
             </tr>
           </tbody>

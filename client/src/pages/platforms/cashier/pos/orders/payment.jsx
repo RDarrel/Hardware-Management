@@ -64,7 +64,7 @@ export default function Payment({
         const { isPerKilo = false } = product;
         const totalOrder = isPerKilo ? kilo + kiloGrams : quantity;
 
-        const haveDiscount = totalOrder >= 3;
+        const haveDiscount = totalOrder >= 15;
 
         const discount = haveDiscount ? subtotal * 0.1 : 0;
 

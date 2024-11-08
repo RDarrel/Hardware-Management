@@ -1,4 +1,5 @@
 const Entity = require("../../../models/administrator/productManagement/Materials"),
+  Audit = require("../../../models/administrator/Audit"),
   handleDuplicate = require("../../../config/duplicate");
 
 exports.browse = (req, res) =>
@@ -18,17 +19,28 @@ exports.browse = (req, res) =>
 
 exports.save = (req, res) =>
   Entity.create(req.body)
-    .then((item) =>
+    .then(async (item) => {
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "ADD",
+        description: "Added a new material",
+      });
       res.status(201).json({
         success: "Supplier Created Successfully",
         payload: item,
-      })
-    )
+      });
+    })
     .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
 
 exports.update = (req, res) =>
   Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
-    .then((item) => {
+    .then(async (item) => {
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "UPDATE",
+        description: "Updated a material",
+      });
+
       if (item) {
         res.json({
           success: "Material Updated Successfully",
@@ -64,8 +76,13 @@ exports.status = (req, res) =>
 
 exports.destroy = (req, res) => {
   Entity.findByIdAndUpdate(req.body._id, { deletedAt: new Date() })
-    .then((item) => {
-      res.json({ success: "Successfuly Deleted Materials", payload: item });
+    .then(async (item) => {
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "ARCHIVE",
+        description: "Archived a material",
+      });
+      res.json({ success: "Successfuly Deleted Material", payload: item });
     })
     .catch((error) => res.status(400).json({ error: error.message }));
 };

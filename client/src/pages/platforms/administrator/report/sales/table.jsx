@@ -2,11 +2,7 @@ import { MDBCol, MDBRow, MDBTable } from "mdbreact";
 import React from "react";
 import PaginationButtons from "../../../../widgets/pagination/buttons";
 import handlePagination from "../../../../widgets/pagination";
-import {
-  ENDPOINT,
-  formattedDate,
-  variation,
-} from "../../../../../services/utilities";
+import { ENDPOINT, variation } from "../../../../../services/utilities";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 const Table = ({
@@ -14,10 +10,39 @@ const Table = ({
   page,
   maxPage,
   setPage = () => {},
+  frequency,
   isDetailedType = true,
 }) => {
+  const handleLabel = () => {
+    if (isDetailedType) {
+      switch (frequency) {
+        case "Weekly":
+          return "Detailed Weekly Item Sales";
+        case "Monthly":
+          return "Detailed Monthly Item Sales";
+        case "Yearly":
+          return "Detailed Yearly Item Sales";
+        default:
+          return "Detailed Daily Item Sales";
+      }
+    } else {
+      switch (frequency) {
+        case "Weekly":
+          return "Weekly Item Sales Summary";
+        case "Monthly":
+          return "Monthly Item Sales Summary";
+        case "Yearly":
+          return "Yearly Item Sales Summary";
+        default:
+          return "Daily Item Sales Summary";
+      }
+    }
+  };
   return (
     <>
+      <h6 className="mt-4">
+        <strong>{handleLabel()} </strong>
+      </h6>
       <MDBTable responsive bordered striped>
         <thead>
           <tr>

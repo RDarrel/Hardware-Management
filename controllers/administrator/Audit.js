@@ -1,45 +1,44 @@
-const Entity = require("../../../models/administrator/productManagement/Category"),
-  Audit = require("../../../models/administrator/Audit"),
-  handleDuplicate = require("../../../config/duplicate");
+const Entity = require("../../models/administrator/Audit"),
+  handleDuplicate = require("../../config/duplicate");
 
-exports.browse = (req, res) =>
-  Entity.find()
+exports.browse = (req, res) => {
+  const { from, to } = req.query || {};
+
+  const fromDate = new Date(from);
+  fromDate.setHours(0, 0, 0, 0);
+  const toDate = new Date(to);
+  toDate.setHours(23, 59, 59, 999);
+  console.log(fromDate, toDate);
+  Entity.find({
+    $gte: fromDate,
+    $lte: toDate,
+  })
+    .populate("employee")
     .select("-__v")
     .sort({ createdAt: -1 })
     .lean()
     .then((items) =>
       res.json({
-        success: "Categpory Fetched Successfully",
-        payload: items.filter(
-          (item) => item.name !== "ADMINISTRATOR" && !item.deletedAt
-        ),
+        success: "Suppliers Fetched Successfully",
+        payload: items,
       })
     )
     .catch((error) => res.status(400).json({ error: error.message }));
+};
 
 exports.save = (req, res) =>
   Entity.create(req.body)
-    .then(async (item) => {
-      await Audit.create({
-        employee: "665354bee6f3d0c154c02c03",
-        action: "ADD",
-        description: "Added a new category",
-      });
+    .then((item) =>
       res.status(201).json({
         success: "Supplier Created Successfully",
         payload: item,
-      });
-    })
+      })
+    )
     .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
 
 exports.update = (req, res) =>
   Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
-    .then(async (item) => {
-      await Audit.create({
-        employee: "665354bee6f3d0c154c02c03",
-        action: "UPDATE",
-        description: "Updated a category",
-      });
+    .then((item) => {
       if (item) {
         res.json({
           success: "Role Updated Successfully",
@@ -75,12 +74,7 @@ exports.status = (req, res) =>
 
 exports.destroy = (req, res) => {
   Entity.findByIdAndUpdate(req.body._id, { deletedAt: new Date() })
-    .then(async (item) => {
-      await Audit.create({
-        employee: "665354bee6f3d0c154c02c03",
-        action: "ARCHIVE",
-        description: "Archived a category",
-      });
+    .then((item) => {
       res.json({ success: "Successfuly Deleted Product", payload: item });
     })
     .catch((error) => res.status(400).json({ error: error.message }));

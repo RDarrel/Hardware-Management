@@ -19,31 +19,39 @@ import {
   PRE_ORDER,
 } from "../../../services/redux/slices/cart";
 import formattedTotal from "../../../services/utilities/forattedTotal";
+
 const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
   const { token, auth } = useSelector(({ auth }) => auth),
     { isLimit = false } = useSelector(({ cart }) => cart),
     [cart, setCart] = useState([]),
+    [totalDiscount, setTotalDiscount] = useState(0),
     [isPreOrder, setIsPreOrder] = useState(false),
     [total, setTotal] = useState(0),
     dispatch = useDispatch();
 
   useEffect(() => {
-    const productWihtSubtotal = checkOutProducts?.map((obj) => ({
-      ...obj,
-      _subtotal: variation.getTheSubTotal("srp", obj, obj.product),
-      subtotal: formattedTotal(
-        variation.getTheSubTotal("srp", obj, obj.product)
-      ),
-      srp: variation.getTheCapitalOrSrp("srp", obj, obj.product),
-      hasVariant: obj.product?.hasVariant,
-      variant: variation.getTheVariant(
-        obj.variant1,
-        obj.variant2,
-        obj.product?.variations
-      ),
-      name: truncateString(capitalize.firstLetter(obj.product.name), 80),
-      qty: variation.qtyOrKilo(obj, obj.product?.isPerKilo),
-    }));
+    const productWihtSubtotal = checkOutProducts?.map((obj) => {
+      const { kiloGrams = 0, kilo = 0, quantity = 0, product } = obj;
+      const { isPerKilo = false } = product;
+      const totalOrder = isPerKilo ? kilo + kiloGrams : quantity;
+      const haveDiscount = totalOrder >= 15;
+      const subtotal = variation.getTheSubTotal("srp", obj, obj.product);
+      return {
+        ...obj,
+        _subtotal: variation.getTheSubTotal("srp", obj, obj.product),
+        subtotal: formattedTotal(subtotal),
+        discount: haveDiscount ? subtotal * 0.1 : 0,
+        srp: variation.getTheCapitalOrSrp("srp", obj, obj.product),
+        hasVariant: obj.product?.hasVariant,
+        variant: variation.getTheVariant(
+          obj.variant1,
+          obj.variant2,
+          obj.product?.variations
+        ),
+        name: truncateString(capitalize.firstLetter(obj.product.name), 80),
+        qty: variation.qtyOrKilo(obj, obj.product?.isPerKilo),
+      };
+    });
 
     setCart(productWihtSubtotal);
   }, [checkOutProducts]);
@@ -52,6 +60,11 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
     const _total = cart.reduce((accumulator, currentValue) => {
       return (accumulator += currentValue._subtotal);
     }, 0);
+    const _totalDiscount = cart.reduce((accumulator, currentValue) => {
+      return (accumulator += currentValue.discount);
+    }, 0);
+
+    setTotalDiscount(_totalDiscount);
 
     setTotal(_total);
   }, [cart]);
@@ -100,6 +113,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
               products: cart,
               date: formattedDate(),
               to: auth.email,
+              totalDiscount,
             },
           })
         );
@@ -123,8 +137,6 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
       product: c.product?._id,
     }));
 
-    console.log(orders);
-
     dispatch(
       PRE_ORDER({
         token,
@@ -132,6 +144,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
           orders,
           orderBy: auth._id,
           total: Number(total),
+          totalDiscount,
           invoice_no: timestamp,
         },
       })
@@ -205,23 +218,36 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
               </div>
             </MDBCardBody>
           </MDBCard>
-          <MDBCard className="mt-3 dotted">
+          <MDBCard className="mt-3 ">
             <MDBCardBody className="m-0 p-0">
               <div className="m-1 p-2">
                 <Table cart={cart} setCart={setCart} />
               </div>
               <hr className="dotted" />
-              <MDBRow className="mr-2">
-                <MDBCol
-                  md="12"
-                  className="text-right d-flex align-items-center justify-content-end"
-                >
-                  <h5 className="mr-5">Order Total ({cart.length} Item):</h5>
-                  <h3 style={{ fontWeight: 800 }} className="text-danger  ml-2">
-                    ₱{formattedTotal(total)}
-                  </h3>
+              <MDBRow className="d-flex justify-content-end">
+                <MDBCol md="4">
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h6 className="mr-5">Total:</h6>
+                    <h5 style={{ fontWeight: 800 }} className=" mr-3">
+                      ₱{formattedTotal(total)}
+                    </h5>
+                  </div>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h6 className="mr-5">Total Discount:</h6>
+                    <h5 style={{ fontWeight: 800 }} className=" mr-3">
+                      ₱{formattedTotal(totalDiscount)}
+                    </h5>
+                  </div>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h6 className="mr-5">Total Due:</h6>
+                    <h5 style={{ fontWeight: 800 }} className=" mr-3">
+                      ₱{formattedTotal(total - totalDiscount)}
+                    </h5>
+                  </div>
                 </MDBCol>
               </MDBRow>
+              <hr className="dotted" />
+
               <div className="mt-3 mr-1 mb-3 d-flex justify-content-end">
                 <MDBBtn color="primary" type="button" onClick={handleBuy}>
                   Generate Receipt

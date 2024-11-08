@@ -4,6 +4,7 @@ const Entity = require("../../models/stockman/Purchases"),
   Notifications = require("../../models/Notifications"),
   Stocks = require("../../models/stockman/Stocks"),
   Merchandises = require("../../models/stockman/Merchandises"),
+  Audit = require("../../models/administrator/Audit"),
   handleDuplicate = require("../../config/duplicate");
 
 var notifications = [];
@@ -31,6 +32,62 @@ const handleNotification = async ({
     notifications.unshift(populateNotification);
   } catch (error) {
     console.log("Error in notification in purchase:", error.message);
+  }
+};
+
+const handleAudit = async (purchase) => {
+  try {
+    const {
+      type: _type,
+      status: stats,
+      requestBy,
+      total = 0,
+      employee = "",
+      supplier = "",
+    } = purchase;
+
+    const status = stats.toUpperCase();
+    const type = _type.toUpperCase();
+    if (type === "REQUEST") {
+      switch (status) {
+        case "APPROVED":
+          await Audit.create({
+            employee: "665354bee6f3d0c154c02c03",
+            action: "APPROVED",
+            description: `Approved ${employee}'s purchase request from ${supplier}.`,
+            amount: total,
+          });
+          break;
+
+        case "RECEIVED":
+          await Audit.create({
+            employee: requestBy,
+            action: "RECEIVED",
+            description: `Received products from ${supplier}.`,
+            amount: total,
+          });
+          break;
+
+        default:
+          break;
+      }
+    } else if (type === "DEFECTIVE") {
+      await Audit.create({
+        employee: requestBy,
+        action: "RECEIVED",
+        description: `Received defective products from ${supplier}.`,
+        amount: total,
+      });
+    } else {
+      await Audit.create({
+        employee: requestBy,
+        action: "RECEIVED",
+        description: `Received discrepancy products from ${supplier}.`,
+        amount: total,
+      });
+    }
+  } catch (error) {
+    console.log("Error in audit trails:", error.message);
   }
 };
 
@@ -169,6 +226,14 @@ const defectiveCheckpoint = async (_purchase, merchandises) => {
         merchandises: await populateMerchandises(createdMerchandises),
       });
 
+      await handleAudit({
+        ...purchase,
+        total,
+        type: "DEFECTIVE",
+        supplier: purchase.supplier.company,
+        status: "RECEIVED",
+      });
+
       await handleNotification({
         type: "DEFECTIVE",
         status: "DEFECTIVE",
@@ -284,8 +349,10 @@ const discrepancyCheckPoint = async (_purchase, merchandises) => {
         }
       );
 
+      const total = getTheTotalAmount(merchandisesWithDiscrepancy);
+
       await Entity.findByIdAndUpdate(newPurchase._id, {
-        total: getTheTotalAmount(merchandisesWithDiscrepancy),
+        total,
       });
 
       const createdMerchandises = await Merchandises.insertMany(
@@ -297,6 +364,14 @@ const discrepancyCheckPoint = async (_purchase, merchandises) => {
       purchasesDefectOrDisc.push({
         ..._populatePurchase._doc,
         merchandises: await populateMerchandises(createdMerchandises),
+      });
+
+      await handleAudit({
+        ...purchase,
+        total,
+        type: "DISCREPANCY",
+        supplier: purchase.supplier.company,
+        status: "RECEIVED",
       });
 
       await handleNotification({
@@ -449,6 +524,14 @@ exports.approved = async (req, res) => {
       expectedDelivered: supplierWithMostProducts.expectedDelivered,
     });
 
+    await handleAudit({
+      ...purchase,
+      type: "REQUEST",
+      status: "APPROVED",
+      total: supplierWithMostProducts.totalAmount,
+      supplier: supplierWithMostProducts.company,
+    });
+
     if (_suppliers.length > 0) {
       for (const supplier of _suppliers) {
         const newPurchase = await Entity.create({
@@ -460,6 +543,14 @@ exports.approved = async (req, res) => {
           status: "approved",
           type: "request",
           total: supplier.totalAmount,
+        });
+
+        await handleAudit({
+          ...purchase,
+          type: "REQUEST",
+          status: "APPROVED",
+          total: newPurchase.total,
+          supplier: supplier.company,
         });
 
         const updatePromises = supplier.merchandises.map((merchandise) => {
@@ -520,6 +611,13 @@ exports.update = async (req, res) => {
         notifications,
       });
     } else if (purchase.status === "received") {
+      await handleAudit({
+        ...purchase,
+        total: purchase.totalReceived,
+        type: "REQUEST",
+        supplier: purchase.supplier.company,
+        status: "RECEIVED",
+      });
       resetNotifications();
       resetDefectOrDiscPurchases();
       await defectiveCheckpoint(purchase, merchandises);

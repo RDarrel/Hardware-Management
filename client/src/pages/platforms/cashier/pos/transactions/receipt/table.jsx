@@ -7,7 +7,6 @@ import productOrder from "../../../../../../services/utilities/product";
 const Table = ({
   handleAction,
   orderDetails = [],
-  total,
   cash,
   hasRefund,
   foundTransaction,
@@ -17,6 +16,16 @@ const Table = ({
     orderDetails.length > 0
       ? orderDetails?.filter(({ isRefundAll }) => !isRefundAll)
       : [];
+
+  const {
+    totalWithoutDeduc: grossSales = 0,
+    totalDiscount: discount = 0,
+    totalRefundSales: refund = 0,
+  } = foundTransaction;
+
+  const netSales = grossSales - discount + refund;
+  const vatableSales = netSales / 1.12;
+  const vat = vatableSales * 0.12;
 
   return (
     <table className="invoice-table">
@@ -132,8 +141,11 @@ const Table = ({
 
             {hasRefund && <p className="ml-3 paragraph ">Total Refund:</p>}
             <p className={`text-start paragraph`}>Total Due:</p>
+            <hr style={{ marginRight: "-0.5rem", marginBottom: "-0.2rem" }} />
             <p className="text-start paragraph"> Cash:</p>
-            <p className="text-start paragraph  mb-1">Change:</p>
+            <p className="text-start paragraph ">Change:</p>
+            <p className="text-start paragraph  ">Vatable Sales:</p>
+            <p className="text-start paragraph  mb-1">VAT(12%):</p>
           </td>
           <td style={{ borderLeft: "none", fontSize: "1rem" }}>
             <p className={`text-right paragraph mt-1`}>
@@ -150,9 +162,14 @@ const Table = ({
             <p className={`text-right paragraph `}>
               ₱{formattedTotal(foundTransaction.totalDue)}
             </p>
-            <p className="text-right paragraph">₱{cash.toLocaleString()}.00</p>
-            <p className={`text-right paragraph mb-1`}>
-              ₱{formattedTotal(change)}
+            <hr style={{ marginBottom: "-0.2rem" }} />
+            <p className="text-right paragraph">₱{formattedTotal(cash)}</p>
+            <p className={`text-right paragraph `}>₱{formattedTotal(change)}</p>
+            <p className={`text-right paragraph `}>
+              ₱{formattedTotal(vatableSales)}
+            </p>
+            <p className={`text-right paragraph mb-1 `}>
+              ₱{formattedTotal(vat)}
             </p>
           </td>
           <td

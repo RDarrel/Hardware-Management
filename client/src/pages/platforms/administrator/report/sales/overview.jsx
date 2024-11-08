@@ -15,13 +15,13 @@ const Overview = ({
 }) => {
   return (
     <>
-      <h6 className="mt-3">
+      <h6>
         <strong>Sales Overview: </strong>
         {formattedDate(from)} to {formattedDate(to)}
       </h6>
       <MDBTable bordered>
         <thead>
-          <tr>
+          <tr className="bg-primary text-white">
             <th> Gross Sales</th>
             <th> Refund </th>
             <th> Discount </th>

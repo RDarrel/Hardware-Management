@@ -8,6 +8,7 @@ import {
   MDBBtn,
 } from "mdbreact";
 import { ENDPOINT, variation } from "../../../../../services/utilities";
+import formattedTotal from "../../../../../services/utilities/forattedTotal";
 const Cart = ({ id, setIsShowCart, setID, cart }) => {
   return (
     <div onMouseLeave={() => setID((prev) => prev + 1)} className="p-2 ">
@@ -24,9 +25,9 @@ const Cart = ({ id, setIsShowCart, setID, cart }) => {
             style={{ color: "white" }}
             className="mr-3 ml-3 cursor-pointer"
           />
-          <span className="counter mt-3">
-            {cart.length > 0 ? cart.length : 0}
-          </span>
+          {cart.length > 0 && (
+            <span className="counter mt-3">{cart.length}</span>
+          )}
         </MDBBtn>
         <MDBPopoverBody className="cart-popover-body" id={`pop-body-${id}`}>
           {cart.slice(0, 5).map((obj, index) => {
@@ -69,11 +70,11 @@ const Cart = ({ id, setIsShowCart, setID, cart }) => {
                   </div>
                 </MDBCol>
                 <MDBCol md="2">
-                  <h6 className="text-danger text-nowrap">
+                  <h6 className=" text-nowrap">
                     ₱
-                    {variation
-                      .getTheSubTotal("srp", obj, product)
-                      .toLocaleString()}
+                    {formattedTotal(
+                      variation.getTheSubTotal("srp", obj, product)
+                    )}
                   </h6>
                 </MDBCol>
               </MDBRow>

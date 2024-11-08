@@ -145,7 +145,7 @@ const Cart = ({
           {isCustomer && (
             <div className="d-flex align-items-center mr-2 mt-2">
               <h6>Total ({checkOutProducts.length} item): </h6>
-              <h4 className="text-danger ml-1 ">
+              <h4 className=" ml-1 ">
                 ₱
                 {formattedTotal(
                   Number(

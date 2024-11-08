@@ -121,60 +121,6 @@ export default function Modal({
     setMerchandises(updatedMerchandises);
 
     toggleChecking();
-    // const supplierName = suppliers.find(({ _id }) => _id === supplier).company;
-    // Swal.fire({
-    //   title: "Are you sure?",
-    //   text: `Before proceeding with your approval, please double-check that the supplier ${supplierName} is correct.`,
-    //   icon: "warning",
-    //   showCancelButton: true,
-    //   confirmButtonColor: "#3085d6",
-    //   cancelButtonColor: "#d33",
-    //   confirmButtonText: "Yes, proceed",
-    //   cancelButtonText: "No, cancel",
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     dispatch(
-    //       UPDATE({
-    //         token,
-    //         data: {
-    //           purchase: {
-    //             ...purchase,
-    //             expectedDelivered,
-    //             supplier,
-    //             total,
-    //             status: "approved",
-    //             approved: new Date().toDateString(),
-    //           },
-    // merchandises: products.map((product) => ({
-    //   ...product,
-    //   quantity: {
-    //     ...product?.quantity,
-    //     received: product?.quantity?.approved,
-    //     defective: 0,
-    //   },
-    //   kilo: {
-    //     ...product?.kilo,
-    //     received: product?.kilo?.approved,
-    //     defective: 0,
-    //   },
-    //   kiloGrams: {
-    //     ...product?.kiloGrams,
-    //     received: product?.kiloGrams?.approved,
-    //     defective: 0,
-    //   },
-    // })),
-    //         },
-    //       })
-    //     );
-    //     toggle();
-
-    //     Swal.fire({
-    //       title: "Approval Confirmed",
-    //       text: `Your Approval has been confirmed with supplier: ${supplierName}.`,
-    //       icon: "success",
-    //     });
-    //   }
-    // });
   };
 
   const handleClose = () => {

@@ -1,4 +1,5 @@
-const Users = require("../../models/Users");
+const Users = require("../../models/Users"),
+  Audit = require("../../models/administrator/Audit");
 
 exports.browse = (_, res) => {
   Users.find({ role: { $in: ["CASHIER", "STOCKMAN"] } })
@@ -9,7 +10,12 @@ exports.browse = (_, res) => {
 };
 exports.save = (req, res) =>
   Users.create(req.body)
-    .then((_payload) => {
+    .then(async (_payload) => {
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "ADD",
+        description: "Added a new employee",
+      });
       const payload = { ..._payload._doc };
       delete payload.password;
       res.status(201).json({
@@ -21,7 +27,13 @@ exports.save = (req, res) =>
 
 exports.update = (req, res) =>
   Users.findByIdAndUpdate(req.body._id, req.body, { new: true })
-    .then((item) => {
+    .then(async (item) => {
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "UPDATE",
+        description: "Updated a employee",
+      });
+
       if (item) {
         res.json({
           success: "Role Updated Successfully",

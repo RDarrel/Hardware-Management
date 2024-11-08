@@ -13,7 +13,7 @@ import Materials from "./productMangement/materials";
 import { Stocks } from "../stockman/stocks";
 import ExpiredProducts from "./report/expiredProducts";
 import Store from "../stockman/store";
-import Audit from "./audit";
+import AuditTrails from "./audit";
 // import Category from "./productMangement/category";
 
 const access = [
@@ -140,7 +140,7 @@ const access = [
     name: "Audit Trails",
     path: "/audit",
     icon: "map",
-    component: Audit,
+    component: AuditTrails,
   },
 ];
 

@@ -1,4 +1,5 @@
 const Entity = require("../../models/administrator/Supplier"),
+  Audit = require("../../models/administrator/Audit"),
   handleDuplicate = require("../../config/duplicate");
 
 exports.browse = (req, res) => {
@@ -19,19 +20,30 @@ exports.browse = (req, res) => {
     .catch((error) => res.status(400).json({ error: error.message }));
 };
 
-exports.save = (req, res) =>
+exports.save = (req, res) => {
   Entity.create(req.body)
-    .then((item) =>
+    .then(async (item) => {
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "ADD",
+        description: "Added a new supplier",
+      });
       res.status(201).json({
         success: "Supplier Created Successfully",
         payload: item,
-      })
-    )
+      });
+    })
     .catch((error) => res.status(400).json({ error: handleDuplicate(error) }));
+};
 
 exports.update = (req, res) =>
   Entity.findByIdAndUpdate(req.body._id, req.body, { new: true })
-    .then((item) => {
+    .then(async (item) => {
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "UPDATE",
+        description: "Updated a supplier",
+      });
       if (item) {
         res.json({
           success: "Role Updated Successfully",
@@ -67,7 +79,12 @@ exports.status = (req, res) =>
 
 exports.destroy = (req, res) => {
   Entity.findByIdAndUpdate(req.body._id, { deletedAt: new Date() })
-    .then((item) => {
+    .then(async (item) => {
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "ARCHIVE",
+        description: "Archived a supplier",
+      });
       res.json({ success: "Successfuly Deleted Product", payload: item });
     })
     .catch((error) => res.status(400).json({ error: error.message }));

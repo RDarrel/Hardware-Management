@@ -15,6 +15,7 @@ export const Header = ({
   isSalesReport = false,
   isDashBoard = false,
   usingDateRange = false,
+  isAudit = false,
   fromRange = new Date(),
   toRange = new Date(),
   setFilteredData = () => {},
@@ -170,7 +171,7 @@ export const Header = ({
           );
         }
 
-        setFilteredData(filteredCollections);
+        setFilteredData(isAudit ? filteredSales : filteredCollections);
 
         if (!isEmployees || !isTransaction) {
           const {

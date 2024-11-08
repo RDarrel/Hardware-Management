@@ -394,12 +394,23 @@ exports.returnProducts = async (req, res) => {
           : { quantityReturn: (quantityReturn += quantity) }),
       };
 
+      const totalReplacement = getTotalReturnRefund(returnProducts);
+
       await Transactions.findByIdAndUpdate(transaction._id, {
         purchases: purchases,
         totalReturnSales:
-          (transaction?.totalReturnSales || 0) +
-          getTotalReturnRefund(returnProducts),
+          (transaction?.totalReturnSales || 0) + totalReplacement,
         returnItemCount: (transaction?.returnItemCount || 0) + 1,
+      });
+
+      await Audit.create({
+        invoice_no,
+        employee: returnBy,
+        action: "REPLACEMENT",
+        amount: totalReplacement,
+        description: `Processed a replacement for products sold to ${
+          customer || "a customer"
+        }.`,
       });
     } else {
       console.log("no have transaction for this invoice_no", invoice_no);
@@ -673,28 +684,34 @@ exports.refund = async (req, res) => {
       products: refundProducts,
     });
 
+    const totalRefund = getTotalReturnRefund(refundProducts);
     if (purchases.length === 0 || refundAll) {
       // await Transactions.findByIdAndDelete(transaction._id);
       await Transactions.findByIdAndUpdate(transaction._id, {
         isExist: false,
         total: 0,
         refundItemCount: (transaction.refundItemCount || 0) + 1,
-        totalRefundSales:
-          (transaction.totalRefundSales || 0) +
-          getTotalReturnRefund(refundProducts),
+        totalRefundSales: (transaction.totalRefundSales || 0) + totalRefund,
       });
     } else {
       const total = Number(newTotal || 0);
       await Transactions.findByIdAndUpdate(transaction._id, {
         purchases,
-        totalRefundSales:
-          (transaction.totalRefundSales || 0) +
-          getTotalReturnRefund(refundProducts),
+        totalRefundSales: (transaction.totalRefundSales || 0) + totalRefund,
         refundItemCount: (transaction.refundItemCount || 0) + 1,
         total,
       });
     }
 
+    await Audit.create({
+      invoice_no,
+      employee: returnBy,
+      action: "REFUND",
+      amount: totalRefund,
+      description: `Processed a refund for products sold to ${
+        customer || "a customer"
+      }.`,
+    });
     res.json({ success: "Successfully refunded products", payload: {} });
   } catch (error) {
     console.error("Error processing refund:", error);

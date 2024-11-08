@@ -14,6 +14,7 @@ import Products from "./products";
 import Suppliers from "./suppliers";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import { fullName } from "../../../../../services/utilities";
 
 export default function Checking({
   show,
@@ -86,8 +87,21 @@ export default function Checking({
     }
   }, [supplier, computeTotalAmount, collections, grandTotal, show]);
 
+  console.log(purchase);
+
   const handleProceed = () => {
-    dispatch(APPROVED({ token, data: { purchase, suppliers } }));
+    dispatch(
+      APPROVED({
+        token,
+        data: {
+          purchase: {
+            ...purchase,
+            employee: fullName(purchase?.requestBy?.fullName),
+          },
+          suppliers,
+        },
+      })
+    );
     Swal.fire({
       icon: "success",
       title: "Success",

@@ -100,16 +100,13 @@ const handleRemoveCart = async (products) => {
   }
 };
 const handleFormattedTotal = (total) => {
-  if (total % 1 !== 0) {
-    const arrTotal = String(total).split(".");
-    const decimalLength = arrTotal[1].length;
-    return `${total.toLocaleString()}${decimalLength === 1 ? "0" : ""}`;
-  } else {
-    return `${total.toLocaleString()}.00`;
-  }
+  if (!total) return "0.00";
+  return parseFloat(total)
+    .toFixed(2)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 exports.receipt = (req, res) => {
-  const { products, total, date = "", to = "" } = req.body;
+  const { products, total, date = "", to = "", totalDiscount = 0 } = req.body;
   handleRemoveCart(products);
   readHTMLFile("./mails/receipt.html", (err, html) => {
     let template = handlebars.compile(html);
@@ -118,12 +115,14 @@ exports.receipt = (req, res) => {
       appName: process.env.APP_NAME,
       products,
       total: handleFormattedTotal(total),
+      totalDiscount: handleFormattedTotal(totalDiscount),
+      totalDue: handleFormattedTotal(total - totalDiscount),
       date,
     };
     let htmlToSend = template(replacements);
     let msg = {
       from: `${process.env.APP_NAME}  <${process.env.EMAIL_USER}>`,
-      to,
+      to: "rdpajarillaga597@gmail.com",
       subject: "Quotation",
       html: htmlToSend,
       attachments: [

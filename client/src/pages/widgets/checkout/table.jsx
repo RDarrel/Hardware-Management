@@ -1,6 +1,7 @@
 import React from "react";
 import { MDBTable } from "mdbreact";
 import { ENDPOINT, variation } from "../../../services/utilities";
+import formattedTotal from "../../../services/utilities/forattedTotal";
 
 const Table = ({ cart }) => {
   return (
@@ -8,9 +9,9 @@ const Table = ({ cart }) => {
       <thead>
         <tr>
           <th>Products Ordered</th>
-          <th className="text-center">SRP</th>
-          <th className="text-center">Quantity/Kilo</th>
-          <th className="text-center">Subtotal</th>
+          <th>SRP</th>
+          <th>Quantity/Kilo</th>
+          <th>Subtotal</th>
         </tr>
       </thead>
       <tbody>
@@ -53,19 +54,19 @@ const Table = ({ cart }) => {
                 </div>
               </td>
 
-              <td className="text-center font-weight-bold">
+              <td className="font-weight-bold">
                 ₱
-                {variation
-                  .getTheCapitalOrSrp("srp", obj, product)
-                  .toLocaleString()}
+                {formattedTotal(
+                  variation.getTheCapitalOrSrp("srp", obj, product)
+                )}
               </td>
 
-              <td className="font-weight-bold text-center">
+              <td className="font-weight-bold ">
                 {variation.qtyOrKilo(obj, product.isPerKilo)}
               </td>
 
-              <td className="font-weight-bold text-danger text-center ">
-                {obj.subtotal.toLocaleString()}
+              <td className="font-weight-bold ">
+                ₱{formattedTotal(obj.subtotal)}
               </td>
             </tr>
           );

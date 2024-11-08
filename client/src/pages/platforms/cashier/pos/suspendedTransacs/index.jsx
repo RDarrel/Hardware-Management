@@ -314,7 +314,7 @@ export default function SuspendedTransacs({
           {!showInvoice && collections.length > 9 && (
             <MDBBadge color="light" className="">
               <h6 className="font-weight-bolder text-white mx-1 my-1 text-dark ">
-                Total of ({collections.length}) suspended transactions
+                Total of ({collections.length}) pending transactions
               </h6>
             </MDBBadge>
           )}

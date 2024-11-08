@@ -25,6 +25,7 @@ import adminDashboard from "./slices/administrator/adminDashboard";
 import notifications from "./slices/notifications";
 import quotations from "./slices/quotations";
 import expiredProductsReport from "./slices/administrator/report/expiredProductsReport";
+import auditTrails from "./slices/administrator/auditTrails";
 const store = configureStore({
   reducer: {
     auth,
@@ -53,6 +54,7 @@ const store = configureStore({
     notifications,
     expiredProductsReport,
     quotations,
+    auditTrails,
   },
 });
 

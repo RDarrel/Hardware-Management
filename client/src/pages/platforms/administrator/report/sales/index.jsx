@@ -201,6 +201,7 @@ const Sales = () => {
                 sales={sales}
                 page={page}
                 setPage={setPage}
+                frequency={frequency}
                 maxPage={maxPage}
                 isDetailedType={type === "Detailed"}
               />

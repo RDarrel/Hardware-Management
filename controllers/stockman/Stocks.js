@@ -1,6 +1,7 @@
 const arrangeStocks = require("../../config/arrangeStocks");
 const Entity = require("../../models/stockman/Stocks"),
   ExpiredProducts = require("../../models/administrator/report/ExpiredProducts"),
+  Audit = require("../../models/administrator/Audit"),
   RemoveExpiredProducts = require("../../config/removeExpiredProducts"),
   handleDuplicate = require("../../config/duplicate");
 
@@ -107,6 +108,12 @@ exports.removeExpired = async (req, res) => {
       handleFormatedExpired(expired.product, expired),
       { new: true }
     );
+
+    await Audit.create({
+      employee: expired.removeBy,
+      action: "REMOVED",
+      description: "Removed expired products",
+    });
 
     res.json({ payload: updatedStock });
   } catch (error) {

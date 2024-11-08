@@ -2,6 +2,7 @@ const RemoveExpiredProducts = require("../../../config/removeExpiredProducts");
 const sortByTopSellingProducts = require("../../../config/sortByTopSellingProducts");
 const Entity = require("../../../models/administrator/productManagement/Products"),
   Stocks = require("../../../models/stockman/Stocks"),
+  Audit = require("../../../models/administrator/Audit"),
   fs = require("fs");
 
 const handleVariantImagesUpload = (productID, variantImages) => {
@@ -281,9 +282,15 @@ exports.save = (req, res) => {
       variant: { ...product.variant, options: remveBase64InMediaOptions },
     },
   })
-    .then((item) => {
+    .then(async (item) => {
       handleUploadProduct(item._id, product?.media?.product);
       handleVariantImagesUpload(item._id, product?.media?.variant);
+
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "ADD",
+        description: "Added a new product",
+      });
 
       res.status(201).json({
         success: "Product Created Successfully",
@@ -310,7 +317,12 @@ exports.update = (req, res) => {
     },
     { new: true }
   )
-    .then((item) => {
+    .then(async (item) => {
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "UPDATE",
+        description: "Updated a product",
+      });
       if (item) {
         handleUploadProduct(item._id, product?.media?.product);
         handleVariantImagesUpload(item._id, product?.media?.variant);
@@ -382,7 +394,12 @@ exports.variation_update = async (req, res) => {
 
 exports.destroy = (req, res) => {
   Entity.findByIdAndUpdate(req.body._id, { deletedAt: new Date() })
-    .then((item) => {
+    .then(async (item) => {
+      await Audit.create({
+        employee: "665354bee6f3d0c154c02c03",
+        action: "ARCHIVE",
+        description: "Archived a product",
+      });
       res.json({ success: "Successfuly Deleted Product", payload: item });
     })
     .catch((error) => res.status(400).json({ error: error.message }));
