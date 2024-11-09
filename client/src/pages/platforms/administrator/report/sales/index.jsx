@@ -12,6 +12,7 @@ import {
 
 import CustomSelect from "../../../../../components/customSelect";
 import {
+  formattedDate,
   // globalSearch,
   variation,
 } from "../../../../../services/utilities";
@@ -20,6 +21,7 @@ import excel from "../../../../../services/utilities/downloadExcel/excel";
 import Spinner from "../../../../widgets/spinner";
 import Table from "./table";
 import Overview from "./overview";
+import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
 const Sales = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth);
@@ -60,40 +62,105 @@ const Sales = () => {
     setSales(filteredSales);
   }, [filteredSales]);
 
+  const netSales = totalSales - (totalDiscount + totalRefund);
+  const totalVatSales = Number(netSales / 1.12).toFixed(2);
+
+  const labelOfProducts = () => {
+    const isDetailedType = type === "Detailed";
+    if (isDetailedType) {
+      switch (frequency) {
+        case "Weekly":
+          return "Detailed Weekly Item Sales";
+        case "Monthly":
+          return "Detailed Monthly Item Sales";
+        case "Yearly":
+          return "Detailed Yearly Item Sales";
+        default:
+          return "Detailed Daily Item Sales";
+      }
+    } else {
+      switch (frequency) {
+        case "Weekly":
+          return "Weekly Item Sales Summary";
+        case "Monthly":
+          return "Monthly Item Sales Summary";
+        case "Yearly":
+          return "Yearly Item Sales Summary";
+        default:
+          return "Daily Item Sales Summary";
+      }
+    }
+  };
+
   const handleExport = () => {
+    const isDetailed = type === "Detailed";
     const options = {
       sheet: "Sales-Report",
       filename: "Sales-Report",
-      title: "Sales Report",
-      // from: formattedDate(baseFrom),
-      // to: formattedDate(baseTo),
+      title: `${frequency} Sales Report`,
+      from: formattedDate(from),
+      to: formattedDate(to),
       income: `₱${totalIncome.toLocaleString()}`,
       sales: `₱${totalSales.toLocaleString()}`,
       pcs: soldQty,
       kg: soldKilo,
+      labelOfProducts: labelOfProducts(),
+      salesOverView: [
+        `₱${formattedTotal(totalSales)}`,
+        `₱${formattedTotal(totalRefund)}`,
+        `₱${formattedTotal(totalDiscount)}`,
+        `₱${formattedTotal(netSales)}`,
+        `₱${formattedTotal(totalIncome)}`,
+        `₱${formattedTotal(totalVatSales)}`,
+        `₱${formattedTotal(Number(totalVatSales * 0.12))}`,
+      ],
     };
 
-    const formatSales = filteredSales.map((sale) => {
-      const { product, sold, capital, income, srp } = sale;
+    const formatSales = sales.map((sale) => {
+      const {
+        product,
+        sold,
+        income,
+        srp = 0,
+        discount = 0,
+        date = "",
+        refundQuantity = 0,
+        netSales: totalNetSales = 0,
+        grossSales: totalGrossSales = 0,
+        totalDiscount = 0,
+      } = sale;
+      const totalRefund = srp * (refundQuantity || 0);
+      const grossSales = isDetailed ? srp * sold : totalGrossSales;
+      const totalDeducInGross = (totalRefund || 0) + (totalDiscount || 0);
+
+      const netSales = isDetailed
+        ? grossSales - totalDeducInGross
+        : totalNetSales;
+
+      const totalVatSales = Number(netSales / 1.12).toFixed(2);
+      const totalVat = Number(totalVatSales * 0.12).toFixed(2);
+
       return {
-        product: product.name,
-        hasVariant: product.hasVariant,
-        ...(product.hasVariant && {
-          variant: variation.name(sale, product.variations),
+        "Date (MM,DD,YY)": date,
+        ...(isDetailed && {
+          product: product.name,
+          hasVariant: product.hasVariant,
+          ...(product.hasVariant && {
+            variant: variation.name(sale, product.variations),
+          }),
         }),
         sold,
         unit: product.isPerKilo ? "Kg" : "Pcs",
-        capital: `₱ ${capital.toLocaleString()}`,
-        srp: `₱ ${srp.toLocaleString()}`,
-        sales: `₱ ${Number(srp * sold).toLocaleString()}`,
-        income: `₱ ${income.toLocaleString()}`,
+        "Gross Sales": String(`₱ ${formattedTotal(grossSales)}`),
+        Discount: `₱ ${formattedTotal(isDetailed ? totalDiscount : discount)}`,
+        "Refund Amount": `₱ ${formattedTotal(totalRefund)}`,
+        "Net Sales": `₱ ${formattedTotal(netSales)}`,
+        Income: `₱${formattedTotal(income)}`,
+        "VAT (12%)": `₱ ${formattedTotal(totalVat)}`,
       };
     });
-    excel({ options, array: formatSales });
+    excel({ options, array: formatSales, isDetailed });
   };
-
-  const netSales = totalSales - (totalDiscount + totalRefund);
-  const totalVatSales = Number(netSales / 1.12).toFixed(2);
 
   return (
     <>
@@ -204,6 +271,7 @@ const Sales = () => {
                 frequency={frequency}
                 maxPage={maxPage}
                 isDetailedType={type === "Detailed"}
+                labelOfProducts={labelOfProducts}
               />
             </>
           ) : (

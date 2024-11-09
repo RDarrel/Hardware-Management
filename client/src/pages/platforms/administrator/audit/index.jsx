@@ -28,7 +28,6 @@ const AuditTrails = () => {
     [page, setPage] = useState(1),
     dispatch = useDispatch();
 
-  // Filter the search results
   useEffect(() => {
     if (search && audits.length > 0) {
       const filtered = globalSearch([...audits], search);
@@ -37,8 +36,6 @@ const AuditTrails = () => {
       setBaseAudits(audits);
     }
   }, [search, audits]);
-
-  // Fetch data
 
   useEffect(() => {
     dispatch(BROWSE({ token }));

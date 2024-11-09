@@ -10,38 +10,13 @@ const Table = ({
   page,
   maxPage,
   setPage = () => {},
-  frequency,
-  isDetailedType = true,
+  isDetailedType = false,
+  labelOfProducts = () => {},
 }) => {
-  const handleLabel = () => {
-    if (isDetailedType) {
-      switch (frequency) {
-        case "Weekly":
-          return "Detailed Weekly Item Sales";
-        case "Monthly":
-          return "Detailed Monthly Item Sales";
-        case "Yearly":
-          return "Detailed Yearly Item Sales";
-        default:
-          return "Detailed Daily Item Sales";
-      }
-    } else {
-      switch (frequency) {
-        case "Weekly":
-          return "Weekly Item Sales Summary";
-        case "Monthly":
-          return "Monthly Item Sales Summary";
-        case "Yearly":
-          return "Yearly Item Sales Summary";
-        default:
-          return "Daily Item Sales Summary";
-      }
-    }
-  };
   return (
     <>
       <h6 className="mt-4">
-        <strong>{handleLabel()} </strong>
+        <strong>{labelOfProducts()} </strong>
       </h6>
       <MDBTable responsive bordered striped>
         <thead>

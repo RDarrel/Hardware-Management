@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import "./print.css";
-import { MDBCol, MDBRow } from "mdbreact";
 import formattedTotal from "../../services/utilities/forattedTotal";
+import "./print.css";
 
 const PrintOut = () => {
   const [products, setProducts] = useState([]);

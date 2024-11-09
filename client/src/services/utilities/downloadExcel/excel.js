@@ -10,13 +10,14 @@ const truncateTextWithEllipsis = (text, maxLength = 50) => {
 };
 
 const flattenArray = (array) => {
-  console.log(array);
   const male = [],
     female = [],
-    head = [{ text: "No.", space: 1 }];
+    head = [];
 
   for (const key in array[0]) {
     const settings = new Map([
+      ["Date (MM,DD,YY)", { text: "Date (MM,DD,YY)", space: 3 }],
+
       ["product", { text: "Product", space: 4 }],
       ["hasVariant", { text: "", dnone: true }],
       ["variant", { text: "", dnone: true }],
@@ -26,7 +27,7 @@ const flattenArray = (array) => {
       ["srp", { text: "SRP" }],
       ["sales", { text: "Sales" }],
       ["income", { text: "Income" }],
-    ]).get(key) || { text: key.toUpperCase(), space: 2 };
+    ]).get(key) || { text: key, space: 3 };
 
     if (key !== "isMale") head.push(settings);
   }
@@ -64,10 +65,20 @@ const set = {
     // worksheet.mergeCells("A1", "");
   },
   banner: ({ worksheet, options }) => {
-    const { title: file, from, to, sales, income, pcs, kg } = options;
+    const { title: file, from, to, salesOverView: sales = [] } = options;
 
-    worksheet.mergeCells("B1:O1");
-    const title = worksheet.getCell("D1");
+    const headers = [
+      "Gross Sales",
+      "Refund",
+      "Discount",
+      "Net Sales",
+      "Income",
+      "Vatable Sales",
+      "VAT(12%)",
+    ];
+
+    worksheet.mergeCells("C1:V1");
+    const title = worksheet.getCell("V1");
     title.value = file;
     title.font = { bold: true, size: 25 };
     title.alignment = { horizontal: "center" };
@@ -110,9 +121,8 @@ const set = {
     };
 
     const staticCellsData = [
-      //ROW 2
       {
-        prevCol: 5,
+        prevCol: 8,
         space: 1,
         title: "From:",
         startPos: 2,
@@ -120,14 +130,14 @@ const set = {
         isTop: true,
       },
       {
-        prevCol: 6,
+        prevCol: 9,
         space: 2,
         title: from,
         startPos: 2,
         isLabel: false,
       },
       {
-        prevCol: 8,
+        prevCol: 12,
         space: 1,
         title: "To:",
         isTop: true,
@@ -135,93 +145,80 @@ const set = {
         isLabel: true,
       },
       {
-        prevCol: 9,
+        prevCol: 13,
         space: 2,
         title: to,
         startPos: 2,
       },
-      //ROW 4
-      {
-        prevCol: 1,
-        space: 2,
-        title: "Total Sales:",
-        isSales: true,
-        startPos: 4,
-        isLabel: true,
-      },
-      {
-        prevCol: 3,
-        space: 2,
-        title: sales,
-        isSales: true,
-        startPos: 4,
-        textColor: "FFFF0000",
-      },
-
-      {
-        prevCol: 5,
-        space: 2,
-        title: "Total Income:",
-        startPos: 4,
-        isLabel: true,
-        isSales: true,
-      },
-      {
-        prevCol: 7,
-        space: 2,
-        title: income,
-        isSales: true,
-        startPos: 4,
-        textColor: "FFFF0000",
-      },
-
-      {
-        prevCol: 9,
-        space: 2,
-        title: "Sold In pcs:",
-        isSales: true,
-        startPos: 4,
-        isLabel: true,
-      },
-      {
-        prevCol: 11,
-        space: 2,
-        title: pcs,
-        startPos: 4,
-        isSales: true,
-        textColor: "FFFF0000",
-      },
-
-      {
-        prevCol: 13,
-        space: 2,
-        title: "Sold In Kg:",
-        startPos: 4,
-        isSales: true,
-
-        isLabel: true,
-      },
-      {
-        prevCol: 15,
-        space: 2,
-        title: kg,
-        isSales: true,
-        startPos: 4,
-
-        textColor: "FFFF0000",
-      },
     ];
 
     staticCellsData.forEach(generateStaticCell);
+
+    worksheet.mergeCells("A3:D3");
+    const salesOverView = worksheet.getCell("D3");
+    salesOverView.value = "Sales Overview";
+    salesOverView.font = { bold: true, size: 15, name: "Times New Roman" };
+    salesOverView.alignment = { horizontal: "left" };
+
+    let prevCol = 0;
+    const space = 4;
+
+    const processOverview = (startingRow, overViews, isValue = false) => {
+      for (const text of overViews) {
+        const headPos = `${getAlpha(prevCol)}${startingRow}`;
+        const head = worksheet.getCell(headPos);
+        const rowHead = worksheet.getRow(`${startingRow}`);
+        rowHead.height = isValue ? 30 : 40;
+        head.value = text;
+        head.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        head.font = {
+          bold: !isValue,
+          size: 12,
+        };
+        head.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+          bottom: { style: "thin" },
+        };
+
+        if (space > 1) {
+          worksheet.mergeCells(
+            `${headPos}:${getAlpha(prevCol + space - 1)}${startingRow}`
+          );
+        }
+
+        prevCol += space;
+      }
+    };
+    processOverview(4, headers);
+    prevCol = 0;
+    processOverview(5, sales, true);
   },
-  main: ({ worksheet, head = [], female = [], male = [] }) => {
+  main: ({
+    worksheet,
+    head = [],
+    male = [],
+    isDetailed = true,
+    labelOfProducts,
+  }) => {
     worksheet.addRow([]);
 
-    const startingRow = 5;
+    worksheet.mergeCells("A7:D7");
+    const salesOverView = worksheet.getCell("D7");
+    salesOverView.value = labelOfProducts;
+    salesOverView.font = { bold: true, size: 13, name: "Times New Roman" };
+    salesOverView.alignment = { horizontal: "left" };
+
+    const startingRow = 8;
 
     let prevCol = 0;
 
-    for (const { text, space = 2, dnone = false } of head) {
+    for (const { text, space = 3, dnone = false } of head) {
       if (!dnone) {
         const headPos = `${getAlpha(prevCol)}${startingRow}`;
         const head = worksheet.getCell(headPos);
@@ -252,11 +249,11 @@ const set = {
     }
 
     function processArray(array, startPos) {
-      console.log(array);
       for (let i = 0; i < array.length; i++) {
-        var element = [i + 1, ...array[i]]; // parent array element
+        var element = [...array[i]]; // parent array element
         let _prevCol = 0;
-        const hasVariant = element[2];
+        const hasVariant = isDetailed ? element[2] : false;
+
         var variant = "";
         if (hasVariant) {
           const _element = [...element];
@@ -265,13 +262,16 @@ const set = {
           element = _element;
         } else {
           const _element = [...element];
-          _element.splice(2, 1);
+          if (isDetailed) {
+            _element.splice(2, 1);
+          }
           element = _element;
         }
+
         // child array
         for (let j = 0; j < element.length; j++) {
           var value = element[j]; // child array value
-          const { space = 2 } = head[j] || {};
+          const { space = 3 } = head[j] || {};
           const cellPos = `${getAlpha(_prevCol)}${startPos}`;
           const cell = worksheet.getCell(cellPos);
           var alignment = {
@@ -292,15 +292,19 @@ const set = {
                 ],
               };
             } else {
-              cell.font = { bold: true };
+              if (isDetailed) {
+                cell.font = { bold: true };
+              }
               cell.value = value;
             }
-            alignment = {
-              ...alignment,
-              horizontal: "left",
-              vertical: "middle",
-              wrapText: true,
-            };
+            if (isDetailed) {
+              alignment = {
+                ...alignment,
+                horizontal: "left",
+                vertical: "middle",
+                wrapText: true,
+              };
+            }
           } else {
             cell.value = value;
           }
@@ -351,10 +355,10 @@ const set = {
 //     "Track and Strand": "",
 //     "Course/s (only for TVL)": "",
 //   }
-const excel = async ({ array = [], options = {} }) => {
+const excel = async ({ array = [], options = {}, isDetailed = true }) => {
   if (!array.length) return;
 
-  const { sheet, filename, signatures, ...rest } = options;
+  const { sheet, filename, signatures, labelOfProducts, ...rest } = options;
 
   const workbook = new ExcelJS.Workbook(),
     worksheet = workbook.addWorksheet(sheet),
@@ -365,7 +369,15 @@ const excel = async ({ array = [], options = {} }) => {
 
   set.image({ worksheet, workbook, options: rest });
   set.banner({ worksheet, options: rest });
-  set.main({ worksheet, head, male, female, options: rest });
+  set.main({
+    worksheet,
+    head,
+    male,
+    female,
+    options: rest,
+    isDetailed,
+    labelOfProducts,
+  });
   // const headLength = Object.keys(rest).length - 1;
   // const footerSkip = headLength <= 5 ? 5 : headLength <= 10 ? 7 : 9;
   // const skip = footerSkip + 6 + male.length + female.length;

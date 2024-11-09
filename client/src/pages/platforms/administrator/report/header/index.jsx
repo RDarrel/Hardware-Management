@@ -192,6 +192,7 @@ export const Header = ({
     }
   }, [
     from,
+    isAudit,
     to,
     isEmployees,
     isTransaction,

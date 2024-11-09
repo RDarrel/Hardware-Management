@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import Footer from "./footer";
 import Body from "./body";
 import { variation } from "../../../../../services/utilities";
-import Receipt from "../../../../widgets/receipt";
+// import Receipt from "../../../../widgets/receipt";
 import seperateKiloAndGrams from "../../../../../services/utilities/seperateKiloAndGrams";
 import { useDispatch, useSelector } from "react-redux";
 import { SAVE } from "../../../../../services/redux/slices/cashier/suspendedTransacs";

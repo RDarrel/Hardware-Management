@@ -5,7 +5,6 @@ import {
   MDBCardBody,
   MDBCol,
   MDBIcon,
-  MDBInputGroup,
   MDBRow,
 } from "mdbreact";
 import Swal from "sweetalert2";
@@ -21,7 +20,6 @@ const Footer = ({
   setCash,
   setIsWalkInQuotation,
 }) => {
-  const change = Number(cash) - Number(total);
   const cashDivRef = useRef(null);
 
   useEffect(() => {

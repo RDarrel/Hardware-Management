@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import incomePerSale from "./netAndIncome";
 import getSalesAndIncome from "./getSalesAndIncome";
 import Card from "./card";
 import netAndIncome from "./netAndIncome";

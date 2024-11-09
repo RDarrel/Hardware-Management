@@ -2,17 +2,7 @@ const Entity = require("../../models/administrator/Audit"),
   handleDuplicate = require("../../config/duplicate");
 
 exports.browse = (req, res) => {
-  const { from, to } = req.query || {};
-
-  const fromDate = new Date(from);
-  fromDate.setHours(0, 0, 0, 0);
-  const toDate = new Date(to);
-  toDate.setHours(23, 59, 59, 999);
-  console.log(fromDate, toDate);
-  Entity.find({
-    $gte: fromDate,
-    $lte: toDate,
-  })
+  Entity.find()
     .populate("employee")
     .select("-__v")
     .sort({ createdAt: -1 })

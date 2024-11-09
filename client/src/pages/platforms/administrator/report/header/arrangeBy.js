@@ -1,19 +1,3 @@
-const arrangeSalesBySummary = (sale) => {
-  const {
-    sold = 0,
-    srp = 0,
-    discount = 0,
-    refundQuantity = 0,
-    capital = 0,
-  } = sale;
-  const grossSales = sold * srp;
-  const refundAmount = (refundQuantity || 0) * srp;
-  const totalDeduc = refundAmount + (discount || 0);
-  const netSales = grossSales - totalDeduc;
-  const income = netSales - capital * sold;
-  return { grossSales, refundAmount, netSales, income, discount };
-};
-
 const getFrequency = (createdAt, frequency) => {
   const date = new Date(createdAt);
   date.setHours(0, 0, 0, 0);
