@@ -64,8 +64,9 @@ const Header = ({
 
   useEffect(() => {
     setNotSeenQuotations(
-      quotationCollections.filter(({ isSeen = false }) => !isSeen) || []
+      quotationCollections.filter(({ isSeen = false }) => !isSeen)
     );
+    console.log(quotationCollections);
     setQuotations(quotationCollections);
   }, [quotationCollections]);
 

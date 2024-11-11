@@ -1,6 +1,6 @@
 import React from "react";
 import { MDBBtn } from "mdbreact";
-// import "./receipt.css";
+import "./receipt.css";
 import Header from "./header";
 import { variation } from "../../../../../../services/utilities";
 import formattedTotal from "../../../../../../services/utilities/forattedTotal";

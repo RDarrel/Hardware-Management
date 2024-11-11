@@ -39,7 +39,7 @@ const Checkout = ({ checkOutProducts, setIsCheckout, toggleCart }) => {
       return {
         ...obj,
         _subtotal: variation.getTheSubTotal("srp", obj, obj.product),
-        subtotal: formattedTotal(subtotal),
+        subtotal: subtotal,
         discount: haveDiscount ? subtotal * 0.1 : 0,
         srp: variation.getTheCapitalOrSrp("srp", obj, obj.product),
         hasVariant: obj.product?.hasVariant,

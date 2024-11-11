@@ -65,6 +65,10 @@ const modelSchema = new mongoose.Schema(
         },
         subtotal: {
           type: Number,
+          required: true,
+          set: (value) => {
+            return typeof value === "string" ? parseFloat(value) : value;
+          },
         },
       },
     ],

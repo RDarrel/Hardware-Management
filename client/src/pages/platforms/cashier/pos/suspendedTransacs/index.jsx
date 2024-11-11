@@ -41,16 +41,16 @@ export default function SuspendedTransacs({
   };
 
   useEffect(() => {
-    if (isQuotation) {
+    if (isQuotation && show) {
       const notSeenQuotations = [...collections]
         .filter(({ isSeen }) => !isSeen)
         .map(({ _id = "" }) => _id)
         .filter(Boolean);
-      if (!!notSeenQuotations) {
+      if (notSeenQuotations.length > 0) {
         dispatch(UPDATE({ token, data: notSeenQuotations }));
       }
     }
-  }, [isQuotation, dispatch, token, collections]);
+  }, [isQuotation, dispatch, token, collections, show]);
 
   const handleGetMax = (selected) => {
     const _products = [...products];

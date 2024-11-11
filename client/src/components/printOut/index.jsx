@@ -119,7 +119,7 @@ const PrintOut = () => {
         </h6>
 
         {obj.customer && (
-          <h6 className="m-0 p-0 customer-name">
+          <h6 className=" p-0 customer-name">
             Customer:
             <span className="invoice"> {obj?.customer}</span>
           </h6>

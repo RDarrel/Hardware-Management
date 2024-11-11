@@ -122,7 +122,7 @@ exports.receipt = (req, res) => {
     let htmlToSend = template(replacements);
     let msg = {
       from: `${process.env.APP_NAME}  <${process.env.EMAIL_USER}>`,
-      to: "rdpajarillaga597@gmail.com",
+      to,
       subject: "Quotation",
       html: htmlToSend,
       attachments: [

@@ -20,7 +20,7 @@
 
 .customer-name {
   margin-top: 0.1px !important;
-  margin-bottom: -10px !important;
+  margin-bottom: 0px !important;
 }
 
 .address {
@@ -178,7 +178,7 @@
 
   .customer-name {
     margin-top: 0.1px !important;
-    margin-bottom: -17px !important;
+    margin-bottom: -8px !important;
   }
 
   .cashier-name-mb {

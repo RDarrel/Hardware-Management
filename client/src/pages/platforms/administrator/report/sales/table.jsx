@@ -19,7 +19,7 @@ const Table = ({
         <strong>{labelOfProducts()} </strong>
       </h6>
       <MDBTable responsive bordered striped>
-        <thead>
+        <thead className="bg-info text-white">
           <tr>
             <th>Date (MM,DD,YY)</th>
             {isDetailedType && <th>Product</th>}
