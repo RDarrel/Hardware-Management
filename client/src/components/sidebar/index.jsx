@@ -10,7 +10,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { SETROUTE } from "../../services/redux/slices/auth";
 import ACCESS from "../../pages/platforms/access";
-import navbarLogo from "../../assets/logo/navbar1.jpg";
+import navbarLogo from "../../assets/logo/navbar3.jpg";
 
 export default function SideNavigation({
   triggerOpening,

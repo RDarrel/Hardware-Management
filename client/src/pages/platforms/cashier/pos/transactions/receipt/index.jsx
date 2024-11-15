@@ -236,12 +236,11 @@ export default function Receipt({
              <label for="return-reason">Reason for ${
                isReturn ? "replacement" : "refund"
              }:</label>
-       <select id="return-reason"  class="swal2-select text-center form-control m-0 p-0">
+          <select id="return-reason"  class="swal2-select text-center form-control m-0 p-0">
             <option value="Defective or damaged product">Defective or damaged product</option>
-            <option value="Wrong item">Wrong item</option>
-            <option value="Quality issues">Quality issues</option>
             <option value="Expired items">Expired items</option>
             <option value="Fitment issues">Fitment issues</option>
+            <option value="Wrong item">Wrong item</option>
           </select>
            </div>
 
@@ -429,10 +428,9 @@ export default function Receipt({
           }:</label>
           <select id="return-reason"  class="swal2-select text-center form-control m-0 p-0">
             <option value="Defective or damaged product">Defective or damaged product</option>
-            <option value="Wrong item">Wrong item</option>
-            <option value="Quality issues">Quality issues</option>
             <option value="Expired items">Expired items</option>
             <option value="Fitment issues">Fitment issues</option>
+            <option value="Wrong item">Wrong item</option>
           </select>
         </div>
       `,

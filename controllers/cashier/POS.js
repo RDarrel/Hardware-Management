@@ -295,7 +295,9 @@ exports.find_transaction = async (req, res) => {
   try {
     const transaction = await Transactions.findOne({
       invoice_no: req.query.invoice_no,
-    }).populate("purchases.product");
+    })
+      .populate("purchases.product")
+      .populate("cashier");
 
     const { purchases = [] } = transaction || {};
     const purchasesWithMax = [];

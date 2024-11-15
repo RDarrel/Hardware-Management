@@ -261,7 +261,6 @@ const POS = ({ isWalkin = false }) => {
         : { quantity: 1 }),
     };
   };
-  console.log(selectedProduct);
 
   const handleAddOrder = (product) => {
     console.log(product);

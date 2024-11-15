@@ -17,7 +17,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   formattedDate,
+  fullName,
   transaction as transactionAction,
+  variation,
 } from "../../../../../services/utilities";
 import Swal from "sweetalert2";
 import Receipt from "./receipt";
@@ -171,6 +173,53 @@ export default function Transactions({ show, toggle }) {
   //   });
   // };
 
+  const handlePrint = () => {
+    window.open(
+      "/printOut",
+      "Claim Stub",
+      "top=100px,left=100px,width=550px,height=750px"
+    );
+    const {
+      totalDue,
+      cash,
+      totalDiscount,
+      total,
+      invoice_no: invoice,
+      customer,
+      totalRefundSales: totalRefund,
+      cashier,
+      purchases: orderDetails,
+    } = foundTransaction;
+
+    const purchases = orderDetails.map((order) => {
+      const { product } = order;
+      const { hasVariant } = product;
+      return {
+        ...order,
+        subtotal: variation.getTheSubTotal("srp", order, product),
+        ...(hasVariant && {
+          variant: variation.name(order, product.variations),
+        }),
+      };
+    });
+
+    const printData = {
+      cashier: fullName(cashier.fullName),
+      invoice_no: invoice,
+      customer,
+      totalRefund,
+      isQuotation: false,
+      isReprint: true,
+      total,
+      totalDiscount,
+      totalDue,
+      cash,
+      purchases,
+    };
+
+    localStorage.setItem("collection", JSON.stringify(printData));
+  };
+
   return (
     <>
       <MDBModal
@@ -245,6 +294,7 @@ export default function Transactions({ show, toggle }) {
                             color="primary"
                             rounded
                             title="Print"
+                            onClick={handlePrint}
                           >
                             <MDBIcon icon="print" />
                           </MDBBtn>

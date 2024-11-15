@@ -137,10 +137,10 @@ export default function Payment({
 
       dispatch(UPDATE_MAX({ purchases: orderDetails }));
     }
-    Swal.fire({
-      title: !isQuotation ? "Successfully Paid" : "Successfully Quotation",
-      icon: "success",
-    });
+    // Swal.fire({
+    //   title: !isQuotation ? "Successfully Paid" : "Successfully Quotation",
+    //   icon: "success",
+    // });
     setInvoice_no("");
     setCustomerQuotation("");
     setOrders([]);

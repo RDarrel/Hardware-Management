@@ -23,7 +23,7 @@ const Table = ({
     totalRefundSales: refund = 0,
   } = foundTransaction;
 
-  const netSales = grossSales - discount + refund;
+  const netSales = grossSales - (discount + refund);
   const vatableSales = netSales / 1.12;
   const vat = vatableSales * 0.12;
 
@@ -139,7 +139,7 @@ const Table = ({
             <p className="text-start paragraph mt-1">Total: </p>
             <p className="text-start paragraph">Total Discount: </p>
 
-            {hasRefund && <p className="ml-3 paragraph ">Total Refund:</p>}
+            {hasRefund && <p className="paragraph ">Total Refund:</p>}
             <p className={`text-start paragraph`}>Total Due:</p>
             <hr style={{ marginRight: "-0.5rem", marginBottom: "-0.2rem" }} />
             <p className="text-start paragraph"> Cash:</p>

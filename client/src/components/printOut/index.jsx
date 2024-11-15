@@ -84,9 +84,14 @@ const PrintOut = () => {
 
     return `${hours}:${minutes} ${ampm}`;
   };
+  const { totalDue = 0, totalRefund = 0, isReprint = false } = obj;
 
-  const vatSales = Number(obj.totalDue / 1.12).toFixed(2);
+  const hasRefund = isReprint && totalRefund > 0;
+  const netSales = !hasRefund ? totalDue : totalDue - totalRefund;
+
+  const vatSales = Number(netSales / 1.12).toFixed(2);
   const vat = Number(vatSales * 0.12).toFixed(2);
+
   return (
     <div className="container-receipt mt-1">
       <div className="header">
@@ -177,6 +182,14 @@ const PrintOut = () => {
           </span>
         </div>
 
+        {hasRefund && (
+          <div className="d-flex justify-content-between ">
+            <span>Total Refund:</span>
+            <span className="font-weight-bold ml-4">
+              {formattedTotal(obj.totalRefund)}
+            </span>
+          </div>
+        )}
         <div className="d-flex justify-content-between mb-2">
           <span>Total Due:</span>
           <span className="font-weight-bold ml-4">

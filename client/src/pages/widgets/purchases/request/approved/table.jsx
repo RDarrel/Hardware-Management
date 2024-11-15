@@ -99,16 +99,23 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
         },
       } = merchandise;
       const { name, hasVariant = false, variations = [] } = product;
-
+      const received = getQtyKiloText("received", merchandise);
+      const approved = getQtyKiloText("approved", merchandise);
+      const defective = getQtyKiloText("defective", merchandise);
       return {
         product: {
           hasVariant,
           name: name,
           variant: variation.getTheVariant(variant1, variant2, variations),
         },
+
         quantity: {
           request: getQtyKiloText("request", merchandise),
-          approved: getQtyKiloText("approved", merchandise),
+          approved,
+          received,
+          defective,
+          // "Non-Defective": approved - (defective - discrepancy),
+          // Discrepancy: discrepancy,
         },
         ...(isAdmin && {
           capital: `₱${formattedTotal(capital)}`,
@@ -252,18 +259,18 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
                       {stockman?.merchandises?.length}
                     </span>
                   </td>
-                  {!isReceived && (
-                    <td>
-                      <MDBBtn
-                        color="info"
-                        size="sm"
-                        title="Export to excel"
-                        onClick={() => handleExport(stockman)}
-                      >
-                        <MDBIcon icon="file-excel" />
-                      </MDBBtn>
-                    </td>
-                  )}
+                  {/* {!isReceived && ( */}
+                  <td>
+                    <MDBBtn
+                      color="info"
+                      size="sm"
+                      title="Export to excel"
+                      onClick={() => handleExport(stockman)}
+                    >
+                      <MDBIcon icon="file-excel" />
+                    </MDBBtn>
+                  </td>
+                  {/* )} */}
                 </tr>
               )
             )}
