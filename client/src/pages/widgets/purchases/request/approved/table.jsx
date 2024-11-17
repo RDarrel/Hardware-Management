@@ -80,10 +80,18 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
     );
   };
 
+  const textOfDefecAndDisc = (total, isPerKilo) => {
+    return isPerKilo ? productOrder.kiloText(total) : `${total} qty`;
+  };
+
+  const getTotalAmount = (purchase, key = "") => {
+    return formattedTotal(GET.totalAmount(purchase?.merchandises, key));
+  };
   const handleExport = (purchase) => {
     const { total, expectedDelivered, supplier, merchandises } = purchase;
     const products = merchandises.map((merchandise) => {
       const {
+        expiration = "",
         product,
         variant1 = "",
         variant2 = "",
@@ -98,10 +106,18 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
           approved: 0,
         },
       } = merchandise;
-      const { name, hasVariant = false, variations = [] } = product;
-      const received = getQtyKiloText("received", merchandise);
-      const approved = getQtyKiloText("approved", merchandise);
-      const defective = getQtyKiloText("defective", merchandise);
+      const {
+        name,
+        hasVariant = false,
+        variations = [],
+        isPerKilo = false,
+      } = product;
+      const Received = getQtyKiloText("received", merchandise);
+      const Approved = getQtyKiloText("approved", merchandise);
+      const Defective = getQtyKiloText("defective", merchandise);
+      const basePurchase = isPerKilo ? kilo : quantity;
+      const nonDefective = basePurchase.received - basePurchase.defective;
+      const discrepancy = basePurchase.approved - basePurchase.received;
       return {
         product: {
           hasVariant,
@@ -110,12 +126,16 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
         },
 
         quantity: {
-          request: getQtyKiloText("request", merchandise),
-          approved,
-          received,
-          defective,
-          // "Non-Defective": approved - (defective - discrepancy),
-          // Discrepancy: discrepancy,
+          ...(!isReceived && {
+            Request: getQtyKiloText("request", merchandise),
+          }),
+          Approved,
+          ...(isReceived && {
+            Received,
+            Defective,
+            "Non-Defective": textOfDefecAndDisc(nonDefective, isPerKilo),
+            Discrepancy: textOfDefecAndDisc(discrepancy, isPerKilo),
+          }),
         },
         ...(isAdmin && {
           capital: `₱${formattedTotal(capital)}`,
@@ -128,16 +148,26 @@ const Table = ({ stockmans = [], isAdmin, isReceived }) => {
             })
           )}`,
         }),
+
+        ...(isReceived && {
+          "Expiration Date": expiration ? formattedDate(expiration) : "--",
+        }),
       };
     });
+    const title = isReceived ? "Received" : "Pending";
     const options = {
       sheet: "PO",
-      filename: "Pending Orders",
-      title: "Pending Orders",
+      filename: `${title} Orders`,
+      title: `${title} Orders`,
       supplier: supplier.company,
       expected: formattedDate(expectedDelivered),
       total: `₱${formattedTotal(total)}`,
+      defective: `₱${getTotalAmount(purchase, "defective")}`,
+      discrepancy: `₱${getTotalAmount(purchase, "discrepancy")}`,
+      received: `₱${formattedTotal(purchase.totalReceived)}`,
       isAdmin,
+      isReceived,
+      stockman: isReceived ? fullName(purchase.requestBy.fullName) : "",
     };
     PendingOrders({ options, array: products });
   };

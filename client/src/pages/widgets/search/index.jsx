@@ -11,6 +11,7 @@ export const Search = ({
   search,
   showExpiredProducts = false,
   expiredProducts = [],
+  handleExport = () => {},
   toggleExpiredProducts = () => {},
   handleSearch = () => {},
   setContainer = () => {},
@@ -77,6 +78,17 @@ export const Search = ({
             >
               {expiredProducts.length}
             </span>
+
+            <MDBBtn
+              size="sm"
+              rounded
+              color="primary"
+              className="ml-3"
+              title="Export to excel"
+              onClick={handleExport}
+            >
+              <MDBIcon icon="file-excel" size="2x" />
+            </MDBBtn>
           </>
         )}
         {!create && (

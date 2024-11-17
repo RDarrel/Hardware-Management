@@ -137,16 +137,19 @@ exports.browse = async (req, res) => {
       .sort({
         ...(status === "pending" ? { expected: 1 } : { expectedDelivered: 1 }),
       })
-      .sort({ createdAt: 1 });
-    const container = [];
+      .sort({ createdAt: 1 })
+      .lean();
+    // const container = [];
 
-    for (const element of purchases) {
-      const merchandises = await Merchandises.find({
-        purchase: element._id,
-      }).populate("product");
+    const container = await Promise.all(
+      purchases.map(async (element) => {
+        const merchandises = await Merchandises.find({
+          purchase: element._id,
+        }).populate("product");
 
-      container.push({ ...element._doc, merchandises });
-    }
+        return { ...element, merchandises };
+      })
+    );
     res.json({ success: "Successfully fetched Purchase", payload: container });
   } catch (error) {
     res.status(400).json({ error: error.message });

@@ -2,7 +2,7 @@ import * as ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import formattedDate from "../formattedDate";
 
-const truncateTextWithEllipsis = (text, maxLength = 50) => {
+const truncateTextWithEllipsis = (text, maxLength = 40) => {
   const ellipsis = "...";
   if (text.length > maxLength) {
     return text.substring(0, maxLength - ellipsis.length) + ellipsis;
@@ -14,6 +14,7 @@ const flattenArray = (array) => {
     head = [{ text: "No.", space: 1 }];
 
   for (const key in array[0]) {
+    const quantityObj = array[0]["quantity"] || {};
     const settings = new Map([
       ["product", { text: "Product", space: 5 }],
 
@@ -21,14 +22,14 @@ const flattenArray = (array) => {
         "quantity",
         {
           text: "Quantity/Kilo",
-          space: 4,
+          space: Object?.keys(quantityObj)?.length * 2,
           hasSubheader: true,
-          subHeaders: ["Request", "Approved"],
+          subHeaders: Object?.keys(quantityObj),
         },
       ],
       ["capital", { text: "Capital" }],
       ["subtotal", { text: "Subtotal" }],
-    ]).get(key) || { text: key.toUpperCase() };
+    ]).get(key) || { text: key };
     if (key !== "isMale") head.push(settings);
   }
 
@@ -64,81 +65,144 @@ const set = {
     // worksheet.mergeCells("A1", "Z8");
   },
   banner: ({ worksheet, options }) => {
-    const { title: file, supplier, expected, total, isAdmin = true } = options;
+    const {
+      title: file,
+      supplier,
+      expected: date,
+      total,
+      isAdmin = true,
+      received = 0,
+      defective = 0,
+      isReceived = false,
+      discrepancy = 0,
+      isStocks = false,
+      stockman = "",
+    } = options;
 
-    worksheet.mergeCells(isAdmin ? "E1:J1" : "D1:G1");
-    const title = worksheet.getCell(isAdmin ? "E1" : "D1");
-    title.value = file;
-    title.font = { bold: true, size: 22, name: "SansSerif" };
+    const firstHeaderEnd = isStocks
+      ? "P1"
+      : isReceived
+      ? "T1"
+      : isAdmin
+      ? "M1"
+      : "J1";
+    const secondHeaderEnd = isStocks
+      ? "P2"
+      : isReceived
+      ? "T2"
+      : isAdmin
+      ? "M2"
+      : "J2";
+
+    worksheet.mergeCells(`A1:${firstHeaderEnd}`);
+    const title = worksheet.getCell("A1");
+    title.value = `${file}`;
+    title.font = { bold: true, size: 20, name: "SansSerif" };
     title.alignment = { horizontal: "center" };
+    if (!isStocks) {
+      worksheet.mergeCells(`A2:${secondHeaderEnd}`);
+      const supplierTxt = worksheet.getCell("A2");
+      supplierTxt.value = `${supplier} ${date}`;
+      supplierTxt.font = { bold: false, size: 15, name: "SansSerif" };
+      supplierTxt.alignment = { horizontal: "center" };
+    }
+    if (stockman) {
+      // kapag received yung status
+      worksheet.mergeCells("A4:F4");
+      const receivedBy = worksheet.getCell("A4");
+      receivedBy.value = `Received By: ${stockman}`;
+      receivedBy.font = { bold: false, size: 12, name: "SansSerif" };
+      receivedBy.alignment = { horizontal: "left" };
+    }
 
-    const handlePopulateCell = ({
-      value,
-      isLabel = false,
-      start,
-      end,
-      textColor = "",
-    }) => {
-      worksheet.mergeCells(`${start}:${end}`);
-      const supplierLabel = worksheet.getCell(start);
-      supplierLabel.value = value;
-      supplierLabel.font = {
-        bold: !isLabel,
-        size: !isLabel ? 13 : 10,
-        name: "SansSerif",
-        color: { argb: textColor },
+    if (!isStocks) {
+      const handlePopulateCell = ({
+        value,
+        isLabel = false,
+        start,
+        isBold = true,
+        end,
+        textColor = "",
+      }) => {
+        worksheet.mergeCells(`${start}:${end}`);
+        const supplierLabel = worksheet.getCell(start);
+        supplierLabel.value = value;
+        supplierLabel.font = {
+          bold: !isLabel && isBold,
+          size: !isLabel && isBold ? 13 : 11,
+          name: "SansSerif",
+          color: { argb: textColor },
+        };
+        supplierLabel.alignment = {
+          horizontal: isLabel ? "right" : "left",
+          vertical: "middle",
+        };
       };
-      supplierLabel.alignment = {
-        horizontal: isLabel ? "right" : "left",
-        vertical: "middle",
-      };
-    };
 
-    handlePopulateCell({
-      value: "Supplier:",
-      isLabel: true,
-      start: "A3",
-      end: "A3",
-    });
-    handlePopulateCell({
-      value: supplier,
-      isLabel: false,
-      start: "B3",
-      end: "C3",
-    });
-    handlePopulateCell({
-      value: "Expected Delivered:",
-      isLabel: true,
-      start: isAdmin ? "D3" : "E3",
-      end: isAdmin ? "F3" : "G3",
-    });
-    handlePopulateCell({
-      value: expected,
-      isLabel: false,
-      start: isAdmin ? "G3" : "H3",
-      end: isAdmin ? "I3" : "J3",
-    });
-    if (isAdmin) {
-      handlePopulateCell({
-        value: "Total Amount:",
-        isLabel: true,
-        start: "J3",
-        end: "K3",
-      });
-      handlePopulateCell({
-        value: total,
-        isLabel: false,
-        start: "L3",
-        end: "N3",
-        textColor: "FFFF0000",
-      });
+      const endTotalColumn = isAdmin ? 6 : 5;
+      if (isAdmin) {
+        handlePopulateCell({
+          value: "Total Payment:",
+          isLabel: false,
+          isBold: false,
+          start: `A${endTotalColumn}`,
+          end: `B${endTotalColumn}`,
+        });
+        handlePopulateCell({
+          value: total,
+          isLabel: false,
+          start: `C${endTotalColumn}`,
+          end: `E${endTotalColumn}`,
+        });
+
+        if (isReceived) {
+          handlePopulateCell({
+            value: "Total Defective:",
+            isLabel: true,
+            start: `F${endTotalColumn}`,
+            end: `G${endTotalColumn}`,
+          });
+          handlePopulateCell({
+            value: defective,
+            isLabel: false,
+            start: `H${endTotalColumn}`,
+            end: `J${endTotalColumn}`,
+          });
+
+          handlePopulateCell({
+            value: "Total Discrepancy:",
+            isLabel: true,
+            start: `K${endTotalColumn}`,
+            end: `L${endTotalColumn}`,
+          });
+          handlePopulateCell({
+            value: discrepancy,
+            isLabel: false,
+            start: `M${endTotalColumn}`,
+            end: `O${endTotalColumn}`,
+          });
+
+          handlePopulateCell({
+            value: "Total Received:",
+            isLabel: true,
+            start: `P${endTotalColumn}`,
+            end: `Q${endTotalColumn}`,
+          });
+          handlePopulateCell({
+            value: received,
+            isLabel: false,
+            start: `R${endTotalColumn}`,
+            end: `T${endTotalColumn}`,
+          });
+        }
+      }
     }
   },
-  main: ({ worksheet, head = [], products }) => {
+  main: ({ worksheet, head = [], products, isAdmin, isStocks = false }) => {
     worksheet.addRow([]);
     worksheet.addRow([]);
 
-    const startingRow = 4;
+    const startingRow = isStocks ? 3 : isAdmin ? 7 : 5;
 
     let prevCol = 0;
 
@@ -184,7 +248,7 @@ const set = {
             wrapText: true,
           };
 
-          subHeadCell.font = { bold: true, size: 8, name: "SansSerif" };
+          subHeadCell.font = { bold: true, size: 10, name: "SansSerif" };
           subHeadCell.border = {
             top: { style: "thin" },
             left: { style: "thin" },
@@ -193,11 +257,6 @@ const set = {
           };
 
           if (i < subHeaders.length) {
-            console.log(
-              `${subHeaderPos}:${getAlpha(prevCol + i * 2 + 1)}${
-                startingRow + 1
-              }`
-            );
             worksheet.mergeCells(
               `${subHeaderPos}:${getAlpha(prevCol + i * 2 + 1)}${
                 startingRow + 1
@@ -240,7 +299,7 @@ const set = {
                   richText: [
                     {
                       text: truncateTextWithEllipsis(name),
-                      font: { bold: true },
+                      font: { bold: true, size: 12 },
                     },
                     {
                       text: `\nVariant:${truncateTextWithEllipsis(variant)}`,
@@ -250,6 +309,7 @@ const set = {
                 };
                 cell.alignment = alignment;
               } else {
+                console.log("product name");
                 cell.value = truncateTextWithEllipsis(name);
                 cell.alignment = alignment;
               }
@@ -257,7 +317,7 @@ const set = {
               cell.value = value;
               cell.alignment = { ...alignment, horizontal: "center" };
             }
-            cell.font = { bold: j === 1 };
+            cell.font = { bold: j === 1, size: j === 1 ? 12 : 11 }; // dating 11
 
             cell.border = {
               top: { style: "thin" },
@@ -291,8 +351,8 @@ const set = {
               };
 
               subHeaderCell.font = {
-                size: 9,
-                name: "SansSerif",
+                size: 11,
+                name: "Calibri",
               };
 
               subHeaderCell.border = {
@@ -652,6 +712,8 @@ const PendingOrders = async ({ array = [], options = {} }) => {
     head,
     products,
     options: rest,
+    isAdmin: options.isAdmin,
+    isStocks: options?.isStocks,
   });
 
   // Save the workbook

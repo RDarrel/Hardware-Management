@@ -51,6 +51,11 @@ const View = ({
           thumb: `${ENDPOINT}/assets/products/${selected._id}/variant/${_id}.jpg`,
           label: _id,
         }));
+
+      const { variant1: vr1 = "", variant2: vr2 = "" } = selected;
+      console.log("variant1", vr1);
+      setVariant1(vr1);
+      setVariant2(vr2);
       setSupplier(suppliers[0]?._id || "");
       setBaseImages([]);
       setSelectedImage({});
@@ -59,8 +64,8 @@ const View = ({
       setBaseImages([...productImages, ...variantImages]);
       setSelectedImage(productImages[0]);
       setStorageOfRemoveImages([]);
-      setVariant1("");
-      setVariant2("");
+      // setVariant1("");
+      // setVariant2("");
       setKilo(1);
       setKiloGrams(0);
       setQuantity(1);

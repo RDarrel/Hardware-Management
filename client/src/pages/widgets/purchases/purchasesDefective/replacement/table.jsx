@@ -5,7 +5,14 @@ import Modal from "../../request/modal";
 import Received from "../../request/approved/Received";
 import GET from "../../GET";
 
-const Table = ({ purchases, isAdmin, isReceived = false, isDefective }) => {
+import excel from "../../excel";
+
+const Table = ({
+  purchases,
+  isAdmin,
+  isReceived = false,
+  isDefective = true,
+}) => {
   const [show, setShow] = useState(false),
     [showReceived, setShowReceived] = useState(false),
     [purchase, setPurchase] = useState({}),
@@ -13,6 +20,22 @@ const Table = ({ purchases, isAdmin, isReceived = false, isDefective }) => {
 
   const toggle = () => setShow(!show);
   const toggleReceived = () => setShowReceived(!showReceived);
+
+  const handleExport = (purchase) => {
+    console.log(isDefective);
+    excel({
+      purchase,
+      isReceived,
+      isAdmin,
+      withRequest: false,
+      qtyKiloKey: isReceived ? "Replenishment" : "Received",
+      title: isDefective
+        ? `${isReceived ? "Received" : ""} Replacement`
+        : `${isReceived ? "Received" : ""} Acknowledge`,
+      withStockman: isReceived,
+    });
+  };
+
   return (
     <>
       <MDBTable bordered={isReceived && isAdmin}>
@@ -126,6 +149,17 @@ const Table = ({ purchases, isAdmin, isReceived = false, isDefective }) => {
                   <span className="counter mb-0">
                     {purchase.merchandises?.length}
                   </span>
+                </td>
+
+                <td>
+                  <MDBBtn
+                    color="info"
+                    size="sm"
+                    title="Export to excel"
+                    onClick={() => handleExport(purchase)}
+                  >
+                    <MDBIcon icon="file-excel" />
+                  </MDBBtn>
                 </td>
               </tr>
             ))

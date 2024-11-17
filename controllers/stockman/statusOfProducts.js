@@ -13,9 +13,15 @@ const statusOfProducts = async () => {
         $gte: currentDate,
         $lte: oneMonthFromNow,
       },
-    }).populate("product");
+    }).populate({
+      path: "product",
+      populate: [{ path: "category" }, { path: "material" }],
+    });
 
-    const outOfStocks = await Stocks.find().populate("product");
+    const outOfStocks = await Stocks.find().populate({
+      path: "product",
+      populate: [{ path: "category" }, { path: "material" }],
+    });
 
     const arrangeStocks =
       outOfStocks.length > 0

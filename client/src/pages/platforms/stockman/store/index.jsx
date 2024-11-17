@@ -38,6 +38,23 @@ const Store = () => {
     dispatch = useDispatch();
 
   const toggleView = () => setIsView(!isView);
+
+  useEffect(() => {
+    const restockString = localStorage.getItem("restock") || "";
+
+    if (restockString && !isLoading) {
+      const restock = JSON.parse(restockString);
+      const { product, variant1, variant2 } = restock;
+      setSelected({
+        ...product,
+        variant1: variant1 || "",
+        variant2: variant2 || "",
+      });
+      setIsView(true);
+      localStorage.removeItem("restock");
+    }
+  }, [isLoading]);
+
   useEffect(() => {
     dispatch(BROWSE({ token, key: { sorted: "true" } }));
   }, [token, dispatch]);
@@ -65,8 +82,6 @@ const Store = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
-  console.log(suppliers);
 
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;

@@ -22,7 +22,7 @@ const RemoveExpiredProducts = async () => {
       expirationDate: { $lte: currentDate },
       hasExpiration: true,
       hasExpired: false,
-    });
+    }).lean();
 
     if (expiredProducts.length > 0) {
       return true;

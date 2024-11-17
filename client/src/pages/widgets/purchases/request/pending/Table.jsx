@@ -82,7 +82,6 @@ const Table = ({ isAdmin, isRejected, purchases }) => {
                     onClick={() => {
                       setMerchandises(purchase.merchandises);
                       setPurchase(purchase);
-
                       setShow(true);
                     }}
                   >

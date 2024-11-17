@@ -2,6 +2,7 @@ import { MDBBtn, MDBIcon, MDBTable } from "mdbreact";
 import React, { useEffect, useState } from "react";
 import { formattedDate, fullName } from "../../../../../services/utilities";
 import Modal from "./modal";
+import excel from "../../excel";
 
 const Table = ({ purchases, isAdmin, isRefund = false, isDefective }) => {
   const [show, setShow] = useState(""),
@@ -23,6 +24,18 @@ const Table = ({ purchases, isAdmin, isRefund = false, isDefective }) => {
   }, [purchases]);
 
   const toggle = () => setShow(!show);
+
+  const handleExport = (purchase) => {
+    excel({
+      purchase,
+      isReceived: false,
+      isAdmin,
+      withRequest: false,
+      qtyKiloKey: "Received",
+      title: isDefective ? "Defective" : "Discrepancy",
+      withStockman: true,
+    });
+  };
   return (
     <>
       <MDBTable>
@@ -76,6 +89,18 @@ const Table = ({ purchases, isAdmin, isRefund = false, isDefective }) => {
                     {purchase.merchandises?.length}
                   </span>
                 </td>
+                {!isRefund && (
+                  <td>
+                    <MDBBtn
+                      color="info"
+                      size="sm"
+                      title="Export to excel"
+                      onClick={() => handleExport(purchase)}
+                    >
+                      <MDBIcon icon="file-excel" />
+                    </MDBBtn>
+                  </td>
+                )}
               </tr>
             ))
           ) : (

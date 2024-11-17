@@ -1,10 +1,10 @@
-const Stocks = require("../models/stockman/Stocks"),
-  RemoveExpiredProducts = require("./removeExpiredProducts");
+const Stocks = require("../models/stockman/Stocks");
+// RemoveExpiredProducts = require("./removeExpiredProducts");
 
 const arrangeStocks = async () => {
   try {
-    await RemoveExpiredProducts();
-    const stocks = await Stocks.find().populate("product");
+    // await RemoveExpiredProducts();
+    const stocks = await Stocks.find().populate("product").lean();
     const computedStocks = stocks.reduce((accumulator, currentValue) => {
       const {
         kiloStock = 0,
@@ -43,7 +43,7 @@ const arrangeStocks = async () => {
           : quantity - Math.abs(quantityStock - expiredQuantity) || 0;
         const totalExpired = isPerKilo ? expiredKilo : expiredQuantity;
         accumulator.push({
-          ...currentValue._doc,
+          ...currentValue,
           key,
           available: isPerKilo
             ? kiloStock > 0

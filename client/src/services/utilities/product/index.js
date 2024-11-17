@@ -52,12 +52,11 @@ const productOrder = {
 
     return max;
   },
+
   kiloText: (_kilo) => {
     const stringToArray = String(_kilo).split(".");
-    console.log(stringToArray);
     const kilo = Number(stringToArray[0]);
     const grams = Number(stringToArray[1] || 0);
-    console.log(grams);
     if (kilo && grams) {
       return `${kilo} kilo${kilo > 1 ? "s" : ""} 
       and ${getGramsTxt(grams)}

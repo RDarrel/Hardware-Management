@@ -7,7 +7,7 @@ const initialState = {
   collections: [],
   progress: 0,
   isSuccess: false,
-  isLoading: false,
+  isLoading: true, // dating false
   message: "",
 };
 

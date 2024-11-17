@@ -16,6 +16,7 @@ const OutOfStocksProducts = ({ outOfStocks = [], isLoading }) => {
             <Table
               products={outOfStocks}
               isStock={true}
+              isExpired={false}
               title={"Out of Stock Product"}
             />
           ) : (

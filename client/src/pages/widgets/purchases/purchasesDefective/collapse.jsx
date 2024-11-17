@@ -79,6 +79,7 @@ const Collapse = ({
             purchases={purchase.stockmans}
             isReceived={true}
             isRefund={false}
+            isDefective={isDefective}
           />
         );
       default:

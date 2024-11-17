@@ -6,9 +6,9 @@ const Variations = ({
   variations,
   setVariant1,
   images,
-  variant1,
   isCart = false,
-  variant2,
+  variant1 = "",
+  variant2 = "",
   setSelectedImage,
   setPrice,
   setVariant2,
@@ -27,9 +27,9 @@ const Variations = ({
         setVariation2(variations[1]);
       }
     }
-    setVariant1("");
-    setVariant2("");
-  }, [has2Variant, variations, setVariant1, setVariant2]);
+    setVariant1(variant1);
+    setVariant2(variant2); // dating empty string binago dahil sa link sa dashboard ng stocks
+  }, [has2Variant, variations, setVariant1, setVariant2, variant1, variant2]);
 
   const handleClickVr1 = (_id) => {
     const vr1Img = !isCart && images.find(({ label }) => label === _id);

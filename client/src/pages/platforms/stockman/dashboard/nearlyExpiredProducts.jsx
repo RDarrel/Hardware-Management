@@ -16,6 +16,7 @@ const NearlyExpiredProducts = ({ nearlyExpired, isLoading }) => {
               products={nearlyExpired}
               title={"Nearly Products Expired"}
               hasPlural={false}
+              isExpired={true}
             />
           ) : (
             <Spinner />

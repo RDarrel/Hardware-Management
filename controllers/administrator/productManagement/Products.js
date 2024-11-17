@@ -1,4 +1,4 @@
-const RemoveExpiredProducts = require("../../../config/removeExpiredProducts");
+// const RemoveExpiredProducts = require("../../../config/removeExpiredProducts");
 const sortByTopSellingProducts = require("../../../config/sortByTopSellingProducts");
 const Entity = require("../../../models/administrator/productManagement/Products"),
   Stocks = require("../../../models/stockman/Stocks"),
@@ -73,18 +73,18 @@ const getTheTotalMax = (product, stocks) => {
 };
 
 const filteredVariations = async (product, options, has2Variant) => {
-  const container = [];
-
-  for (const option of options) {
+  // Map through all options at once and use Promise.all to handle the asynchronous operations concurrently
+  const optionsPromises = options.map(async (option) => {
     const { prices = [] } = option;
 
     if (has2Variant) {
+      // Handle the case where there are two variants
       const pricesPromises = prices.map(async (price) => {
         const isExist = await Stocks.find({
           product: product._id,
           variant1: option._id,
           variant2: price._id,
-        });
+        }).lean();
 
         if (isExist.length > 0) {
           const max = getTheTotalMax(product, isExist);
@@ -98,8 +98,9 @@ const filteredVariations = async (product, options, has2Variant) => {
 
       const resolvedPrices = await Promise.all(pricesPromises);
       const filteredPrices = resolvedPrices.filter(Boolean);
+
       if (filteredPrices.length > 0) {
-        //ang ginagawa lang neto kukunin niya parin yung prices kahit walang stock pero magiging disable yun walang stock
+        // Retain prices even if they have no stock but disable them if max is 0
         const newFilteredPrices = option.prices
           .map((price) => {
             const isExist = filteredPrices.find(({ _id }) => _id === price._id);
@@ -111,23 +112,31 @@ const filteredVariations = async (product, options, has2Variant) => {
           })
           .filter(Boolean);
 
-        container.push({ ...option, prices: newFilteredPrices });
+        return { ...option, prices: newFilteredPrices };
       }
     } else {
+      // Handle the case with only one variant
       const isExist = await Stocks.find({
         product: product._id,
         variant1: option._id,
-      });
+      }).lean();
 
       if (isExist.length > 0) {
         const max = getTheTotalMax(product, isExist);
         if (max > 0) {
-          container.push({ ...option, max });
+          return { ...option, max };
         }
       }
     }
-  }
-  return container;
+
+    return null; // Return null if the option does not meet the criteria
+  });
+
+  // Wait for all the options to be processed
+  const resolvedOptions = await Promise.all(optionsPromises);
+  const filteredOptions = resolvedOptions.filter(Boolean);
+
+  return filteredOptions;
 };
 
 const filterValidPrices = (prices) => {
@@ -179,11 +188,13 @@ const mergePricesToLowestOptions = (options, highestVrOptions) => {
 };
 
 exports.sellingProducts = async (_, res) => {
+  //nag add ng .lean() sa lahat ng query
   try {
-    await RemoveExpiredProducts();
+    // await RemoveExpiredProducts();
     const products = await Entity.find()
       .populate("category")
-      .populate("material");
+      .populate("material")
+      .lean();
 
     const productPromises = products.map(async (product) => {
       const { has2Variant, hasVariant } = product;
@@ -223,7 +234,7 @@ exports.sellingProducts = async (_, res) => {
 
         if (filteredOptions.length > 0) {
           return {
-            ...product._doc,
+            ...product,
             variations: [
               { ...variations[0], options: filteredOptions },
               has2Variant && {
@@ -234,11 +245,11 @@ exports.sellingProducts = async (_, res) => {
           };
         }
       } else {
-        const isExist = await Stocks.find({ product: product._id });
+        const isExist = await Stocks.find({ product: product._id }).lean();
         if (isExist.length > 0) {
           const max = getTheTotalMax(product, isExist);
           if (max > 0) {
-            return { ...product._doc, max };
+            return { ...product, max };
           }
         }
       }

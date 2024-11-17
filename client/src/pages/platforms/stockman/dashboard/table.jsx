@@ -1,20 +1,29 @@
 import React, { useState } from "react";
-import { MDBTable } from "mdbreact";
+import { MDBBtn, MDBIcon, MDBTable } from "mdbreact";
 import {
   ENDPOINT,
   formattedDate,
   handlePagination,
   variation,
 } from "../../../../services/utilities";
+import { useHistory } from "react-router";
 import PaginationButtons from "../../../widgets/pagination/buttons";
+
 const Table = ({
-  products = [],
-  isStock = false,
   title = "",
+  isStock = false,
   hasPlural = true,
+  isExpired = false,
+  products = [],
 }) => {
   const [page, setPage] = useState(1);
   const maxPage = 5;
+  const history = useHistory();
+
+  const handleBuyAgain = (product) => {
+    history.push("/store");
+    localStorage.setItem("restock", JSON.stringify(product));
+  };
   return (
     <>
       <MDBTable>
@@ -34,6 +43,11 @@ const Table = ({
             <th className="font-weight-bold dark-grey-text text-center th-lg">
               <strong>Unit</strong>
             </th>
+            {!isExpired && (
+              <th className="font-weight-bold dark-grey-text text-center th-lg">
+                <strong>Action</strong>
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -100,6 +114,17 @@ const Table = ({
                 <td className="text-center">
                   {product.isPerKilo ? "kg" : "Pcs"}
                 </td>
+                {!isExpired && (
+                  <td className="text-center">
+                    <MDBBtn
+                      size="sm"
+                      color="info"
+                      onClick={() => handleBuyAgain(obj)}
+                    >
+                      <MDBIcon icon="shopping-cart" />
+                    </MDBBtn>
+                  </td>
+                )}
               </tr>
             );
           })}

@@ -206,7 +206,10 @@ const Sales = () => {
                 className="m-0 p-0"
                 choices={["Detailed", "Summary"]}
                 preValue={type}
-                onChange={(value) => setType(value)}
+                onChange={(value) => {
+                  setType(value);
+                  setPage(1);
+                }}
               />
             </MDBCol>
             <MDBCol
@@ -233,7 +236,10 @@ const Sales = () => {
               <CustomSelect
                 className="m-0 p-0"
                 choices={["Daily", "Weekly", "Monthly", "Yearly"]}
-                onChange={(value) => setFrequency(value)}
+                onChange={(value) => {
+                  setFrequency(value);
+                  setPage(1);
+                }}
                 preValue={frequency}
               />
             </MDBCol>

@@ -41,8 +41,6 @@ export default function Request({ isAdmin }) {
 
   useEffect(() => {
     setPurchases(collections);
-    console.log(collections);
-    console.log("running again");
   }, [collections]);
 
   useEffect(() => {

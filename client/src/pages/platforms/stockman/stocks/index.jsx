@@ -12,6 +12,7 @@ import PaginationButtons from "../../../widgets/pagination/buttons";
 import { Search } from "../../../widgets/search";
 import Spinner from "../../../widgets/spinner";
 import Expired from "./expired";
+import PendingOrders from "../../../../services/utilities/downloadExcel/pendingOrders";
 
 export const Stocks = () => {
   const { token, maxPage } = useSelector(({ auth }) => auth),
@@ -65,6 +66,47 @@ export const Stocks = () => {
     setDidSearch(true);
   };
 
+  const handleExport = () => {
+    const formmatedStocks = stocks.map((stock) => {
+      const {
+        product,
+        beginning,
+        available,
+        sold,
+        variant1,
+        variant2,
+        totalExpired,
+      } = stock;
+      const {
+        name,
+        hasVariant = false,
+        variations = [],
+        isPerKilo = false,
+      } = product;
+
+      return {
+        product: {
+          hasVariant,
+          name: name,
+          variant: variation.getTheVariant(variant1, variant2, variations),
+        },
+        Begining: beginning,
+        Available: available,
+        Sold: sold,
+        Expired: totalExpired,
+        Unit: isPerKilo ? "Kg" : "Pcs",
+      };
+    });
+
+    const options = {
+      sheet: "Stocks",
+      filename: `Stocks`,
+      title: `Stocks`,
+      isStocks: true,
+    };
+    PendingOrders({ options, array: formmatedStocks });
+  };
+
   return (
     <MDBCard>
       <MDBCardBody>
@@ -78,6 +120,7 @@ export const Stocks = () => {
           didSearch={didSearch}
           toggleExpiredProducts={toggle}
           setDidSearch={setDidSearch}
+          handleExport={handleExport}
           setSearch={setSearch}
           setContainer={setStocks}
           handleSearch={handleSearch}

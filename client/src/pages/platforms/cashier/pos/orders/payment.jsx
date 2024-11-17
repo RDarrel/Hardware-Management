@@ -9,7 +9,6 @@ import {
 import { POS } from "../../../../../services/redux/slices/cart";
 import { UPDATE_MAX } from "../../../../../services/redux/slices/administrator/productManagement/products";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
-import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { fullName, variation } from "../../../../../services/utilities";
 

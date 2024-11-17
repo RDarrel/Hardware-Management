@@ -177,7 +177,7 @@ export const InformationView = ({
           <MDBCol md="5">
             <CustomSelect
               className="m-0 p-0"
-              preValue={supplier}
+              preValue={suppliers[0]._id} //dating supplier
               choices={suppliers || []}
               texts="company"
               values="_id"
