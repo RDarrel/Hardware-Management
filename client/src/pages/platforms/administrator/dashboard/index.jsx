@@ -22,10 +22,10 @@ const Dashboard = () => {
 
   return (
     <MDBContainer fluid id="v6" className="mb-5">
-      <SalesCycles sales={sales} />
+      <CurrentSales sales={sales} />
       {/* <Total sales={sales} /> */}
       <Graph products={sales} />
-      <CurrentSales sales={sales} />
+      <SalesCycles sales={sales} />
       <TopSellingProducts products={topSellingProducts} />
       <StockmanDashboard isAdmin={true} />
     </MDBContainer>

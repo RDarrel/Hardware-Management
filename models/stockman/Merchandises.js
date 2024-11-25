@@ -7,12 +7,15 @@ const modelSchema = new mongoose.Schema(
       ref: "Purchases",
       required: true,
     },
+
     product: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Products",
       required: true,
     },
+
     expiration: { type: String },
+
     variant1: {
       type: String,
     },
