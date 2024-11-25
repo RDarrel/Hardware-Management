@@ -21,12 +21,6 @@ const MONTHS = [
 const Monthly = ({ sales = [] }) => {
   const [filteredSales, setFilteredSales] = useState([]);
   const [latestMonth, setLatestMonth] = useState(-1);
-  const [lastMonth, setLastMonth] = useState(-1);
-  const [lastMonthly, setLastMonthly] = useState({
-    totalSales: 0,
-    totalIncome: 0,
-    totalNetSales: 0,
-  });
   const [monthly, setMonthly] = useState({
     totalSales: 0,
     totalIncome: 0,

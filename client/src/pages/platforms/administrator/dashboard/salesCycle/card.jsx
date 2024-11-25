@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  MDBCard,
-  MDBCardBody,
-  MDBCardHeader,
-  MDBCol,
-  MDBProgress,
-} from "mdbreact";
+import { MDBCard, MDBCardBody, MDBCardHeader, MDBCol } from "mdbreact";
 import CustomSelect from "../../../../../components/customSelect";
 import formattedTotal from "../../../../../services/utilities/forattedTotal";
 
@@ -14,7 +8,6 @@ const Card = ({
   array = [],
   setValue = () => {},
   value = "",
-  lastTitle = "Worse than last year",
   label = "",
   color = "info",
 }) => {
@@ -53,17 +46,6 @@ const Card = ({
               <strong>&nbsp; ₱{formattedTotal(params.totalIncome || 0)}</strong>
             </h6>
           </div>
-
-          <MDBProgress
-            value={120}
-            // value={yearlyDifferenceSale}
-            barClassName="grey darken-2"
-          />
-          <p className="font-small grey-text text-nowrap">
-            {lastTitle}
-            {/* {currentYearIsBetter ? "Better" : "Worse"} than last year (
-              {yearlyDifferenceSale}%) */}
-          </p>
         </MDBCardBody>
       </MDBCard>
     </MDBCol>
